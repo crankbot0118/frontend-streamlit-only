@@ -4,6 +4,9 @@ Import and call ``apply_global_styles()`` once near the top of any page
 (after ``st.set_page_config``) to get consistent styling across the app.
 """
 
+import base64
+from pathlib import Path
+
 import streamlit as st
 
 BRAND_ORANGE = "#e87511"
@@ -21,6 +24,29 @@ _GLOBAL_CSS = f"""
   [data-testid="stHeader"] {{
       height: 0;
       background: transparent;
+  }}
+
+  /* Persistent sidebar: hide the collapse control so it stays expanded. */
+  [data-testid="stSidebarCollapseButton"] {{
+      display: none !important;
+  }}
+
+  /* Sidebar content top-flush, matching the main title. */
+  [data-testid="stSidebarUserContent"] {{
+      padding-top: 1.2rem;
+  }}
+
+  /* Logo block, left-aligned to match render_title. */
+  .ca-logo {{
+      margin: 0 0 0.9rem 0;
+      padding: 0;
+  }}
+
+  .ca-logo img {{
+      width: 170px;
+      max-width: 100%;
+      height: auto;
+      display: block;
   }}
 
   /* Page title row, flush to the top. */
@@ -64,6 +90,24 @@ _GLOBAL_CSS = f"""
 def apply_global_styles() -> None:
     """Inject the shared CSS into the current page."""
     st.html(_GLOBAL_CSS)
+
+
+def render_logo(path: str = "assets/logo.svg", width: int = 170) -> None:
+    """Render the SVG logo, top-flush and left-aligned like ``render_title``.
+
+    Reads the SVG from ``assets/`` and embeds it as a data URI so it renders
+    inline (typically inside the sidebar).
+    """
+    svg = Path(path).read_text(encoding="utf-8")
+    b64 = base64.b64encode(svg.encode("utf-8")).decode("ascii")
+    st.html(
+        f"""
+        <div class="ca-logo">
+          <img src="data:image/svg+xml;base64,{b64}" alt="Clone automation logo"
+               style="width:{width}px;" />
+        </div>
+        """
+    )
 
 
 def render_title(title: str, subtitle: str | None = None) -> None:

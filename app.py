@@ -2,15 +2,19 @@
 
 import streamlit as st
 
-from styles import apply_global_styles, render_title
+from styles import apply_global_styles, render_logo, render_title
 
 st.set_page_config(
     page_title="Clone automation dashboard",
     page_icon=":material/precision_manufacturing:",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 
 apply_global_styles()
+
+with st.sidebar:
+    render_logo()
 
 render_title(
     "Clone automation dashboard",
