@@ -104,18 +104,25 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Sidebar navigation ---------- */
 
-  /* Tighten vertical spacing between nav items. */
+  /* Tighten vertical spacing and keep every block left-aligned. */
   .st-key-ca-nav [data-testid="stVerticalBlock"] {{
       gap: 0.1rem;
+      align-items: stretch;
   }}
 
-  /* Borderless, left-aligned link-style nav buttons. */
-  .st-key-ca-nav [data-testid="stButton"] > button {{
+  .st-key-ca-nav [data-testid="stElementContainer"] {{
+      align-items: flex-start;
+      text-align: left;
+  }}
+
+  /* Borderless, left-aligned link-style nav buttons (descendant selectors so
+     we catch the button regardless of intermediate wrappers). */
+  .st-key-ca-nav .stButton button {{
       display: flex !important;
       align-items: center !important;
       justify-content: flex-start !important;
       text-align: left !important;
-      width: 100%;
+      width: 100% !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
@@ -126,32 +133,35 @@ _GLOBAL_CSS = f"""
       color: {BRAND_INK};
   }}
 
-  /* Keep the label itself left-aligned (Streamlit centers it by default). */
-  .st-key-ca-nav [data-testid="stButton"] > button > div,
-  .st-key-ca-nav [data-testid="stButton"] > button [data-testid="stMarkdownContainer"] {{
+  /* Stop Streamlit from centering the label inside the button. */
+  .st-key-ca-nav .stButton button > div,
+  .st-key-ca-nav .stButton button [data-testid="stMarkdownContainer"] {{
       width: 100%;
+      display: flex !important;
+      justify-content: flex-start !important;
       text-align: left !important;
   }}
 
-  .st-key-ca-nav [data-testid="stButton"] > button p {{
+  .st-key-ca-nav .stButton button p {{
+      margin: 0;
       font-weight: 600;
       font-size: 0.98rem;
       text-align: left !important;
   }}
 
-  .st-key-ca-nav [data-testid="stButton"] > button:hover {{
-      background: rgba(232, 117, 17, 0.10) !important;
+  .st-key-ca-nav .stButton button:hover {{
+      background: rgba(232, 117, 17, 0.12) !important;
       color: {BRAND_ORANGE};
   }}
 
-  .st-key-ca-nav [data-testid="stButton"] > button:hover svg,
-  .st-key-ca-nav [data-testid="stButton"] > button:hover p {{
+  .st-key-ca-nav .stButton button:hover svg,
+  .st-key-ca-nav .stButton button:hover p {{
       color: {BRAND_ORANGE};
   }}
 
   /* Group dropdowns: fully borderless / no box, blend into the sidebar. */
   .st-key-ca-nav [data-testid="stExpander"],
-  .st-key-ca-nav [data-testid="stExpander"] > details {{
+  .st-key-ca-nav [data-testid="stExpander"] details {{
       border: none !important;
       box-shadow: none !important;
       outline: none !important;
@@ -165,7 +175,10 @@ _GLOBAL_CSS = f"""
       gap: 0.5rem;
       padding: 0.45rem 0.55rem;
       font-weight: 700;
-      color: #5b6166;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: 0.78rem;
+      color: #6b7177;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
@@ -182,9 +195,17 @@ _GLOBAL_CSS = f"""
       outline: none !important;
   }}
 
-  /* Move the dropdown chevron to the left of the label. */
+  /* Brand-colored chevron, moved to the left of the label. */
   .st-key-ca-nav [data-testid="stExpander"] summary svg {{
       order: -1;
+      color: {BRAND_ORANGE};
+      fill: {BRAND_ORANGE};
+  }}
+
+  /* Left-align the summary label text too. */
+  .st-key-ca-nav [data-testid="stExpander"] summary p,
+  .st-key-ca-nav [data-testid="stExpander"] summary span {{
+      text-align: left !important;
   }}
 
   /* Indent the items nested inside a group. */
@@ -192,9 +213,10 @@ _GLOBAL_CSS = f"""
       padding-left: 0.6rem;
   }}
 
-  /* Keep the divider, just make it lighter and tighter. */
+  /* Keep the divider, tinted to match the logo. */
   .st-key-ca-nav [data-testid="stDivider"] hr {{
       margin: 0.5rem 0;
+      border-color: rgba(232, 117, 17, 0.25);
   }}
 </style>
 """
