@@ -40,9 +40,9 @@ _GLOBAL_CSS = f"""
   }}
 
   [data-testid="stSidebar"] {{
-      width: 244px !important;
-      min-width: 244px !important;
-      max-width: 244px !important;
+      width: 264px !important;
+      min-width: 264px !important;
+      max-width: 264px !important;
   }}
 
   /* Collapse the empty sidebar header so content sits at the very top. */
@@ -194,10 +194,10 @@ _GLOBAL_CSS = f"""
       fill: #9aa0a6 !important;
   }}
 
-  /* Small yellow "Coming soon!" highlight, nested under each disabled item. */
+  /* Small yellow "Coming soon!" highlight, left-aligned with the item row. */
   .ca-soon {{
       display: inline-block;
-      margin: -0.15rem 0 0.4rem 2.35rem;
+      margin: -0.2rem 0 0.4rem 0.55rem;
       padding: 0.05rem 0.45rem;
       border-radius: 6px;
       background: #fff3cd;
