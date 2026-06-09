@@ -5,6 +5,7 @@ Import and call ``apply_global_styles()`` once near the top of any page
 """
 
 import base64
+import html
 from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
@@ -1060,23 +1061,49 @@ _GLOBAL_CSS = f"""
       color: {BRAND_ORANGE} !important;
   }}
 
-  /* ---------- Step detail dialog — strict light mode ---------- */
+  /* ---------- Step detail dialog — translucent overlay + strict light panel ---------- */
+  [data-testid="stBackdrop"] {{
+      background-color: rgba(19, 21, 22, 0.38) !important;
+      backdrop-filter: blur(4px) !important;
+      -webkit-backdrop-filter: blur(4px) !important;
+  }}
   [data-testid="stDialog"],
-  [data-testid="stDialog"] > div,
   div[data-baseweb="modal"],
-  div[data-baseweb="modal"] > div {{
-      background: #ffffff !important;
+  div[data-baseweb="modal"] > div,
+  [data-testid="stDialog"] > div {{
+      background: transparent !important;
+      background-color: transparent !important;
+      color-scheme: light only !important;
+  }}
+  [data-testid="stDialog"] [role="dialog"],
+  [data-testid="stDialog"] [data-testid="stModal"],
+  [data-testid="stDialog"] [data-testid="stModalContainer"],
+  div[data-baseweb="modal"] [data-baseweb="modal-dialog"] {{
+      background: rgba(255, 255, 255, 0.97) !important;
+      backdrop-filter: blur(14px) saturate(1.1) !important;
+      -webkit-backdrop-filter: blur(14px) saturate(1.1) !important;
       color: {BRAND_INK} !important;
       color-scheme: light only !important;
+      border: 1px solid rgba(227, 230, 232, 0.95) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 22px 64px rgba(19, 21, 22, 0.22) !important;
+      --background-color: #ffffff !important;
+      --secondary-background-color: #f6f7f8 !important;
+      --text-color: {BRAND_INK} !important;
   }}
   [data-testid="stDialog"] header,
   [data-testid="stDialog"] [data-testid="stModalHeader"] {{
-      background: #ffffff !important;
+      background: transparent !important;
       border-bottom: 1px solid #eef0f2 !important;
   }}
   [data-testid="stDialog"] header h1,
   [data-testid="stDialog"] [data-testid="stModalHeader"] h1 {{
       display: none !important;
+  }}
+  [data-testid="stDialog"] [data-testid="stModalCloseButton"],
+  [data-testid="stDialog"] button[aria-label="Close"] {{
+      color: #6b7177 !important;
+      background: transparent !important;
   }}
   .ca-step-dialog-title {{
       font-size: 1.35rem;
@@ -1085,22 +1112,73 @@ _GLOBAL_CSS = f"""
       margin: 0 0 1rem 0;
       padding: 0;
   }}
-  [data-testid="stDialog"] [data-testid="stMarkdownContainer"] p,
-  [data-testid="stDialog"] [data-testid="stMarkdownContainer"] li,
-  [data-testid="stDialog"] label,
-  [data-testid="stDialog"] h4 {{
-      color: {BRAND_INK} !important;
+  .ca-step-dialog-body {{
+      color: {BRAND_INK};
+      background: transparent;
   }}
-  [data-testid="stDialog"] [data-testid="stDataFrame"],
-  [data-testid="stDialog"] [data-testid="stDataFrameGlideDataEditor"],
-  [data-testid="stDialog"] .gdgrid-root,
-  [data-testid="stDialog"] .gdg-cell {{
-      background: #ffffff !important;
-      color: {BRAND_INK} !important;
+  .ca-step-dialog-fields {{
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 0.45rem 1rem;
+      margin: 0 0 1.25rem 0;
+      font-size: 0.92rem;
   }}
-  [data-testid="stDialog"] .gdg-header-row {{
+  .ca-step-dialog-fields dt {{
+      margin: 0;
+      font-weight: 600;
+      color: {BRAND_INK};
+  }}
+  .ca-step-dialog-fields dd {{
+      margin: 0;
+      color: #3d4348;
+  }}
+  .ca-step-dialog-section {{
+      font-size: 1rem;
+      font-weight: 700;
+      color: {BRAND_INK};
+      margin: 0 0 0.55rem 0;
+  }}
+  .ca-step-dialog-table-wrap {{
+      overflow-x: auto;
+      border: 1px solid #e3e6e8;
+      border-radius: 8px;
+      background: #ffffff;
+  }}
+  .ca-step-dialog-table {{
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      background: #ffffff;
+      color: {BRAND_INK};
+  }}
+  .ca-step-dialog-table th,
+  .ca-step-dialog-table td {{
+      padding: 0.45rem 0.65rem;
+      text-align: left;
+      border-bottom: 1px solid #eef0f2;
+      color: {BRAND_INK};
+      background: #ffffff;
+  }}
+  .ca-step-dialog-table th {{
       background: #f6f7f8 !important;
-      color: {BRAND_INK} !important;
+      font-weight: 600;
+      color: #3d4348;
+  }}
+  .ca-step-dialog-table tr:last-child td {{
+      border-bottom: none;
+  }}
+  .ca-step-dialog-empty {{
+      color: #6b7177;
+      font-size: 0.88rem;
+      margin: 0;
+  }}
+  .ca-step-dialog-error {{
+      color: #cf222e;
+      background: #ffebe9;
+      border: 1px solid #ff8182;
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.9rem;
   }}
 </style>
 """
@@ -1153,6 +1231,67 @@ def status_color(status: str) -> str:
 def status_badge_html(status: str) -> str:
     """Return an HTML badge span for a status (colored)."""
     return f'<span class="ca-badge {status_color(status)}">{status or "—"}</span>'
+
+
+def step_attempts_table_html(attempts: list[dict]) -> str:
+    """Light-mode HTML table for step attempt history."""
+    if not attempts:
+        return '<p class="ca-step-dialog-empty">No attempts recorded for this function.</p>'
+
+    rows = []
+    for row in attempts:
+        current = "Yes" if row.get("is_current") else ""
+        rows.append(
+            "<tr>"
+            f"<td>{html.escape(str(row.get('attempt_number', '')))}</td>"
+            f"<td>{html.escape(str(row.get('clone_function_run_id', '')))}</td>"
+            f"<td>{html.escape(str(row.get('status', '')))}</td>"
+            f"<td>{html.escape(fmt_dt(row.get('start_time')))}</td>"
+            f"<td>{html.escape(fmt_dt(row.get('end_time')))}</td>"
+            f"<td>{html.escape(current)}</td>"
+            "</tr>"
+        )
+    return (
+        '<div class="ca-step-dialog-table-wrap">'
+        '<table class="ca-step-dialog-table">'
+        "<thead><tr>"
+        "<th>Attempt</th>"
+        "<th>Clone function run ID</th>"
+        "<th>Status</th>"
+        "<th>Start</th>"
+        "<th>End</th>"
+        "<th>Current</th>"
+        "</tr></thead>"
+        f"<tbody>{''.join(rows)}</tbody>"
+        "</table></div>"
+    )
+
+
+def step_detail_dialog_html(detail: dict, function_name: str) -> str:
+    """Full light-mode dialog body (HTML only — avoids Streamlit dark widgets)."""
+    safe_name = html.escape(function_name)
+    status = status_badge_html(detail.get("status", ""))
+    attempts_html = step_attempts_table_html(detail.get("attempts") or [])
+    return (
+        f'<div class="ca-step-dialog-body">'
+        f'<div class="ca-step-dialog-title">Function step details · {safe_name}</div>'
+        f'<dl class="ca-step-dialog-fields">'
+        f"<dt>Clone run ID</dt><dd>{html.escape(str(detail.get('clone_run_id', '—')))}</dd>"
+        f"<dt>Clone function run ID</dt>"
+        f"<dd>{html.escape(str(detail.get('clone_function_run_id', '—')))}</dd>"
+        f"<dt>Status</dt><dd>{status}</dd>"
+        f"<dt>Start</dt><dd>{html.escape(fmt_dt(detail.get('start_time')))}</dd>"
+        f"<dt>End</dt><dd>{html.escape(fmt_dt(detail.get('end_time')))}</dd>"
+        f"</dl>"
+        f'<div class="ca-step-dialog-section">Attempts</div>'
+        f"{attempts_html}"
+        f"</div>"
+    )
+
+
+def step_detail_dialog_error_html(message: str) -> str:
+    safe = html.escape(message)
+    return f'<div class="ca-step-dialog-body"><p class="ca-step-dialog-error">{safe}</p></div>'
 
 
 # Status -> PNG asset in the repo-root ``assets/`` folder. Used on the run

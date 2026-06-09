@@ -1,6 +1,5 @@
 """Run details page — shows the steps (clone_function_run_status) for a run."""
 
-import html
 import time
 
 import streamlit as st
@@ -15,7 +14,6 @@ from api import (
     step_log_url,
 )
 from styles import (
-    fmt_dt,
     fmt_duration,
     fmt_relative_update,
     fmt_started,
@@ -24,6 +22,8 @@ from styles import (
     status_badge_html,
     status_image_html,
     step_action_link_html,
+    step_detail_dialog_error_html,
+    step_detail_dialog_html,
 )
 
 run_id = st.session_state.get("selected_run_id")
@@ -174,89 +174,17 @@ else:
         clone_function_run_id: int,
         function_name: str,
     ) -> None:
-        st.markdown(
-            """
-            <style>
-            [data-testid="stDialog"], [data-testid="stDialog"] > div,
-            div[data-baseweb="modal"], div[data-baseweb="modal"] > div {
-                background: #ffffff !important;
-                color: #131516 !important;
-                color-scheme: light only !important;
-            }
-            [data-testid="stDialog"] header,
-            [data-testid="stDialog"] [data-testid="stModalHeader"] {
-                background: #ffffff !important;
-                border-bottom: 1px solid #eef0f2 !important;
-            }
-            [data-testid="stDialog"] header h1,
-            [data-testid="stDialog"] [data-testid="stModalHeader"] h1 {
-                display: none !important;
-            }
-            [data-testid="stDialog"] [data-testid="stMarkdownContainer"] p,
-            [data-testid="stDialog"] [data-testid="stMarkdownContainer"] li,
-            [data-testid="stDialog"] h4 {
-                color: #131516 !important;
-            }
-            [data-testid="stDialog"] table,
-            [data-testid="stDialog"] thead,
-            [data-testid="stDialog"] tbody,
-            [data-testid="stDialog"] tr,
-            [data-testid="stDialog"] th,
-            [data-testid="stDialog"] td {
-                background: #ffffff !important;
-                color: #131516 !important;
-            }
-            [data-testid="stDialog"] thead tr th {
-                background: #f6f7f8 !important;
-            }
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
-        safe_name = html.escape(function_name)
-        st.markdown(
-            f'<div class="ca-step-dialog-title">Function step details · {safe_name}</div>',
-            unsafe_allow_html=True,
-        )
         try:
             detail = get_step_detail(clone_run_id, clone_function_run_id)
         except Exception as exc:
-            st.error(f"Could not load step details: {exc}")
+            st.html(step_detail_dialog_error_html(f"Could not load step details: {exc}"))
             return
 
         if not detail:
-            st.warning("No details found for this step.")
+            st.html(step_detail_dialog_error_html("No details found for this step."))
             return
 
-        st.markdown(f"**Clone run ID:** `{detail.get('clone_run_id')}`")
-        st.markdown(
-            f"**Clone function run ID:** `{detail.get('clone_function_run_id')}`"
-        )
-        st.markdown(
-            f"**Status:** {status_badge_html(detail.get('status', ''))}",
-            unsafe_allow_html=True,
-        )
-        st.markdown(f"**Start:** {fmt_dt(detail.get('start_time'))}")
-        st.markdown(f"**End:** {fmt_dt(detail.get('end_time'))}")
-
-        attempts = detail.get("attempts") or []
-        st.markdown("#### Attempts")
-        if not attempts:
-            st.caption("No attempts recorded for this function.")
-        else:
-            table_rows = []
-            for row in attempts:
-                table_rows.append(
-                    {
-                        "Attempt": row.get("attempt_number"),
-                        "Clone function run ID": row.get("clone_function_run_id"),
-                        "Status": row.get("status"),
-                        "Start": fmt_dt(row.get("start_time")),
-                        "End": fmt_dt(row.get("end_time")),
-                        "Current": "Yes" if row.get("is_current") else "",
-                    }
-                )
-            st.table(table_rows)
+        st.html(step_detail_dialog_html(detail, function_name))
 
     with st.container(key="ca-steps"):
         for i, step in enumerate(steps):
