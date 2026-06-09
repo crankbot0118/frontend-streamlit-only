@@ -5,7 +5,7 @@ Import and call ``apply_global_styles()`` once near the top of any page
 """
 
 import base64
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import streamlit as st
@@ -362,9 +362,9 @@ def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
     "Last refresh on ..." line. Call inside a ``with st.sidebar:`` block,
     after the navigation.
     """
-    last_refresh = last_refresh or datetime.now()
+    last_refresh = last_refresh or datetime.now(timezone.utc)
     state = "is-live" if is_live else "is-offline"
-    stamp = last_refresh.strftime("%b %d, %Y at %I:%M %p")
+    stamp = last_refresh.strftime("%b %d, %Y at %I:%M %p UTC")
     with st.container(key="ca-status"):
         st.html(
             f"""
