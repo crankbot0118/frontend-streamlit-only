@@ -5,6 +5,7 @@ Import and call ``apply_global_styles()`` once near the top of any page
 """
 
 import base64
+from datetime import datetime
 from pathlib import Path
 
 import streamlit as st
@@ -270,6 +271,76 @@ _GLOBAL_CSS = f"""
       margin: 0.5rem 0;
       border-color: rgba(232, 117, 17, 0.25);
   }}
+
+  /* ---------- Sidebar bottom status card ---------- */
+
+  /* Make the sidebar a full-height column so the status can sit at the bottom. */
+  [data-testid="stSidebarUserContent"] {{
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 5.5rem);
+  }}
+
+  [data-testid="stSidebarUserContent"] > [data-testid="stVerticalBlock"] {{
+      flex: 1 1 auto;
+  }}
+
+  /* Push the status block to the very bottom. */
+  [data-testid="stSidebarUserContent"] :has(> .st-key-ca-status) {{
+      margin-top: auto;
+  }}
+
+  .ca-status {{
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 0.75rem;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid #e3e6e8;
+  }}
+
+  .ca-status .ca-dot {{
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+  }}
+
+  .ca-status .ca-status-label {{
+      font-weight: 700;
+      font-size: 0.92rem;
+  }}
+
+  /* Live: glowing green with a pulse. */
+  .ca-status.is-live .ca-dot {{
+      background: #22c55e;
+      animation: ca-pulse 1.6s ease-out infinite;
+  }}
+  .ca-status.is-live .ca-status-label {{
+      color: #15803d;
+  }}
+
+  /* Offline: red with a steady glow. */
+  .ca-status.is-offline .ca-dot {{
+      background: #ef4444;
+      box-shadow: 0 0 7px 1px rgba(239, 68, 68, 0.7);
+  }}
+  .ca-status.is-offline .ca-status-label {{
+      color: #b91c1c;
+  }}
+
+  @keyframes ca-pulse {{
+      0%   {{ box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }}
+      70%  {{ box-shadow: 0 0 0 9px rgba(34, 197, 94, 0); }}
+      100% {{ box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }}
+  }}
+
+  .ca-refresh {{
+      margin: 0.4rem 0 0 0.15rem;
+      font-size: 0.72rem;
+      color: #6b7177;
+  }}
 </style>
 """
 
@@ -296,6 +367,29 @@ def render_logo(path: str | Path | None = None, width: int = 170) -> None:
         </div>
         """
     )
+
+
+def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
+    """Render the bottom-of-sidebar backend status card.
+
+    A glowing green dot + "Live" when the backend is reachable, or a red dot +
+    "Offline" otherwise, with a "Last refresh on ..." line below it. Call inside
+    a ``with st.sidebar:`` block, after the navigation.
+    """
+    last_refresh = last_refresh or datetime.now()
+    state = "is-live" if is_live else "is-offline"
+    label = "Live" if is_live else "Offline"
+    stamp = last_refresh.strftime("%b %d, %Y at %I:%M %p")
+    with st.container(key="ca-status"):
+        st.html(
+            f"""
+            <div class="ca-status {state}">
+              <span class="ca-dot"></span>
+              <span class="ca-status-label">{label}</span>
+            </div>
+            <div class="ca-refresh">Last refresh on {stamp}</div>
+            """
+        )
 
 
 DEFAULT_PAGE = "Home"

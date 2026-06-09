@@ -5,13 +5,17 @@ The default Streamlit nav is hidden (``position="hidden"``) so our own
 sidebar in ``render_sidebar_nav`` is the only navigation.
 """
 
+from datetime import datetime
+
 import streamlit as st
 
+from api import check_backend_health
 from styles import (
     apply_global_styles,
     build_pages,
     render_logo,
     render_sidebar_nav,
+    render_status,
 )
 
 st.set_page_config(
@@ -29,5 +33,6 @@ pg = st.navigation(list(pages.values()), position="hidden")
 with st.sidebar:
     render_logo()
     render_sidebar_nav(pages, current_title=pg.title)
+    render_status(check_backend_health(), datetime.now())
 
 pg.run()
