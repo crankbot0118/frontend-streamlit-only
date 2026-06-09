@@ -39,6 +39,38 @@ def get_clone_runs(db: Session, limit: int = 50) -> list[dict]:
     return [dict(zip(columns, row)) for row in results.fetchall()]
 
 
+def get_clone_run(db: Session, clone_run_id: int) -> dict | None:
+    """Fetch a single ``clone_run_status`` row (with ``client_name`` joined).
+
+    Returns ``None`` when no run matches ``clone_run_id``.
+    """
+    query = text(
+        """
+        SELECT
+            cr.clone_run_id,
+            cr.client_id,
+            c.client_name,
+            cr.user_id,
+            cr.user_name,
+            cr.source_env_id,
+            cr.target_env_id,
+            cr.source_name,
+            cr.target_name,
+            cr.status,
+            cr.start_date,
+            cr.last_update,
+            cr.log_location
+        FROM clone_run_status cr
+        JOIN clients c ON c.client_id = cr.client_id
+        WHERE cr.clone_run_id = :clone_run_id
+        """
+    )
+    results = db.execute(query, {"clone_run_id": clone_run_id})
+    columns = list(results.keys())
+    row = results.fetchone()
+    return dict(zip(columns, row)) if row else None
+
+
 def get_run_steps(db: Session, clone_run_id: int) -> list[dict]:
     """Fetch the latest attempt of each step for a clone run.
 

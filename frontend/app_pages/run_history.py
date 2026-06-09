@@ -3,7 +3,7 @@
 import streamlit as st
 
 from api import get_runs
-from styles import render_run_card, render_title
+from styles import goto_page, render_run_card, render_title
 
 render_title(
     "Run History",
@@ -24,4 +24,5 @@ else:
             if render_run_card(run):
                 st.session_state["selected_run_id"] = run["clone_run_id"]
                 st.session_state["selected_run"] = run
-                st.switch_page("app_pages/run_details.py")
+                st.query_params["run"] = str(run["clone_run_id"])
+                goto_page("Run details")

@@ -2,7 +2,7 @@
 
 import streamlit as st
 
-from api import get_run_steps
+from api import get_run, get_run_steps
 from styles import (
     fmt_dt,
     fmt_duration,
@@ -14,9 +14,31 @@ from styles import (
 )
 
 run_id = st.session_state.get("selected_run_id")
+
+# On a hard refresh Streamlit starts a fresh session and session_state is empty,
+# so fall back to the run id carried in the URL query param.
+if not run_id:
+    qp_run = st.query_params.get("run")
+    if qp_run is not None:
+        try:
+            run_id = int(qp_run)
+            st.session_state["selected_run_id"] = run_id
+        except (TypeError, ValueError):
+            run_id = None
+
 run = st.session_state.get("selected_run")
+# Re-fetch the run object when it is missing but we know which run we want.
+if run_id and (not run or run.get("clone_run_id") != run_id):
+    run = get_run(run_id)
+    if run:
+        st.session_state["selected_run"] = run
+
+# Keep the URL in sync so subsequent refreshes still work.
+if run_id:
+    st.query_params["run"] = str(run_id)
 
 if st.button(":material/arrow_back: Back to Run History", key="back_to_runs"):
+    st.query_params.clear()
     goto_page("Run History")
 
 if not run_id:

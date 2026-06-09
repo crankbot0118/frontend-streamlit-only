@@ -47,6 +47,24 @@ def get_runs(limit: int = 50) -> list[dict]:
     return _as_list(_get_json(f"/api/v1/runs?limit={limit}"), "runs", "latest_runs")
 
 
+def get_run(clone_run_id: int) -> dict | None:
+    """Fetch a single clone run by id.
+
+    Tries the dedicated ``/api/v1/runs/{id}`` endpoint first; if that is
+    unavailable (older backend) it falls back to scanning the runs list.
+    """
+    try:
+        data = _get_json(f"/api/v1/runs/{clone_run_id}")
+        if isinstance(data, dict) and data.get("clone_run_id") is not None:
+            return data
+    except Exception:
+        pass
+    for run in get_runs(limit=200):
+        if run.get("clone_run_id") == clone_run_id:
+            return run
+    return None
+
+
 def get_run_steps(clone_run_id: int) -> list[dict]:
     """Fetch the step rows (clone_function_run_status) for a clone run."""
     return _as_list(_get_json(f"/api/v1/runs/{clone_run_id}/steps"), "steps")

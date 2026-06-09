@@ -7,11 +7,11 @@ Run locally with:
 
 from datetime import datetime, timezone
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from crud import get_clone_runs, get_run_steps
+from crud import get_clone_run, get_clone_runs, get_run_steps
 from database import get_db
 from schemas import CloneFunctionRunOut, CloneRunOut
 
@@ -44,6 +44,21 @@ def health() -> dict:
 )
 def list_clone_runs(limit: int = 50, db: Session = Depends(get_db)) -> list[CloneRunOut]:
     return get_clone_runs(db, limit)
+
+
+@app.get(
+    "/api/v1/runs/{clone_run_id}",
+    response_model=CloneRunOut,
+    summary="Get a single clone run",
+    description="Fetches one clone_run_status row (with client_name) by id.",
+)
+def get_single_run(
+    clone_run_id: int, db: Session = Depends(get_db)
+) -> CloneRunOut:
+    run = get_clone_run(db, clone_run_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail="Run not found")
+    return run
 
 
 @app.get(
