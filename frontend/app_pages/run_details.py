@@ -8,13 +8,11 @@ from api import (
     abort_run,
     get_run,
     get_run_steps,
-    get_step_detail,
     run_log_url,
     skip_run,
     step_log_url,
 )
 from styles import (
-    fmt_dt,
     fmt_duration,
     fmt_relative_update,
     fmt_started,
@@ -22,7 +20,8 @@ from styles import (
     render_title,
     status_badge_html,
     status_image_html,
-    step_download_links_html,
+    step_detail_dialog_html,
+    step_log_link_html,
 )
 
 run_id = st.session_state.get("selected_run_id")
@@ -167,55 +166,9 @@ if not steps:
     st.caption("No steps found for this run.")
 else:
 
-    @st.dialog("Function step details", width="large")
-    def _show_step_detail_dialog(clone_run_id: int, clone_function_run_id: int) -> None:
-        try:
-            detail = get_step_detail(clone_run_id, clone_function_run_id)
-        except Exception as exc:
-            st.error(f"Could not load step details: {exc}")
-            return
-
-        if not detail:
-            st.warning("No details found for this step.")
-            return
-
-        fn_name = detail.get("function_name", "—")
-        fn_id = detail.get("function_id", "—")
-        st.markdown(f"**{fn_name}** · function_id `{fn_id}`")
-        st.caption(
-            f"PK formula: base_pk = clone_run_id + 1 + (function_id × 2) → "
-            f"`{detail.get('base_pk')}` · current attempt `{detail.get('attempt_number')}`"
-        )
-
-        info_cols = st.columns(2)
-        with info_cols[0]:
-            st.markdown(f"**Clone function run ID:** `{detail.get('clone_function_run_id')}`")
-            st.markdown(f"**Status:** {status_badge_html(detail.get('status', ''))}", unsafe_allow_html=True)
-            st.markdown(f"**Start:** {fmt_dt(detail.get('start_time'))}")
-        with info_cols[1]:
-            st.markdown(f"**Clone run ID:** `{detail.get('clone_run_id')}`")
-            log_path = detail.get("step_func_log_location") or "—"
-            st.markdown(f"**Step log path:** `{log_path}`")
-            st.markdown(f"**End:** {fmt_dt(detail.get('end_time'))}")
-
-        attempts = detail.get("attempts") or []
-        st.markdown("#### Attempt history")
-        if not attempts:
-            st.caption("No attempts recorded for this function.")
-        else:
-            table_rows = []
-            for row in attempts:
-                table_rows.append(
-                    {
-                        "Attempt": row.get("attempt_number"),
-                        "Clone function run ID": row.get("clone_function_run_id"),
-                        "Status": row.get("status"),
-                        "Start": fmt_dt(row.get("start_time")),
-                        "End": fmt_dt(row.get("end_time")),
-                        "Current": "Yes" if row.get("is_current") else "",
-                    }
-                )
-            st.dataframe(table_rows, use_container_width=True, hide_index=True)
+    @st.dialog(" ", width="medium")
+    def _show_step_detail_dialog(step: dict) -> None:
+        st.html(step_detail_dialog_html(step))
 
     with st.container(key="ca-steps"):
         for i, step in enumerate(steps):
@@ -240,10 +193,9 @@ else:
                 if is_open:
                     with st.container(key=f"step_links_{i}"):
                         if st.button("Details", key=f"step_details_{i}"):
-                            _show_step_detail_dialog(run_id, step_pk)
+                            _show_step_detail_dialog(step)
                         st.html(
-                            step_download_links_html(
-                                run_log_url(run_id),
+                            step_log_link_html(
                                 step_log_url(run_id, step_pk)
                                 if step.get("step_func_log_location")
                                 else None,
