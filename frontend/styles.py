@@ -43,6 +43,7 @@ _GLOBAL_CSS = f"""
       --background-color: #ffffff;
       --secondary-background-color: #f6f7f8;
       --text-color: {BRAND_INK};
+      --ca-detail-inline-gap: 0.45rem;
   }}
   [data-testid="stAppViewContainer"],
   .stApp,
@@ -553,7 +554,27 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run details header ---------- */
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
-  /* Title row: title + Abort + Skip inline with dot-sized gaps. */
+  /* Title parts use the same gap as the middot-separated heading text. */
+  .ca-detail-title-parts {{
+      display: inline-flex;
+      align-items: center;
+      gap: var(--ca-detail-inline-gap);
+      margin: 0;
+      padding: 0;
+      font-size: 2.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: {BRAND_INK};
+      line-height: 1.1;
+      white-space: nowrap;
+  }}
+  .ca-detail-title-parts .ca-run-sep {{
+      flex: 0 0 auto;
+  }}
+  .ca-detail-title-parts .arrow {{
+      color: {BRAND_ORANGE};
+  }}
+  /* Title row: heading then Abort / Skip with identical gap (no dot). */
   .st-key-ca-detail-title-row,
   .st-key-ca-detail-title-row [data-testid="stVerticalBlock"],
   .st-key-ca-detail-title-row [data-testid="stVerticalBlockBorderWrapper"] {{
@@ -561,7 +582,7 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: 0.45rem !important;
+      gap: var(--ca-detail-inline-gap) !important;
       width: fit-content !important;
       max-width: 100% !important;
   }}
@@ -579,7 +600,7 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: 0.45rem !important;
+      gap: var(--ca-detail-inline-gap) !important;
       width: auto !important;
   }}
   .st-key-detail-actions [data-testid="stElementContainer"] {{
@@ -589,10 +610,6 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
   .ca-detail-title {{
-      margin: 0;
-  }}
-  .ca-detail-title h1 {{
-      white-space: nowrap;
       margin: 0;
   }}
   /* Abort / Skip — icon + label, tight beside the heading. */

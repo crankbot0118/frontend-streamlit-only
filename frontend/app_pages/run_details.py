@@ -88,8 +88,13 @@ if run:
             st.html(
                 f"""
                 <div class="ca-title ca-detail-title">
-                  <h1>Run #{run_id} <span class="ca-run-sep">&middot;</span> {src}
-                    <span class="arrow">&#8594;</span> {tgt}</h1>
+                  <h1 class="ca-detail-title-parts">
+                    <span>Run #{run_id}</span>
+                    <span class="ca-run-sep">&middot;</span>
+                    <span>{src}</span>
+                    <span class="arrow">&#8594;</span>
+                    <span>{tgt}</span>
+                  </h1>
                 </div>
                 """
             )
