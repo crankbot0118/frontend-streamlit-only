@@ -9,7 +9,7 @@ run_id = st.session_state.get("selected_run_id")
 run = st.session_state.get("selected_run")
 
 if st.button(":material/arrow_back: Back to Run History", key="back_to_runs"):
-    st.switch_page("pages/run_history.py")
+    st.switch_page("app_pages/run_history.py")
 
 if not run_id:
     render_title("Run details")

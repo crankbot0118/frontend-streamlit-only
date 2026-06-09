@@ -24,4 +24,4 @@ else:
             if render_run_card(run):
                 st.session_state["selected_run_id"] = run["clone_run_id"]
                 st.session_state["selected_run"] = run
-                st.switch_page("pages/run_details.py")
+                st.switch_page("app_pages/run_details.py")

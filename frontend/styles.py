@@ -564,25 +564,25 @@ DEFAULT_PAGE = "Home"
 # registry (build_pages) and the custom sidebar (render_sidebar_nav).
 NAV: list[dict] = [
     {"kind": "item", "title": "Home", "icon": "space_dashboard",
-     "key": "nav_home", "module": "pages/home.py"},
+     "key": "nav_home", "module": "app_pages/home.py"},
     {"kind": "group", "title": "Admin", "badge": "Coming soon!", "items": [
         {"title": "Clients", "icon": "work", "key": "nav_clients",
-         "module": "pages/clients.py", "disabled": True},
+         "module": "app_pages/clients.py", "disabled": True},
         {"title": "Team", "icon": "group", "key": "nav_team",
-         "module": "pages/team.py", "disabled": True},
+         "module": "app_pages/team.py", "disabled": True},
         {"title": "Targets", "icon": "dns", "key": "nav_targets",
-         "module": "pages/targets.py", "disabled": True},
+         "module": "app_pages/targets.py", "disabled": True},
     ]},
     {"kind": "group", "title": "Clone Setup", "items": [
-        {"title": "DB Config", "icon": "database", "key": "nav_db", "module": "pages/db_config.py"},
-        {"title": "EBS Config", "icon": "deployed_code", "key": "nav_ebs", "module": "pages/ebs_config.py"},
-        {"title": "Integrations", "icon": "hub", "key": "nav_integrations", "module": "pages/integrations.py"},
+        {"title": "DB Config", "icon": "database", "key": "nav_db", "module": "app_pages/db_config.py"},
+        {"title": "EBS Config", "icon": "deployed_code", "key": "nav_ebs", "module": "app_pages/ebs_config.py"},
+        {"title": "Integrations", "icon": "hub", "key": "nav_integrations", "module": "app_pages/integrations.py"},
     ]},
     {"kind": "divider"},
     {"kind": "item", "title": "Execute Clone", "icon": "play_arrow",
-     "key": "nav_execute", "module": "pages/execute_clone.py"},
+     "key": "nav_execute", "module": "app_pages/execute_clone.py"},
     {"kind": "item", "title": "Run History", "icon": "history",
-     "key": "nav_history", "module": "pages/run_history.py"},
+     "key": "nav_history", "module": "app_pages/run_history.py"},
 ]
 
 
@@ -598,7 +598,7 @@ def _iter_nav_items(nav: list[dict] = NAV):
 # Pages that must be registered with st.navigation (so st.switch_page can reach
 # them) but should NOT appear in the custom sidebar.
 HIDDEN_PAGES = [
-    {"title": "Run details", "icon": "history", "module": "pages/run_details.py"},
+    {"title": "Run details", "icon": "history", "module": "app_pages/run_details.py"},
 ]
 
 
