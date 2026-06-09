@@ -53,11 +53,11 @@ CREATE TABLE users (
 
 -- To insert a user with hashed password:
 -- INSERT INTO users (user_name, client_id, user_password)
--- VALUES ('tarun', 1, crypt('plaintext_password', gen_salt('bf')));
+-- VALUES ('tarun', 1, crypt('<your-password>', gen_salt('bf')));
 
 -- To verify a password:
 -- SELECT user_id FROM users WHERE user_name = 'tarun'
---   AND user_password = crypt('plaintext_password', user_password);
+--   AND user_password = crypt('<your-password>', user_password);
 
 
 -- ============================================================

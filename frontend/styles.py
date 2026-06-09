@@ -1248,9 +1248,17 @@ def status_color(status: str) -> str:
     return STATUS_COLORS.get((status or "").upper(), "gray")
 
 
+def _esc(text) -> str:
+    """Escape user- or DB-sourced text for safe HTML embedding."""
+    if text is None or text == "":
+        return html.escape("—", quote=True)
+    return html.escape(str(text), quote=True)
+
+
 def status_badge_html(status: str) -> str:
     """Return an HTML badge span for a status (colored)."""
-    return f'<span class="ca-badge {status_color(status)}">{status or "—"}</span>'
+    safe = _esc(status)
+    return f'<span class="ca-badge {status_color(status)}">{safe}</span>'
 
 
 def step_attempts_table_html(attempts: list[dict]) -> str:
@@ -1345,7 +1353,7 @@ def status_image_html(status: str, size: int = STATUS_ICON_PX) -> str:
         # Asset missing/unreadable on this host — degrade to the text badge
         # rather than crashing the whole page.
         return status_badge_html(status)
-    label = (status or "").title()
+    label = _esc((status or "unknown").title())
     return (
         f'<img class="ca-step-status-img" src="{uri}" '
         f'alt="{label}" title="{label}" '
@@ -1356,8 +1364,9 @@ def status_image_html(status: str, size: int = STATUS_ICON_PX) -> str:
 def step_action_link_html(step_log_href: str | None) -> str:
     """Download Step Log link with middot spacing matching the title row."""
     if step_log_href:
+        safe_href = html.escape(step_log_href, quote=True)
         link = (
-            f'<a class="ca-loglink" href="{step_log_href}" download>'
+            f'<a class="ca-loglink" href="{safe_href}" download>'
             f"Download Step Log</a>"
         )
     else:
@@ -1498,13 +1507,13 @@ def render_run_card(run: dict) -> bool:
     info_html = f"""
         <div class="ca-run">
           <div class="ca-run-line1">
-            <span class="ca-run-client">{client}</span>
+            <span class="ca-run-client">{_esc(client)}</span>
             <span class="sep">&middot;</span>
-            <span>Run #{rid}</span>
+            <span>Run #{_esc(rid)}</span>
             <span class="sep">&middot;</span>
-            <span>{run.get('source_name', '—')}<span class="arrow">&#8594;</span>{run.get('target_name', '—')}</span>
+            <span>{_esc(run.get('source_name', '—'))}<span class="arrow">&#8594;</span>{_esc(run.get('target_name', '—'))}</span>
             <span class="sep">&middot;</span>
-            <span>{run.get('user_name', '—')}</span>
+            <span>{_esc(run.get('user_name', '—'))}</span>
             <span class="sep">&middot;</span>
             {status_badge_html(run.get('status', ''))}
           </div>

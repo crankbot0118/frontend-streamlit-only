@@ -38,6 +38,10 @@ echo;echo
 exit 1
 fi
 
+_VALIDATE_DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
+. "${_VALIDATE_DIR}/vigt_validate_args.sh"
+vigt_validate_shell_args "$1" "$2"
+
 set -x
 CLONE_RUN_ID=$2
 

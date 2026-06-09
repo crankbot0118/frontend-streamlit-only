@@ -13,6 +13,22 @@ import urllib.request
 from datetime import date
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+API_KEY = os.getenv("API_KEY", "").strip()
+
+
+def _api_key_header() -> dict[str, str]:
+    if not API_KEY:
+        return {}
+    return {"X-API-Key": API_KEY}
+
+
+def _signed_url(path: str) -> str:
+    """Build a backend URL, appending ``api_key`` for browser download links."""
+    url = f"{BACKEND_URL.rstrip('/')}{path}"
+    if not API_KEY:
+        return url
+    sep = "&" if "?" in url else "?"
+    return f"{url}{sep}{urllib.parse.urlencode({'api_key': API_KEY})}"
 
 
 def check_backend_health(timeout: float = 2.0) -> bool:
@@ -28,7 +44,8 @@ def check_backend_health(timeout: float = 2.0) -> bool:
 def _get_json(path: str, timeout: float = 5.0):
     """GET a JSON resource from the backend. Raises on failure."""
     url = f"{BACKEND_URL.rstrip('/')}{path}"
-    with urllib.request.urlopen(url, timeout=timeout) as resp:
+    req = urllib.request.Request(url, headers=_api_key_header())
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
 
@@ -40,7 +57,7 @@ def _post_json(path: str, body: dict | None = None, timeout: float = 10.0) -> di
         url,
         data=payload,
         method="POST",
-        headers={"Content-Type": "application/json"},
+        headers={"Content-Type": "application/json", **_api_key_header()},
     )
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
@@ -132,14 +149,13 @@ def get_step_detail(clone_run_id: int, clone_function_run_id: int) -> dict:
 
 def run_log_url(clone_run_id: int) -> str:
     """Backend download URL for a run's log (serves ``log_location``)."""
-    return f"{BACKEND_URL.rstrip('/')}/api/v1/runs/{clone_run_id}/log"
+    return _signed_url(f"/api/v1/runs/{clone_run_id}/log")
 
 
 def step_log_url(clone_run_id: int, clone_function_run_id: int) -> str:
     """Backend download URL for a function-step log."""
-    return (
-        f"{BACKEND_URL.rstrip('/')}/api/v1/runs/{clone_run_id}/steps/"
-        f"{clone_function_run_id}/log"
+    return _signed_url(
+        f"/api/v1/runs/{clone_run_id}/steps/{clone_function_run_id}/log"
     )
 
 

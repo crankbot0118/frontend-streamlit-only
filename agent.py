@@ -99,6 +99,22 @@ logging.basicConfig(
 log = logging.getLogger("vigt_agent")
 
 _shutdown = False
+_SAFE_DBNAME_RE = re.compile(r"^[a-zA-Z0-9_-]+$")
+_SUBPROCESS_TIMEOUT = int(os.environ.get("SUBPROCESS_TIMEOUT", "0")) or None
+
+
+def validate_dbname(dbname: str) -> str:
+    """Reject path traversal / shell metacharacters in the instance dbname key."""
+    if not dbname or not _SAFE_DBNAME_RE.fullmatch(dbname):
+        raise ValueError(f"Invalid INSTANCE dbname: {dbname!r}")
+    return dbname
+
+
+def validate_clone_run_id(clone_run_id: int) -> int:
+    """Ensure clone_run_id is a positive integer before passing to shell scripts."""
+    if clone_run_id <= 0:
+        raise ValueError(f"Invalid clone_run_id: {clone_run_id}")
+    return clone_run_id
 
 
 def _handle_signal(signum, frame):
@@ -144,8 +160,8 @@ def verify_instance_env(conn) -> dict:
 def script_dbname(env: dict) -> str:
     """Instance key passed as $1 to master_clone.sh and helper scripts."""
     if INSTANCE_DBNAME:
-        return INSTANCE_DBNAME
-    return env["env_name"].strip().lower()
+        return validate_dbname(INSTANCE_DBNAME)
+    return validate_dbname(env["env_name"].strip().lower())
 
 
 def parse_shell_env_file(path: Path) -> dict[str, str]:
@@ -187,6 +203,8 @@ def resolve_clone_log_path(dbname: str, clone_run_id: int) -> str | None:
     Resolve CLONE_LOG the same way master_clone.sh does after sourcing db.env.
     Optional ~/.env CLONE_LOG override supports {run_id} and {dbname}.
     """
+    validate_dbname(dbname)
+    validate_clone_run_id(clone_run_id)
     override = os.environ.get("CLONE_LOG") or os.environ.get("CLONE_LOG_PATH")
     if override:
         return (
@@ -369,9 +387,17 @@ def wait_for_operator(conn, clone_run_id: int, failed_step: dict | None) -> str:
 def run(cmd: list[str], label: str, *, env: dict[str, str] | None = None) -> int:
     log.info("%s → %s", label, " ".join(cmd))
     try:
-        result = subprocess.run(cmd, check=False, env=env or os.environ.copy())
+        result = subprocess.run(
+            cmd,
+            check=False,
+            env=env or os.environ.copy(),
+            timeout=_SUBPROCESS_TIMEOUT,
+        )
         log.info("%s exited with code %s", label, result.returncode)
         return result.returncode
+    except subprocess.TimeoutExpired:
+        log.error("%s timed out after %ss", label, _SUBPROCESS_TIMEOUT)
+        return -1
     except FileNotFoundError:
         log.error("%s script not found: %s", label, cmd[0])
         return -1
@@ -381,7 +407,8 @@ def run(cmd: list[str], label: str, *, env: dict[str, str] | None = None) -> int
 
 
 def execute_job(conn, job: dict, dbname: str, script_env: dict[str, str]):
-    clone_run_id = job["clone_run_id"]
+    clone_run_id = validate_clone_run_id(job["clone_run_id"])
+    validate_dbname(dbname)
     source_name = job["source_name"]
 
     log.info(

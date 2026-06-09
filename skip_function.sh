@@ -17,6 +17,10 @@ echo "Usage: skip_function.sh <dbname> <clone_run_id>"
 exit 1
 fi
 
+_VALIDATE_DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
+. "${_VALIDATE_DIR}/vigt_validate_args.sh"
+vigt_validate_shell_args "$1" "$2"
+
 CLONE_RUN_ID=$2
 
 INSTANCE_CLONE_DIR=/u02/shared/AUTOMATION/Clone_Auto/Instances

@@ -1,5 +1,7 @@
 """Run details page — shows the steps (clone_function_run_status) for a run."""
 
+import html
+
 import streamlit as st
 
 from api import (
@@ -22,6 +24,7 @@ from styles import (
     step_action_link_html,
     step_detail_dialog_error_html,
     step_detail_dialog_html,
+    _esc,
 )
 
 
@@ -90,13 +93,15 @@ failed_step_id = (
 )
 
 if run:
-    src = run.get("source_name", "—")
-    tgt = run.get("target_name", "—")
-    user = run.get("user_name", "—")
+    src = _esc(run.get("source_name", "—"))
+    tgt = _esc(run.get("target_name", "—"))
+    user = _esc(run.get("user_name", "—"))
+    safe_run_id = _esc(run_id)
     is_failed = (run.get("status") or "").upper() == "FAILED"
+    log_href = html.escape(run_log_url(run_id), quote=True)
     log_link_html = (
         '<span class="ca-log-sep">&middot;</span>'
-        f'<a class="ca-loglink" href="{run_log_url(run_id)}" download>Download Log</a>'
+        f'<a class="ca-loglink" href="{log_href}" download>Download Log</a>'
     )
 
     with st.container(key="ca-detail-header"):
@@ -105,7 +110,7 @@ if run:
                 f"""
                 <div class="ca-title ca-detail-title">
                   <h1 class="ca-detail-title-parts">
-                    <span>Run #{run_id}</span>
+                    <span>Run #{safe_run_id}</span>
                     <span class="ca-run-sep">&middot;</span>
                     <span>{src}</span>
                     <span class="arrow">&#8594;</span>
@@ -195,6 +200,7 @@ else:
     def _render_step_cards(step_rows: list[dict]) -> None:
         for i, step in enumerate(step_rows):
             name = step.get("function_name", "—")
+            safe_name = _esc(name)
             step_pk = step.get("clone_function_run_id")
             open_key = f"step_open_{run_id}_{i}"
             is_open = st.session_state.get(open_key, False)
@@ -204,7 +210,7 @@ else:
                     f'<div class="{head_class}">'
                     f'<div class="ca-step-left">'
                     f'{status_image_html(step.get("status", ""))}'
-                    f'<span class="ca-step-name">{name}</span>'
+                    f'<span class="ca-step-name">{safe_name}</span>'
                     f"</div>"
                     f'<span class="ca-step-more">More actions</span>'
                     f"</div>"

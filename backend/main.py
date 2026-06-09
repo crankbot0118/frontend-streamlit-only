@@ -3,6 +3,10 @@
 Run locally with:
     uvicorn main:app --reload --port 8000
 (from inside the ``backend/`` directory)
+
+Set ``API_KEY`` in the environment before deployment. The Streamlit frontend
+must send the same value via ``X-API-Key`` (and ``api_key`` query param for
+log download links opened in the browser).
 """
 
 import os
@@ -36,15 +40,38 @@ from schemas import (
     RunActionOut,
     RunFiltersOut,
 )
+from security import (
+    ALLOWED_ORIGINS,
+    ENABLE_DOCS,
+    RATE_LIMIT_REQUESTS,
+    RATE_LIMIT_WINDOW_SEC,
+    RateLimitMiddleware,
+    SecurityHeadersMiddleware,
+    is_allowed_log_url,
+    resolve_local_log_path,
+    verify_api_key,
+)
 
-app = FastAPI(title="Clone Automation API", version="0.1.0")
+app = FastAPI(
+    title="Clone Automation API",
+    version="0.1.0",
+    dependencies=[Depends(verify_api_key)],
+    docs_url="/docs" if ENABLE_DOCS else None,
+    redoc_url="/redoc" if ENABLE_DOCS else None,
+    openapi_url="/openapi.json" if ENABLE_DOCS else None,
+)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # tighten this in production
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "X-API-Key"],
 )
+app.add_middleware(RateLimitMiddleware, RATE_LIMIT_REQUESTS, RATE_LIMIT_WINDOW_SEC)
+app.add_middleware(SecurityHeadersMiddleware)
+
+_MAX_RUN_LIMIT = 200
 
 
 @app.get("/health")
@@ -121,7 +148,7 @@ def create_clone_run_endpoint(
     "in descending order — most recently updated runs first, regardless of status.",
 )
 def list_clone_runs(
-    limit: int = 50,
+    limit: int = Query(50, ge=1, le=_MAX_RUN_LIMIT),
     client: str | None = Query(None, description="Filter by client name"),
     target: str | None = Query(None, description="Filter by target name"),
     user: str | None = Query(None, description="Filter by user name"),
@@ -153,6 +180,15 @@ def get_single_run(
     return run
 
 
+def _file_download_response(path: os.PathLike, filename: str) -> FileResponse:
+    return FileResponse(
+        path,
+        media_type="application/octet-stream",
+        filename=filename,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
 @app.get(
     "/api/v1/runs/{clone_run_id}/log",
     summary="Download the log for a clone run",
@@ -170,18 +206,13 @@ def download_run_log(clone_run_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="No log available for this run")
 
     if location.startswith(("http://", "https://")):
+        if not is_allowed_log_url(location):
+            raise HTTPException(status_code=404, detail="Log not available")
         return RedirectResponse(location)
 
-    if os.path.isfile(location):
-        filename = os.path.basename(location) or f"clone_run_{clone_run_id}.log"
-        return FileResponse(
-            location,
-            media_type="application/octet-stream",
-            filename=filename,
-            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
-        )
-
-    raise HTTPException(status_code=404, detail="Log file not found")
+    path = resolve_local_log_path(location)
+    filename = os.path.basename(str(path)) or f"clone_run_{clone_run_id}.log"
+    return _file_download_response(path, filename)
 
 
 def _run_action(
@@ -286,18 +317,13 @@ def download_function_step_log(
         raise HTTPException(status_code=404, detail="No step log available")
 
     if location.startswith(("http://", "https://")):
+        if not is_allowed_log_url(location):
+            raise HTTPException(status_code=404, detail="Log not available")
         return RedirectResponse(location)
 
-    if os.path.isfile(location):
-        filename = (
-            os.path.basename(location)
-            or f"clone_run_{clone_run_id}_step_{clone_function_run_id}.log"
-        )
-        return FileResponse(
-            location,
-            media_type="application/octet-stream",
-            filename=filename,
-            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
-        )
-
-    raise HTTPException(status_code=404, detail="Step log file not found")
+    path = resolve_local_log_path(location)
+    filename = (
+        os.path.basename(str(path))
+        or f"clone_run_{clone_run_id}_step_{clone_function_run_id}.log"
+    )
+    return _file_download_response(path, filename)
