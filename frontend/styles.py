@@ -381,10 +381,25 @@ _GLOBAL_CSS = f"""
       align-items: center;
   }}
 
-  /* Redirect button on the right end. */
+  /* Borderless icon button, pinned to the right extreme. */
+  [class*="st-key-runcard_"] [data-testid="stButton"] {{
+      display: flex;
+      justify-content: flex-end;
+  }}
   [class*="st-key-runcard_"] [data-testid="stButton"] button {{
-      width: 100%;
-      border-radius: 8px;
+      width: auto;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: #8a9097;
+      padding: 0.3rem;
+  }}
+  [class*="st-key-runcard_"] [data-testid="stButton"] button:hover {{
+      background: transparent !important;
+      color: {BRAND_ORANGE};
+  }}
+  [class*="st-key-runcard_"] [data-testid="stButton"] button:hover svg {{
+      color: {BRAND_ORANGE};
   }}
 
   .ca-run-line1 {{
@@ -408,13 +423,17 @@ _GLOBAL_CSS = f"""
       margin: 0 0.3rem;
   }}
   .ca-run-line2 {{
-      margin-top: 0.35rem;
-      font-size: 0.76rem;
+      margin-top: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
       color: #6b7177;
   }}
-  .ca-run-line2 .sep {{
-      color: #c2c7cc;
-      margin: 0 0.5rem;
+  .ca-run-line2 .ca-run-refresh-icon {{
+      color: {BRAND_ORANGE};
+      font-size: 0.95rem;
+      line-height: 1;
   }}
 
   /* ---------- Step rows (run details) ---------- */
@@ -509,6 +528,24 @@ def fmt_dt_compact(value) -> str:
         return str(value)
 
 
+def fmt_relative_update(value) -> str:
+    """Human-friendly update time, e.g. "Updated today at 2:18 PM",
+    "Updated yesterday at 9:05 AM", or "Updated on Jun 08 at 1:09 PM"."""
+    if not value:
+        return "Not updated yet"
+    try:
+        dt = datetime.fromisoformat(str(value))
+    except (ValueError, TypeError):
+        return f"Updated {value}"
+    time_str = dt.strftime("%I:%M %p").lstrip("0")
+    days = (datetime.now().date() - dt.date()).days
+    if days == 0:
+        return f"Updated today at {time_str}"
+    if days == 1:
+        return f"Updated yesterday at {time_str}"
+    return f"Updated on {dt.strftime('%b %d')} at {time_str}"
+
+
 def render_run_card(run: dict) -> bool:
     """Render a run card with two info lines and a redirect button on the right.
 
@@ -531,9 +568,8 @@ def render_run_card(run: dict) -> bool:
             {status_badge_html(run.get('status', ''))}
           </div>
           <div class="ca-run-line2">
-            Started: {fmt_dt_compact(run.get('start_date'))}
-            <span class="sep">&middot;</span>
-            Last update: {fmt_dt_compact(run.get('last_update'))}
+            <span class="ca-run-refresh-icon">&#8635;</span>
+            {fmt_relative_update(run.get('last_update'))}
           </div>
         </div>
     """
