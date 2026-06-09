@@ -101,6 +101,80 @@ _GLOBAL_CSS = f"""
       color: #5b6166;
       font-size: 0.95rem;
   }}
+
+  /* ---------- Sidebar navigation ---------- */
+
+  /* Tighten vertical spacing between nav items. */
+  .st-key-ca-nav [data-testid="stVerticalBlock"] {{
+      gap: 0.1rem;
+  }}
+
+  /* Borderless, left-aligned link-style nav buttons. */
+  .st-key-ca-nav [data-testid="stButton"] > button {{
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      width: 100%;
+      justify-content: flex-start;
+      text-align: left;
+      gap: 0.7rem;
+      padding: 0.45rem 0.6rem;
+      border-radius: 8px;
+      color: {BRAND_INK};
+  }}
+
+  .st-key-ca-nav [data-testid="stButton"] > button p {{
+      font-weight: 600;
+      font-size: 0.98rem;
+  }}
+
+  .st-key-ca-nav [data-testid="stButton"] > button:hover {{
+      background: rgba(232, 117, 17, 0.10) !important;
+      color: {BRAND_ORANGE};
+  }}
+
+  .st-key-ca-nav [data-testid="stButton"] > button:hover svg,
+  .st-key-ca-nav [data-testid="stButton"] > button:hover p {{
+      color: {BRAND_ORANGE};
+  }}
+
+  /* Group dropdowns: borderless, transparent, like the reference. */
+  .st-key-ca-nav [data-testid="stExpander"] {{
+      border: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
+  }}
+
+  .st-key-ca-nav [data-testid="stExpander"] details {{
+      border: none !important;
+      background: transparent !important;
+  }}
+
+  .st-key-ca-nav [data-testid="stExpander"] summary {{
+      padding: 0.45rem 0.6rem;
+      gap: 0.5rem;
+      font-weight: 700;
+      color: #5b6166;
+  }}
+
+  .st-key-ca-nav [data-testid="stExpander"] summary:hover {{
+      color: {BRAND_INK};
+  }}
+
+  /* Move the dropdown chevron to the left of the label. */
+  .st-key-ca-nav [data-testid="stExpander"] summary svg {{
+      order: -1;
+  }}
+
+  /* Indent the items nested inside a group. */
+  .st-key-ca-nav [data-testid="stExpanderDetails"] {{
+      padding-left: 0.9rem;
+  }}
+
+  /* Lighter, tighter divider in the sidebar nav. */
+  .st-key-ca-nav [data-testid="stDivider"] {{
+      margin: 0.5rem 0;
+  }}
 </style>
 """
 
@@ -126,6 +200,47 @@ def render_logo(path: str = "assets/logo.svg", width: int = 170) -> None:
         </div>
         """
     )
+
+
+def render_sidebar_nav() -> None:
+    """Render the sidebar navigation: link-style items with Material icons
+    and collapsible groups, styled to look borderless and clean.
+
+    Call ``apply_global_styles()`` before this so the CSS is available, and
+    call this inside a ``with st.sidebar:`` block.
+    """
+    with st.container(key="ca-nav"):
+        st.button(
+            "Dashboard",
+            icon=":material/space_dashboard:",
+            width="stretch",
+            key="nav_dashboard",
+        )
+
+        with st.expander("Admin", expanded=True):
+            st.button("Accounts", icon=":material/work:", width="stretch", key="nav_accounts")
+            st.button("Team", icon=":material/group:", width="stretch", key="nav_team")
+            st.button("Targets", icon=":material/dns:", width="stretch", key="nav_targets")
+
+        with st.expander("Clone Setup", expanded=True):
+            st.button("Database", icon=":material/database:", width="stretch", key="nav_database")
+            st.button("EBS Config", icon=":material/deployed_code:", width="stretch", key="nav_ebs")
+            st.button(
+                "Connections",
+                icon=":material/power:",
+                width="stretch",
+                key="nav_connections",
+            )
+
+        st.divider()
+
+        st.button(
+            "Execute Clone",
+            icon=":material/play_arrow:",
+            width="stretch",
+            key="nav_execute",
+        )
+        st.button("Run History", icon=":material/history:", width="stretch", key="nav_history")
 
 
 def render_title(title: str, subtitle: str | None = None) -> None:
