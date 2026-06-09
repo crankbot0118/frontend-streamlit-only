@@ -28,6 +28,7 @@ st.set_page_config(
 apply_global_styles()
 
 pages = build_pages()
+st.session_state["_pages"] = pages
 pg = st.navigation(list(pages.values()), position="hidden")
 
 with st.sidebar:

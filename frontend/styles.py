@@ -484,6 +484,25 @@ _GLOBAL_CSS = f"""
   }}
   .ca-detail-status {{ margin-top: 0.55rem; }}
 
+  /* Borderless "Back to Run History" link-style button. */
+  .st-key-back_to_runs .stButton button {{
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      outline: none !important;
+      padding: 0.2rem 0.1rem !important;
+      color: #6b7177;
+      font-weight: 600;
+  }}
+  .st-key-back_to_runs .stButton button:hover {{
+      background: transparent !important;
+      color: {BRAND_ORANGE};
+  }}
+  .st-key-back_to_runs .stButton button:hover svg,
+  .st-key-back_to_runs .stButton button:hover p {{
+      color: {BRAND_ORANGE};
+  }}
+
   /* ---------- Step rows (run details) ---------- */
   .ca-steps {{
       display: flex;
@@ -769,10 +788,12 @@ def build_pages() -> dict:
 def goto_page(title: str) -> None:
     """Switch to a registered page by its title.
 
-    Uses the ``st.Page`` object (not a raw path string), which is the reliable
-    way to navigate when pages are managed by ``st.navigation``.
+    Reuses the exact ``st.Page`` instances registered with ``st.navigation``
+    (stored in session state by ``app.py``); a freshly built ``st.Page`` may not
+    match the registry, which is why string-path navigation was unreliable.
     """
-    st.switch_page(build_pages()[title])
+    pages = st.session_state.get("_pages") or build_pages()
+    st.switch_page(pages[title])
 
 
 def _nav_link(pages: dict, item: dict, current_title: str) -> None:
