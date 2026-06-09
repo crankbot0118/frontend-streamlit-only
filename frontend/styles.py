@@ -12,6 +12,10 @@ import streamlit as st
 BRAND_ORANGE = "#e87511"
 BRAND_INK = "#131516"
 
+# Repo root is the parent of the ``frontend/`` package that holds this file.
+REPO_ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_LOGO_PATH = REPO_ROOT / "assets" / "logo.svg"
+
 _GLOBAL_CSS = f"""
 <style>
   /* Pull the page content to the very top, no wasted space, and trim the
@@ -275,13 +279,14 @@ def apply_global_styles() -> None:
     st.html(_GLOBAL_CSS)
 
 
-def render_logo(path: str = "assets/logo.svg", width: int = 170) -> None:
+def render_logo(path: str | Path | None = None, width: int = 170) -> None:
     """Render the SVG logo, top-flush and left-aligned like ``render_title``.
 
-    Reads the SVG from ``assets/`` and embeds it as a data URI so it renders
-    inline (typically inside the sidebar).
+    Reads the SVG from the repo-root ``assets/`` folder (resolved absolutely so
+    it works regardless of the current working directory) and embeds it as a
+    data URI so it renders inline (typically inside the sidebar).
     """
-    svg = Path(path).read_text(encoding="utf-8")
+    svg = Path(path or DEFAULT_LOGO_PATH).read_text(encoding="utf-8")
     b64 = base64.b64encode(svg.encode("utf-8")).decode("ascii")
     st.html(
         f"""
