@@ -11,6 +11,7 @@ from styles import (
     goto_page,
     render_title,
     status_badge_html,
+    status_image_html,
 )
 
 run_id = st.session_state.get("selected_run_id")
@@ -90,15 +91,23 @@ except Exception:
 if not steps:
     st.caption("No steps found for this run.")
 else:
-    rows = "".join(
-        f"""
-        <div class="ca-step">
-          <div class="ca-step-name">{s.get('function_name', '—')}</div>
-          <div>{status_badge_html(s.get('status', ''))}</div>
-          <div class="ca-step-time">Start: {fmt_dt(s.get('start_time'))}</div>
-          <div class="ca-step-time">End: {fmt_dt(s.get('end_time'))}</div>
-        </div>
-        """
-        for s in steps
-    )
-    st.html(f'<div class="ca-steps">{rows}</div>')
+    with st.container(key="ca-steps"):
+        for i, step in enumerate(steps):
+            name = step.get("function_name", "—")
+            with st.container(key=f"stepcard_{i}"):
+                left, right = st.columns([7, 2], vertical_alignment="center")
+                with left:
+                    st.html(
+                        f'<div class="ca-step-left">'
+                        f'<span class="ca-step-name">{name}</span>'
+                        f'{status_image_html(step.get("status", ""))}'
+                        f"</div>"
+                    )
+                with right:
+                    with st.expander("More actions"):
+                        st.html(
+                            f'<div class="ca-step-detail">'
+                            f'<div class="ca-step-time">Start: {fmt_dt(step.get("start_time"))}</div>'
+                            f'<div class="ca-step-time">End: {fmt_dt(step.get("end_time"))}</div>'
+                            f"</div>"
+                        )

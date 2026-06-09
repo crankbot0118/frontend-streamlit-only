@@ -6,6 +6,7 @@ Import and call ``apply_global_styles()`` once near the top of any page
 
 import base64
 from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
 
 import streamlit as st
@@ -535,28 +536,90 @@ _GLOBAL_CSS = f"""
   }}
 
   /* ---------- Step rows (run details) ---------- */
-  .ca-steps {{
-      display: flex;
-      flex-direction: column;
+  .st-key-ca-steps > [data-testid="stVerticalBlock"] {{
       gap: 0.4rem;
   }}
-  .ca-step {{
-      display: grid;
-      grid-template-columns: 1.7fr auto 1fr 1fr;
-      align-items: center;
-      gap: 0.9rem;
+
+  /* Each step is a bordered card: name + status icon on the left, a
+     borderless "More actions" dropdown on the far right. */
+  [class*="st-key-stepcard_"] {{
       border: 1px solid #e3e6e8;
       border-radius: 10px;
-      padding: 0.55rem 0.95rem;
+      padding: 0.45rem 0.95rem;
       background: #ffffff;
+  }}
+  [class*="st-key-stepcard_"] [data-testid="stHorizontalBlock"] {{
+      align-items: center;
+  }}
+
+  .ca-step-left {{
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
   }}
   .ca-step-name {{
       font-weight: 600;
       color: {BRAND_INK};
   }}
+  .ca-step-status-img {{
+      width: auto;
+      display: block;
+  }}
   .ca-step-time {{
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       color: #6b7177;
+      white-space: nowrap;
+  }}
+  .ca-step-detail {{
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+  }}
+
+  /* "More actions" dropdown: borderless, right-aligned trigger. */
+  [class*="st-key-stepcard_"] [data-testid="stExpander"],
+  [class*="st-key-stepcard_"] [data-testid="stExpander"] details {{
+      border: none !important;
+      box-shadow: none !important;
+      outline: none !important;
+      background: transparent !important;
+  }}
+  /* "More actions" text on the left, the toggle arrow pushed to the far right.
+     row-reverse moves Streamlit's native arrow (which sits before the label by
+     default) to the right of the text; flex-start then packs both to the edge. */
+  [class*="st-key-stepcard_"] [data-testid="stExpander"] summary {{
+      display: flex !important;
+      flex-direction: row-reverse;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 0.25rem;
+      padding: 0.1rem 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      outline: none !important;
+      color: #6b7177;
+      font-weight: 600;
+      white-space: nowrap;
+  }}
+  [class*="st-key-stepcard_"] [data-testid="stExpander"] summary p {{
+      margin: 0;
+      font-size: 0.85rem;
+  }}
+  [class*="st-key-stepcard_"] [data-testid="stExpander"] summary:hover {{
+      color: {BRAND_ORANGE};
+  }}
+
+  /* Native toggle arrow (arrow_right when collapsed -> arrow_down when open),
+     sized to match the redirect arrow on the Run History cards (1.9rem). */
+  [class*="st-key-stepcard_"] [data-testid="stExpander"] summary [data-testid="stIconMaterial"] {{
+      font-size: 1.9rem !important;
+      width: 1.9rem !important;
+      height: 1.9rem !important;
+      line-height: 1 !important;
+      color: inherit;
+  }}
+  [class*="st-key-stepcard_"] [data-testid="stExpander"] details[open] summary [data-testid="stIconMaterial"] {{
+      color: {BRAND_ORANGE};
   }}
 </style>
 """
@@ -604,6 +667,38 @@ def status_color(status: str) -> str:
 def status_badge_html(status: str) -> str:
     """Return an HTML badge span for a status (colored)."""
     return f'<span class="ca-badge {status_color(status)}">{status or "—"}</span>'
+
+
+# Status -> PNG asset in the repo-root ``assets/`` folder. Used on the run
+# details step rows in place of the text badge.
+STATUS_ASSETS = {
+    "COMPLETED": "completed.png",
+    "RUNNING": "running.png",
+    "PENDING": "pending.png",
+    "FAILED": "failed.png",
+    "SKIPPED": "skipped.png",
+    "ABORTED": "aborted.png",
+}
+
+
+@lru_cache(maxsize=None)
+def _asset_data_uri(filename: str) -> str:
+    """Read a PNG from ``assets/`` and return it as a base64 data URI."""
+    data = (REPO_ROOT / "assets" / filename).read_bytes()
+    b64 = base64.b64encode(data).decode("ascii")
+    return f"data:image/png;base64,{b64}"
+
+
+def status_image_html(status: str, height: int = 24) -> str:
+    """Return an ``<img>`` of the status asset, falling back to the text badge."""
+    filename = STATUS_ASSETS.get((status or "").upper())
+    if not filename:
+        return status_badge_html(status)
+    label = (status or "").title()
+    return (
+        f'<img class="ca-step-status-img" src="{_asset_data_uri(filename)}" '
+        f'alt="{label}" title="{label}" style="height:{height}px;" />'
+    )
 
 
 def fmt_dt(value) -> str:
