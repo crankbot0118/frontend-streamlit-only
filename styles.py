@@ -194,10 +194,10 @@ _GLOBAL_CSS = f"""
       fill: #9aa0a6 !important;
   }}
 
-  /* Small yellow "Coming soon!" highlight, left-aligned with the item row. */
+  /* Small yellow "Coming soon!" highlight at the top of the Admin group. */
   .ca-soon {{
       display: inline-block;
-      margin: -0.2rem 0 0.4rem 0.55rem;
+      margin: 0 0 0.4rem 0.55rem;
       padding: 0.05rem 0.45rem;
       border-radius: 6px;
       background: #fff3cd;
@@ -300,7 +300,7 @@ DEFAULT_PAGE = "Home"
 NAV: list[dict] = [
     {"kind": "item", "title": "Home", "icon": "space_dashboard",
      "key": "nav_home", "module": "pages/home.py"},
-    {"kind": "group", "title": "Admin", "items": [
+    {"kind": "group", "title": "Admin", "badge": "Coming soon!", "items": [
         {"title": "Clients", "icon": "work", "key": "nav_clients",
          "module": "pages/clients.py", "disabled": True},
         {"title": "Team", "icon": "group", "key": "nav_team",
@@ -360,7 +360,6 @@ def _nav_link(pages: dict, item: dict, current_title: str) -> None:
             key=item["key"],
             disabled=True,
         )
-        st.html(f'<span class="ca-soon">{item.get("badge", "Coming soon!")}</span>')
         return
 
     active = current_title == item["title"]
@@ -388,6 +387,8 @@ def render_sidebar_nav(pages: dict, current_title: str) -> None:
                 _nav_link(pages, entry, current_title)
             elif entry["kind"] == "group":
                 with st.expander(entry["title"], expanded=True):
+                    if entry.get("badge"):
+                        st.html(f'<span class="ca-soon">{entry["badge"]}</span>')
                     for item in entry["items"]:
                         _nav_link(pages, item, current_title)
             elif entry["kind"] == "divider":
