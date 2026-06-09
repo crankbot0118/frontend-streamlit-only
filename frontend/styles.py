@@ -377,15 +377,21 @@ _GLOBAL_CSS = f"""
       box-shadow: 0 2px 12px rgba(19, 21, 22, 0.07);
   }}
 
-  /* The button's element container must not reserve a flow row at the bottom. */
-  [class*="st-key-runcard_"] .stButton {{
+  /* Pull the button's whole element container out of flow and pin it to the
+     card's right edge (Streamlit sets each element container position:relative,
+     so positioning the .stButton wrapper alone anchors it to the wrong box). */
+  [class*="st-key-runcard_"] [data-testid="stElementContainer"]:has(.stButton) {{
       position: absolute !important;
       right: 0.5rem;
       top: 50%;
       transform: translateY(-50%);
-      margin: 0 !important;
       width: auto !important;
+      margin: 0 !important;
       z-index: 3;
+  }}
+  [class*="st-key-runcard_"] .stButton {{
+      width: auto !important;
+      margin: 0 !important;
   }}
   /* Borderless icon button, pinned to the extreme right, vertically centered. */
   [class*="st-key-runcard_"] .stButton button {{
@@ -641,7 +647,7 @@ def render_run_card(run: dict) -> bool:
         return st.button(
             "",
             key=f"open_run_{rid}",
-            icon=":material/arrow_forward:",
+            icon=":material/arrow_right:",
             help="View run details",
         )
 
