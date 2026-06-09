@@ -686,26 +686,69 @@ _GLOBAL_CSS = f"""
       opacity: 0.45 !important;
       cursor: not-allowed !important;
   }}
-  /* Auto refresh — pinned to the meta row's right edge, always visible. */
-  .st-key-ca-detail-meta-row {{
-      position: relative;
-      padding-right: 10.5rem;
+  /* Auto refresh + Download Log — inline at the end of the meta row. */
+  .st-key-ca-detail-meta-row,
+  .st-key-ca-detail-meta-row > [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-meta-row > [data-testid="stVerticalBlockBorderWrapper"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      flex-wrap: nowrap !important;
+      gap: 0.35rem !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca-detail-meta-row > [data-testid="stElementContainer"] {{
+      width: auto !important;
+      flex: 0 1 auto !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca-detail-meta-row > [data-testid="stElementContainer"]:first-child {{
+      flex: 1 1 auto !important;
+  }}
+  .st-key-detail-meta-trail,
+  .st-key-detail-meta-trail > [data-testid="stVerticalBlock"],
+  .st-key-detail-meta-trail > [data-testid="stVerticalBlockBorderWrapper"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      flex-wrap: nowrap !important;
+      gap: 0.55rem !important;
+      width: auto !important;
+      flex: 0 0 auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-detail-meta-trail > [data-testid="stElementContainer"] {{
+      width: auto !important;
+      flex: 0 0 auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .ca-detail-trail-log {{
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      flex: 0 0 auto;
   }}
   .st-key-ca-detail-meta-row .st-key-detail-refresh {{
-      position: absolute !important;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
+      position: static !important;
+      transform: none !important;
       width: auto !important;
       margin: 0 !important;
-      z-index: 5;
+      z-index: 1;
       display: flex !important;
       align-items: center;
       justify-content: flex-end;
-      background: #ffffff !important;
-      padding-left: 0.5rem;
+      background: transparent !important;
+      padding: 0 !important;
       opacity: 1 !important;
       visibility: visible !important;
+      flex: 0 0 auto !important;
   }}
   .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stVerticalBlock"],
   .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stElementContainer"] {{
@@ -741,15 +784,15 @@ _GLOBAL_CSS = f"""
       visibility: visible !important;
   }}
   .ca-detail-head {{
-      margin: 0.15rem 0 0.2rem 0;
+      margin: 0;
       max-width: 100%;
       overflow: hidden;
   }}
-  /* Single-line meta: Triggered by <user> · Started · Updated · Duration · status · Download Log */
+  /* Meta line: Triggered by · Started · Updated · Duration · status (trail follows inline) */
   .ca-detail-meta {{
       display: flex;
       flex-direction: row;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       align-items: center;
       gap: 0.45rem;
       font-size: 0.86rem;
@@ -757,6 +800,8 @@ _GLOBAL_CSS = f"""
       font-style: italic;
       max-width: 100%;
       overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
   }}
   .ca-detail-meta .ca-run-metaline {{
       display: inline-flex;
@@ -789,6 +834,13 @@ _GLOBAL_CSS = f"""
   }}
   .ca-loglink:hover {{
       text-decoration: underline;
+  }}
+  /* Tighter gap between meta row and orange accent bar on run details. */
+  .st-key-ca-detail-header .ca-title-rule {{
+      margin: 0.05rem 0 0.45rem 0;
+  }}
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] {{
+      gap: 0.15rem !important;
   }}
 
   /* Borderless "Back to Run History" link-style button. */

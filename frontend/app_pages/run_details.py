@@ -137,17 +137,19 @@ if run:
                     <span class="ca-detail-sep">&middot;</span>
                     <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}</span>
                     <span class="ca-detail-sep">&middot;</span>
-                    {status_badge_html(run.get('status', ''))}{log_link_html}
+                    {status_badge_html(run.get('status', ''))}
                   </div>
                 </div>
                 """
             )
-            with st.container(key="detail-refresh"):
-                st.toggle(
-                    "Auto refresh",
-                    key=f"auto_refresh_{run_id}",
-                    label_visibility="visible",
-                )
+            with st.container(key="detail-meta-trail"):
+                st.html(f'<div class="ca-detail-trail-log">{log_link_html}</div>')
+                with st.container(key="detail-refresh"):
+                    st.toggle(
+                        "Auto refresh",
+                        key=f"auto_refresh_{run_id}",
+                        label_visibility="visible",
+                    )
 
         st.html('<hr class="ca-title-rule" />')
 else:
