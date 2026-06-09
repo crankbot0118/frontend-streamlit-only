@@ -159,6 +159,23 @@ _GLOBAL_CSS = f"""
       color: {BRAND_ORANGE};
   }}
 
+  /* Active item (rendered as a primary button) — brand highlight. */
+  .st-key-ca-nav .stButton button[kind="primary"] {{
+      background: rgba(232, 117, 17, 0.14) !important;
+      box-shadow: inset 3px 0 0 {BRAND_ORANGE} !important;
+      color: {BRAND_ORANGE} !important;
+  }}
+
+  .st-key-ca-nav .stButton button[kind="primary"] p {{
+      color: {BRAND_ORANGE} !important;
+      font-weight: 700;
+  }}
+
+  .st-key-ca-nav .stButton button[kind="primary"] svg {{
+      color: {BRAND_ORANGE} !important;
+      fill: {BRAND_ORANGE} !important;
+  }}
+
   /* Group dropdowns: fully borderless / no box, blend into the sidebar. */
   .st-key-ca-nav [data-testid="stExpander"],
   .st-key-ca-nav [data-testid="stExpander"] details {{
@@ -245,45 +262,56 @@ def render_logo(path: str = "assets/logo.svg", width: int = 170) -> None:
     )
 
 
+DEFAULT_PAGE = "Home"
+
+
+def _select_page(page: str) -> None:
+    st.session_state["active_page"] = page
+
+
+def _nav_button(label: str, icon: str, key: str) -> None:
+    """A single link-style nav button that sets the active page on click.
+
+    The active item is rendered as a ``primary`` button so it can be
+    highlighted via CSS.
+    """
+    active = st.session_state.get("active_page", DEFAULT_PAGE) == label
+    st.button(
+        label,
+        icon=icon,
+        width="stretch",
+        key=key,
+        type="primary" if active else "secondary",
+        on_click=_select_page,
+        args=(label,),
+    )
+
+
 def render_sidebar_nav() -> None:
     """Render the sidebar navigation: link-style items with Material icons
     and collapsible groups, styled to look borderless and clean.
 
-    Call ``apply_global_styles()`` before this so the CSS is available, and
-    call this inside a ``with st.sidebar:`` block.
+    Clicking an item sets ``st.session_state["active_page"]`` so the main
+    area can render the matching page. Call ``apply_global_styles()`` before
+    this, inside a ``with st.sidebar:`` block.
     """
     with st.container(key="ca-nav"):
-        st.button(
-            "Dashboard",
-            icon=":material/space_dashboard:",
-            width="stretch",
-            key="nav_dashboard",
-        )
+        _nav_button("Home", ":material/space_dashboard:", "nav_home")
 
         with st.expander("Admin", expanded=True):
-            st.button("Accounts", icon=":material/work:", width="stretch", key="nav_accounts")
-            st.button("Team", icon=":material/group:", width="stretch", key="nav_team")
-            st.button("Targets", icon=":material/dns:", width="stretch", key="nav_targets")
+            _nav_button("Clients", ":material/work:", "nav_clients")
+            _nav_button("Team", ":material/group:", "nav_team")
+            _nav_button("Targets", ":material/dns:", "nav_targets")
 
         with st.expander("Clone Setup", expanded=True):
-            st.button("Database", icon=":material/database:", width="stretch", key="nav_database")
-            st.button("EBS Config", icon=":material/deployed_code:", width="stretch", key="nav_ebs")
-            st.button(
-                "Connections",
-                icon=":material/power:",
-                width="stretch",
-                key="nav_connections",
-            )
+            _nav_button("Database", ":material/database:", "nav_database")
+            _nav_button("EBS Config", ":material/deployed_code:", "nav_ebs")
+            _nav_button("Connections", ":material/power:", "nav_connections")
 
         st.divider()
 
-        st.button(
-            "Execute Clone",
-            icon=":material/play_arrow:",
-            width="stretch",
-            key="nav_execute",
-        )
-        st.button("Run History", icon=":material/history:", width="stretch", key="nav_history")
+        _nav_button("Execute Clone", ":material/play_arrow:", "nav_execute")
+        _nav_button("Run History", ":material/history:", "nav_history")
 
 
 def render_title(title: str, subtitle: str | None = None) -> None:
