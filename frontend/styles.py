@@ -745,7 +745,7 @@ _GLOBAL_CSS = f"""
       max-width: 100%;
       overflow: hidden;
   }}
-  /* Single-line meta: Triggered by <user> · Started · Updated · Duration · status · View Log */
+  /* Single-line meta: Triggered by <user> · Started · Updated · Duration · status · Download Log */
   .ca-detail-meta {{
       display: flex;
       flex-direction: row;
