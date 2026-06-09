@@ -1,13 +1,18 @@
+"""Clone Automation dashboard — home page."""
+
 import streamlit as st
 
-from components import render_page_header
-from styles import apply_global_styles
+from styles import apply_global_styles, render_title
 
 st.set_page_config(
-    page_title="Clone Automation Dashboard",
+    page_title="Clone automation dashboard",
+    page_icon=":material/precision_manufacturing:",
     layout="wide",
-    initial_sidebar_state="expanded",
 )
 
 apply_global_styles()
-render_page_header("Clone Automation Dashboard")
+
+render_title(
+    "Clone automation dashboard",
+    subtitle="Monitor, run, and review your automated clone jobs.",
+)
