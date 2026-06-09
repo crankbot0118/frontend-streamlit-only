@@ -55,13 +55,11 @@ if run:
     src = run.get("source_name", "—")
     tgt = run.get("target_name", "—")
     user = run.get("user_name", "—")
-    log_link_html = ""
-    if run.get("log_location"):
-        log_link_html = (
-            '<span class="ca-log-sep">&middot;</span>'
-            f'<a class="ca-loglink" href="{run_log_url(run_id)}" '
-            'target="_blank" rel="noopener" download>View Log</a>'
-        )
+    log_link_html = (
+        '<span class="ca-log-sep">&middot;</span>'
+        f'<a class="ca-loglink" href="{run_log_url(run_id)}" '
+        'target="_blank" rel="noopener" download>View Log</a>'
+    )
     st.html(
         f"""
         <div class="ca-title">
@@ -69,19 +67,17 @@ if run:
             <span class="arrow">&#8594;</span> {tgt}</h1>
         </div>
         <div class="ca-detail-head">
-          <div class="ca-detail-user">{user}</div>
           <div class="ca-detail-meta">
-            <span class="ca-run-metaline">
-              <span class="mi mi-start">&#9654;</span> Started {fmt_started(run.get('start_date'))}
-            </span>
-            <span class="ca-run-metaline">
-              <span class="mi mi-upd">&#8635;</span> {fmt_relative_update(run.get('last_update'))}
-            </span>
-            <span class="ca-run-metaline">
-              <span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}
-            </span>
+            <span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>
+            <span class="ca-detail-sep">&middot;</span>
+            <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {fmt_started(run.get('start_date'))}</span>
+            <span class="ca-detail-sep">&middot;</span>
+            <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {fmt_relative_update(run.get('last_update'))}</span>
+            <span class="ca-detail-sep">&middot;</span>
+            <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}</span>
+            <span class="ca-detail-sep">&middot;</span>
+            {status_badge_html(run.get('status', ''))}{log_link_html}
           </div>
-          <div class="ca-detail-status">{status_badge_html(run.get('status', ''))}{log_link_html}</div>
         </div>
         <hr class="ca-title-rule" />
         """

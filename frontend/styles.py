@@ -486,16 +486,13 @@ _GLOBAL_CSS = f"""
   .ca-detail-head {{
       margin: 0.15rem 0 0.2rem 0;
   }}
-  .ca-detail-user {{
-      font-size: 1rem;
-      font-weight: 600;
-      color: {BRAND_INK};
-      margin-bottom: 0.4rem;
-  }}
+  /* Single-line meta: Triggered by <user> · Started · Updated · Duration · status · View Log */
   .ca-detail-meta {{
       display: flex;
-      flex-direction: column;
-      gap: 0.28rem;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem;
       font-size: 0.86rem;
       color: #6b7177;
       font-style: italic;
@@ -503,7 +500,16 @@ _GLOBAL_CSS = f"""
   .ca-detail-meta .ca-run-metaline {{
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.35rem;
+  }}
+  .ca-detail-sep {{
+      color: #c2c7cc;
+      font-style: normal;
+  }}
+  .ca-trigger-user {{
+      font-style: normal;
+      font-weight: 700;
+      color: {BRAND_INK};
   }}
   .ca-detail-status {{
       margin-top: 0.55rem;
