@@ -194,15 +194,15 @@ _GLOBAL_CSS = f"""
       fill: #9aa0a6 !important;
   }}
 
-  /* Small yellow "Coming soon!" highlight. */
+  /* Small yellow "Coming soon!" highlight, nested under each disabled item. */
   .ca-soon {{
       display: inline-block;
-      margin: 0 0 0.35rem 0.55rem;
+      margin: -0.15rem 0 0.4rem 2.35rem;
       padding: 0.05rem 0.45rem;
       border-radius: 6px;
       background: #fff3cd;
       color: #8a6500;
-      font-size: 0.68rem;
+      font-size: 0.66rem;
       font-weight: 700;
       letter-spacing: 0.02em;
   }}
@@ -300,7 +300,7 @@ DEFAULT_PAGE = "Home"
 NAV: list[dict] = [
     {"kind": "item", "title": "Home", "icon": "space_dashboard",
      "key": "nav_home", "module": "pages/home.py"},
-    {"kind": "group", "title": "Admin", "badge": "Coming soon!", "items": [
+    {"kind": "group", "title": "Admin", "items": [
         {"title": "Clients", "icon": "work", "key": "nav_clients",
          "module": "pages/clients.py", "disabled": True},
         {"title": "Team", "icon": "group", "key": "nav_team",
@@ -311,7 +311,7 @@ NAV: list[dict] = [
     {"kind": "group", "title": "Clone Setup", "items": [
         {"title": "DB Config", "icon": "database", "key": "nav_db", "module": "pages/db_config.py"},
         {"title": "EBS Config", "icon": "deployed_code", "key": "nav_ebs", "module": "pages/ebs_config.py"},
-        {"title": "Connections", "icon": "power", "key": "nav_connections", "module": "pages/connections.py"},
+        {"title": "Integrations", "icon": "hub", "key": "nav_integrations", "module": "pages/integrations.py"},
     ]},
     {"kind": "divider"},
     {"kind": "item", "title": "Execute Clone", "icon": "play_arrow",
@@ -360,6 +360,7 @@ def _nav_link(pages: dict, item: dict, current_title: str) -> None:
             key=item["key"],
             disabled=True,
         )
+        st.html(f'<span class="ca-soon">{item.get("badge", "Coming soon!")}</span>')
         return
 
     active = current_title == item["title"]
@@ -387,8 +388,6 @@ def render_sidebar_nav(pages: dict, current_title: str) -> None:
                 _nav_link(pages, entry, current_title)
             elif entry["kind"] == "group":
                 with st.expander(entry["title"], expanded=True):
-                    if entry.get("badge"):
-                        st.html(f'<span class="ca-soon">{entry["badge"]}</span>')
                     for item in entry["items"]:
                         _nav_link(pages, item, current_title)
             elif entry["kind"] == "divider":
