@@ -2,6 +2,7 @@
 
 from styles.base import inject_css
 from styles.layout import get_css as layout_css
+from styles.streamlit_overrides import get_css as streamlit_overrides_css
 from styles.tokens import get_css as tokens_css
 from styles.typography import get_css as typography_css
 
@@ -14,4 +15,5 @@ def apply_global_styles() -> None:
         tokens_css(),
         typography_css(),
         layout_css(),
+        streamlit_overrides_css(),
     )

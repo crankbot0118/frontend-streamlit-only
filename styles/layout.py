@@ -7,8 +7,8 @@ def get_css() -> str:
     return f"""
     .{PAGE_HEADER_CLASS} {{
         width: 100%;
-        padding: var(--cad-space-lg) 0 var(--cad-space-md);
-        margin-bottom: var(--cad-space-lg);
+        padding: 0 0 var(--cad-space-md);
+        margin: 0 0 var(--cad-space-lg);
         border-bottom: 1px solid rgba(19, 21, 22, 0.08);
     }}
 
