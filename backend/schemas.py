@@ -1,0 +1,24 @@
+"""Pydantic response models for the read endpoints."""
+
+from datetime import datetime
+
+from pydantic import BaseModel
+
+
+class CloneRunOut(BaseModel):
+    """One row from ``clone_run_status``."""
+
+    clone_run_id: int
+    client_id: int
+    user_id: int
+    user_name: str
+    source_env_id: int
+    target_env_id: int
+    source_name: str
+    target_name: str
+    status: str
+    start_date: datetime | None = None
+    last_update: datetime | None = None
+    log_location: str | None = None
+
+    model_config = {"from_attributes": True}

@@ -7,9 +7,22 @@ Run locally with:
 
 from datetime import datetime, timezone
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
+
+from crud import get_clone_runs
+from database import get_db
+from schemas import CloneRunOut
 
 app = FastAPI(title="Clone Automation API", version="0.1.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # tighten this in production
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/health")
@@ -20,3 +33,14 @@ def health() -> dict:
         "service": "clone-automation-api",
         "time": datetime.now(timezone.utc).isoformat(),
     }
+
+
+@app.get(
+    "/api/v1/runs",
+    response_model=list[CloneRunOut],
+    summary="List clone runs",
+    description="Fetches rows from clone_run_status sorted by execution time "
+    "(start_date) in descending order — most recent runs first.",
+)
+def list_clone_runs(limit: int = 50, db: Session = Depends(get_db)) -> list[CloneRunOut]:
+    return get_clone_runs(db, limit)
