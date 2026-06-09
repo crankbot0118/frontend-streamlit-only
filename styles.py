@@ -179,6 +179,34 @@ _GLOBAL_CSS = f"""
       fill: {BRAND_ORANGE} !important;
   }}
 
+  /* Disabled ("coming soon") items: muted, not clickable, no hover accent. */
+  .st-key-ca-nav .stButton button:disabled,
+  .st-key-ca-nav .stButton button[disabled] {{
+      opacity: 1 !important;
+      cursor: not-allowed !important;
+      background: transparent !important;
+      color: #9aa0a6 !important;
+  }}
+
+  .st-key-ca-nav .stButton button:disabled p,
+  .st-key-ca-nav .stButton button:disabled svg {{
+      color: #9aa0a6 !important;
+      fill: #9aa0a6 !important;
+  }}
+
+  /* Small yellow "Coming soon!" highlight. */
+  .ca-soon {{
+      display: inline-block;
+      margin: 0 0 0.35rem 0.55rem;
+      padding: 0.05rem 0.45rem;
+      border-radius: 6px;
+      background: #fff3cd;
+      color: #8a6500;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+  }}
+
   /* Group dropdowns: fully borderless / no box, blend into the sidebar. */
   .st-key-ca-nav [data-testid="stExpander"],
   .st-key-ca-nav [data-testid="stExpander"] details {{
@@ -272,10 +300,13 @@ DEFAULT_PAGE = "Home"
 NAV: list[dict] = [
     {"kind": "item", "title": "Home", "icon": "space_dashboard",
      "key": "nav_home", "module": "pages/home.py"},
-    {"kind": "group", "title": "Admin", "items": [
-        {"title": "Clients", "icon": "work", "key": "nav_clients", "module": "pages/clients.py"},
-        {"title": "Team", "icon": "group", "key": "nav_team", "module": "pages/team.py"},
-        {"title": "Targets", "icon": "dns", "key": "nav_targets", "module": "pages/targets.py"},
+    {"kind": "group", "title": "Admin", "badge": "Coming soon!", "items": [
+        {"title": "Clients", "icon": "work", "key": "nav_clients",
+         "module": "pages/clients.py", "disabled": True},
+        {"title": "Team", "icon": "group", "key": "nav_team",
+         "module": "pages/team.py", "disabled": True},
+        {"title": "Targets", "icon": "dns", "key": "nav_targets",
+         "module": "pages/targets.py", "disabled": True},
     ]},
     {"kind": "group", "title": "Clone Setup", "items": [
         {"title": "DB Config", "icon": "database", "key": "nav_db", "module": "pages/db_config.py"},
@@ -319,7 +350,18 @@ def _nav_link(pages: dict, item: dict, current_title: str) -> None:
     """A single link-style nav button that switches to a real page on click.
 
     The active page is rendered as a ``primary`` button so CSS can highlight it.
+    Items marked ``"disabled": True`` are shown but not clickable.
     """
+    if item.get("disabled"):
+        st.button(
+            item["title"],
+            icon=f":material/{item['icon']}:",
+            width="stretch",
+            key=item["key"],
+            disabled=True,
+        )
+        return
+
     active = current_title == item["title"]
     if st.button(
         item["title"],
@@ -345,6 +387,8 @@ def render_sidebar_nav(pages: dict, current_title: str) -> None:
                 _nav_link(pages, entry, current_title)
             elif entry["kind"] == "group":
                 with st.expander(entry["title"], expanded=True):
+                    if entry.get("badge"):
+                        st.html(f'<span class="ca-soon">{entry["badge"]}</span>')
                     for item in entry["items"]:
                         _nav_link(pages, item, current_title)
             elif entry["kind"] == "divider":
