@@ -574,7 +574,16 @@ _GLOBAL_CSS = f"""
   .ca-detail-title-parts .arrow {{
       color: {BRAND_ORANGE};
   }}
-  /* Title row: heading then Abort / Skip with identical gap (no dot). */
+  /* Dot between Abort and Skip — same style as the title separators. */
+  .ca-action-sep {{
+      display: inline-flex;
+      align-items: center;
+      font-size: 1.35rem;
+      font-weight: 400;
+      color: #c2c7cc;
+      line-height: 1;
+  }}
+  /* Title row: heading then Abort · Skip with identical gap. */
   .st-key-ca-detail-title-row,
   .st-key-ca-detail-title-row [data-testid="stVerticalBlock"],
   .st-key-ca-detail-title-row [data-testid="stVerticalBlockBorderWrapper"] {{

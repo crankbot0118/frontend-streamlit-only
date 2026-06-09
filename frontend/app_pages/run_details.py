@@ -111,6 +111,7 @@ if run:
                         st.rerun()
                     except Exception as exc:
                         st.error(f"Could not abort run: {exc}")
+                st.html('<span class="ca-run-sep ca-action-sep">&middot;</span>')
                 if st.button(
                     "Skip",
                     key="detail_skip",
