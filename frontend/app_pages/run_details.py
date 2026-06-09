@@ -1,7 +1,5 @@
 """Run details page — shows the steps (clone_function_run_status) for a run."""
 
-import time
-
 import streamlit as st
 
 from api import (
@@ -25,6 +23,10 @@ from styles import (
     step_detail_dialog_error_html,
     step_detail_dialog_html,
 )
+
+
+def _toggle_step(open_key: str) -> None:
+    st.session_state[open_key] = not st.session_state.get(open_key, False)
 
 run_id = st.session_state.get("selected_run_id")
 
@@ -190,8 +192,8 @@ else:
 
         st.html(step_detail_dialog_html(detail, function_name))
 
-    with st.container(key="ca-steps"):
-        for i, step in enumerate(steps):
+    def _render_step_cards(step_rows: list[dict]) -> None:
+        for i, step in enumerate(step_rows):
             name = step.get("function_name", "—")
             step_pk = step.get("clone_function_run_id")
             open_key = f"step_open_{run_id}_{i}"
@@ -207,12 +209,17 @@ else:
                     f'<span class="ca-step-more">More actions</span>'
                     f"</div>"
                 )
-                if st.button("", key=f"more_{i}", icon=":material/arrow_right:", help="More actions"):
-                    st.session_state[open_key] = not is_open
-                    st.rerun()
+                st.button(
+                    "",
+                    key=f"more_{run_id}_{i}",
+                    icon=":material/arrow_right:",
+                    help="More actions",
+                    on_click=_toggle_step,
+                    args=(open_key,),
+                )
                 if is_open:
                     with st.container(key=f"step_links_{i}"):
-                        if st.button("Details", key=f"step_details_{i}"):
+                        if st.button("Details", key=f"step_details_{run_id}_{i}"):
                             _show_step_detail_dialog(run_id, step_pk, name)
                         st.html(
                             step_action_link_html(
@@ -222,7 +229,18 @@ else:
                             )
                         )
 
-if st.session_state.get(refresh_key):
-    st.session_state.pop("selected_run", None)
-    time.sleep(3)
-    st.rerun()
+    def _render_live_steps() -> None:
+        st.session_state.pop("selected_run", None)
+        live_steps = get_run_steps(run_id)
+        _render_step_cards(live_steps)
+
+    with st.container(key="ca-steps"):
+        if st.session_state.get(refresh_key):
+
+            @st.fragment(run_every=3)
+            def _auto_refresh_steps() -> None:
+                _render_live_steps()
+
+            _auto_refresh_steps()
+        else:
+            _render_step_cards(steps)
