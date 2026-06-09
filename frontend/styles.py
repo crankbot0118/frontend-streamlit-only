@@ -664,38 +664,62 @@ _GLOBAL_CSS = f"""
       opacity: 0.45 !important;
       cursor: not-allowed !important;
   }}
-  /* Auto refresh — always visible (on or off), pinned to the far right. */
-  .st-key-detail-refresh {{
+  /* Auto refresh — always visible; sit above any overlapping meta text. */
+  .st-key-ca-detail-header [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child {{
+      overflow: hidden;
+      min-width: 0;
+  }}
+  .st-key-ca-detail-header [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child {{
+      overflow: visible !important;
+      flex-shrink: 0 !important;
+      position: relative;
+      z-index: 4;
+  }}
+  .st-key-detail-refresh,
+  .st-key-detail-refresh [data-testid="stVerticalBlock"],
+  .st-key-detail-refresh [data-testid="stElementContainer"] {{
       display: flex !important;
       justify-content: flex-end;
       align-items: center;
       width: 100%;
       opacity: 1 !important;
       visibility: visible !important;
+      position: relative;
+      z-index: 4;
+      background: #ffffff !important;
+      padding-left: 0.45rem;
   }}
-  .st-key-detail-refresh [data-testid="stVerticalBlock"],
+  .st-key-detail-refresh * {{
+      opacity: 1 !important;
+      visibility: visible !important;
+  }}
   .st-key-detail-refresh [data-testid="stWidgetLabel"],
-  .st-key-detail-refresh [data-testid="stToggle"],
+  .st-key-detail-refresh [data-testid="stWidgetLabel"] p,
+  .st-key-detail-refresh [data-testid="stWidgetLabel"] span,
+  .st-key-detail-refresh [data-testid="stMarkdownContainer"] p,
   .st-key-detail-refresh label,
   .st-key-detail-refresh label p,
-  .st-key-detail-refresh label span,
-  .st-key-detail-refresh [role="switch"] {{
+  .st-key-detail-refresh label span {{
+      color: #6b7177 !important;
       opacity: 1 !important;
       visibility: visible !important;
   }}
   .st-key-detail-refresh [data-testid="stWidgetLabel"] p {{
       font-size: 0.82rem !important;
       font-weight: 600 !important;
-      color: #6b7177 !important;
       white-space: nowrap;
   }}
-  .st-key-detail-refresh label:hover,
-  .st-key-detail-refresh label:hover p {{
+  .st-key-detail-refresh [data-testid="stToggle"],
+  .st-key-detail-refresh [data-testid="stCheckbox"],
+  .st-key-detail-refresh [role="switch"],
+  .st-key-detail-refresh [data-baseweb="switch"] {{
       opacity: 1 !important;
       visibility: visible !important;
   }}
   .ca-detail-head {{
       margin: 0.15rem 0 0.2rem 0;
+      max-width: 100%;
+      overflow: hidden;
   }}
   /* Single-line meta: Triggered by <user> · Started · Updated · Duration · status · View Log */
   .ca-detail-meta {{
@@ -707,6 +731,8 @@ _GLOBAL_CSS = f"""
       font-size: 0.86rem;
       color: #6b7177;
       font-style: italic;
+      max-width: 100%;
+      overflow: hidden;
   }}
   .ca-detail-meta .ca-run-metaline {{
       display: inline-flex;
