@@ -686,66 +686,51 @@ _GLOBAL_CSS = f"""
       opacity: 0.45 !important;
       cursor: not-allowed !important;
   }}
-  /* Auto refresh + Download Log — inline at the end of the meta row. */
-  .st-key-ca-detail-meta-row,
+  /* Meta row: full-width facts + Download Log; Auto refresh pinned far right. */
+  .st-key-ca-detail-meta-row {{
+      position: relative;
+      width: 100%;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
   .st-key-ca-detail-meta-row > [data-testid="stVerticalBlock"],
   .st-key-ca-detail-meta-row > [data-testid="stVerticalBlockBorderWrapper"] {{
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: 0.35rem !important;
       width: 100% !important;
-      max-width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
+      gap: 0 !important;
   }}
   .st-key-ca-detail-meta-row > [data-testid="stElementContainer"] {{
-      width: auto !important;
-      flex: 0 1 auto !important;
-      min-width: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
   .st-key-ca-detail-meta-row > [data-testid="stElementContainer"]:first-child {{
       flex: 1 1 auto !important;
+      width: 100% !important;
+      min-width: 0 !important;
   }}
-  .st-key-detail-meta-trail,
-  .st-key-detail-meta-trail > [data-testid="stVerticalBlock"],
-  .st-key-detail-meta-trail > [data-testid="stVerticalBlockBorderWrapper"] {{
-      display: flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-      flex-wrap: nowrap !important;
-      gap: 0.55rem !important;
-      width: auto !important;
-      flex: 0 0 auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-detail-meta-trail > [data-testid="stElementContainer"] {{
-      width: auto !important;
-      flex: 0 0 auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .ca-detail-trail-log {{
-      display: inline-flex;
-      align-items: center;
-      white-space: nowrap;
-      flex: 0 0 auto;
+  .ca-detail-meta-bar {{
+      width: 100%;
+      box-sizing: border-box;
+      padding-right: 10rem;
   }}
   .st-key-ca-detail-meta-row .st-key-detail-refresh {{
-      position: static !important;
-      transform: none !important;
+      position: absolute !important;
+      right: 0 !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
       width: auto !important;
       margin: 0 !important;
-      z-index: 1;
+      z-index: 2;
       display: flex !important;
       align-items: center;
       justify-content: flex-end;
-      background: transparent !important;
-      padding: 0 !important;
+      background: #ffffff !important;
+      padding-left: 0.75rem !important;
       opacity: 1 !important;
       visibility: visible !important;
       flex: 0 0 auto !important;
@@ -786,22 +771,27 @@ _GLOBAL_CSS = f"""
   .ca-detail-head {{
       margin: 0;
       max-width: 100%;
-      overflow: hidden;
   }}
-  /* Meta line: Triggered by · Started · Updated · Duration · status (trail follows inline) */
+  /* Meta line: Triggered by · Started · Updated · Duration · status · Download Log */
   .ca-detail-meta {{
       display: flex;
       flex-direction: row;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       align-items: center;
-      gap: 0.45rem;
+      gap: 0.5rem;
+      row-gap: 0.2rem;
       font-size: 0.86rem;
       color: #6b7177;
       font-style: italic;
-      max-width: 100%;
-      overflow: hidden;
+      width: 100%;
+  }}
+  .ca-detail-meta .ca-run-metaline,
+  .ca-detail-meta .ca-badge,
+  .ca-detail-meta .ca-loglink,
+  .ca-detail-meta .ca-log-sep,
+  .ca-detail-meta .ca-detail-sep {{
+      flex: 0 0 auto;
       white-space: nowrap;
-      text-overflow: ellipsis;
   }}
   .ca-detail-meta .ca-run-metaline {{
       display: inline-flex;
@@ -837,10 +827,14 @@ _GLOBAL_CSS = f"""
   }}
   /* Tighter gap between meta row and orange accent bar on run details. */
   .st-key-ca-detail-header .ca-title-rule {{
-      margin: 0.05rem 0 0.45rem 0;
+      margin: 0 0 0.35rem 0;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] {{
-      gap: 0.15rem !important;
+      gap: 0.08rem !important;
+  }}
+  .st-key-ca-detail-meta-row [data-testid="stElementContainer"] {{
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
   }}
 
   /* Borderless "Back to Run History" link-style button. */
