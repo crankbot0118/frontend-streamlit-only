@@ -261,9 +261,16 @@ _GLOBAL_CSS = f"""
       text-align: left !important;
   }}
 
-  /* Indent the items nested inside a group. */
+  /* Indent the items nested inside a group, with tight vertical padding. */
   .st-key-ca-nav [data-testid="stExpanderDetails"] {{
       padding-left: 0.6rem;
+      padding-top: 0.1rem;
+      padding-bottom: 0.1rem;
+  }}
+
+  /* Remove the expander's own trailing space before the divider. */
+  .st-key-ca-nav [data-testid="stExpander"] {{
+      margin-bottom: 0 !important;
   }}
 
   /* Keep the divider, tinted to match the logo, with a tight gap. */
