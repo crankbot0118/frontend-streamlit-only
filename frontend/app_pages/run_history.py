@@ -82,5 +82,7 @@ else:
             if render_run_card(run):
                 st.session_state["selected_run_id"] = run["clone_run_id"]
                 st.session_state["selected_run"] = run
+                st.session_state[f"auto_refresh_{run['clone_run_id']}"] = True
+                st.session_state["_auto_refresh_run"] = run["clone_run_id"]
                 st.query_params["run"] = str(run["clone_run_id"])
                 goto_page("Run details")

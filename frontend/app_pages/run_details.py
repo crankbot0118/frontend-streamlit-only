@@ -53,6 +53,11 @@ if run_id and (not run or run.get("clone_run_id") != run_id):
 # Keep the URL in sync so subsequent refreshes still work.
 if run_id:
     st.query_params["run"] = str(run_id)
+    if st.session_state.get("_auto_refresh_run") != run_id:
+        st.session_state[f"auto_refresh_{run_id}"] = True
+        st.session_state["_auto_refresh_run"] = run_id
+
+refresh_key = f"auto_refresh_{run_id}"
 
 if st.button(
     "Back to Run History",
@@ -120,7 +125,6 @@ if run:
                         st.rerun()
                     except Exception as exc:
                         st.error(f"Could not abort run: {exc}")
-                st.html('<span class="ca-run-sep ca-action-sep">&middot;</span>')
                 if st.button(
                     "Skip",
                     key="detail_skip",
@@ -156,7 +160,7 @@ if run:
             with st.container(key="detail-refresh"):
                 st.toggle(
                     "Auto refresh",
-                    key=f"auto_refresh_{run_id}",
+                    key=refresh_key,
                     label_visibility="visible",
                 )
 
@@ -218,7 +222,7 @@ else:
                             )
                         )
 
-if st.session_state.get(f"auto_refresh_{run_id}"):
+if st.session_state.get(refresh_key):
     st.session_state.pop("selected_run", None)
     time.sleep(3)
     st.rerun()

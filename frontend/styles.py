@@ -648,14 +648,20 @@ _GLOBAL_CSS = f"""
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
-      gap: 0.45rem !important;
+      gap: 0.55rem !important;
       width: auto !important;
       font-size: 1.35rem !important;
       font-weight: 700 !important;
-      padding: 0.3rem 0.65rem !important;
+      padding: 0.35rem 0.9rem !important;
       min-height: 0 !important;
       border-radius: 8px !important;
       white-space: nowrap !important;
+  }}
+  .st-key-detail_abort .stButton button p,
+  .st-key-detail_skip .stButton button p {{
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 1 !important;
   }}
   .st-key-detail_abort .stButton button::before,
   .st-key-detail_skip .stButton button::before {{
@@ -771,6 +777,20 @@ _GLOBAL_CSS = f"""
       opacity: 1 !important;
       visibility: visible !important;
   }}
+  .st-key-detail-refresh [data-baseweb="switch"] {{
+      background-color: #c4c9ce !important;
+      border: 1px solid #aeb4ba !important;
+      min-width: 2.35rem !important;
+      min-height: 1.35rem !important;
+  }}
+  .st-key-detail-refresh [data-baseweb="switch"][aria-checked="true"] {{
+      background-color: {BRAND_ORANGE} !important;
+      border-color: {BRAND_ORANGE} !important;
+  }}
+  .st-key-detail-refresh [data-baseweb="switch"] > div {{
+      background-color: #ffffff !important;
+      box-shadow: 0 1px 3px rgba(19, 21, 22, 0.18) !important;
+  }}
   .ca-detail-head {{
       margin: 0;
       max-width: 100%;
@@ -781,7 +801,7 @@ _GLOBAL_CSS = f"""
       flex-direction: row;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.5rem;
+      gap: var(--ca-detail-inline-gap);
       row-gap: 0.2rem;
       font-size: 0.86rem;
       color: #6b7177;
@@ -973,7 +993,7 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: 0.5rem !important;
+      gap: var(--ca-detail-inline-gap) !important;
       width: 100% !important;
       margin: 0.5rem 0 0 0 !important;
       padding: 0.5rem 0 0 0 !important;
@@ -986,12 +1006,10 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       position: static !important;
   }}
-  .ca-step-action-sep {{
+  .ca-step-links-inline {{
       display: inline-flex;
       align-items: center;
-      color: #c2c7cc;
-      font-size: 0.86rem;
-      line-height: 1;
+      gap: var(--ca-detail-inline-gap);
   }}
   .ca-step-link-disabled {{
       color: #b0b5ba;
@@ -1332,7 +1350,7 @@ def status_image_html(status: str, size: int = STATUS_ICON_PX) -> str:
 
 
 def step_action_link_html(step_log_href: str | None) -> str:
-    """Download Step Log link with leading middot (follows Details on the same row)."""
+    """Download Step Log link with middot spacing matching the title row."""
     if step_log_href:
         link = (
             f'<a class="ca-loglink" href="{step_log_href}" download>'
@@ -1340,7 +1358,11 @@ def step_action_link_html(step_log_href: str | None) -> str:
         )
     else:
         link = '<span class="ca-step-link-disabled">Download Step Log</span>'
-    return f'<span class="ca-step-action-sep">&middot;</span>{link}'
+    return (
+        f'<span class="ca-step-links-inline">'
+        f'<span class="ca-detail-sep">&middot;</span>{link}'
+        f"</span>"
+    )
 
 
 def step_detail_panel_html(
