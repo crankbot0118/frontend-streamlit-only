@@ -1,0 +1,13 @@
+[theme]
+base = "light"
+primaryColor = "#e87511"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f6f7f8"
+textColor = "#131516"
+linkColor = "#e87511"
+borderColor = "#e3e6e8"
+baseRadius = "8px"
+
+[client]
+# Hide the app menu (and its Light/Dark/System theme picker) for all viewers.
+toolbarMode = "minimal"

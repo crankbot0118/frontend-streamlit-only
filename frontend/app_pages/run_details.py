@@ -94,20 +94,26 @@ else:
     with st.container(key="ca-steps"):
         for i, step in enumerate(steps):
             name = step.get("function_name", "—")
+            open_key = f"step_open_{run_id}_{i}"
+            is_open = st.session_state.get(open_key, False)
             with st.container(key=f"stepcard_{i}"):
-                left, right = st.columns([7, 2], vertical_alignment="center")
-                with left:
+                st.html(
+                    f'<div class="ca-step-head">'
+                    f'<div class="ca-step-left">'
+                    f'<span class="ca-step-name">{name}</span>'
+                    f'{status_image_html(step.get("status", ""))}'
+                    f"</div>"
+                    f'<span class="ca-step-more">More actions</span>'
+                    f"</div>"
+                )
+                arrow = ":material/arrow_drop_down:" if is_open else ":material/arrow_right:"
+                if st.button("", key=f"more_{i}", icon=arrow, help="More actions"):
+                    st.session_state[open_key] = not is_open
+                    st.rerun()
+                if is_open:
                     st.html(
-                        f'<div class="ca-step-left">'
-                        f'<span class="ca-step-name">{name}</span>'
-                        f'{status_image_html(step.get("status", ""))}'
+                        f'<div class="ca-step-detail">'
+                        f'<div class="ca-step-time">Start: {fmt_dt(step.get("start_time"))}</div>'
+                        f'<div class="ca-step-time">End: {fmt_dt(step.get("end_time"))}</div>'
                         f"</div>"
                     )
-                with right:
-                    with st.expander("More actions"):
-                        st.html(
-                            f'<div class="ca-step-detail">'
-                            f'<div class="ca-step-time">Start: {fmt_dt(step.get("start_time"))}</div>'
-                            f'<div class="ca-step-time">End: {fmt_dt(step.get("end_time"))}</div>'
-                            f"</div>"
-                        )

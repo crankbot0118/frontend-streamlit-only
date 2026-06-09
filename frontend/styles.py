@@ -540,18 +540,24 @@ _GLOBAL_CSS = f"""
       gap: 0.4rem;
   }}
 
-  /* Each step is a bordered card: name + status icon on the left, a
-     borderless "More actions" dropdown on the far right. */
+  /* Each step is a bordered card. Right padding reserves room for the toggle
+     arrow, which is pinned to the card's right edge (like Run History cards). */
   [class*="st-key-stepcard_"] {{
+      position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
-      padding: 0.45rem 0.95rem;
+      padding: 0.5rem 2.8rem 0.5rem 1.1rem;
       background: #ffffff;
   }}
-  [class*="st-key-stepcard_"] [data-testid="stHorizontalBlock"] {{
-      align-items: center;
-  }}
 
+  /* Header row: name + status icon on the left, "More actions" on the right. */
+  .ca-step-head {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.7rem;
+      min-height: 1.9rem;
+  }}
   .ca-step-left {{
       display: flex;
       align-items: center;
@@ -565,8 +571,9 @@ _GLOBAL_CSS = f"""
       width: auto;
       display: block;
   }}
-  .ca-step-time {{
-      font-size: 0.78rem;
+  .ca-step-more {{
+      font-size: 0.85rem;
+      font-weight: 600;
       color: #6b7177;
       white-space: nowrap;
   }}
@@ -574,52 +581,56 @@ _GLOBAL_CSS = f"""
       display: flex;
       flex-direction: column;
       gap: 0.2rem;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid #eef0f2;
   }}
-
-  /* "More actions" dropdown: borderless, right-aligned trigger. */
-  [class*="st-key-stepcard_"] [data-testid="stExpander"],
-  [class*="st-key-stepcard_"] [data-testid="stExpander"] details {{
-      border: none !important;
-      box-shadow: none !important;
-      outline: none !important;
-      background: transparent !important;
-  }}
-  /* "More actions" text on the left, the toggle arrow pushed to the far right.
-     row-reverse moves Streamlit's native arrow (which sits before the label by
-     default) to the right of the text; flex-start then packs both to the edge. */
-  [class*="st-key-stepcard_"] [data-testid="stExpander"] summary {{
-      display: flex !important;
-      flex-direction: row-reverse;
-      align-items: center !important;
-      justify-content: flex-start !important;
-      gap: 0.25rem;
-      padding: 0.1rem 0 !important;
-      border: none !important;
-      box-shadow: none !important;
-      outline: none !important;
+  .ca-step-time {{
+      font-size: 0.78rem;
       color: #6b7177;
-      font-weight: 600;
       white-space: nowrap;
   }}
-  [class*="st-key-stepcard_"] [data-testid="stExpander"] summary p {{
-      margin: 0;
-      font-size: 0.85rem;
-  }}
-  [class*="st-key-stepcard_"] [data-testid="stExpander"] summary:hover {{
-      color: {BRAND_ORANGE};
-  }}
 
-  /* Native toggle arrow (arrow_right when collapsed -> arrow_down when open),
-     sized to match the redirect arrow on the Run History cards (1.9rem). */
-  [class*="st-key-stepcard_"] [data-testid="stExpander"] summary [data-testid="stIconMaterial"] {{
+  /* Toggle arrow button pinned to the card's right edge, aligned with the
+     header row — the same redirect arrow style used on the Run History cards. */
+  [class*="st-key-stepcard_"] [data-testid="stElementContainer"]:has(.stButton) {{
+      position: absolute !important;
+      right: 0.5rem;
+      top: 0.5rem;
+      height: 1.9rem;
+      display: flex;
+      align-items: center;
+      width: auto !important;
+      margin: 0 !important;
+      z-index: 3;
+  }}
+  [class*="st-key-stepcard_"] .stButton {{
+      width: auto !important;
+      margin: 0 !important;
+  }}
+  [class*="st-key-stepcard_"] .stButton button {{
+      width: auto !important;
+      min-height: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: #8a9097;
+      padding: 0.1rem;
+  }}
+  [class*="st-key-stepcard_"] .stButton button [data-testid="stIconMaterial"] {{
       font-size: 1.9rem !important;
       width: 1.9rem !important;
       height: 1.9rem !important;
       line-height: 1 !important;
-      color: inherit;
   }}
-  [class*="st-key-stepcard_"] [data-testid="stExpander"] details[open] summary [data-testid="stIconMaterial"] {{
-      color: {BRAND_ORANGE};
+  [class*="st-key-stepcard_"] .stButton button svg {{
+      width: 1.9rem !important;
+      height: 1.9rem !important;
+  }}
+  [class*="st-key-stepcard_"] .stButton button:hover,
+  [class*="st-key-stepcard_"] .stButton button:hover [data-testid="stIconMaterial"],
+  [class*="st-key-stepcard_"] .stButton button:hover svg {{
+      color: {BRAND_ORANGE} !important;
   }}
 </style>
 """
