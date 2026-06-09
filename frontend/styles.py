@@ -553,21 +553,32 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run details header ---------- */
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
-  /* Title row: heading left, Abort / Skip pinned to the right on one line. */
-  .st-key-ca-detail-title-row [data-testid="stHorizontalBlock"] {{
+  /* Title row: heading then Abort / Skip immediately beside it (no spacer). */
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] {{
+      display: flex !important;
+      flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
+      gap: 0.55rem !important;
+  }}
+  .st-key-ca-detail-title-row [data-testid="stElementContainer"] {{
+      width: auto !important;
+      flex: 0 0 auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
   .ca-detail-title {{
       margin: 0;
   }}
   .ca-detail-title h1 {{
       white-space: nowrap;
+      margin: 0;
   }}
-  /* Abort / Skip — icon + label, sized beside the page heading. */
+  /* Abort / Skip — icon + label, tight beside the heading. */
   .st-key-detail_abort .stButton,
   .st-key-detail_skip .stButton {{
-      width: 100% !important;
+      width: auto !important;
+      margin: 0 !important;
   }}
   .st-key-detail_abort .stButton button,
   .st-key-detail_skip .stButton button {{
@@ -575,7 +586,7 @@ _GLOBAL_CSS = f"""
       align-items: center !important;
       justify-content: center !important;
       gap: 0.45rem !important;
-      width: 100% !important;
+      width: auto !important;
       font-size: 1.35rem !important;
       font-weight: 700 !important;
       padding: 0.3rem 0.65rem !important;

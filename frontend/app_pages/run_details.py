@@ -85,44 +85,38 @@ if run:
 
     with st.container(key="ca-detail-header"):
         with st.container(key="ca-detail-title-row"):
-            title_col, abort_col, skip_col = st.columns(
-                [7.2, 1.4, 1.4], vertical_alignment="center"
+            st.html(
+                f"""
+                <div class="ca-title ca-detail-title">
+                  <h1>Run #{run_id} <span class="ca-run-sep">&middot;</span> {src}
+                    <span class="arrow">&#8594;</span> {tgt}</h1>
+                </div>
+                """
             )
-            with title_col:
-                st.html(
-                    f"""
-                    <div class="ca-title ca-detail-title">
-                      <h1>Run #{run_id} <span class="ca-run-sep">&middot;</span> {src}
-                        <span class="arrow">&#8594;</span> {tgt}</h1>
-                    </div>
-                    """
-                )
-            with abort_col:
-                if st.button(
-                    "Abort",
-                    key="detail_abort",
-                    disabled=not is_failed,
-                    help="Mark this failed run as ABORTED",
-                ):
-                    try:
-                        abort_run(run_id, failed_step_id)
-                        st.session_state.pop("selected_run", None)
-                        st.rerun()
-                    except Exception as exc:
-                        st.error(f"Could not abort run: {exc}")
-            with skip_col:
-                if st.button(
-                    "Skip",
-                    key="detail_skip",
-                    disabled=not is_failed,
-                    help="Mark this failed run as SKIPPED",
-                ):
-                    try:
-                        skip_run(run_id, failed_step_id)
-                        st.session_state.pop("selected_run", None)
-                        st.rerun()
-                    except Exception as exc:
-                        st.error(f"Could not skip run: {exc}")
+            if st.button(
+                "Abort",
+                key="detail_abort",
+                disabled=not is_failed,
+                help="Mark this failed run as ABORTED",
+            ):
+                try:
+                    abort_run(run_id, failed_step_id)
+                    st.session_state.pop("selected_run", None)
+                    st.rerun()
+                except Exception as exc:
+                    st.error(f"Could not abort run: {exc}")
+            if st.button(
+                "Skip",
+                key="detail_skip",
+                disabled=not is_failed,
+                help="Mark this failed run as SKIPPED",
+            ):
+                try:
+                    skip_run(run_id, failed_step_id)
+                    st.session_state.pop("selected_run", None)
+                    st.rerun()
+                except Exception as exc:
+                    st.error(f"Could not skip run: {exc}")
 
         meta_col, refresh_col = st.columns([8, 2], vertical_alignment="center")
         with meta_col:
