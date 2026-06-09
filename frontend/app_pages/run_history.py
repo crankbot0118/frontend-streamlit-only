@@ -65,6 +65,12 @@ except Exception:
     st.error("Could not reach the backend to load runs. Is the API running?")
     runs = []
 
+runs = sorted(
+    runs,
+    key=lambda r: (r.get("last_update") or "", r.get("clone_run_id") or 0),
+    reverse=True,
+)
+
 if not runs:
     if filters_active:
         st.info("No runs match your filters. Try a different client, target, user, or start date.")

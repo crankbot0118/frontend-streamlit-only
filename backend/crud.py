@@ -74,12 +74,10 @@ def get_clone_runs(
     user: str | None = None,
     start_date: date | None = None,
 ) -> list[dict]:
-    """Fetch rows from ``clone_run_status`` ordered by execution time, newest
-    first.
-
-    Sorted by ``start_date`` descending (runs that have not started yet are
-    pushed to the end), with ``clone_run_id`` descending as a tiebreaker.
-    Joins ``clients`` to include ``client_name``.
+    """Fetch rows from ``clone_run_status`` ordered by ``last_update``, newest
+    first, regardless of status. Rows with no ``last_update`` sort last;
+    ``clone_run_id`` descending is the tiebreaker. Joins ``clients`` for
+    ``client_name``.
     """
     conditions: list[str] = []
     params: dict = {"limit": limit}
@@ -116,7 +114,7 @@ def get_clone_runs(
         FROM ({_LATEST_RUNS_CTE}) cr
         JOIN clients c ON c.client_id = cr.client_id
         {where}
-        ORDER BY cr.start_date DESC NULLS LAST, cr.clone_run_id DESC
+        ORDER BY cr.last_update DESC NULLS LAST, cr.clone_run_id DESC
         LIMIT :limit
         """
     )

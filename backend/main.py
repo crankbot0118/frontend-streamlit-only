@@ -114,8 +114,8 @@ def create_clone_run_endpoint(
     "/api/v1/runs",
     response_model=list[CloneRunOut],
     summary="List clone runs",
-    description="Fetches rows from clone_run_status sorted by execution time "
-    "(start_date) in descending order — most recent runs first.",
+    description="Fetches rows from clone_run_status sorted by last_update "
+    "in descending order — most recently updated runs first, regardless of status.",
 )
 def list_clone_runs(
     limit: int = 50,
