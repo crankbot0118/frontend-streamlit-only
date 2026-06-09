@@ -83,7 +83,7 @@ _GLOBAL_CSS = f"""
   .ca-title h1 {{
       margin: 0;
       padding: 0;
-      font-size: 2.1rem;
+      font-size: 2.6rem;
       font-weight: 700;
       letter-spacing: -0.02em;
       color: {BRAND_INK};
