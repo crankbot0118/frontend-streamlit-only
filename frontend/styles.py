@@ -458,6 +458,32 @@ _GLOBAL_CSS = f"""
   .ca-run-metaline .mi-upd   {{ color: {BRAND_ORANGE}; }}
   .ca-run-metaline .mi-dur   {{ color: #8a9097; }}
 
+  /* ---------- Run details header ---------- */
+  .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
+  .ca-detail-head {{
+      margin: 0.15rem 0 0.2rem 0;
+  }}
+  .ca-detail-user {{
+      font-size: 1rem;
+      font-weight: 600;
+      color: {BRAND_INK};
+      margin-bottom: 0.4rem;
+  }}
+  .ca-detail-meta {{
+      display: flex;
+      flex-direction: column;
+      gap: 0.28rem;
+      font-size: 0.86rem;
+      color: #6b7177;
+      font-style: italic;
+  }}
+  .ca-detail-meta .ca-run-metaline {{
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+  }}
+  .ca-detail-status {{ margin-top: 0.55rem; }}
+
   /* ---------- Step rows (run details) ---------- */
   .ca-steps {{
       display: flex;
@@ -738,6 +764,15 @@ def build_pages() -> dict:
             icon=f":material/{item['icon']}:",
         )
     return pages
+
+
+def goto_page(title: str) -> None:
+    """Switch to a registered page by its title.
+
+    Uses the ``st.Page`` object (not a raw path string), which is the reliable
+    way to navigate when pages are managed by ``st.navigation``.
+    """
+    st.switch_page(build_pages()[title])
 
 
 def _nav_link(pages: dict, item: dict, current_title: str) -> None:
