@@ -9,6 +9,17 @@ from datetime import datetime
 
 import streamlit as st
 
+# Force light theme in-app so we never follow OS/browser dark mode when
+# Streamlit is started from ``frontend/`` (no local ``.streamlit`` there).
+if hasattr(st, "set_theme"):
+    st.set_theme(
+        base="light",
+        primary_color="#e87511",
+        background_color="#ffffff",
+        secondary_background_color="#f6f7f8",
+        text_color="#131516",
+    )
+
 from api import check_backend_health
 from styles import (
     apply_global_styles,

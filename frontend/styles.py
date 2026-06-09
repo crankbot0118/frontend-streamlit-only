@@ -20,6 +20,27 @@ DEFAULT_LOGO_PATH = REPO_ROOT / "assets" / "logo.svg"
 
 _GLOBAL_CSS = f"""
 <style>
+  /* Lock the shell to light mode (not system/dark) even if config.toml is
+     not picked up from the repo root. */
+  :root,
+  .stApp {{
+      color-scheme: light only;
+      --primary-color: {BRAND_ORANGE};
+      --background-color: #ffffff;
+      --secondary-background-color: #f6f7f8;
+      --text-color: {BRAND_INK};
+  }}
+  [data-testid="stAppViewContainer"],
+  .stApp,
+  section.main {{
+      background-color: #ffffff !important;
+      color: {BRAND_INK} !important;
+  }}
+  [data-testid="stSidebar"],
+  [data-testid="stSidebar"] > div {{
+      background-color: #f6f7f8 !important;
+  }}
+
   /* Hide the top-right toolbar (theme toggle + app menu with the
      Light/Dark/System theme picker) and the "Made with Streamlit" footer. */
   [data-testid="stToolbar"],

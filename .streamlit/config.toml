@@ -1,3 +1,7 @@
+# Repo-root config only — run Streamlit from the repo root, e.g.:
+#   streamlit run frontend/app.py
+# A single [theme] section (no [theme.dark]) locks the app to light mode.
+
 [theme]
 base = "light"
 primaryColor = "#e87511"
