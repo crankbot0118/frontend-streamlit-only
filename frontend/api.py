@@ -5,6 +5,7 @@ dependencies. The backend base URL can be overridden with the ``BACKEND_URL``
 environment variable.
 """
 
+import json
 import os
 import urllib.request
 
@@ -19,3 +20,20 @@ def check_backend_health(timeout: float = 2.0) -> bool:
             return resp.status == 200
     except Exception:
         return False
+
+
+def _get_json(path: str, timeout: float = 5.0):
+    """GET a JSON resource from the backend. Raises on failure."""
+    url = f"{BACKEND_URL.rstrip('/')}{path}"
+    with urllib.request.urlopen(url, timeout=timeout) as resp:
+        return json.loads(resp.read().decode("utf-8"))
+
+
+def get_runs(limit: int = 50) -> list[dict]:
+    """Fetch clone runs (newest execution first)."""
+    return _get_json(f"/api/v1/runs?limit={limit}")
+
+
+def get_run_steps(clone_run_id: int) -> list[dict]:
+    """Fetch the step rows (clone_function_run_status) for a clone run."""
+    return _get_json(f"/api/v1/runs/{clone_run_id}/steps")

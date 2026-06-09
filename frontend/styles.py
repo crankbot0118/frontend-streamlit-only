@@ -340,6 +340,117 @@ _GLOBAL_CSS = f"""
       70%  {{ box-shadow: 0 0 0 9px rgba(34, 197, 94, 0); }}
       100% {{ box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }}
   }}
+
+  /* ---------- Status badges (reused on cards + steps) ---------- */
+  .ca-badge {{
+      display: inline-block;
+      padding: 0.12rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+  }}
+  .ca-badge.green  {{ background: #dafbe1; color: #116329; }}
+  .ca-badge.blue   {{ background: #ddf4ff; color: #0a3069; }}
+  .ca-badge.gray   {{ background: #eef0f2; color: #57606a; }}
+  .ca-badge.red    {{ background: #ffebe9; color: #cf222e; }}
+  .ca-badge.orange {{ background: #fff1e5; color: #bc4c00; }}
+  .ca-badge.violet {{ background: #fbefff; color: #6639ba; }}
+
+  /* ---------- Run cards (Run History) ---------- */
+  .st-key-ca-runs > [data-testid="stVerticalBlock"] {{
+      gap: 0.7rem;
+  }}
+
+  /* Each card container is clickable via a transparent button overlay. */
+  [class*="st-key-runcard_"] {{
+      position: relative;
+      border: 1px solid #e3e6e8;
+      border-radius: 12px;
+      padding: 0.85rem 1.1rem;
+      background: #ffffff;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }}
+  [class*="st-key-runcard_"]:hover {{
+      border-color: {BRAND_ORANGE};
+      box-shadow: 0 2px 12px rgba(19, 21, 22, 0.07);
+  }}
+
+  [class*="st-key-runcard_"] [data-testid="stButton"] {{
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      z-index: 3;
+  }}
+  [class*="st-key-runcard_"] [data-testid="stButton"] button {{
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      padding: 0;
+      border: none;
+      cursor: pointer;
+  }}
+
+  .ca-run-top {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+  }}
+  .ca-run-client {{
+      font-weight: 700;
+      font-size: 1rem;
+      color: {BRAND_INK};
+  }}
+  .ca-run-env {{
+      margin-top: 0.35rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: {BRAND_INK};
+  }}
+  .ca-run-env .arrow {{
+      color: {BRAND_ORANGE};
+      margin: 0 0.4rem;
+  }}
+  .ca-run-meta {{
+      margin-top: 0.25rem;
+      font-size: 0.8rem;
+      color: #5b6166;
+  }}
+  .ca-run-dates {{
+      margin-top: 0.55rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.3rem;
+      font-size: 0.74rem;
+      color: #6b7177;
+  }}
+
+  /* ---------- Step rows (run details) ---------- */
+  .ca-steps {{
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+  }}
+  .ca-step {{
+      display: grid;
+      grid-template-columns: 1.7fr auto 1fr 1fr;
+      align-items: center;
+      gap: 0.9rem;
+      border: 1px solid #e3e6e8;
+      border-radius: 10px;
+      padding: 0.55rem 0.95rem;
+      background: #ffffff;
+  }}
+  .ca-step-name {{
+      font-weight: 600;
+      color: {BRAND_INK};
+  }}
+  .ca-step-time {{
+      font-size: 0.75rem;
+      color: #6b7177;
+  }}
 </style>
 """
 
@@ -366,6 +477,64 @@ def render_logo(path: str | Path | None = None, width: int = 170) -> None:
         </div>
         """
     )
+
+
+STATUS_COLORS = {
+    "COMPLETED": "green",
+    "RUNNING": "blue",
+    "PENDING": "gray",
+    "FAILED": "red",
+    "SKIPPED": "orange",
+    "ABORTED": "violet",
+}
+
+
+def status_color(status: str) -> str:
+    """Map a clone status to a badge color name."""
+    return STATUS_COLORS.get((status or "").upper(), "gray")
+
+
+def status_badge_html(status: str) -> str:
+    """Return an HTML badge span for a status (colored)."""
+    return f'<span class="ca-badge {status_color(status)}">{status or "—"}</span>'
+
+
+def fmt_dt(value) -> str:
+    """Format an ISO datetime string (or None) for display."""
+    if not value:
+        return "—"
+    try:
+        return datetime.fromisoformat(str(value)).strftime("%b %d, %Y %I:%M %p")
+    except (ValueError, TypeError):
+        return str(value)
+
+
+def render_run_card(run: dict) -> bool:
+    """Render a clickable run card. Returns ``True`` when clicked.
+
+    Shows client, user, source -> target, colored status, start and last-update
+    times. The whole card is clickable via a transparent button overlay.
+    """
+    rid = run.get("clone_run_id")
+    html = f"""
+        <div class="ca-run">
+          <div class="ca-run-top">
+            <span class="ca-run-client">{run.get('client_name', '—')}</span>
+            {status_badge_html(run.get('status', ''))}
+          </div>
+          <div class="ca-run-env">
+            {run.get('source_name', '—')}<span class="arrow">&#8594;</span>{run.get('target_name', '—')}
+          </div>
+          <div class="ca-run-meta">Run #{rid} &middot; User: {run.get('user_name', '—')}</div>
+          <div class="ca-run-dates">
+            <span>Started: {fmt_dt(run.get('start_date'))}</span>
+            <span>Updated: {fmt_dt(run.get('last_update'))}</span>
+          </div>
+        </div>
+    """
+    with st.container(key=f"runcard_{rid}"):
+        st.html(html)
+        return st.button("Open run", key=f"open_run_{rid}")
 
 
 def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
@@ -426,10 +595,18 @@ def _iter_nav_items(nav: list[dict] = NAV):
             yield from entry["items"]
 
 
+# Pages that must be registered with st.navigation (so st.switch_page can reach
+# them) but should NOT appear in the custom sidebar.
+HIDDEN_PAGES = [
+    {"title": "Run details", "icon": "history", "module": "pages/run_details.py"},
+]
+
+
 def build_pages() -> dict:
     """Build the ``st.Page`` registry keyed by page title.
 
-    Pass ``list(build_pages().values())`` to ``st.navigation``.
+    Pass ``list(build_pages().values())`` to ``st.navigation``. Includes the
+    sidebar pages plus hidden detail pages reachable via ``st.switch_page``.
     """
     pages = {}
     for item in _iter_nav_items():
@@ -438,6 +615,12 @@ def build_pages() -> dict:
             title=item["title"],
             icon=f":material/{item['icon']}:",
             default=(item["title"] == DEFAULT_PAGE),
+        )
+    for item in HIDDEN_PAGES:
+        pages[item["title"]] = st.Page(
+            item["module"],
+            title=item["title"],
+            icon=f":material/{item['icon']}:",
         )
     return pages
 

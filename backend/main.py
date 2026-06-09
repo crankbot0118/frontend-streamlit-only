@@ -11,9 +11,9 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from crud import get_clone_runs
+from crud import get_clone_runs, get_run_steps
 from database import get_db
-from schemas import CloneRunOut
+from schemas import CloneFunctionRunOut, CloneRunOut
 
 app = FastAPI(title="Clone Automation API", version="0.1.0")
 
@@ -44,3 +44,16 @@ def health() -> dict:
 )
 def list_clone_runs(limit: int = 50, db: Session = Depends(get_db)) -> list[CloneRunOut]:
     return get_clone_runs(db, limit)
+
+
+@app.get(
+    "/api/v1/runs/{clone_run_id}/steps",
+    response_model=list[CloneFunctionRunOut],
+    summary="Get steps for a clone run",
+    description="Fetches clone_function_run_status rows (latest attempt per "
+    "function) for a given clone_run_id, ordered by function_id.",
+)
+def list_run_steps(
+    clone_run_id: int, db: Session = Depends(get_db)
+) -> list[CloneFunctionRunOut]:
+    return get_run_steps(db, clone_run_id)
