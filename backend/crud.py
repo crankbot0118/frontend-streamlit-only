@@ -1,7 +1,6 @@
 """Read helpers for clone run data."""
 
 from datetime import date
-
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 

@@ -84,18 +84,19 @@ if run:
     )
 
     with st.container(key="ca-detail-header"):
-        title_col, actions_col = st.columns([7, 2], vertical_alignment="center")
-        with title_col:
-            st.html(
-                f"""
-                <div class="ca-title ca-detail-title">
-                  <h1>Run #{run_id} <span class="ca-run-sep">&middot;</span> {src}
-                    <span class="arrow">&#8594;</span> {tgt}</h1>
-                </div>
-                """
+        with st.container(key="ca-detail-title-row"):
+            title_col, abort_col, skip_col = st.columns(
+                [7.2, 1.4, 1.4], vertical_alignment="center"
             )
-        with actions_col:
-            abort_col, skip_col = st.columns(2, gap="small")
+            with title_col:
+                st.html(
+                    f"""
+                    <div class="ca-title ca-detail-title">
+                      <h1>Run #{run_id} <span class="ca-run-sep">&middot;</span> {src}
+                        <span class="arrow">&#8594;</span> {tgt}</h1>
+                    </div>
+                    """
+                )
             with abort_col:
                 if st.button(
                     "Abort",

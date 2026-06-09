@@ -18,6 +18,20 @@ BRAND_INK = "#131516"
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_LOGO_PATH = REPO_ROOT / "assets" / "logo.svg"
 
+
+@lru_cache(maxsize=None)
+def _asset_data_uri(filename: str) -> str:
+    """Read a file from ``assets/`` and return it as a base64 data URI."""
+    data = (REPO_ROOT / "assets" / filename).read_bytes()
+    b64 = base64.b64encode(data).decode("ascii")
+    suffix = Path(filename).suffix.lower()
+    mime = "image/svg+xml" if suffix == ".svg" else "image/png"
+    return f"data:{mime};base64,{b64}"
+
+
+_ABORT_BTN_ICON = _asset_data_uri("aborted.png")
+_SKIP_BTN_ICON = _asset_data_uri("skipped.png")
+
 _GLOBAL_CSS = f"""
 <style>
   /* Lock the shell to light mode (not system/dark) even if config.toml is
@@ -539,25 +553,52 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run details header ---------- */
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
-  .st-key-ca-detail-header [data-testid="stHorizontalBlock"] {{
-      align-items: center;
+  /* Title row: heading left, Abort / Skip pinned to the right on one line. */
+  .st-key-ca-detail-title-row [data-testid="stHorizontalBlock"] {{
+      align-items: center !important;
+      flex-wrap: nowrap !important;
   }}
   .ca-detail-title {{
       margin: 0;
   }}
-  /* Abort / Skip — sized to sit beside the page heading. */
+  .ca-detail-title h1 {{
+      white-space: nowrap;
+  }}
+  /* Abort / Skip — icon + label, sized beside the page heading. */
   .st-key-detail_abort .stButton,
   .st-key-detail_skip .stButton {{
       width: 100% !important;
   }}
   .st-key-detail_abort .stButton button,
   .st-key-detail_skip .stButton button {{
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.45rem !important;
       width: 100% !important;
       font-size: 1.35rem !important;
       font-weight: 700 !important;
-      padding: 0.3rem 0.75rem !important;
+      padding: 0.3rem 0.65rem !important;
       min-height: 0 !important;
       border-radius: 8px !important;
+      white-space: nowrap !important;
+  }}
+  .st-key-detail_abort .stButton button::before,
+  .st-key-detail_skip .stButton button::before {{
+      content: "";
+      display: inline-block;
+      width: 1.25rem;
+      height: 1.25rem;
+      flex: 0 0 auto;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+  }}
+  .st-key-detail_abort .stButton button::before {{
+      background-image: url({_ABORT_BTN_ICON});
+  }}
+  .st-key-detail_skip .stButton button::before {{
+      background-image: url({_SKIP_BTN_ICON});
   }}
   .st-key-detail_abort .stButton button {{
       background: #ffebe9 !important;
@@ -574,18 +615,35 @@ _GLOBAL_CSS = f"""
       opacity: 0.45 !important;
       cursor: not-allowed !important;
   }}
-  /* Auto refresh toggle pinned to the far right of the meta row. */
+  /* Auto refresh — always visible (on or off), pinned to the far right. */
   .st-key-detail-refresh {{
-      display: flex;
+      display: flex !important;
       justify-content: flex-end;
       align-items: center;
       width: 100%;
+      opacity: 1 !important;
+      visibility: visible !important;
+  }}
+  .st-key-detail-refresh [data-testid="stVerticalBlock"],
+  .st-key-detail-refresh [data-testid="stWidgetLabel"],
+  .st-key-detail-refresh [data-testid="stToggle"],
+  .st-key-detail-refresh label,
+  .st-key-detail-refresh label p,
+  .st-key-detail-refresh label span,
+  .st-key-detail-refresh [role="switch"] {{
+      opacity: 1 !important;
+      visibility: visible !important;
   }}
   .st-key-detail-refresh [data-testid="stWidgetLabel"] p {{
       font-size: 0.82rem !important;
       font-weight: 600 !important;
       color: #6b7177 !important;
       white-space: nowrap;
+  }}
+  .st-key-detail-refresh label:hover,
+  .st-key-detail-refresh label:hover p {{
+      opacity: 1 !important;
+      visibility: visible !important;
   }}
   .ca-detail-head {{
       margin: 0.15rem 0 0.2rem 0;
@@ -840,14 +898,6 @@ STATUS_ASSETS = {
     "SKIPPED": "skipped.png",
     "ABORTED": "aborted.png",
 }
-
-
-@lru_cache(maxsize=None)
-def _asset_data_uri(filename: str) -> str:
-    """Read a PNG from ``assets/`` and return it as a base64 data URI."""
-    data = (REPO_ROOT / "assets" / filename).read_bytes()
-    b64 = base64.b64encode(data).decode("ascii")
-    return f"data:image/png;base64,{b64}"
 
 
 def status_image_html(status: str, size: int = 22) -> str:
