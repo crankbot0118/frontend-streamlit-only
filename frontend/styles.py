@@ -377,29 +377,31 @@ _GLOBAL_CSS = f"""
       box-shadow: 0 2px 12px rgba(19, 21, 22, 0.07);
   }}
 
-  /* Borderless icon button, pinned to the extreme right, vertically centered. */
-  [class*="st-key-runcard_"] [data-testid="stButton"] {{
-      position: absolute;
+  /* The button's element container must not reserve a flow row at the bottom. */
+  [class*="st-key-runcard_"] .stButton {{
+      position: absolute !important;
       right: 0.5rem;
       top: 50%;
       transform: translateY(-50%);
-      margin: 0;
-      width: auto;
+      margin: 0 !important;
+      width: auto !important;
       z-index: 3;
   }}
-  [class*="st-key-runcard_"] [data-testid="stButton"] button {{
-      width: auto;
+  /* Borderless icon button, pinned to the extreme right, vertically centered. */
+  [class*="st-key-runcard_"] .stButton button {{
+      width: auto !important;
+      min-height: 0 !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
       color: #8a9097;
       padding: 0.3rem;
   }}
-  [class*="st-key-runcard_"] [data-testid="stButton"] button:hover {{
+  [class*="st-key-runcard_"] .stButton button:hover {{
       background: transparent !important;
       color: {BRAND_ORANGE};
   }}
-  [class*="st-key-runcard_"] [data-testid="stButton"] button:hover svg {{
+  [class*="st-key-runcard_"] .stButton button:hover svg {{
       color: {BRAND_ORANGE};
   }}
 
@@ -426,15 +428,21 @@ _GLOBAL_CSS = f"""
   .ca-run-meta {{
       margin-top: 0.45rem;
       display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem;
       font-size: 0.78rem;
       color: #6b7177;
+      font-style: italic;
+  }}
+  .ca-run-meta .sepm {{
+      color: #c2c7cc;
+      font-style: normal;
   }}
   .ca-run-metaline {{
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.35rem;
   }}
   .ca-run-metaline .mi {{
       font-size: 0.92rem;
@@ -594,10 +602,16 @@ def render_run_card(run: dict) -> bool:
     redirect button is clicked.
     """
     rid = run.get("clone_run_id")
+    client = (
+        run.get("client_name")
+        or run.get("clientName")
+        or run.get("client")
+        or "—"
+    )
     info_html = f"""
         <div class="ca-run">
           <div class="ca-run-line1">
-            <span class="ca-run-client">{run.get('client_name', '—')}</span>
+            <span class="ca-run-client">{client}</span>
             <span class="sep">&middot;</span>
             <span>Run #{rid}</span>
             <span class="sep">&middot;</span>
@@ -608,15 +622,17 @@ def render_run_card(run: dict) -> bool:
             {status_badge_html(run.get('status', ''))}
           </div>
           <div class="ca-run-meta">
-            <div class="ca-run-metaline">
+            <span class="ca-run-metaline">
               <span class="mi mi-start">&#9654;</span> Started {fmt_started(run.get('start_date'))}
-            </div>
-            <div class="ca-run-metaline">
+            </span>
+            <span class="sepm">&middot;</span>
+            <span class="ca-run-metaline">
               <span class="mi mi-upd">&#8635;</span> {fmt_relative_update(run.get('last_update'))}
-            </div>
-            <div class="ca-run-metaline">
+            </span>
+            <span class="sepm">&middot;</span>
+            <span class="ca-run-metaline">
               <span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}
-            </div>
+            </span>
           </div>
         </div>
     """
