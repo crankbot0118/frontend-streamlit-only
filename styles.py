@@ -262,7 +262,7 @@ def render_logo(path: str = "assets/logo.svg", width: int = 170) -> None:
     )
 
 
-DEFAULT_PAGE = "Home"
+DEFAULT_PAGE = "Clone Automation Dashboard"
 
 
 def _select_page(page: str) -> None:
