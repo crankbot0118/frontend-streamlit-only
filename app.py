@@ -1,13 +1,17 @@
-"""Clone Automation dashboard — home page."""
+"""Clone Automation dashboard — multipage entry point.
+
+Defines the page registry and renders the shared, custom-styled sidebar.
+The default Streamlit nav is hidden (``position="hidden"``) so our own
+sidebar in ``render_sidebar_nav`` is the only navigation.
+"""
 
 import streamlit as st
 
 from styles import (
-    DEFAULT_PAGE,
     apply_global_styles,
+    build_pages,
     render_logo,
     render_sidebar_nav,
-    render_title,
 )
 
 st.set_page_config(
@@ -19,14 +23,11 @@ st.set_page_config(
 
 apply_global_styles()
 
-if "active_page" not in st.session_state:
-    st.session_state["active_page"] = DEFAULT_PAGE
+pages = build_pages()
+pg = st.navigation(list(pages.values()), position="hidden")
 
 with st.sidebar:
     render_logo()
-    render_sidebar_nav()
+    render_sidebar_nav(pages, current_title=pg.title)
 
-active_page = st.session_state["active_page"]
-render_title(active_page)
-
-st.write(f"{active_page} content goes here.")
+pg.run()

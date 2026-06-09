@@ -14,10 +14,13 @@ BRAND_INK = "#131516"
 
 _GLOBAL_CSS = f"""
 <style>
-  /* Pull the page content to the very top, no wasted space. */
+  /* Pull the page content to the very top, no wasted space, and trim the
+     wide left/right gutters so content sits closer to the sidebar. */
   [data-testid="stMainBlockContainer"] {{
       padding-top: 1.2rem;
       padding-bottom: 2rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
   }}
 
   /* Collapse the empty default header bar that pushes content down. */
@@ -262,56 +265,90 @@ def render_logo(path: str = "assets/logo.svg", width: int = 170) -> None:
     )
 
 
-DEFAULT_PAGE = "Clone Automation Dashboard"
+DEFAULT_PAGE = "Home"
+
+# Single source of truth for navigation: drives both the real ``st.Page``
+# registry (build_pages) and the custom sidebar (render_sidebar_nav).
+NAV: list[dict] = [
+    {"kind": "item", "title": "Home", "icon": "space_dashboard",
+     "key": "nav_home", "module": "pages/home.py"},
+    {"kind": "group", "title": "Admin", "items": [
+        {"title": "Clients", "icon": "work", "key": "nav_clients", "module": "pages/clients.py"},
+        {"title": "Team", "icon": "group", "key": "nav_team", "module": "pages/team.py"},
+        {"title": "Targets", "icon": "dns", "key": "nav_targets", "module": "pages/targets.py"},
+    ]},
+    {"kind": "group", "title": "Clone Setup", "items": [
+        {"title": "DB Config", "icon": "database", "key": "nav_db", "module": "pages/db_config.py"},
+        {"title": "EBS Config", "icon": "deployed_code", "key": "nav_ebs", "module": "pages/ebs_config.py"},
+        {"title": "Connections", "icon": "power", "key": "nav_connections", "module": "pages/connections.py"},
+    ]},
+    {"kind": "divider"},
+    {"kind": "item", "title": "Execute Clone", "icon": "play_arrow",
+     "key": "nav_execute", "module": "pages/execute_clone.py"},
+    {"kind": "item", "title": "Run History", "icon": "history",
+     "key": "nav_history", "module": "pages/run_history.py"},
+]
 
 
-def _select_page(page: str) -> None:
-    st.session_state["active_page"] = page
+def _iter_nav_items(nav: list[dict] = NAV):
+    """Yield every clickable nav item (flattening groups)."""
+    for entry in nav:
+        if entry["kind"] == "item":
+            yield entry
+        elif entry["kind"] == "group":
+            yield from entry["items"]
 
 
-def _nav_button(label: str, icon: str, key: str) -> None:
-    """A single link-style nav button that sets the active page on click.
+def build_pages() -> dict:
+    """Build the ``st.Page`` registry keyed by page title.
 
-    The active item is rendered as a ``primary`` button so it can be
-    highlighted via CSS.
+    Pass ``list(build_pages().values())`` to ``st.navigation``.
     """
-    active = st.session_state.get("active_page", DEFAULT_PAGE) == label
-    st.button(
-        label,
-        icon=icon,
+    pages = {}
+    for item in _iter_nav_items():
+        pages[item["title"]] = st.Page(
+            item["module"],
+            title=item["title"],
+            icon=f":material/{item['icon']}:",
+            default=(item["title"] == DEFAULT_PAGE),
+        )
+    return pages
+
+
+def _nav_link(pages: dict, item: dict, current_title: str) -> None:
+    """A single link-style nav button that switches to a real page on click.
+
+    The active page is rendered as a ``primary`` button so CSS can highlight it.
+    """
+    active = current_title == item["title"]
+    if st.button(
+        item["title"],
+        icon=f":material/{item['icon']}:",
         width="stretch",
-        key=key,
+        key=item["key"],
         type="primary" if active else "secondary",
-        on_click=_select_page,
-        args=(label,),
-    )
+    ):
+        st.switch_page(pages[item["title"]])
 
 
-def render_sidebar_nav() -> None:
+def render_sidebar_nav(pages: dict, current_title: str) -> None:
     """Render the sidebar navigation: link-style items with Material icons
     and collapsible groups, styled to look borderless and clean.
 
-    Clicking an item sets ``st.session_state["active_page"]`` so the main
-    area can render the matching page. Call ``apply_global_styles()`` before
-    this, inside a ``with st.sidebar:`` block.
+    Clicking an item calls ``st.switch_page`` to load the matching page.
+    Call ``apply_global_styles()`` before this, inside a ``with st.sidebar:``
+    block. ``current_title`` (e.g. ``pg.title``) drives the active highlight.
     """
     with st.container(key="ca-nav"):
-        _nav_button("Home", ":material/space_dashboard:", "nav_home")
-
-        with st.expander("Admin", expanded=True):
-            _nav_button("Clients", ":material/work:", "nav_clients")
-            _nav_button("Team", ":material/group:", "nav_team")
-            _nav_button("Targets", ":material/dns:", "nav_targets")
-
-        with st.expander("Clone Setup", expanded=True):
-            _nav_button("DB Config", ":material/database:", "nav_database")
-            _nav_button("EBS Config", ":material/deployed_code:", "nav_ebs")
-            _nav_button("Connections", ":material/power:", "nav_connections")
-
-        st.divider()
-
-        _nav_button("Execute Clone", ":material/play_arrow:", "nav_execute")
-        _nav_button("Run History", ":material/history:", "nav_history")
+        for entry in NAV:
+            if entry["kind"] == "item":
+                _nav_link(pages, entry, current_title)
+            elif entry["kind"] == "group":
+                with st.expander(entry["title"], expanded=True):
+                    for item in entry["items"]:
+                        _nav_link(pages, item, current_title)
+            elif entry["kind"] == "divider":
+                st.divider()
 
 
 def render_title(title: str, subtitle: str | None = None) -> None:
