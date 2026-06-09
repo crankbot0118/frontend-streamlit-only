@@ -1,10 +1,59 @@
 """Read helpers for clone run data."""
 
+from datetime import date
+
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 
-def get_clone_runs(db: Session, limit: int = 50) -> list[dict]:
+def get_run_filter_options(db: Session) -> dict[str, list[str]]:
+    """Distinct client, target, and user values for Run History filter dropdowns."""
+    clients = db.execute(
+        text(
+            """
+            SELECT DISTINCT c.client_name
+            FROM clone_run_status cr
+            JOIN clients c ON c.client_id = cr.client_id
+            WHERE c.client_name IS NOT NULL
+            ORDER BY c.client_name
+            """
+        )
+    ).scalars().all()
+    targets = db.execute(
+        text(
+            """
+            SELECT DISTINCT target_name
+            FROM clone_run_status
+            WHERE target_name IS NOT NULL
+            ORDER BY target_name
+            """
+        )
+    ).scalars().all()
+    users = db.execute(
+        text(
+            """
+            SELECT DISTINCT user_name
+            FROM clone_run_status
+            WHERE user_name IS NOT NULL
+            ORDER BY user_name
+            """
+        )
+    ).scalars().all()
+    return {
+        "clients": list(clients),
+        "targets": list(targets),
+        "users": list(users),
+    }
+
+
+def get_clone_runs(
+    db: Session,
+    limit: int = 50,
+    client: str | None = None,
+    target: str | None = None,
+    user: str | None = None,
+    start_date: date | None = None,
+) -> list[dict]:
     """Fetch rows from ``clone_run_status`` ordered by execution time, newest
     first.
 
@@ -12,8 +61,24 @@ def get_clone_runs(db: Session, limit: int = 50) -> list[dict]:
     pushed to the end), with ``clone_run_id`` descending as a tiebreaker.
     Joins ``clients`` to include ``client_name``.
     """
+    conditions: list[str] = []
+    params: dict = {"limit": limit}
+    if client:
+        conditions.append("c.client_name = :client")
+        params["client"] = client
+    if target:
+        conditions.append("cr.target_name = :target")
+        params["target"] = target
+    if user:
+        conditions.append("cr.user_name = :user")
+        params["user"] = user
+    if start_date:
+        conditions.append("cr.start_date::date = :start_date")
+        params["start_date"] = start_date
+
+    where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
     query = text(
-        """
+        f"""
         SELECT
             cr.clone_run_id,
             cr.client_id,
@@ -30,11 +95,12 @@ def get_clone_runs(db: Session, limit: int = 50) -> list[dict]:
             cr.log_location
         FROM clone_run_status cr
         JOIN clients c ON c.client_id = cr.client_id
+        {where}
         ORDER BY cr.start_date DESC NULLS LAST, cr.clone_run_id DESC
         LIMIT :limit
         """
     )
-    results = db.execute(query, {"limit": limit})
+    results = db.execute(query, params)
     columns = list(results.keys())
     return [dict(zip(columns, row)) for row in results.fetchall()]
 

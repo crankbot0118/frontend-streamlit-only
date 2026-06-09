@@ -25,6 +25,14 @@ class CloneRunOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class RunFiltersOut(BaseModel):
+    """Distinct values for Run History filter dropdowns."""
+
+    clients: list[str]
+    targets: list[str]
+    users: list[str]
+
+
 class CloneFunctionRunOut(BaseModel):
     """One step row from ``clone_function_run_status`` (latest attempt)."""
 

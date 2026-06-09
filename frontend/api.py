@@ -7,7 +7,9 @@ environment variable.
 
 import json
 import os
+import urllib.parse
 import urllib.request
+from datetime import date
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
@@ -42,9 +44,37 @@ def _as_list(data, *keys: str) -> list[dict]:
     return []
 
 
-def get_runs(limit: int = 50) -> list[dict]:
-    """Fetch clone runs (newest execution first)."""
-    return _as_list(_get_json(f"/api/v1/runs?limit={limit}"), "runs", "latest_runs")
+def get_run_filters() -> dict[str, list[str]]:
+    """Fetch distinct client, target, and user values for Run History filters."""
+    data = _get_json("/api/v1/runs/filters")
+    if isinstance(data, dict):
+        return {
+            "clients": data.get("clients") or [],
+            "targets": data.get("targets") or [],
+            "users": data.get("users") or [],
+        }
+    return {"clients": [], "targets": [], "users": []}
+
+
+def get_runs(
+    limit: int = 200,
+    client: str | None = None,
+    target: str | None = None,
+    user: str | None = None,
+    start_date: date | None = None,
+) -> list[dict]:
+    """Fetch clone runs (newest execution first), optionally filtered."""
+    params: dict[str, str | int] = {"limit": limit}
+    if client:
+        params["client"] = client
+    if target:
+        params["target"] = target
+    if user:
+        params["user"] = user
+    if start_date:
+        params["start_date"] = start_date.isoformat()
+    query = urllib.parse.urlencode(params)
+    return _as_list(_get_json(f"/api/v1/runs?{query}"), "runs", "latest_runs")
 
 
 def get_run(clone_run_id: int) -> dict | None:

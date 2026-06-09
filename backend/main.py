@@ -6,16 +6,16 @@ Run locally with:
 """
 
 import os
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
-from crud import get_clone_run, get_clone_runs, get_run_steps
+from crud import get_clone_run, get_clone_runs, get_run_filter_options, get_run_steps
 from database import get_db
-from schemas import CloneFunctionRunOut, CloneRunOut
+from schemas import CloneFunctionRunOut, CloneRunOut, RunFiltersOut
 
 app = FastAPI(title="Clone Automation API", version="0.1.0")
 
@@ -38,14 +38,38 @@ def health() -> dict:
 
 
 @app.get(
+    "/api/v1/runs/filters",
+    response_model=RunFiltersOut,
+    summary="Run History filter options",
+    description="Distinct client, target, and user values for filter dropdowns.",
+)
+def list_run_filters(db: Session = Depends(get_db)) -> RunFiltersOut:
+    return get_run_filter_options(db)
+
+
+@app.get(
     "/api/v1/runs",
     response_model=list[CloneRunOut],
     summary="List clone runs",
     description="Fetches rows from clone_run_status sorted by execution time "
     "(start_date) in descending order — most recent runs first.",
 )
-def list_clone_runs(limit: int = 50, db: Session = Depends(get_db)) -> list[CloneRunOut]:
-    return get_clone_runs(db, limit)
+def list_clone_runs(
+    limit: int = 50,
+    client: str | None = Query(None, description="Filter by client name"),
+    target: str | None = Query(None, description="Filter by target name"),
+    user: str | None = Query(None, description="Filter by user name"),
+    start_date: date | None = Query(None, description="Filter by start date (calendar day)"),
+    db: Session = Depends(get_db),
+) -> list[CloneRunOut]:
+    return get_clone_runs(
+        db,
+        limit,
+        client=client,
+        target=target,
+        user=user,
+        start_date=start_date,
+    )
 
 
 @app.get(

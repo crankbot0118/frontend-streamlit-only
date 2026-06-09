@@ -299,7 +299,7 @@ _GLOBAL_CSS = f"""
   .st-key-ca-nav [data-testid="stExpanderDetails"] {{
       padding-left: 0.6rem;
       padding-top: 0.1rem;
-      padding-bottom: 0.1rem;
+      padding-bottom: 0;
       border: none !important;
       box-shadow: none !important;
   }}
@@ -309,13 +309,32 @@ _GLOBAL_CSS = f"""
       margin-bottom: 0 !important;
   }}
 
-  /* Keep the divider, tinted to match the logo, with a tight gap. */
-  .st-key-ca-nav [data-testid="stDivider"] {{
+  /* Divider before Execute Clone — keep it tight under Integrations. */
+  .st-key-ca-nav-divider {{
       margin: 0 !important;
+      padding: 0 !important;
   }}
-  .st-key-ca-nav [data-testid="stDivider"] hr {{
-      margin: 0.1rem 0;
+  .st-key-ca-nav-divider [data-testid="stVerticalBlock"] {{
+      gap: 0 !important;
+  }}
+  .st-key-ca-nav [data-testid="stDivider"],
+  .st-key-ca-nav-divider [data-testid="stDivider"] {{
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca-nav [data-testid="stDivider"] hr,
+  .st-key-ca-nav-divider [data-testid="stDivider"] hr {{
+      margin: 0 !important;
       border-color: rgba(232, 117, 17, 0.25);
+  }}
+
+  /* ---------- Run History filters ---------- */
+  .st-key-ca-run-filters {{
+      margin-bottom: 0.75rem;
+  }}
+  .st-key-ca-run-filters [data-testid="stHorizontalBlock"] {{
+      align-items: flex-end;
+      gap: 0.65rem;
   }}
 
   /* ---------- Sidebar bottom status card ---------- */
@@ -1057,7 +1076,8 @@ def render_sidebar_nav(pages: dict, current_title: str) -> None:
                     for item in entry["items"]:
                         _nav_link(pages, item, current_title)
             elif entry["kind"] == "divider":
-                st.divider()
+                with st.container(key="ca-nav-divider"):
+                    st.divider()
 
 
 def render_title(title: str, subtitle: str | None = None) -> None:
