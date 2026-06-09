@@ -5,7 +5,7 @@ Import and call ``apply_global_styles()`` once near the top of any page
 """
 
 import base64
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
 import streamlit as st
@@ -363,11 +363,12 @@ _GLOBAL_CSS = f"""
       gap: 0.7rem;
   }}
 
-  /* Card container: two-line info on the left, redirect button on the right. */
+  /* Card container: two-line info on the left, redirect button at far right. */
   [class*="st-key-runcard_"] {{
+      position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 12px;
-      padding: 0.75rem 0.9rem 0.75rem 1.1rem;
+      padding: 0.75rem 3rem 0.75rem 1.1rem;
       background: #ffffff;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }}
@@ -376,15 +377,15 @@ _GLOBAL_CSS = f"""
       box-shadow: 0 2px 12px rgba(19, 21, 22, 0.07);
   }}
 
-  /* Keep the inner columns vertically centered and tight. */
-  [class*="st-key-runcard_"] [data-testid="stHorizontalBlock"] {{
-      align-items: center;
-  }}
-
-  /* Borderless icon button, pinned to the right extreme. */
+  /* Borderless icon button, pinned to the extreme right, vertically centered. */
   [class*="st-key-runcard_"] [data-testid="stButton"] {{
-      display: flex;
-      justify-content: flex-end;
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      margin: 0;
+      width: auto;
+      z-index: 3;
   }}
   [class*="st-key-runcard_"] [data-testid="stButton"] button {{
       width: auto;
@@ -422,19 +423,26 @@ _GLOBAL_CSS = f"""
       color: {BRAND_ORANGE};
       margin: 0 0.3rem;
   }}
-  .ca-run-line2 {{
-      margin-top: 0.4rem;
+  .ca-run-meta {{
+      margin-top: 0.45rem;
       display: flex;
-      align-items: center;
-      gap: 0.35rem;
+      flex-direction: column;
+      gap: 0.2rem;
       font-size: 0.78rem;
       color: #6b7177;
   }}
-  .ca-run-line2 .ca-run-refresh-icon {{
-      color: {BRAND_ORANGE};
-      font-size: 0.95rem;
+  .ca-run-metaline {{
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+  }}
+  .ca-run-metaline .mi {{
+      font-size: 0.92rem;
       line-height: 1;
   }}
+  .ca-run-metaline .mi-start {{ color: #1a7f37; }}
+  .ca-run-metaline .mi-upd   {{ color: {BRAND_ORANGE}; }}
+  .ca-run-metaline .mi-dur   {{ color: #8a9097; }}
 
   /* ---------- Step rows (run details) ---------- */
   .ca-steps {{
@@ -546,6 +554,38 @@ def fmt_relative_update(value) -> str:
     return f"Updated on {dt.strftime('%b %d')} at {time_str}"
 
 
+def fmt_started(value) -> str:
+    """Format a start timestamp as "08 Jun 2026, 1:08 PM" (local time)."""
+    if not value:
+        return "Not started"
+    try:
+        dt = datetime.fromisoformat(str(value))
+    except (ValueError, TypeError):
+        return str(value)
+    return dt.strftime("%d %b %Y, ") + dt.strftime("%I:%M %p").lstrip("0")
+
+
+def fmt_duration(start, end) -> str:
+    """Elapsed time between two timestamps, e.g. "1h 9m" / "9m 30s" / "45s"."""
+    if not start or not end:
+        return "—"
+    try:
+        s = datetime.fromisoformat(str(start))
+        e = datetime.fromisoformat(str(end))
+    except (ValueError, TypeError):
+        return "—"
+    secs = int((e - s).total_seconds())
+    if secs < 0:
+        return "—"
+    hours, rem = divmod(secs, 3600)
+    mins, sec = divmod(rem, 60)
+    if hours:
+        return f"{hours}h {mins}m"
+    if mins:
+        return f"{mins}m {sec}s" if sec else f"{mins}m"
+    return f"{sec}s"
+
+
 def render_run_card(run: dict) -> bool:
     """Render a run card with two info lines and a redirect button on the right.
 
@@ -567,23 +607,27 @@ def render_run_card(run: dict) -> bool:
             <span class="sep">&middot;</span>
             {status_badge_html(run.get('status', ''))}
           </div>
-          <div class="ca-run-line2">
-            <span class="ca-run-refresh-icon">&#8635;</span>
-            {fmt_relative_update(run.get('last_update'))}
+          <div class="ca-run-meta">
+            <div class="ca-run-metaline">
+              <span class="mi mi-start">&#9654;</span> Started {fmt_started(run.get('start_date'))}
+            </div>
+            <div class="ca-run-metaline">
+              <span class="mi mi-upd">&#8635;</span> {fmt_relative_update(run.get('last_update'))}
+            </div>
+            <div class="ca-run-metaline">
+              <span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}
+            </div>
           </div>
         </div>
     """
     with st.container(key=f"runcard_{rid}"):
-        info_col, btn_col = st.columns([6, 1], vertical_alignment="center")
-        with info_col:
-            st.html(info_html)
-        with btn_col:
-            return st.button(
-                "",
-                key=f"open_run_{rid}",
-                icon=":material/arrow_forward:",
-                help="View run details",
-            )
+        st.html(info_html)
+        return st.button(
+            "",
+            key=f"open_run_{rid}",
+            icon=":material/arrow_forward:",
+            help="View run details",
+        )
 
 
 def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
@@ -593,9 +637,9 @@ def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
     "Last refresh on ..." line. Call inside a ``with st.sidebar:`` block,
     after the navigation.
     """
-    last_refresh = last_refresh or datetime.now(timezone.utc)
+    last_refresh = last_refresh or datetime.now()
     state = "is-live" if is_live else "is-offline"
-    stamp = last_refresh.strftime("%b %d, %Y at %I:%M %p UTC")
+    stamp = last_refresh.strftime("%b %d, %Y at %I:%M %p")
     with st.container(key="ca-status"):
         st.html(
             f"""
