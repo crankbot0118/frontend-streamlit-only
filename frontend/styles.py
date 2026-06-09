@@ -1268,6 +1268,7 @@ def step_attempts_table_html(attempts: list[dict]) -> str:
             f"<td>{html.escape(str(row.get('status', '')))}</td>"
             f"<td>{html.escape(fmt_dt(row.get('start_time')))}</td>"
             f"<td>{html.escape(fmt_dt(row.get('end_time')))}</td>"
+            f"<td>{html.escape(fmt_duration(row.get('start_time'), row.get('end_time')))}</td>"
             f"<td>{html.escape(current)}</td>"
             "</tr>"
         )
@@ -1280,6 +1281,7 @@ def step_attempts_table_html(attempts: list[dict]) -> str:
         "<th>Status</th>"
         "<th>Start</th>"
         "<th>End</th>"
+        "<th>Duration</th>"
         "<th>Current</th>"
         "</tr></thead>"
         f"<tbody>{''.join(rows)}</tbody>"
@@ -1302,6 +1304,8 @@ def step_detail_dialog_html(detail: dict, function_name: str) -> str:
         f"<dt>Status</dt><dd>{status}</dd>"
         f"<dt>Start</dt><dd>{html.escape(fmt_dt(detail.get('start_time')))}</dd>"
         f"<dt>End</dt><dd>{html.escape(fmt_dt(detail.get('end_time')))}</dd>"
+        f"<dt>Duration</dt>"
+        f"<dd>{html.escape(fmt_duration(detail.get('start_time'), detail.get('end_time')))}</dd>"
         f"</dl>"
         f'<div class="ca-step-dialog-section">Attempts</div>'
         f"{attempts_html}"
