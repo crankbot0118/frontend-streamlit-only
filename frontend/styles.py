@@ -14,6 +14,8 @@ import streamlit as st
 
 BRAND_ORANGE = "#e87511"
 BRAND_INK = "#131516"
+STATUS_ICON_PX = 18
+ACTION_ICON_REM = "1.1rem"
 
 # Repo root is the parent of the ``frontend/`` package that holds this file.
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -659,8 +661,8 @@ _GLOBAL_CSS = f"""
   .st-key-detail_skip .stButton button::before {{
       content: "";
       display: inline-block;
-      width: 1.25rem;
-      height: 1.25rem;
+      width: {ACTION_ICON_REM};
+      height: {ACTION_ICON_REM};
       flex: 0 0 auto;
       background-position: center;
       background-repeat: no-repeat;
@@ -1306,7 +1308,7 @@ STATUS_ASSETS = {
 }
 
 
-def status_image_html(status: str, size: int = 22) -> str:
+def status_image_html(status: str, size: int = STATUS_ICON_PX) -> str:
     """Return a square ``<img>`` of the status icon (falls back to text badge).
 
     The icons are square, so a fixed ``size`` keeps every icon — and the
