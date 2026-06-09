@@ -132,7 +132,7 @@ _GLOBAL_CSS = f"""
       height: 3px;
       width: 100%;
       border: none;
-      margin: 0.4rem 0 1.4rem 0;
+      margin: 0.4rem 0 0.55rem 0;
       border-radius: 999px;
       background: linear-gradient(90deg, {BRAND_ORANGE} 0%, rgba(232,117,17,0.15) 100%);
   }}
@@ -146,14 +146,16 @@ _GLOBAL_CSS = f"""
   /* ---------- Sidebar navigation ---------- */
 
   /* Tighten vertical spacing and keep every block left-aligned. */
-  .st-key-ca-nav [data-testid="stVerticalBlock"] {{
-      gap: 0.1rem;
+  .st-key-ca-nav > [data-testid="stVerticalBlock"] {{
+      gap: 0 !important;
       align-items: stretch;
   }}
 
   .st-key-ca-nav [data-testid="stElementContainer"] {{
       align-items: flex-start;
       text-align: left;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
 
   /* Borderless, left-aligned link-style nav buttons (descendant selectors so
@@ -169,7 +171,7 @@ _GLOBAL_CSS = f"""
       box-shadow: none !important;
       outline: none !important;
       gap: 0.7rem;
-      padding: 0.45rem 0.55rem;
+      padding: 0.35rem 0.55rem;
       border-radius: 8px;
       color: {BRAND_INK};
   }}
@@ -259,7 +261,7 @@ _GLOBAL_CSS = f"""
       align-items: center !important;
       justify-content: flex-start !important;
       gap: 0.5rem;
-      padding: 0.45rem 0.55rem;
+      padding: 0.35rem 0.55rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.03em;
@@ -309,32 +311,46 @@ _GLOBAL_CSS = f"""
       margin-bottom: 0 !important;
   }}
 
-  /* Divider before Execute Clone — keep it tight under Integrations. */
-  .st-key-ca-nav-divider {{
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-ca-nav-divider [data-testid="stVerticalBlock"] {{
-      gap: 0 !important;
-  }}
-  .st-key-ca-nav [data-testid="stDivider"],
-  .st-key-ca-nav-divider [data-testid="stDivider"] {{
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-ca-nav [data-testid="stDivider"] hr,
-  .st-key-ca-nav-divider [data-testid="stDivider"] hr {{
-      margin: 0 !important;
-      border-color: rgba(232, 117, 17, 0.25);
+  /* Thin divider line before Execute Clone (no st.divider wrapper gap). */
+  .ca-nav-divider-line {{
+      display: block;
+      height: 1px;
+      border: none;
+      margin: 0.12rem 0.55rem 0.12rem 0.55rem;
+      background: rgba(232, 117, 17, 0.25);
   }}
 
   /* ---------- Run History filters ---------- */
   .st-key-ca-run-filters {{
-      margin-bottom: 0.75rem;
+      margin-top: -0.35rem !important;
+      margin-bottom: 0.5rem;
+  }}
+  .st-key-ca-run-filters [data-testid="stVerticalBlock"] {{
+      gap: 0.25rem !important;
   }}
   .st-key-ca-run-filters [data-testid="stHorizontalBlock"] {{
       align-items: flex-end;
       gap: 0.65rem;
+  }}
+  .st-key-ca-run-filters [data-testid="stWidgetLabel"] p {{
+      color: #6b7177 !important;
+      font-size: 0.82rem;
+      font-weight: 600;
+  }}
+  /* Force white filter controls (select + date) on light background. */
+  .st-key-ca-run-filters [data-testid="stSelectbox"] > div > div,
+  .st-key-ca-run-filters [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+  .st-key-ca-run-filters [data-testid="stDateInput"] > div > div,
+  .st-key-ca-run-filters [data-testid="stDateInput"] [data-baseweb="input"],
+  .st-key-ca-run-filters [data-testid="stDateInput"] input {{
+      background-color: #ffffff !important;
+      color: {BRAND_INK} !important;
+      border-color: #e3e6e8 !important;
+  }}
+  .st-key-ca-run-filters [data-testid="stSelectbox"] svg,
+  .st-key-ca-run-filters [data-testid="stDateInput"] svg {{
+      color: #6b7177 !important;
+      fill: #6b7177 !important;
   }}
 
   /* ---------- Sidebar bottom status card ---------- */
@@ -1076,8 +1092,7 @@ def render_sidebar_nav(pages: dict, current_title: str) -> None:
                     for item in entry["items"]:
                         _nav_link(pages, item, current_title)
             elif entry["kind"] == "divider":
-                with st.container(key="ca-nav-divider"):
-                    st.divider()
+                st.html('<hr class="ca-nav-divider-line" />')
 
 
 def render_title(title: str, subtitle: str | None = None) -> None:
