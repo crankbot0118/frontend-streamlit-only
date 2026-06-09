@@ -85,19 +85,15 @@ if run:
 
     with st.container(key="ca-detail-header"):
         with st.container(key="ca-detail-title-row"):
-            title_col, abort_col, skip_col = st.columns(
-                3, gap="small", vertical_alignment="center"
+            st.html(
+                f"""
+                <div class="ca-title ca-detail-title">
+                  <h1>Run #{run_id} <span class="ca-run-sep">&middot;</span> {src}
+                    <span class="arrow">&#8594;</span> {tgt}</h1>
+                </div>
+                """
             )
-            with title_col:
-                st.html(
-                    f"""
-                    <div class="ca-title ca-detail-title">
-                      <h1>Run #{run_id} <span class="ca-run-sep">&middot;</span> {src}
-                        <span class="arrow">&#8594;</span> {tgt}</h1>
-                    </div>
-                    """
-                )
-            with abort_col:
+            with st.container(key="detail-actions"):
                 if st.button(
                     "Abort",
                     key="detail_abort",
@@ -110,7 +106,6 @@ if run:
                         st.rerun()
                     except Exception as exc:
                         st.error(f"Could not abort run: {exc}")
-            with skip_col:
                 if st.button(
                     "Skip",
                     key="detail_skip",
