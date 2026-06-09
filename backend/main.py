@@ -17,6 +17,8 @@ from crud import (
     get_clone_run,
     get_clone_runs,
     get_execute_clone_options,
+    get_function_step_detail,
+    get_function_step_log_location,
     get_run_filter_options,
     get_run_steps,
     mark_run_action,
@@ -29,6 +31,7 @@ from schemas import (
     CreateCloneRunIn,
     CreateCloneRunOut,
     ExecuteCloneOptionsOut,
+    FunctionStepDetailOut,
     RunActionIn,
     RunActionOut,
     RunFiltersOut,
@@ -246,3 +249,55 @@ def list_run_steps(
     clone_run_id: int, db: Session = Depends(get_db)
 ) -> list[CloneFunctionRunOut]:
     return get_run_steps(db, clone_run_id)
+
+
+@app.get(
+    "/api/v1/runs/{clone_run_id}/steps/{clone_function_run_id}",
+    response_model=FunctionStepDetailOut,
+    summary="Get function-step details and attempt history",
+    description="Returns one clone_function_run_status row plus all prior "
+    "attempts for the same function within the clone run. Attempt numbers "
+    "follow the PK formula base_pk = clone_run_id + 1 + (function_id * 2).",
+)
+def get_function_step(
+    clone_run_id: int,
+    clone_function_run_id: int,
+    db: Session = Depends(get_db),
+) -> FunctionStepDetailOut:
+    detail = get_function_step_detail(db, clone_run_id, clone_function_run_id)
+    if detail is None:
+        raise HTTPException(status_code=404, detail="Function step not found")
+    return detail
+
+
+@app.get(
+    "/api/v1/runs/{clone_run_id}/steps/{clone_function_run_id}/log",
+    summary="Download the log for a function step attempt",
+    description="Serves the file referenced by step_func_log_location for the "
+    "given clone_function_run_id.",
+)
+def download_function_step_log(
+    clone_run_id: int,
+    clone_function_run_id: int,
+    db: Session = Depends(get_db),
+):
+    location = get_function_step_log_location(db, clone_run_id, clone_function_run_id)
+    if not location:
+        raise HTTPException(status_code=404, detail="No step log available")
+
+    if location.startswith(("http://", "https://")):
+        return RedirectResponse(location)
+
+    if os.path.isfile(location):
+        filename = (
+            os.path.basename(location)
+            or f"clone_run_{clone_run_id}_step_{clone_function_run_id}.log"
+        )
+        return FileResponse(
+            location,
+            media_type="application/octet-stream",
+            filename=filename,
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
+
+    raise HTTPException(status_code=404, detail="Step log file not found")

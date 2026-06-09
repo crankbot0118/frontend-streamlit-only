@@ -111,3 +111,35 @@ class CloneFunctionRunOut(BaseModel):
     retry_count: int | None = None
 
     model_config = {"from_attributes": True}
+
+
+class FunctionStepAttemptOut(BaseModel):
+    """One attempt row for a clone function within a clone run."""
+
+    clone_function_run_id: int
+    attempt_number: int
+    status: str
+    start_time: datetime | None = None
+    end_time: datetime | None = None
+    step_func_log_location: str | None = None
+    is_current: bool = False
+
+    model_config = {"from_attributes": True}
+
+
+class FunctionStepDetailOut(BaseModel):
+    """Detailed view of one function-step row and its attempt history."""
+
+    clone_function_run_id: int
+    clone_run_id: int
+    function_id: int
+    function_name: str
+    status: str
+    start_time: datetime | None = None
+    end_time: datetime | None = None
+    step_func_log_location: str | None = None
+    base_pk: int
+    attempt_number: int
+    attempts: list[FunctionStepAttemptOut]
+
+    model_config = {"from_attributes": True}

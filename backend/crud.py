@@ -155,6 +155,112 @@ def get_clone_run(db: Session, clone_run_id: int) -> dict | None:
     return dict(zip(columns, row)) if row else None
 
 
+def function_run_base_pk(clone_run_id: int, function_id: int) -> int:
+    """First attempt PK: clone_run_id + 1 + (function_id * 2)."""
+    return clone_run_id + 1 + (function_id * 2)
+
+
+def function_run_attempt_number(
+    clone_run_id: int, function_id: int, clone_function_run_id: int
+) -> int:
+    """Attempt offset from the base PK (0 = initial, 1 = first retry, …)."""
+    return clone_function_run_id - function_run_base_pk(clone_run_id, function_id)
+
+
+def get_function_step_detail(
+    db: Session, clone_run_id: int, clone_function_run_id: int
+) -> dict | None:
+    """Return one function-step row plus all attempts for the same function."""
+    current_row = db.execute(
+        text(
+            """
+            SELECT
+                cfrs.clone_function_run_id,
+                cfrs.clone_run_id,
+                cfrs.function_id,
+                cf.function_name,
+                cfrs.status,
+                cfrs.start_time,
+                cfrs.end_time,
+                cfrs.step_func_log_location
+            FROM clone_function_run_status cfrs
+            JOIN clone_functions cf ON cf.function_id = cfrs.function_id
+            WHERE cfrs.clone_run_id = :clone_run_id
+              AND cfrs.clone_function_run_id = :clone_function_run_id
+            """
+        ),
+        {
+            "clone_run_id": clone_run_id,
+            "clone_function_run_id": clone_function_run_id,
+        },
+    ).mappings().first()
+    if current_row is None:
+        return None
+
+    current = dict(current_row)
+    base_pk = function_run_base_pk(clone_run_id, current["function_id"])
+    attempt_rows = db.execute(
+        text(
+            """
+            SELECT
+                clone_function_run_id,
+                status,
+                start_time,
+                end_time,
+                step_func_log_location,
+                (clone_function_run_id - :base_pk) AS attempt_number
+            FROM clone_function_run_status
+            WHERE clone_run_id = :clone_run_id
+              AND function_id = :function_id
+            ORDER BY clone_function_run_id ASC
+            """
+        ),
+        {
+            "clone_run_id": clone_run_id,
+            "function_id": current["function_id"],
+            "base_pk": base_pk,
+        },
+    ).mappings().all()
+
+    attempts = []
+    for row in attempt_rows:
+        item = dict(row)
+        item["is_current"] = (
+            item["clone_function_run_id"] == current["clone_function_run_id"]
+        )
+        attempts.append(item)
+
+    current["base_pk"] = base_pk
+    current["attempt_number"] = function_run_attempt_number(
+        clone_run_id, current["function_id"], current["clone_function_run_id"]
+    )
+    current["attempts"] = attempts
+    return current
+
+
+def get_function_step_log_location(
+    db: Session, clone_run_id: int, clone_function_run_id: int
+) -> str | None:
+    """Resolve ``step_func_log_location`` for a specific function-step row."""
+    row = db.execute(
+        text(
+            """
+            SELECT step_func_log_location
+            FROM clone_function_run_status
+            WHERE clone_run_id = :clone_run_id
+              AND clone_function_run_id = :clone_function_run_id
+            """
+        ),
+        {
+            "clone_run_id": clone_run_id,
+            "clone_function_run_id": clone_function_run_id,
+        },
+    ).mappings().first()
+    if row is None:
+        return None
+    return row["step_func_log_location"]
+
+
 def get_run_steps(db: Session, clone_run_id: int) -> list[dict]:
     """Fetch the latest attempt of each step for a clone run.
 

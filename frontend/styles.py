@@ -962,6 +962,60 @@ _GLOBAL_CSS = f"""
       color: #6b7177;
       white-space: nowrap;
   }}
+  /* Step dropdown action links: Details · Download Step Log · Download Run Log */
+  [class*="st-key-step_links_"],
+  [class*="st-key-step_links_"] > [data-testid="stVerticalBlock"],
+  [class*="st-key-step_links_"] > [data-testid="stVerticalBlockBorderWrapper"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      flex-wrap: nowrap !important;
+      gap: 0.5rem !important;
+      width: 100% !important;
+      margin: 0.5rem 0 0 0 !important;
+      padding: 0.5rem 0 0 0 !important;
+      border-top: 1px solid #eef0f2;
+  }}
+  [class*="st-key-step_links_"] > [data-testid="stElementContainer"] {{
+      width: auto !important;
+      flex: 0 0 auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  [class*="st-key-step_links_"] > [data-testid="stElementContainer"]:last-child {{
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+  }}
+  .ca-step-links {{
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: 0.86rem;
+  }}
+  .ca-step-link-disabled {{
+      color: #b0b5ba;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: not-allowed;
+  }}
+  [class*="st-key-step_details_"] .stButton,
+  [class*="st-key-step_details_"] .stButton button {{
+      width: auto !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: {BRAND_ORANGE} !important;
+      font-size: 0.86rem !important;
+      font-weight: 600 !important;
+  }}
+  [class*="st-key-step_details_"] .stButton button:hover {{
+      text-decoration: underline;
+      color: {BRAND_ORANGE} !important;
+  }}
 
   /* Toggle arrow button pinned to the card's right edge, aligned with the
      header row — the same redirect arrow style used on the Run History cards. */
@@ -1093,6 +1147,31 @@ def status_image_html(status: str, size: int = 22) -> str:
         f'<img class="ca-step-status-img" src="{uri}" '
         f'alt="{label}" title="{label}" '
         f'style="width:{size}px;height:{size}px;" />'
+    )
+
+
+def step_download_links_html(
+    run_log_href: str,
+    step_log_href: str | None,
+) -> str:
+    """Middot-separated download links for the expanded step row."""
+    if step_log_href:
+        step_link = (
+            f'<a class="ca-loglink" href="{step_log_href}" download>'
+            f"Download Step Log</a>"
+        )
+    else:
+        step_link = '<span class="ca-step-link-disabled">Download Step Log</span>'
+
+    run_link = (
+        f'<a class="ca-loglink" href="{run_log_href}" download>'
+        f"Download Run Log</a>"
+    )
+    return (
+        f'<div class="ca-step-links">'
+        f'<span class="ca-detail-sep">&middot;</span>{step_link}'
+        f'<span class="ca-detail-sep">&middot;</span>{run_link}'
+        f"</div>"
     )
 
 

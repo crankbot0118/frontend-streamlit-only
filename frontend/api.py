@@ -124,9 +124,23 @@ def get_run_steps(clone_run_id: int) -> list[dict]:
     return _as_list(_get_json(f"/api/v1/runs/{clone_run_id}/steps"), "steps")
 
 
+def get_step_detail(clone_run_id: int, clone_function_run_id: int) -> dict:
+    """Fetch one function-step row and all attempts for that function."""
+    data = _get_json(f"/api/v1/runs/{clone_run_id}/steps/{clone_function_run_id}")
+    return data if isinstance(data, dict) else {}
+
+
 def run_log_url(clone_run_id: int) -> str:
     """Backend download URL for a run's log (serves ``log_location``)."""
     return f"{BACKEND_URL.rstrip('/')}/api/v1/runs/{clone_run_id}/log"
+
+
+def step_log_url(clone_run_id: int, clone_function_run_id: int) -> str:
+    """Backend download URL for a function-step log."""
+    return (
+        f"{BACKEND_URL.rstrip('/')}/api/v1/runs/{clone_run_id}/steps/"
+        f"{clone_function_run_id}/log"
+    )
 
 
 def abort_run(clone_run_id: int, clone_function_run_id: int | None = None) -> dict:

@@ -4,7 +4,15 @@ import time
 
 import streamlit as st
 
-from api import abort_run, get_run, get_run_steps, run_log_url, skip_run
+from api import (
+    abort_run,
+    get_run,
+    get_run_steps,
+    get_step_detail,
+    run_log_url,
+    skip_run,
+    step_log_url,
+)
 from styles import (
     fmt_dt,
     fmt_duration,
@@ -14,6 +22,7 @@ from styles import (
     render_title,
     status_badge_html,
     status_image_html,
+    step_download_links_html,
 )
 
 run_id = st.session_state.get("selected_run_id")
@@ -157,14 +166,67 @@ else:
 if not steps:
     st.caption("No steps found for this run.")
 else:
+
+    @st.dialog("Function step details", width="large")
+    def _show_step_detail_dialog(clone_run_id: int, clone_function_run_id: int) -> None:
+        try:
+            detail = get_step_detail(clone_run_id, clone_function_run_id)
+        except Exception as exc:
+            st.error(f"Could not load step details: {exc}")
+            return
+
+        if not detail:
+            st.warning("No details found for this step.")
+            return
+
+        fn_name = detail.get("function_name", "—")
+        fn_id = detail.get("function_id", "—")
+        st.markdown(f"**{fn_name}** · function_id `{fn_id}`")
+        st.caption(
+            f"PK formula: base_pk = clone_run_id + 1 + (function_id × 2) → "
+            f"`{detail.get('base_pk')}` · current attempt `{detail.get('attempt_number')}`"
+        )
+
+        info_cols = st.columns(2)
+        with info_cols[0]:
+            st.markdown(f"**Clone function run ID:** `{detail.get('clone_function_run_id')}`")
+            st.markdown(f"**Status:** {status_badge_html(detail.get('status', ''))}", unsafe_allow_html=True)
+            st.markdown(f"**Start:** {fmt_dt(detail.get('start_time'))}")
+        with info_cols[1]:
+            st.markdown(f"**Clone run ID:** `{detail.get('clone_run_id')}`")
+            log_path = detail.get("step_func_log_location") or "—"
+            st.markdown(f"**Step log path:** `{log_path}`")
+            st.markdown(f"**End:** {fmt_dt(detail.get('end_time'))}")
+
+        attempts = detail.get("attempts") or []
+        st.markdown("#### Attempt history")
+        if not attempts:
+            st.caption("No attempts recorded for this function.")
+        else:
+            table_rows = []
+            for row in attempts:
+                table_rows.append(
+                    {
+                        "Attempt": row.get("attempt_number"),
+                        "Clone function run ID": row.get("clone_function_run_id"),
+                        "Status": row.get("status"),
+                        "Start": fmt_dt(row.get("start_time")),
+                        "End": fmt_dt(row.get("end_time")),
+                        "Current": "Yes" if row.get("is_current") else "",
+                    }
+                )
+            st.dataframe(table_rows, use_container_width=True, hide_index=True)
+
     with st.container(key="ca-steps"):
         for i, step in enumerate(steps):
             name = step.get("function_name", "—")
+            step_pk = step.get("clone_function_run_id")
             open_key = f"step_open_{run_id}_{i}"
             is_open = st.session_state.get(open_key, False)
+            head_class = "ca-step-head ca-step-head--open" if is_open else "ca-step-head"
             with st.container(key=f"stepcard_{i}"):
                 st.html(
-                    f'<div class="ca-step-head">'
+                    f'<div class="{head_class}">'
                     f'<div class="ca-step-left">'
                     f'{status_image_html(step.get("status", ""))}'
                     f'<span class="ca-step-name">{name}</span>'
@@ -172,17 +234,21 @@ else:
                     f'<span class="ca-step-more">More actions</span>'
                     f"</div>"
                 )
-                arrow = ":material/arrow_drop_down:" if is_open else ":material/arrow_right:"
-                if st.button("", key=f"more_{i}", icon=arrow, help="More actions"):
+                if st.button("", key=f"more_{i}", icon=":material/arrow_right:", help="More actions"):
                     st.session_state[open_key] = not is_open
                     st.rerun()
                 if is_open:
-                    st.html(
-                        f'<div class="ca-step-detail">'
-                        f'<div class="ca-step-time">Start: {fmt_dt(step.get("start_time"))}</div>'
-                        f'<div class="ca-step-time">End: {fmt_dt(step.get("end_time"))}</div>'
-                        f"</div>"
-                    )
+                    with st.container(key=f"step_links_{i}"):
+                        if st.button("Details", key=f"step_details_{i}"):
+                            _show_step_detail_dialog(run_id, step_pk)
+                        st.html(
+                            step_download_links_html(
+                                run_log_url(run_id),
+                                step_log_url(run_id, step_pk)
+                                if step.get("step_func_log_location")
+                                else None,
+                            )
+                        )
 
 if st.session_state.get(f"auto_refresh_{run_id}"):
     st.session_state.pop("selected_run", None)
