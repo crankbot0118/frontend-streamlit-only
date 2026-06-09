@@ -111,21 +111,32 @@ _GLOBAL_CSS = f"""
 
   /* Borderless, left-aligned link-style nav buttons. */
   .st-key-ca-nav [data-testid="stButton"] > button {{
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      text-align: left !important;
+      width: 100%;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
-      width: 100%;
-      justify-content: flex-start;
-      text-align: left;
+      outline: none !important;
       gap: 0.7rem;
-      padding: 0.45rem 0.6rem;
+      padding: 0.45rem 0.55rem;
       border-radius: 8px;
       color: {BRAND_INK};
+  }}
+
+  /* Keep the label itself left-aligned (Streamlit centers it by default). */
+  .st-key-ca-nav [data-testid="stButton"] > button > div,
+  .st-key-ca-nav [data-testid="stButton"] > button [data-testid="stMarkdownContainer"] {{
+      width: 100%;
+      text-align: left !important;
   }}
 
   .st-key-ca-nav [data-testid="stButton"] > button p {{
       font-weight: 600;
       font-size: 0.98rem;
+      text-align: left !important;
   }}
 
   .st-key-ca-nav [data-testid="stButton"] > button:hover {{
@@ -138,27 +149,37 @@ _GLOBAL_CSS = f"""
       color: {BRAND_ORANGE};
   }}
 
-  /* Group dropdowns: borderless, transparent, like the reference. */
-  .st-key-ca-nav [data-testid="stExpander"] {{
+  /* Group dropdowns: fully borderless / no box, blend into the sidebar. */
+  .st-key-ca-nav [data-testid="stExpander"],
+  .st-key-ca-nav [data-testid="stExpander"] > details {{
       border: none !important;
       box-shadow: none !important;
-      background: transparent !important;
-  }}
-
-  .st-key-ca-nav [data-testid="stExpander"] details {{
-      border: none !important;
+      outline: none !important;
       background: transparent !important;
   }}
 
   .st-key-ca-nav [data-testid="stExpander"] summary {{
-      padding: 0.45rem 0.6rem;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
       gap: 0.5rem;
+      padding: 0.45rem 0.55rem;
       font-weight: 700;
       color: #5b6166;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      outline: none !important;
   }}
 
-  .st-key-ca-nav [data-testid="stExpander"] summary:hover {{
+  .st-key-ca-nav [data-testid="stExpander"] summary:hover,
+  .st-key-ca-nav [data-testid="stExpander"] summary:focus,
+  .st-key-ca-nav [data-testid="stExpander"] summary:focus-visible {{
       color: {BRAND_INK};
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      outline: none !important;
   }}
 
   /* Move the dropdown chevron to the left of the label. */
@@ -168,11 +189,11 @@ _GLOBAL_CSS = f"""
 
   /* Indent the items nested inside a group. */
   .st-key-ca-nav [data-testid="stExpanderDetails"] {{
-      padding-left: 0.9rem;
+      padding-left: 0.6rem;
   }}
 
-  /* Lighter, tighter divider in the sidebar nav. */
-  .st-key-ca-nav [data-testid="stDivider"] {{
+  /* Keep the divider, just make it lighter and tighter. */
+  .st-key-ca-nav [data-testid="stDivider"] hr {{
       margin: 0.5rem 0;
   }}
 </style>
