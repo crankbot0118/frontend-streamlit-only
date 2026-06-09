@@ -5,10 +5,12 @@ Run locally with:
 (from inside the ``backend/`` directory)
 """
 
+import os
 from datetime import datetime, timezone
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
 from crud import get_clone_run, get_clone_runs, get_run_steps
@@ -59,6 +61,32 @@ def get_single_run(
     if run is None:
         raise HTTPException(status_code=404, detail="Run not found")
     return run
+
+
+@app.get(
+    "/api/v1/runs/{clone_run_id}/log",
+    summary="Download the log for a clone run",
+    description="Serves the file referenced by clone_run_status.log_location. "
+    "If the location is an http(s) URL the request is redirected to it; "
+    "otherwise the local file is returned as a download.",
+)
+def download_run_log(clone_run_id: int, db: Session = Depends(get_db)):
+    run = get_clone_run(db, clone_run_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail="Run not found")
+
+    location = getattr(run, "log_location", None)
+    if not location:
+        raise HTTPException(status_code=404, detail="No log available for this run")
+
+    if location.startswith(("http://", "https://")):
+        return RedirectResponse(location)
+
+    if os.path.isfile(location):
+        filename = os.path.basename(location) or f"clone_run_{clone_run_id}.log"
+        return FileResponse(location, media_type="text/plain", filename=filename)
+
+    raise HTTPException(status_code=404, detail="Log file not found")
 
 
 @app.get(

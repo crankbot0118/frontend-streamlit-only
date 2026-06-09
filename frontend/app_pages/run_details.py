@@ -2,7 +2,7 @@
 
 import streamlit as st
 
-from api import get_run, get_run_steps
+from api import get_run, get_run_steps, run_log_url
 from styles import (
     fmt_dt,
     fmt_duration,
@@ -55,6 +55,13 @@ if run:
     src = run.get("source_name", "—")
     tgt = run.get("target_name", "—")
     user = run.get("user_name", "—")
+    log_link_html = ""
+    if run.get("log_location"):
+        log_link_html = (
+            '<span class="ca-log-sep">&middot;</span>'
+            f'<a class="ca-loglink" href="{run_log_url(run_id)}" '
+            'target="_blank" rel="noopener" download>View Log</a>'
+        )
     st.html(
         f"""
         <div class="ca-title">
@@ -74,7 +81,7 @@ if run:
               <span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}
             </span>
           </div>
-          <div class="ca-detail-status">{status_badge_html(run.get('status', ''))}</div>
+          <div class="ca-detail-status">{status_badge_html(run.get('status', ''))}{log_link_html}</div>
         </div>
         <hr class="ca-title-rule" />
         """

@@ -505,7 +505,24 @@ _GLOBAL_CSS = f"""
       align-items: center;
       gap: 0.4rem;
   }}
-  .ca-detail-status {{ margin-top: 0.55rem; }}
+  .ca-detail-status {{
+      margin-top: 0.55rem;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+  }}
+  .ca-log-sep {{
+      color: #c2c7cc;
+  }}
+  .ca-loglink {{
+      color: {BRAND_ORANGE};
+      font-size: 0.86rem;
+      font-weight: 600;
+      text-decoration: none;
+  }}
+  .ca-loglink:hover {{
+      text-decoration: underline;
+  }}
 
   /* Borderless "Back to Run History" link-style button. */
   .st-key-back_to_runs .stButton button {{

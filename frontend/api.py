@@ -68,3 +68,8 @@ def get_run(clone_run_id: int) -> dict | None:
 def get_run_steps(clone_run_id: int) -> list[dict]:
     """Fetch the step rows (clone_function_run_status) for a clone run."""
     return _as_list(_get_json(f"/api/v1/runs/{clone_run_id}/steps"), "steps")
+
+
+def run_log_url(clone_run_id: int) -> str:
+    """Backend download URL for a run's log (serves ``log_location``)."""
+    return f"{BACKEND_URL.rstrip('/')}/api/v1/runs/{clone_run_id}/log"
