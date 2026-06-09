@@ -261,11 +261,14 @@ _GLOBAL_CSS = f"""
       text-align: left !important;
   }}
 
-  /* Indent the items nested inside a group, with tight vertical padding. */
+  /* Indent the items nested inside a group, with tight vertical padding.
+     Remove the separator border between the header and the content. */
   .st-key-ca-nav [data-testid="stExpanderDetails"] {{
       padding-left: 0.6rem;
       padding-top: 0.1rem;
       padding-bottom: 0.1rem;
+      border: none !important;
+      box-shadow: none !important;
   }}
 
   /* Remove the expander's own trailing space before the divider. */
