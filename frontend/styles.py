@@ -290,26 +290,24 @@ _GLOBAL_CSS = f"""
       margin-top: auto;
   }}
 
+  /* Single inline row: glowing dot + last-refresh text. No card. */
   .ca-status {{
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      padding: 0.55rem 0.75rem;
-      border-radius: 10px;
-      background: #ffffff;
-      border: 1px solid #e3e6e8;
+      gap: 0.55rem;
+      padding: 0.2rem 0.15rem;
   }}
 
   .ca-status .ca-dot {{
-      width: 11px;
-      height: 11px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       flex: 0 0 auto;
   }}
 
-  .ca-status .ca-status-label {{
-      font-weight: 700;
-      font-size: 0.92rem;
+  .ca-status .ca-refresh-text {{
+      font-size: 0.75rem;
+      color: #6b7177;
   }}
 
   /* Live: glowing green with a pulse. */
@@ -317,29 +315,17 @@ _GLOBAL_CSS = f"""
       background: #22c55e;
       animation: ca-pulse 1.6s ease-out infinite;
   }}
-  .ca-status.is-live .ca-status-label {{
-      color: #15803d;
-  }}
 
   /* Offline: red with a steady glow. */
   .ca-status.is-offline .ca-dot {{
       background: #ef4444;
       box-shadow: 0 0 7px 1px rgba(239, 68, 68, 0.7);
   }}
-  .ca-status.is-offline .ca-status-label {{
-      color: #b91c1c;
-  }}
 
   @keyframes ca-pulse {{
       0%   {{ box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }}
       70%  {{ box-shadow: 0 0 0 9px rgba(34, 197, 94, 0); }}
       100% {{ box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }}
-  }}
-
-  .ca-refresh {{
-      margin: 0.4rem 0 0 0.15rem;
-      font-size: 0.72rem;
-      color: #6b7177;
   }}
 </style>
 """
@@ -372,22 +358,20 @@ def render_logo(path: str | Path | None = None, width: int = 170) -> None:
 def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
     """Render the bottom-of-sidebar backend status card.
 
-    A glowing green dot + "Live" when the backend is reachable, or a red dot +
-    "Offline" otherwise, with a "Last refresh on ..." line below it. Call inside
-    a ``with st.sidebar:`` block, after the navigation.
+    A glowing green dot (live) or red dot (offline) sits to the left of a
+    "Last refresh on ..." line. Call inside a ``with st.sidebar:`` block,
+    after the navigation.
     """
     last_refresh = last_refresh or datetime.now()
     state = "is-live" if is_live else "is-offline"
-    label = "Live" if is_live else "Offline"
     stamp = last_refresh.strftime("%b %d, %Y at %I:%M %p")
     with st.container(key="ca-status"):
         st.html(
             f"""
             <div class="ca-status {state}">
               <span class="ca-dot"></span>
-              <span class="ca-status-label">{label}</span>
+              <span class="ca-refresh-text">Last refresh on {stamp}</span>
             </div>
-            <div class="ca-refresh">Last refresh on {stamp}</div>
             """
         )
 
