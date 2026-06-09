@@ -670,8 +670,13 @@ _GLOBAL_CSS = f"""
 
 
 def apply_global_styles() -> None:
-    """Inject the shared CSS into the current page."""
-    st.html(_GLOBAL_CSS)
+    """Inject the shared CSS into the current page.
+
+    Uses ``st.markdown(..., unsafe_allow_html=True)`` rather than ``st.html``:
+    in Streamlit 1.42+ a ``<style>`` block injected via ``st.html`` lands in the
+    DOM but no longer takes effect, which silently drops all custom styling.
+    """
+    st.markdown(_GLOBAL_CSS, unsafe_allow_html=True)
 
 
 def render_logo(path: str | Path | None = None, width: int = 170) -> None:
@@ -742,9 +747,15 @@ def status_image_html(status: str, size: int = 22) -> str:
     filename = STATUS_ASSETS.get((status or "").upper())
     if not filename:
         return status_badge_html(status)
+    try:
+        uri = _asset_data_uri(filename)
+    except OSError:
+        # Asset missing/unreadable on this host — degrade to the text badge
+        # rather than crashing the whole page.
+        return status_badge_html(status)
     label = (status or "").title()
     return (
-        f'<img class="ca-step-status-img" src="{_asset_data_uri(filename)}" '
+        f'<img class="ca-step-status-img" src="{uri}" '
         f'alt="{label}" title="{label}" '
         f'style="width:{size}px;height:{size}px;" />'
     )

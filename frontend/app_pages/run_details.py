@@ -29,8 +29,12 @@ if not run_id:
 
 run = st.session_state.get("selected_run")
 # Re-fetch the run object when it is missing but we know which run we want.
+# Guard against backend errors so the page degrades instead of crashing.
 if run_id and (not run or run.get("clone_run_id") != run_id):
-    run = get_run(run_id)
+    try:
+        run = get_run(run_id)
+    except Exception:
+        run = None
     if run:
         st.session_state["selected_run"] = run
 
