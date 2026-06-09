@@ -125,8 +125,7 @@ if run:
                     except Exception as exc:
                         st.error(f"Could not skip run: {exc}")
 
-        meta_col, refresh_col = st.columns([8, 2], vertical_alignment="center")
-        with meta_col:
+        with st.container(key="ca-detail-meta-row"):
             st.html(
                 f"""
                 <div class="ca-detail-head">
@@ -144,9 +143,12 @@ if run:
                 </div>
                 """
             )
-        with refresh_col:
             with st.container(key="detail-refresh"):
-                st.toggle("Auto refresh", key=f"auto_refresh_{run_id}")
+                st.toggle(
+                    "Auto refresh",
+                    key=f"auto_refresh_{run_id}",
+                    label_visibility="visible",
+                )
 
         st.html('<hr class="ca-title-rule" />')
 else:

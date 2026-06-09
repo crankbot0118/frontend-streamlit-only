@@ -673,32 +673,34 @@ _GLOBAL_CSS = f"""
       opacity: 0.45 !important;
       cursor: not-allowed !important;
   }}
-  /* Auto refresh — always visible; sit above any overlapping meta text. */
-  .st-key-ca-detail-header [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child {{
-      overflow: hidden;
-      min-width: 0;
-  }}
-  .st-key-ca-detail-header [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child {{
-      overflow: visible !important;
-      flex-shrink: 0 !important;
+  /* Auto refresh — pinned to the meta row's right edge, always visible. */
+  .st-key-ca-detail-meta-row {{
       position: relative;
-      z-index: 4;
+      padding-right: 10.5rem;
   }}
-  .st-key-detail-refresh,
-  .st-key-detail-refresh [data-testid="stVerticalBlock"],
-  .st-key-detail-refresh [data-testid="stElementContainer"] {{
+  .st-key-ca-detail-meta-row .st-key-detail-refresh {{
+      position: absolute !important;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: auto !important;
+      margin: 0 !important;
+      z-index: 5;
       display: flex !important;
-      justify-content: flex-end;
       align-items: center;
-      width: 100%;
+      justify-content: flex-end;
+      background: #ffffff !important;
+      padding-left: 0.5rem;
       opacity: 1 !important;
       visibility: visible !important;
-      position: relative;
-      z-index: 4;
-      background: #ffffff !important;
-      padding-left: 0.45rem;
   }}
-  .st-key-detail-refresh * {{
+  .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stElementContainer"] {{
+      display: flex !important;
+      align-items: center;
+      justify-content: flex-end;
+      width: auto !important;
+      margin: 0 !important;
       opacity: 1 !important;
       visibility: visible !important;
   }}
