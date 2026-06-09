@@ -19,6 +19,17 @@ DEFAULT_LOGO_PATH = REPO_ROOT / "assets" / "logo.svg"
 
 _GLOBAL_CSS = f"""
 <style>
+  /* Hide the top-right toolbar (theme toggle + app menu with the
+     Light/Dark/System theme picker) and the "Made with Streamlit" footer. */
+  [data-testid="stToolbar"],
+  [data-testid="stMainMenu"],
+  [data-testid="stStatusWidget"],
+  #MainMenu,
+  footer {{
+      display: none !important;
+      visibility: hidden !important;
+  }}
+
   /* Pull the page content to the very top, no wasted space, and trim the
      wide left/right gutters so content sits closer to the sidebar. */
   [data-testid="stMainBlockContainer"] {{
