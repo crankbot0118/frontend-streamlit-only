@@ -553,19 +553,32 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run details header ---------- */
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
-  /* Title row: heading then Abort / Skip immediately beside it (no spacer). */
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] {{
-      display: flex !important;
-      flex-direction: row !important;
+  /* Title row: heading + Abort + Skip on one line, packed left beside each other. */
+  .st-key-ca-detail-title-row [data-testid="stHorizontalBlock"] {{
+      display: inline-flex !important;
+      width: auto !important;
+      max-width: 100% !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: 0.55rem !important;
+      gap: 0.5rem !important;
+  }}
+  .st-key-ca-detail-title-row [data-testid="column"] {{
+      flex: 0 0 auto !important;
+      width: auto !important;
+      min-width: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca-detail-title-row [data-testid="column"] [data-testid="stVerticalBlock"] {{
+      gap: 0 !important;
   }}
   .st-key-ca-detail-title-row [data-testid="stElementContainer"] {{
       width: auto !important;
-      flex: 0 0 auto !important;
       margin: 0 !important;
       padding: 0 !important;
+  }}
+  .st-key-ca-detail-title-row [data-testid="stElementContainer"]:has([data-testid="stHorizontalBlock"]) {{
+      width: auto !important;
+      flex: 0 0 auto !important;
   }}
   .ca-detail-title {{
       margin: 0;
