@@ -363,12 +363,11 @@ _GLOBAL_CSS = f"""
       gap: 0.7rem;
   }}
 
-  /* Each card container is clickable via a transparent button overlay. */
+  /* Card container: two-line info on the left, redirect button on the right. */
   [class*="st-key-runcard_"] {{
-      position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 12px;
-      padding: 0.85rem 1.1rem;
+      padding: 0.75rem 0.9rem 0.75rem 1.1rem;
       background: #ffffff;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }}
@@ -377,54 +376,45 @@ _GLOBAL_CSS = f"""
       box-shadow: 0 2px 12px rgba(19, 21, 22, 0.07);
   }}
 
-  [class*="st-key-runcard_"] [data-testid="stButton"] {{
-      position: absolute;
-      inset: 0;
-      margin: 0;
-      z-index: 3;
-  }}
-  [class*="st-key-runcard_"] [data-testid="stButton"] button {{
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      padding: 0;
-      border: none;
-      cursor: pointer;
+  /* Keep the inner columns vertically centered and tight. */
+  [class*="st-key-runcard_"] [data-testid="stHorizontalBlock"] {{
+      align-items: center;
   }}
 
-  .ca-run-top {{
+  /* Redirect button on the right end. */
+  [class*="st-key-runcard_"] [data-testid="stButton"] button {{
+      width: 100%;
+      border-radius: 8px;
+  }}
+
+  .ca-run-line1 {{
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-  }}
-  .ca-run-client {{
-      font-weight: 700;
-      font-size: 1rem;
-      color: {BRAND_INK};
-  }}
-  .ca-run-env {{
-      margin-top: 0.35rem;
-      font-size: 0.95rem;
+      gap: 0.45rem;
+      font-size: 0.92rem;
       font-weight: 600;
       color: {BRAND_INK};
   }}
-  .ca-run-env .arrow {{
+  .ca-run-line1 .sep {{
+      color: #c2c7cc;
+      font-weight: 400;
+  }}
+  .ca-run-line1 .ca-run-client {{
+      font-weight: 700;
+  }}
+  .ca-run-line1 .arrow {{
       color: {BRAND_ORANGE};
-      margin: 0 0.4rem;
+      margin: 0 0.3rem;
   }}
-  .ca-run-meta {{
-      margin-top: 0.25rem;
-      font-size: 0.8rem;
-      color: #5b6166;
-  }}
-  .ca-run-dates {{
-      margin-top: 0.55rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.3rem;
-      font-size: 0.74rem;
+  .ca-run-line2 {{
+      margin-top: 0.35rem;
+      font-size: 0.76rem;
       color: #6b7177;
+  }}
+  .ca-run-line2 .sep {{
+      color: #c2c7cc;
+      margin: 0 0.5rem;
   }}
 
   /* ---------- Step rows (run details) ---------- */
@@ -509,32 +499,55 @@ def fmt_dt(value) -> str:
         return str(value)
 
 
-def render_run_card(run: dict) -> bool:
-    """Render a clickable run card. Returns ``True`` when clicked.
+def fmt_dt_compact(value) -> str:
+    """Format an ISO datetime string (or None) as ``ddmmyy hhmmss``."""
+    if not value:
+        return "—"
+    try:
+        return datetime.fromisoformat(str(value)).strftime("%d%m%y %H%M%S")
+    except (ValueError, TypeError):
+        return str(value)
 
-    Shows client, user, source -> target, colored status, start and last-update
-    times. The whole card is clickable via a transparent button overlay.
+
+def render_run_card(run: dict) -> bool:
+    """Render a run card with two info lines and a redirect button on the right.
+
+    Line 1: client · Run # · source -> target · user · status (colored).
+    Line 2: started · last update (ddmmyy hhmmss). Returns ``True`` when the
+    redirect button is clicked.
     """
     rid = run.get("clone_run_id")
-    html = f"""
+    info_html = f"""
         <div class="ca-run">
-          <div class="ca-run-top">
+          <div class="ca-run-line1">
             <span class="ca-run-client">{run.get('client_name', '—')}</span>
+            <span class="sep">&middot;</span>
+            <span>Run #{rid}</span>
+            <span class="sep">&middot;</span>
+            <span>{run.get('source_name', '—')}<span class="arrow">&#8594;</span>{run.get('target_name', '—')}</span>
+            <span class="sep">&middot;</span>
+            <span>{run.get('user_name', '—')}</span>
+            <span class="sep">&middot;</span>
             {status_badge_html(run.get('status', ''))}
           </div>
-          <div class="ca-run-env">
-            {run.get('source_name', '—')}<span class="arrow">&#8594;</span>{run.get('target_name', '—')}
-          </div>
-          <div class="ca-run-meta">Run #{rid} &middot; User: {run.get('user_name', '—')}</div>
-          <div class="ca-run-dates">
-            <span>Started: {fmt_dt(run.get('start_date'))}</span>
-            <span>Updated: {fmt_dt(run.get('last_update'))}</span>
+          <div class="ca-run-line2">
+            Started: {fmt_dt_compact(run.get('start_date'))}
+            <span class="sep">&middot;</span>
+            Last update: {fmt_dt_compact(run.get('last_update'))}
           </div>
         </div>
     """
     with st.container(key=f"runcard_{rid}"):
-        st.html(html)
-        return st.button("Open run", key=f"open_run_{rid}")
+        info_col, btn_col = st.columns([6, 1], vertical_alignment="center")
+        with info_col:
+            st.html(info_html)
+        with btn_col:
+            return st.button(
+                "",
+                key=f"open_run_{rid}",
+                icon=":material/arrow_forward:",
+                help="View run details",
+            )
 
 
 def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
