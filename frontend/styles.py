@@ -266,9 +266,12 @@ _GLOBAL_CSS = f"""
       padding-left: 0.6rem;
   }}
 
-  /* Keep the divider, tinted to match the logo. */
+  /* Keep the divider, tinted to match the logo, with a tight gap. */
+  .st-key-ca-nav [data-testid="stDivider"] {{
+      margin: 0 !important;
+  }}
   .st-key-ca-nav [data-testid="stDivider"] hr {{
-      margin: 0.5rem 0;
+      margin: 0.1rem 0;
       border-color: rgba(232, 117, 17, 0.25);
   }}
 
