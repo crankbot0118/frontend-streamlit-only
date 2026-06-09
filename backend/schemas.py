@@ -33,6 +33,21 @@ class RunFiltersOut(BaseModel):
     users: list[str]
 
 
+class RunActionIn(BaseModel):
+    """Optional body for abort/skip — pin the failed function step to act on."""
+
+    clone_function_run_id: int | None = None
+
+
+class RunActionOut(BaseModel):
+    """Response after aborting or skipping a failed clone run."""
+
+    clone_run_id: int
+    status: str
+    message: str
+    clone_function_run_id: int | None = None
+
+
 class CloneFunctionRunOut(BaseModel):
     """One step row from ``clone_function_run_status`` (latest attempt)."""
 

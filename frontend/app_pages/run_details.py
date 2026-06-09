@@ -1,8 +1,10 @@
 """Run details page — shows the steps (clone_function_run_status) for a run."""
 
+import time
+
 import streamlit as st
 
-from api import get_run, get_run_steps, run_log_url
+from api import abort_run, get_run, get_run_steps, run_log_url, skip_run
 from styles import (
     fmt_dt,
     fmt_duration,
@@ -55,45 +57,98 @@ if not run_id:
     st.warning("No run selected. Go back to Run History and pick a run.")
     st.stop()
 
-if run:
-    src = run.get("source_name", "—")
-    tgt = run.get("target_name", "—")
-    user = run.get("user_name", "—")
-    log_link_html = (
-        '<span class="ca-log-sep">&middot;</span>'
-        f'<a class="ca-loglink" href="{run_log_url(run_id)}" '
-        'target="_blank" rel="noopener" download>View Log</a>'
-    )
-    st.html(
-        f"""
-        <div class="ca-title">
-          <h1>Run #{run_id} <span class="ca-run-sep">&middot;</span> {src}
-            <span class="arrow">&#8594;</span> {tgt}</h1>
-        </div>
-        <div class="ca-detail-head">
-          <div class="ca-detail-meta">
-            <span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>
-            <span class="ca-detail-sep">&middot;</span>
-            <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {fmt_started(run.get('start_date'))}</span>
-            <span class="ca-detail-sep">&middot;</span>
-            <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {fmt_relative_update(run.get('last_update'))}</span>
-            <span class="ca-detail-sep">&middot;</span>
-            <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}</span>
-            <span class="ca-detail-sep">&middot;</span>
-            {status_badge_html(run.get('status', ''))}{log_link_html}
-          </div>
-        </div>
-        <hr class="ca-title-rule" />
-        """
-    )
-else:
-    render_title(f"Run #{run_id}")
-
 try:
     steps = get_run_steps(run_id)
 except Exception:
     st.error("Could not reach the backend to load steps. Is the API running?")
     steps = []
+
+failed_steps = [
+    s for s in steps if (s.get("status") or "").upper() == "FAILED"
+]
+failed_step_id = (
+    max(failed_steps, key=lambda s: s["clone_function_run_id"])["clone_function_run_id"]
+    if failed_steps
+    else None
+)
+
+if run:
+    src = run.get("source_name", "—")
+    tgt = run.get("target_name", "—")
+    user = run.get("user_name", "—")
+    is_failed = (run.get("status") or "").upper() == "FAILED"
+    log_link_html = (
+        '<span class="ca-log-sep">&middot;</span>'
+        f'<a class="ca-loglink" href="{run_log_url(run_id)}" '
+        'target="_blank" rel="noopener" download>View Log</a>'
+    )
+
+    with st.container(key="ca-detail-header"):
+        title_col, actions_col = st.columns([7, 2], vertical_alignment="center")
+        with title_col:
+            st.html(
+                f"""
+                <div class="ca-title ca-detail-title">
+                  <h1>Run #{run_id} <span class="ca-run-sep">&middot;</span> {src}
+                    <span class="arrow">&#8594;</span> {tgt}</h1>
+                </div>
+                """
+            )
+        with actions_col:
+            abort_col, skip_col = st.columns(2, gap="small")
+            with abort_col:
+                if st.button(
+                    "Abort",
+                    key="detail_abort",
+                    disabled=not is_failed,
+                    help="Mark this failed run as ABORTED",
+                ):
+                    try:
+                        abort_run(run_id, failed_step_id)
+                        st.session_state.pop("selected_run", None)
+                        st.rerun()
+                    except Exception as exc:
+                        st.error(f"Could not abort run: {exc}")
+            with skip_col:
+                if st.button(
+                    "Skip",
+                    key="detail_skip",
+                    disabled=not is_failed,
+                    help="Mark this failed run as SKIPPED",
+                ):
+                    try:
+                        skip_run(run_id, failed_step_id)
+                        st.session_state.pop("selected_run", None)
+                        st.rerun()
+                    except Exception as exc:
+                        st.error(f"Could not skip run: {exc}")
+
+        meta_col, refresh_col = st.columns([8, 2], vertical_alignment="center")
+        with meta_col:
+            st.html(
+                f"""
+                <div class="ca-detail-head">
+                  <div class="ca-detail-meta">
+                    <span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>
+                    <span class="ca-detail-sep">&middot;</span>
+                    <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {fmt_started(run.get('start_date'))}</span>
+                    <span class="ca-detail-sep">&middot;</span>
+                    <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {fmt_relative_update(run.get('last_update'))}</span>
+                    <span class="ca-detail-sep">&middot;</span>
+                    <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}</span>
+                    <span class="ca-detail-sep">&middot;</span>
+                    {status_badge_html(run.get('status', ''))}{log_link_html}
+                  </div>
+                </div>
+                """
+            )
+        with refresh_col:
+            with st.container(key="detail-refresh"):
+                st.toggle("Auto refresh", key=f"auto_refresh_{run_id}")
+
+        st.html('<hr class="ca-title-rule" />')
+else:
+    render_title(f"Run #{run_id}")
 
 if not steps:
     st.caption("No steps found for this run.")
@@ -124,3 +179,8 @@ else:
                         f'<div class="ca-step-time">End: {fmt_dt(step.get("end_time"))}</div>'
                         f"</div>"
                     )
+
+if st.session_state.get(f"auto_refresh_{run_id}"):
+    st.session_state.pop("selected_run", None)
+    time.sleep(3)
+    st.rerun()

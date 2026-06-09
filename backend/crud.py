@@ -5,14 +5,33 @@ from datetime import date
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+# Latest ``clone_run_status`` row per ``clone_run_id`` (append-only status history).
+_LATEST_RUNS_CTE = """
+    SELECT DISTINCT ON (clone_run_id)
+        clone_run_id,
+        client_id,
+        user_id,
+        user_name,
+        source_env_id,
+        target_env_id,
+        source_name,
+        target_name,
+        status,
+        start_date,
+        last_update,
+        log_location
+    FROM clone_run_status
+    ORDER BY clone_run_id, last_update DESC NULLS LAST, clone_run_id DESC
+"""
+
 
 def get_run_filter_options(db: Session) -> dict[str, list[str]]:
     """Distinct client, target, and user values for Run History filter dropdowns."""
     clients = db.execute(
         text(
-            """
+            f"""
             SELECT DISTINCT c.client_name
-            FROM clone_run_status cr
+            FROM ({_LATEST_RUNS_CTE}) cr
             JOIN clients c ON c.client_id = cr.client_id
             WHERE c.client_name IS NOT NULL
             ORDER BY c.client_name
@@ -21,9 +40,9 @@ def get_run_filter_options(db: Session) -> dict[str, list[str]]:
     ).scalars().all()
     targets = db.execute(
         text(
-            """
+            f"""
             SELECT DISTINCT target_name
-            FROM clone_run_status
+            FROM ({_LATEST_RUNS_CTE}) latest_runs
             WHERE target_name IS NOT NULL
             ORDER BY target_name
             """
@@ -31,9 +50,9 @@ def get_run_filter_options(db: Session) -> dict[str, list[str]]:
     ).scalars().all()
     users = db.execute(
         text(
-            """
+            f"""
             SELECT DISTINCT user_name
-            FROM clone_run_status
+            FROM ({_LATEST_RUNS_CTE}) latest_runs
             WHERE user_name IS NOT NULL
             ORDER BY user_name
             """
@@ -93,7 +112,7 @@ def get_clone_runs(
             cr.start_date,
             cr.last_update,
             cr.log_location
-        FROM clone_run_status cr
+        FROM ({_LATEST_RUNS_CTE}) cr
         JOIN clients c ON c.client_id = cr.client_id
         {where}
         ORDER BY cr.start_date DESC NULLS LAST, cr.clone_run_id DESC
@@ -111,7 +130,7 @@ def get_clone_run(db: Session, clone_run_id: int) -> dict | None:
     Returns ``None`` when no run matches ``clone_run_id``.
     """
     query = text(
-        """
+        f"""
         SELECT
             cr.clone_run_id,
             cr.client_id,
@@ -126,7 +145,7 @@ def get_clone_run(db: Session, clone_run_id: int) -> dict | None:
             cr.start_date,
             cr.last_update,
             cr.log_location
-        FROM clone_run_status cr
+        FROM ({_LATEST_RUNS_CTE}) cr
         JOIN clients c ON c.client_id = cr.client_id
         WHERE cr.clone_run_id = :clone_run_id
         """
@@ -167,3 +186,139 @@ def get_run_steps(db: Session, clone_run_id: int) -> list[dict]:
     results = db.execute(query, {"clone_run_id": clone_run_id})
     columns = list(results.keys())
     return [dict(zip(columns, row)) for row in results.fetchall()]
+
+
+def _get_failed_function_step(
+    db: Session, clone_run_id: int, clone_function_run_id: int | None = None
+) -> dict | None:
+    """Return the failed function step to act on (latest FAILED unless id given)."""
+    if clone_function_run_id is not None:
+        query = text(
+            """
+            SELECT
+                clone_function_run_id,
+                clone_run_id,
+                function_id,
+                step_func_log_location
+            FROM clone_function_run_status
+            WHERE clone_function_run_id = :clone_function_run_id
+              AND clone_run_id = :clone_run_id
+              AND status = 'FAILED'
+            """
+        )
+        params = {
+            "clone_function_run_id": clone_function_run_id,
+            "clone_run_id": clone_run_id,
+        }
+    else:
+        query = text(
+            """
+            SELECT
+                clone_function_run_id,
+                clone_run_id,
+                function_id,
+                step_func_log_location
+            FROM clone_function_run_status
+            WHERE clone_run_id = :clone_run_id AND status = 'FAILED'
+            ORDER BY clone_function_run_id DESC
+            LIMIT 1
+            """
+        )
+        params = {"clone_run_id": clone_run_id}
+
+    row = db.execute(query, params).mappings().first()
+    return dict(row) if row else None
+
+
+def mark_run_action(
+    db: Session,
+    clone_run_id: int,
+    new_status: str,
+    clone_function_run_id: int | None = None,
+) -> dict | None:
+    """Append ABORTED/SKIPPED status rows for the run and the failed function step.
+
+    Inserts a new ``clone_function_run_status`` row for the single failed step
+    (preserving prior attempts) and a new ``clone_run_status`` row for the run.
+    Returns the latest run row, or ``None`` when the run does not exist.
+    Raises ``ValueError`` when the run is not FAILED or no failed step is found.
+    """
+    run = get_clone_run(db, clone_run_id)
+    if run is None:
+        return None
+    if (run.get("status") or "").upper() != "FAILED":
+        raise ValueError("Run is not in FAILED state")
+
+    failed_step = _get_failed_function_step(db, clone_run_id, clone_function_run_id)
+    if failed_step is None:
+        raise ValueError("No failed function step found for this run")
+
+    db.execute(
+        text(
+            """
+            INSERT INTO clone_function_run_status (
+                clone_run_id,
+                function_id,
+                status,
+                start_time,
+                end_time,
+                step_func_log_location
+            ) VALUES (
+                :clone_run_id,
+                :function_id,
+                :status,
+                NOW(),
+                NOW(),
+                :step_func_log_location
+            )
+            """
+        ),
+        {
+            "clone_run_id": failed_step["clone_run_id"],
+            "function_id": failed_step["function_id"],
+            "status": new_status,
+            "step_func_log_location": failed_step.get("step_func_log_location"),
+        },
+    )
+    db.execute(
+        text(
+            f"""
+            INSERT INTO clone_run_status (
+                clone_run_id,
+                client_id,
+                user_id,
+                user_name,
+                source_env_id,
+                target_env_id,
+                source_name,
+                target_name,
+                status,
+                start_date,
+                last_update,
+                log_location
+            )
+            SELECT
+                clone_run_id,
+                client_id,
+                user_id,
+                user_name,
+                source_env_id,
+                target_env_id,
+                source_name,
+                target_name,
+                :status,
+                start_date,
+                NOW(),
+                log_location
+            FROM ({_LATEST_RUNS_CTE}) latest_runs
+            WHERE clone_run_id = :clone_run_id
+            """
+        ),
+        {"clone_run_id": clone_run_id, "status": new_status},
+    )
+    db.commit()
+    latest = get_clone_run(db, clone_run_id)
+    if latest is None:
+        return None
+    latest["acted_clone_function_run_id"] = failed_step["clone_function_run_id"]
+    return latest

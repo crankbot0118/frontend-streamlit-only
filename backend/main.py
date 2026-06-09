@@ -13,9 +13,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
-from crud import get_clone_run, get_clone_runs, get_run_filter_options, get_run_steps
+from crud import (
+    get_clone_run,
+    get_clone_runs,
+    get_run_filter_options,
+    get_run_steps,
+    mark_run_action,
+)
 from database import get_db
-from schemas import CloneFunctionRunOut, CloneRunOut, RunFiltersOut
+from schemas import (
+    CloneFunctionRunOut,
+    CloneRunOut,
+    RunActionIn,
+    RunActionOut,
+    RunFiltersOut,
+)
 
 app = FastAPI(title="Clone Automation API", version="0.1.0")
 
@@ -111,6 +123,60 @@ def download_run_log(clone_run_id: int, db: Session = Depends(get_db)):
         return FileResponse(location, media_type="text/plain", filename=filename)
 
     raise HTTPException(status_code=404, detail="Log file not found")
+
+
+def _run_action(
+    clone_run_id: int,
+    new_status: str,
+    label: str,
+    db: Session,
+    body: RunActionIn | None = None,
+) -> RunActionOut:
+    run = get_clone_run(db, clone_run_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail="Run not found")
+    step_id = body.clone_function_run_id if body else None
+    try:
+        updated = mark_run_action(db, clone_run_id, new_status, step_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    acted_step = updated.get("acted_clone_function_run_id") if updated else step_id
+    return RunActionOut(
+        clone_run_id=clone_run_id,
+        status=updated["status"] if updated else new_status,
+        message=f"Run marked as {label}.",
+        clone_function_run_id=acted_step,
+    )
+
+
+@app.post(
+    "/api/v1/runs/{clone_run_id}/abort",
+    response_model=RunActionOut,
+    summary="Abort a failed clone run",
+    description="Inserts ABORTED status rows for the run and the single failed "
+    "function step. Only allowed when the latest run status is FAILED.",
+)
+def abort_clone_run(
+    clone_run_id: int,
+    body: RunActionIn | None = None,
+    db: Session = Depends(get_db),
+) -> RunActionOut:
+    return _run_action(clone_run_id, "ABORTED", "ABORTED", db, body)
+
+
+@app.post(
+    "/api/v1/runs/{clone_run_id}/skip",
+    response_model=RunActionOut,
+    summary="Skip a failed clone run",
+    description="Inserts SKIPPED status rows for the run and the single failed "
+    "function step. Only allowed when the latest run status is FAILED.",
+)
+def skip_clone_run(
+    clone_run_id: int,
+    body: RunActionIn | None = None,
+    db: Session = Depends(get_db),
+) -> RunActionOut:
+    return _run_action(clone_run_id, "SKIPPED", "SKIPPED", db, body)
 
 
 @app.get(

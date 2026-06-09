@@ -7,6 +7,7 @@ environment variable.
 
 import json
 import os
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import date
@@ -29,6 +30,29 @@ def _get_json(path: str, timeout: float = 5.0):
     url = f"{BACKEND_URL.rstrip('/')}{path}"
     with urllib.request.urlopen(url, timeout=timeout) as resp:
         return json.loads(resp.read().decode("utf-8"))
+
+
+def _post_json(path: str, body: dict | None = None, timeout: float = 10.0) -> dict:
+    """POST JSON to the backend. Raises on failure."""
+    url = f"{BACKEND_URL.rstrip('/')}{path}"
+    payload = json.dumps(body or {}).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=payload,
+        method="POST",
+        headers={"Content-Type": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            return data if isinstance(data, dict) else {}
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        try:
+            detail = json.loads(body).get("detail", body)
+        except json.JSONDecodeError:
+            detail = body
+        raise RuntimeError(detail) from exc
 
 
 def _as_list(data, *keys: str) -> list[dict]:
@@ -103,3 +127,19 @@ def get_run_steps(clone_run_id: int) -> list[dict]:
 def run_log_url(clone_run_id: int) -> str:
     """Backend download URL for a run's log (serves ``log_location``)."""
     return f"{BACKEND_URL.rstrip('/')}/api/v1/runs/{clone_run_id}/log"
+
+
+def abort_run(clone_run_id: int, clone_function_run_id: int | None = None) -> dict:
+    """Insert ABORTED status for the run and the failed function step."""
+    body = {}
+    if clone_function_run_id is not None:
+        body["clone_function_run_id"] = clone_function_run_id
+    return _post_json(f"/api/v1/runs/{clone_run_id}/abort", body)
+
+
+def skip_run(clone_run_id: int, clone_function_run_id: int | None = None) -> dict:
+    """Insert SKIPPED status for the run and the failed function step."""
+    body = {}
+    if clone_function_run_id is not None:
+        body["clone_function_run_id"] = clone_function_run_id
+    return _post_json(f"/api/v1/runs/{clone_run_id}/skip", body)

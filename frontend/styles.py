@@ -539,6 +539,54 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run details header ---------- */
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
+  .st-key-ca-detail-header [data-testid="stHorizontalBlock"] {{
+      align-items: center;
+  }}
+  .ca-detail-title {{
+      margin: 0;
+  }}
+  /* Abort / Skip — sized to sit beside the page heading. */
+  .st-key-detail_abort .stButton,
+  .st-key-detail_skip .stButton {{
+      width: 100% !important;
+  }}
+  .st-key-detail_abort .stButton button,
+  .st-key-detail_skip .stButton button {{
+      width: 100% !important;
+      font-size: 1.35rem !important;
+      font-weight: 700 !important;
+      padding: 0.3rem 0.75rem !important;
+      min-height: 0 !important;
+      border-radius: 8px !important;
+  }}
+  .st-key-detail_abort .stButton button {{
+      background: #ffebe9 !important;
+      color: #cf222e !important;
+      border: 1px solid #ff8182 !important;
+  }}
+  .st-key-detail_skip .stButton button {{
+      background: #fff1e5 !important;
+      color: #bc4c00 !important;
+      border: 1px solid #fd8c73 !important;
+  }}
+  .st-key-detail_abort .stButton button:disabled,
+  .st-key-detail_skip .stButton button:disabled {{
+      opacity: 0.45 !important;
+      cursor: not-allowed !important;
+  }}
+  /* Auto refresh toggle pinned to the far right of the meta row. */
+  .st-key-detail-refresh {{
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      width: 100%;
+  }}
+  .st-key-detail-refresh [data-testid="stWidgetLabel"] p {{
+      font-size: 0.82rem !important;
+      font-weight: 600 !important;
+      color: #6b7177 !important;
+      white-space: nowrap;
+  }}
   .ca-detail-head {{
       margin: 0.15rem 0 0.2rem 0;
   }}
