@@ -29,11 +29,24 @@ def _get_json(path: str, timeout: float = 5.0):
         return json.loads(resp.read().decode("utf-8"))
 
 
+def _as_list(data, *keys: str) -> list[dict]:
+    """Normalize a response that may be a bare list or a wrapped object
+    like ``{"runs": [...]}`` into a plain list of dicts."""
+    if isinstance(data, list):
+        return data
+    if isinstance(data, dict):
+        for key in keys:
+            value = data.get(key)
+            if isinstance(value, list):
+                return value
+    return []
+
+
 def get_runs(limit: int = 50) -> list[dict]:
     """Fetch clone runs (newest execution first)."""
-    return _get_json(f"/api/v1/runs?limit={limit}")
+    return _as_list(_get_json(f"/api/v1/runs?limit={limit}"), "runs", "latest_runs")
 
 
 def get_run_steps(clone_run_id: int) -> list[dict]:
     """Fetch the step rows (clone_function_run_status) for a clone run."""
-    return _get_json(f"/api/v1/runs/{clone_run_id}/steps")
+    return _as_list(_get_json(f"/api/v1/runs/{clone_run_id}/steps"), "steps")
