@@ -304,7 +304,7 @@ def render_sidebar_nav() -> None:
             _nav_button("Targets", ":material/dns:", "nav_targets")
 
         with st.expander("Clone Setup", expanded=True):
-            _nav_button("Database", ":material/database:", "nav_database")
+            _nav_button("DB Config", ":material/database:", "nav_database")
             _nav_button("EBS Config", ":material/deployed_code:", "nav_ebs")
             _nav_button("Connections", ":material/power:", "nav_connections")
 
