@@ -79,8 +79,7 @@ if run:
     is_failed = (run.get("status") or "").upper() == "FAILED"
     log_link_html = (
         '<span class="ca-log-sep">&middot;</span>'
-        f'<a class="ca-loglink" href="{run_log_url(run_id)}" '
-        'target="_blank" rel="noopener" download>View Log</a>'
+        f'<a class="ca-loglink" href="{run_log_url(run_id)}" download>Download Log</a>'
     )
 
     with st.container(key="ca-detail-header"):

@@ -20,12 +20,15 @@
 #   NULLIFY_CLONE_SH    — full path to nullify_clone_control.sh
 #   ABORT_CLONE_SH      — full path to abort_clone.sh
 #   POLL_INTERVAL       — seconds between polls (default: 10)
+#   INSTANCE_CLONE_DIR  — instance root (default: /u02/shared/AUTOMATION/Clone_Auto/Instances)
+#   CLONE_LOG           — optional override for log file path ({run_id}, {dbname} placeholders)
 # =============================================================================
 
 from __future__ import annotations
 
 import logging
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -81,6 +84,11 @@ SKIP_FUNCTION_SH = _require("SKIP_FUNCTION_SH")
 NULLIFY_CLONE_SH = _require("NULLIFY_CLONE_SH")
 ABORT_CLONE_SH = _require("ABORT_CLONE_SH")
 POLL_INTERVAL = int(os.environ.get("POLL_INTERVAL", "10"))
+INSTANCE_CLONE_DIR = os.environ.get(
+    "INSTANCE_CLONE_DIR",
+    "/u02/shared/AUTOMATION/Clone_Auto/Instances",
+)
+LOG_LOCATION_MAX = 100
 
 logging.basicConfig(
     level=logging.INFO,
@@ -138,6 +146,85 @@ def script_dbname(env: dict) -> str:
     if INSTANCE_DBNAME:
         return INSTANCE_DBNAME
     return env["env_name"].strip().lower()
+
+
+def parse_shell_env_file(path: Path) -> dict[str, str]:
+    """Parse KEY=value lines from a shell env file (no sourcing/eval)."""
+    values: dict[str, str] = {}
+    if not path.is_file():
+        return values
+    for raw_line in path.read_text().splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or line.startswith("."):
+            continue
+        if "=" not in line:
+            continue
+        key, _, val = line.partition("=")
+        values[key.strip()] = val.strip().strip('"').strip("'")
+    return values
+
+
+def expand_shell_vars(value: str, ctx: dict[str, str]) -> str:
+    """Expand ${VAR} and $VAR references using ctx (same file as master_clone.sh)."""
+    prev = None
+    while prev != value:
+        prev = value
+        value = re.sub(
+            r"\$\{([^}]+)\}",
+            lambda m: ctx.get(m.group(1), m.group(0)),
+            value,
+        )
+        value = re.sub(
+            r"\$([A-Za-z_][A-Za-z0-9_]*)",
+            lambda m: ctx.get(m.group(1), m.group(0)),
+            value,
+        )
+    return value
+
+
+def resolve_clone_log_path(dbname: str, clone_run_id: int) -> str | None:
+    """
+    Resolve CLONE_LOG the same way master_clone.sh does after sourcing db.env.
+    Optional ~/.env CLONE_LOG override supports {run_id} and {dbname}.
+    """
+    override = os.environ.get("CLONE_LOG") or os.environ.get("CLONE_LOG_PATH")
+    if override:
+        return (
+            override.replace("{run_id}", str(clone_run_id)).replace("{dbname}", dbname)
+        )
+
+    env_file = Path(INSTANCE_CLONE_DIR) / dbname / "env" / "DB" / f"{dbname}_db.env"
+    ctx = parse_shell_env_file(env_file)
+    raw = ctx.get("CLONE_LOG")
+    if not raw:
+        log.warning("CLONE_LOG not found in %s", env_file)
+        return None
+    return expand_shell_vars(raw, ctx)
+
+
+def set_run_log_location(conn, clone_run_id: int, log_path: str) -> None:
+    """Write clone_run_status.log_location so the dashboard can serve View Log."""
+    if len(log_path) > LOG_LOCATION_MAX:
+        log.warning(
+            "[run=%s] log path exceeds %s chars and will be truncated: %s",
+            clone_run_id,
+            LOG_LOCATION_MAX,
+            log_path,
+        )
+        log_path = log_path[:LOG_LOCATION_MAX]
+
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            UPDATE clone_run_status
+            SET log_location = %s,
+                last_update  = NOW()
+            WHERE clone_run_id = %s
+            """,
+            (log_path, clone_run_id),
+        )
+    conn.commit()
+    log.info("[run=%s] log_location set: %s", clone_run_id, log_path)
 
 
 def pg_subprocess_env() -> dict[str, str]:
@@ -305,12 +392,21 @@ def execute_job(conn, job: dict, dbname: str, script_env: dict[str, str]):
         job["user_name"],
     )
 
+    log_path = resolve_clone_log_path(dbname, clone_run_id)
+    if log_path:
+        set_run_log_location(conn, clone_run_id, log_path)
+    else:
+        log.warning("[run=%s] Could not resolve clone log path", clone_run_id)
+
     while True:
         exit_code = run(
             [MASTER_CLONE_SH, dbname, str(clone_run_id)],
             label=f"[run={clone_run_id}] master_clone.sh",
             env=script_env,
         )
+
+        if log_path:
+            set_run_log_location(conn, clone_run_id, log_path)
 
         if exit_code == 0:
             run_status = get_latest_run_status(conn, clone_run_id)

@@ -171,7 +171,12 @@ def download_run_log(clone_run_id: int, db: Session = Depends(get_db)):
 
     if os.path.isfile(location):
         filename = os.path.basename(location) or f"clone_run_{clone_run_id}.log"
-        return FileResponse(location, media_type="text/plain", filename=filename)
+        return FileResponse(
+            location,
+            media_type="application/octet-stream",
+            filename=filename,
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
 
     raise HTTPException(status_code=404, detail="Log file not found")
 
