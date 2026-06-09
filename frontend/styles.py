@@ -377,8 +377,10 @@ _GLOBAL_CSS = f"""
       box-shadow: 0 2px 12px rgba(19, 21, 22, 0.07);
   }}
 
-  /* The button's element container must not reserve a flow row at the bottom. */
-  [class*="st-key-runcard_"] .stButton {{
+  /* The redirect widget container, keyed open_run_<id>, is pinned to the right
+     edge of the card and vertically centered, taken out of normal flow so it
+     never drops to a new line. */
+  [class*="st-key-open_run_"] {{
       position: absolute !important;
       right: 0.5rem;
       top: 50%;
@@ -387,8 +389,8 @@ _GLOBAL_CSS = f"""
       width: auto !important;
       z-index: 3;
   }}
-  /* Borderless icon button, pinned to the extreme right, vertically centered. */
-  [class*="st-key-runcard_"] .stButton button {{
+  /* Borderless icon button. */
+  [class*="st-key-open_run_"] button {{
       width: auto !important;
       min-height: 0 !important;
       background: transparent !important;
@@ -397,11 +399,11 @@ _GLOBAL_CSS = f"""
       color: #8a9097;
       padding: 0.3rem;
   }}
-  [class*="st-key-runcard_"] .stButton button:hover {{
+  [class*="st-key-open_run_"] button:hover {{
       background: transparent !important;
       color: {BRAND_ORANGE};
   }}
-  [class*="st-key-runcard_"] .stButton button:hover svg {{
+  [class*="st-key-open_run_"] button:hover svg {{
       color: {BRAND_ORANGE};
   }}
 
