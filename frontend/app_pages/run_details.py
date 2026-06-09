@@ -100,8 +100,8 @@ else:
                 st.html(
                     f'<div class="ca-step-head">'
                     f'<div class="ca-step-left">'
-                    f'<span class="ca-step-name">{name}</span>'
                     f'{status_image_html(step.get("status", ""))}'
+                    f'<span class="ca-step-name">{name}</span>'
                     f"</div>"
                     f'<span class="ca-step-more">More actions</span>'
                     f"</div>"

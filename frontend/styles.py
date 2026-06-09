@@ -558,17 +558,20 @@ _GLOBAL_CSS = f"""
       gap: 0.7rem;
       min-height: 1.9rem;
   }}
+  /* Icon first, name right beside it — both aligned in vertical columns.
+     Tight gap so the name sits close to its status icon. */
   .ca-step-left {{
       display: flex;
       align-items: center;
-      gap: 0.7rem;
+      gap: 0.45rem;
   }}
   .ca-step-name {{
       font-weight: 600;
       color: {BRAND_INK};
   }}
   .ca-step-status-img {{
-      width: auto;
+      flex: 0 0 auto;
+      object-fit: contain;
       display: block;
   }}
   .ca-step-more {{
@@ -584,6 +587,13 @@ _GLOBAL_CSS = f"""
       margin-top: 0.5rem;
       padding-top: 0.5rem;
       border-top: 1px solid #eef0f2;
+      animation: ca-step-expand 0.18s ease-out;
+  }}
+
+  /* Minimal fade + slide-in when the "More actions" dropdown opens. */
+  @keyframes ca-step-expand {{
+      from {{ opacity: 0; transform: translateY(-4px); }}
+      to   {{ opacity: 1; transform: translateY(0); }}
   }}
   .ca-step-time {{
       font-size: 0.78rem;
@@ -700,15 +710,20 @@ def _asset_data_uri(filename: str) -> str:
     return f"data:image/png;base64,{b64}"
 
 
-def status_image_html(status: str, height: int = 24) -> str:
-    """Return an ``<img>`` of the status asset, falling back to the text badge."""
+def status_image_html(status: str, size: int = 22) -> str:
+    """Return a square ``<img>`` of the status icon (falls back to text badge).
+
+    The icons are square, so a fixed ``size`` keeps every icon — and the
+    function name beside it — aligned in a clean vertical column across rows.
+    """
     filename = STATUS_ASSETS.get((status or "").upper())
     if not filename:
         return status_badge_html(status)
     label = (status or "").title()
     return (
         f'<img class="ca-step-status-img" src="{_asset_data_uri(filename)}" '
-        f'alt="{label}" title="{label}" style="height:{height}px;" />'
+        f'alt="{label}" title="{label}" '
+        f'style="width:{size}px;height:{size}px;" />'
     )
 
 
