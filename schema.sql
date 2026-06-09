@@ -304,6 +304,65 @@ EXECUTE FUNCTION sync_clone_run_status();
 
 
 -- ============================================================
+--  TRIGGER FUNCTION: sync_env_lock()
+--  Keeps environments.locked in sync with active clone runs.
+--  Only the TARGET environment is locked while its latest run
+--  status is PENDING, RUNNING, or FAILED.
+-- ============================================================
+
+CREATE OR REPLACE FUNCTION sync_env_lock()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_target_ids INTEGER[] := ARRAY[]::INTEGER[];
+    v_tid        INTEGER;
+BEGIN
+    IF TG_OP = 'DELETE' THEN
+        IF OLD.target_env_id IS NOT NULL THEN
+            v_target_ids := array_append(v_target_ids, OLD.target_env_id);
+        END IF;
+    ELSE
+        IF NEW.target_env_id IS NOT NULL THEN
+            v_target_ids := array_append(v_target_ids, NEW.target_env_id);
+        END IF;
+        IF TG_OP = 'UPDATE'
+           AND OLD.target_env_id IS DISTINCT FROM NEW.target_env_id
+           AND OLD.target_env_id IS NOT NULL THEN
+            v_target_ids := array_append(v_target_ids, OLD.target_env_id);
+        END IF;
+    END IF;
+
+    FOREACH v_tid IN ARRAY v_target_ids LOOP
+        UPDATE environments e
+        SET locked = EXISTS (
+            SELECT 1
+            FROM (
+                SELECT DISTINCT ON (clone_run_id)
+                    status
+                FROM clone_run_status
+                WHERE target_env_id = v_tid
+                ORDER BY clone_run_id, last_update DESC NULLS LAST, clone_run_id DESC
+            ) latest
+            WHERE latest.status IN ('PENDING', 'RUNNING', 'FAILED')
+        )
+        WHERE e.env_id = v_tid;
+    END LOOP;
+
+    IF TG_OP = 'DELETE' THEN
+        RETURN OLD;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER trg_sync_env_lock
+AFTER INSERT OR UPDATE OF status, target_env_id OR DELETE
+ON clone_run_status
+FOR EACH ROW
+EXECUTE FUNCTION sync_env_lock();
+
+
+-- ============================================================
 --  HELPER FUNCTION: create_clone_run()
 --  Atomically inserts 1 clone_run_status row + 36 step rows.
 --  Locks the target environment only (source remains available).
@@ -340,11 +399,7 @@ BEGIN
     -- Get next run ID (multiple of 1000)
     v_run_id := nextval('clone_run_id_seq');
 
-    -- Lock target environment only
-    UPDATE environments SET locked = TRUE
-    WHERE env_id = p_target_env_id;
-
-    -- Insert parent job row
+    -- Insert parent job row (trg_sync_env_lock locks the target on INSERT)
     INSERT INTO clone_run_status (
         clone_run_id, client_id, user_id, user_name,
         source_env_id, target_env_id, source_name, target_name,
@@ -394,12 +449,34 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION finish_clone_run(
     p_run_id INTEGER
 ) RETURNS VOID AS $$
+DECLARE
+    v_target_env_id INTEGER;
 BEGIN
-    UPDATE environments
-    SET locked = FALSE
-    WHERE env_id = (
-        SELECT target_env_id FROM clone_run_status WHERE clone_run_id = p_run_id
-    );
+    SELECT target_env_id
+    INTO v_target_env_id
+    FROM clone_run_status
+    WHERE clone_run_id = p_run_id
+    ORDER BY last_update DESC NULLS LAST, clone_run_id DESC
+    LIMIT 1;
+
+    IF v_target_env_id IS NULL THEN
+        RAISE EXCEPTION 'Clone run % not found.', p_run_id;
+    END IF;
+
+    -- Recalculate lock from latest run statuses (same rule as trg_sync_env_lock)
+    UPDATE environments e
+    SET locked = EXISTS (
+        SELECT 1
+        FROM (
+            SELECT DISTINCT ON (clone_run_id)
+                status
+            FROM clone_run_status
+            WHERE target_env_id = v_target_env_id
+            ORDER BY clone_run_id, last_update DESC NULLS LAST, clone_run_id DESC
+        ) latest
+        WHERE latest.status IN ('PENDING', 'RUNNING', 'FAILED')
+    )
+    WHERE e.env_id = v_target_env_id;
 END;
 $$ LANGUAGE plpgsql;
 
