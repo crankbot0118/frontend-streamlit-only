@@ -918,20 +918,44 @@ _GLOBAL_CSS = f"""
       color: #6b7177;
       white-space: nowrap;
   }}
+  .ca-step-detail-panel {{
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  }}
+  .ca-step-detail-panel--open {{
+      grid-template-rows: 1fr;
+  }}
   .ca-step-detail {{
       display: flex;
       flex-direction: column;
       gap: 0.2rem;
+      overflow: hidden;
+      min-height: 0;
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 1px solid transparent;
+      opacity: 0;
+      transform: translateY(-6px);
+      transition:
+          opacity 0.24s ease,
+          transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+          margin-top 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+          padding-top 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+          border-color 0.24s ease;
+  }}
+  .ca-step-detail-panel--open .ca-step-detail {{
       margin-top: 0.5rem;
       padding-top: 0.5rem;
-      border-top: 1px solid #eef0f2;
-      animation: ca-step-expand 0.18s ease-out;
+      border-top-color: #eef0f2;
+      opacity: 1;
+      transform: translateY(0);
   }}
-
-  /* Minimal fade + slide-in when the "More actions" dropdown opens. */
-  @keyframes ca-step-expand {{
-      from {{ opacity: 0; transform: translateY(-4px); }}
-      to   {{ opacity: 1; transform: translateY(0); }}
+  @media (prefers-reduced-motion: reduce) {{
+      .ca-step-detail-panel,
+      .ca-step-detail {{
+          transition: none !important;
+      }}
   }}
   .ca-step-time {{
       font-size: 0.78rem;
@@ -970,6 +994,10 @@ _GLOBAL_CSS = f"""
       width: 1.9rem !important;
       height: 1.9rem !important;
       line-height: 1 !important;
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  }}
+  [class*="st-key-stepcard_"]:has(.ca-step-head--open) .stButton button [data-testid="stIconMaterial"] {{
+      transform: rotate(90deg);
   }}
   [class*="st-key-stepcard_"] .stButton button svg {{
       width: 1.9rem !important;
@@ -1066,6 +1094,48 @@ def status_image_html(status: str, size: int = 22) -> str:
         f'alt="{label}" title="{label}" '
         f'style="width:{size}px;height:{size}px;" />'
     )
+
+
+def step_detail_panel_html(
+    run_id: int,
+    index: int,
+    is_open: bool,
+    start_time,
+    end_time,
+) -> str:
+    """Collapsible step detail panel with smooth open/close animation."""
+    panel_class = "ca-step-detail-panel--open" if is_open else "ca-step-detail-panel--closed"
+    panel_id = f"step-panel-{run_id}-{index}"
+    store_key = f"ca-step-{run_id}-{index}"
+    start = fmt_dt(start_time)
+    end = fmt_dt(end_time)
+    return f"""
+<div id="{panel_id}" class="ca-step-detail-panel {panel_class}">
+  <div class="ca-step-detail">
+    <div class="ca-step-time">Start: {start}</div>
+    <div class="ca-step-time">End: {end}</div>
+  </div>
+</div>
+<script>
+(function () {{
+  var panel = document.getElementById("{panel_id}");
+  if (!panel) return;
+  var key = "{store_key}";
+  var wasOpen = sessionStorage.getItem(key) === "1";
+  var isOpen = panel.classList.contains("ca-step-detail-panel--open");
+  if (!wasOpen && isOpen) {{
+    panel.classList.remove("ca-step-detail-panel--open");
+    void panel.offsetHeight;
+    panel.classList.add("ca-step-detail-panel--open");
+  }} else if (wasOpen && !isOpen) {{
+    panel.classList.add("ca-step-detail-panel--open");
+    void panel.offsetHeight;
+    panel.classList.remove("ca-step-detail-panel--open");
+  }}
+  sessionStorage.setItem(key, isOpen ? "1" : "0");
+}})();
+</script>
+"""
 
 
 def fmt_dt(value) -> str:

@@ -6,7 +6,6 @@ import streamlit as st
 
 from api import abort_run, get_run, get_run_steps, run_log_url, skip_run
 from styles import (
-    fmt_dt,
     fmt_duration,
     fmt_relative_update,
     fmt_started,
@@ -14,6 +13,7 @@ from styles import (
     render_title,
     status_badge_html,
     status_image_html,
+    step_detail_panel_html,
 )
 
 run_id = st.session_state.get("selected_run_id")
@@ -157,32 +157,39 @@ else:
 if not steps:
     st.caption("No steps found for this run.")
 else:
-    with st.container(key="ca-steps"):
-        for i, step in enumerate(steps):
-            name = step.get("function_name", "—")
-            open_key = f"step_open_{run_id}_{i}"
-            is_open = st.session_state.get(open_key, False)
-            with st.container(key=f"stepcard_{i}"):
-                st.html(
-                    f'<div class="ca-step-head">'
-                    f'<div class="ca-step-left">'
-                    f'{status_image_html(step.get("status", ""))}'
-                    f'<span class="ca-step-name">{name}</span>'
-                    f"</div>"
-                    f'<span class="ca-step-more">More actions</span>'
-                    f"</div>"
-                )
-                arrow = ":material/arrow_drop_down:" if is_open else ":material/arrow_right:"
-                if st.button("", key=f"more_{i}", icon=arrow, help="More actions"):
-                    st.session_state[open_key] = not is_open
-                    st.rerun()
-                if is_open:
+
+    @st.fragment
+    def _render_run_steps() -> None:
+        with st.container(key="ca-steps"):
+            for i, step in enumerate(steps):
+                name = step.get("function_name", "—")
+                open_key = f"step_open_{run_id}_{i}"
+                is_open = st.session_state.get(open_key, False)
+                head_class = "ca-step-head ca-step-head--open" if is_open else "ca-step-head"
+                with st.container(key=f"stepcard_{i}"):
                     st.html(
-                        f'<div class="ca-step-detail">'
-                        f'<div class="ca-step-time">Start: {fmt_dt(step.get("start_time"))}</div>'
-                        f'<div class="ca-step-time">End: {fmt_dt(step.get("end_time"))}</div>'
+                        f'<div class="{head_class}">'
+                        f'<div class="ca-step-left">'
+                        f'{status_image_html(step.get("status", ""))}'
+                        f'<span class="ca-step-name">{name}</span>'
+                        f"</div>"
+                        f'<span class="ca-step-more">More actions</span>'
                         f"</div>"
                     )
+                    if st.button("", key=f"more_{i}", icon=":material/arrow_right:", help="More actions"):
+                        st.session_state[open_key] = not is_open
+                        st.rerun(scope="fragment")
+                    st.html(
+                        step_detail_panel_html(
+                            run_id,
+                            i,
+                            is_open,
+                            step.get("start_time"),
+                            step.get("end_time"),
+                        )
+                    )
+
+    _render_run_steps()
 
 if st.session_state.get(f"auto_refresh_{run_id}"):
     st.session_state.pop("selected_run", None)
