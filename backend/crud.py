@@ -212,7 +212,8 @@ def get_function_step_detail(
             FROM clone_function_run_status
             WHERE clone_run_id = :clone_run_id
               AND function_id = :function_id
-            ORDER BY clone_function_run_id ASC
+            ORDER BY COALESCE(end_time, start_time) DESC NULLS LAST,
+                     clone_function_run_id DESC
             """
         ),
         {

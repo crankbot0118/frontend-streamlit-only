@@ -962,7 +962,7 @@ _GLOBAL_CSS = f"""
       color: #6b7177;
       white-space: nowrap;
   }}
-  /* Step dropdown: Details · Download Step Log */
+  /* Step dropdown action links: Details · Download Step Log */
   [class*="st-key-step_links_"],
   [class*="st-key-step_links_"] > [data-testid="stVerticalBlock"],
   [class*="st-key-step_links_"] > [data-testid="stVerticalBlockBorderWrapper"] {{
@@ -977,18 +977,18 @@ _GLOBAL_CSS = f"""
       border-top: 1px solid #eef0f2;
   }}
   [class*="st-key-step_links_"] > [data-testid="stElementContainer"] {{
-      position: static !important;
       width: auto !important;
       flex: 0 0 auto !important;
       margin: 0 !important;
       padding: 0 !important;
+      position: static !important;
   }}
-  .ca-step-links {{
+  .ca-step-action-sep {{
       display: inline-flex;
       align-items: center;
-      flex-wrap: nowrap;
-      gap: 0.5rem;
+      color: #c2c7cc;
       font-size: 0.86rem;
+      line-height: 1;
   }}
   .ca-step-link-disabled {{
       color: #b0b5ba;
@@ -1014,8 +1014,9 @@ _GLOBAL_CSS = f"""
       color: {BRAND_ORANGE} !important;
   }}
 
-  /* Expand/collapse arrow only — not Details or other step buttons. */
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] {{
+  /* Expand/collapse arrow only — not Details or other step actions. */
+  [class*="st-key-stepcard_"] [class*="st-key-more_"],
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] > [data-testid="stElementContainer"] {{
       position: absolute !important;
       right: 0.5rem;
       top: 0.5rem;
@@ -1025,12 +1026,6 @@ _GLOBAL_CSS = f"""
       width: auto !important;
       margin: 0 !important;
       z-index: 3;
-  }}
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] [data-testid="stElementContainer"] {{
-      position: static !important;
-      width: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton {{
       width: auto !important;
@@ -1065,43 +1060,47 @@ _GLOBAL_CSS = f"""
       color: {BRAND_ORANGE} !important;
   }}
 
-  /* Light-mode step detail dialog */
-  [data-testid="stDialog"] [data-testid="stModal"] {{
+  /* ---------- Step detail dialog — strict light mode ---------- */
+  [data-testid="stDialog"],
+  [data-testid="stDialog"] > div,
+  div[data-baseweb="modal"],
+  div[data-baseweb="modal"] > div {{
       background: #ffffff !important;
       color: {BRAND_INK} !important;
+      color-scheme: light only !important;
   }}
+  [data-testid="stDialog"] header,
   [data-testid="stDialog"] [data-testid="stModalHeader"] {{
+      background: #ffffff !important;
+      border-bottom: 1px solid #eef0f2 !important;
+  }}
+  [data-testid="stDialog"] header h1,
+  [data-testid="stDialog"] [data-testid="stModalHeader"] h1 {{
       display: none !important;
   }}
-  [data-testid="stDialog"] [data-testid="stModalBody"] {{
-      background: #ffffff !important;
-      color: {BRAND_INK} !important;
-      padding-top: 1.25rem !important;
-  }}
-  .ca-step-dialog {{
-      color: {BRAND_INK};
-  }}
   .ca-step-dialog-title {{
-      margin: 0 0 1rem 0;
-      font-size: 1.15rem;
+      font-size: 1.35rem;
       font-weight: 700;
       color: {BRAND_INK};
+      margin: 0 0 1rem 0;
+      padding: 0;
   }}
-  .ca-step-dialog-fields {{
-      margin: 0;
-      display: grid;
-      grid-template-columns: 11rem 1fr;
-      gap: 0.55rem 1rem;
-      font-size: 0.92rem;
+  [data-testid="stDialog"] [data-testid="stMarkdownContainer"] p,
+  [data-testid="stDialog"] [data-testid="stMarkdownContainer"] li,
+  [data-testid="stDialog"] label,
+  [data-testid="stDialog"] h4 {{
+      color: {BRAND_INK} !important;
   }}
-  .ca-step-dialog-fields dt {{
-      margin: 0;
-      font-weight: 600;
-      color: #5b6166;
+  [data-testid="stDialog"] [data-testid="stDataFrame"],
+  [data-testid="stDialog"] [data-testid="stDataFrameGlideDataEditor"],
+  [data-testid="stDialog"] .gdgrid-root,
+  [data-testid="stDialog"] .gdg-cell {{
+      background: #ffffff !important;
+      color: {BRAND_INK} !important;
   }}
-  .ca-step-dialog-fields dd {{
-      margin: 0;
-      color: {BRAND_INK};
+  [data-testid="stDialog"] .gdg-header-row {{
+      background: #f6f7f8 !important;
+      color: {BRAND_INK} !important;
   }}
 </style>
 """
@@ -1191,7 +1190,7 @@ def status_image_html(status: str, size: int = 22) -> str:
     )
 
 
-def step_log_link_html(step_log_href: str | None) -> str:
+def step_action_link_html(step_log_href: str | None) -> str:
     """Download Step Log link with leading middot (follows Details on the same row)."""
     if step_log_href:
         link = (
@@ -1200,33 +1199,7 @@ def step_log_link_html(step_log_href: str | None) -> str:
         )
     else:
         link = '<span class="ca-step-link-disabled">Download Step Log</span>'
-    return (
-        f'<div class="ca-step-links">'
-        f'<span class="ca-detail-sep">&middot;</span>{link}'
-        f"</div>"
-    )
-
-
-def step_detail_dialog_html(step: dict) -> str:
-    """Light popup body for a function-step row."""
-    fn_name = step.get("function_name", "—")
-    return f"""
-<div class="ca-step-dialog">
-  <h3 class="ca-step-dialog-title">Function step details · {fn_name}</h3>
-  <dl class="ca-step-dialog-fields">
-    <dt>Clone run ID</dt>
-    <dd>{step.get("clone_run_id", "—")}</dd>
-    <dt>Clone function run ID</dt>
-    <dd>{step.get("clone_function_run_id", "—")}</dd>
-    <dt>Status</dt>
-    <dd>{status_badge_html(step.get("status", ""))}</dd>
-    <dt>Start</dt>
-    <dd>{fmt_dt(step.get("start_time"))}</dd>
-    <dt>End</dt>
-    <dd>{fmt_dt(step.get("end_time"))}</dd>
-  </dl>
-</div>
-"""
+    return f'<span class="ca-step-action-sep">&middot;</span>{link}'
 
 
 def step_detail_panel_html(
