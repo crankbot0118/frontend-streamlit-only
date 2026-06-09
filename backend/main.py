@@ -16,14 +16,19 @@ from sqlalchemy.orm import Session
 from crud import (
     get_clone_run,
     get_clone_runs,
+    get_execute_clone_options,
     get_run_filter_options,
     get_run_steps,
     mark_run_action,
+    trigger_clone_run,
 )
 from database import get_db
 from schemas import (
     CloneFunctionRunOut,
     CloneRunOut,
+    CreateCloneRunIn,
+    CreateCloneRunOut,
+    ExecuteCloneOptionsOut,
     RunActionIn,
     RunActionOut,
     RunFiltersOut,
@@ -57,6 +62,52 @@ def health() -> dict:
 )
 def list_run_filters(db: Session = Depends(get_db)) -> RunFiltersOut:
     return get_run_filter_options(db)
+
+
+@app.get(
+    "/api/v1/execute-clone/options",
+    response_model=ExecuteCloneOptionsOut,
+    summary="Execute Clone form options",
+    description="Users and environments for the Execute Clone page dropdowns.",
+)
+def list_execute_clone_options(
+    db: Session = Depends(get_db),
+) -> ExecuteCloneOptionsOut:
+    return get_execute_clone_options(db)
+
+
+@app.post(
+    "/api/v1/execute-clone/trigger",
+    response_model=CreateCloneRunOut,
+    summary="Trigger a clone run",
+    description="Validates source/target rules, then calls ``create_clone_run`` "
+    "which locks the target and inserts the run plus 36 pending step rows.",
+)
+def create_clone_run_endpoint(
+    body: CreateCloneRunIn,
+    db: Session = Depends(get_db),
+) -> CreateCloneRunOut:
+    try:
+        run = trigger_clone_run(
+            db,
+            body.user_id,
+            body.source_env_id,
+            body.target_env_id,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    return CreateCloneRunOut(
+        clone_run_id=run["clone_run_id"],
+        status=run["status"],
+        source_name=run["source_name"],
+        target_name=run["target_name"],
+        user_name=run["user_name"],
+        message=(
+            f"Clone run #{run['clone_run_id']} created: "
+            f"{run['source_name']} → {run['target_name']}."
+        ),
+    )
 
 
 @app.get(

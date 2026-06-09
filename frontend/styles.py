@@ -335,19 +335,23 @@ _GLOBAL_CSS = f"""
       background: rgba(232, 117, 17, 0.25);
   }}
 
-  /* ---------- Run History filters ---------- */
-  .st-key-ca-run-filters {{
+  /* ---------- Run History filters + Execute Clone form ---------- */
+  .st-key-ca-run-filters,
+  .st-key-ca-execute-clone-form {{
       margin-top: -0.35rem !important;
       margin-bottom: 0.5rem;
   }}
-  .st-key-ca-run-filters [data-testid="stVerticalBlock"] {{
+  .st-key-ca-run-filters [data-testid="stVerticalBlock"],
+  .st-key-ca-execute-clone-form [data-testid="stVerticalBlock"] {{
       gap: 0.25rem !important;
   }}
-  .st-key-ca-run-filters [data-testid="stHorizontalBlock"] {{
+  .st-key-ca-run-filters [data-testid="stHorizontalBlock"],
+  .st-key-ca-execute-clone-form [data-testid="stHorizontalBlock"] {{
       align-items: flex-end;
       gap: 0.65rem;
   }}
-  .st-key-ca-run-filters [data-testid="stWidgetLabel"] p {{
+  .st-key-ca-run-filters [data-testid="stWidgetLabel"] p,
+  .st-key-ca-execute-clone-form [data-testid="stWidgetLabel"] p {{
       color: #6b7177 !important;
       font-size: 0.82rem;
       font-weight: 600;
@@ -357,15 +361,24 @@ _GLOBAL_CSS = f"""
   .st-key-ca-run-filters [data-testid="stSelectbox"] [data-baseweb="select"] > div,
   .st-key-ca-run-filters [data-testid="stDateInput"] > div > div,
   .st-key-ca-run-filters [data-testid="stDateInput"] [data-baseweb="input"],
-  .st-key-ca-run-filters [data-testid="stDateInput"] input {{
+  .st-key-ca-run-filters [data-testid="stDateInput"] input,
+  .st-key-ca-execute-clone-form [data-testid="stSelectbox"] > div > div,
+  .st-key-ca-execute-clone-form [data-testid="stSelectbox"] [data-baseweb="select"] > div {{
       background-color: #ffffff !important;
       color: {BRAND_INK} !important;
       border-color: #e3e6e8 !important;
   }}
   .st-key-ca-run-filters [data-testid="stSelectbox"] svg,
-  .st-key-ca-run-filters [data-testid="stDateInput"] svg {{
+  .st-key-ca-run-filters [data-testid="stDateInput"] svg,
+  .st-key-ca-execute-clone-form [data-testid="stSelectbox"] svg {{
       color: #6b7177 !important;
       fill: #6b7177 !important;
+  }}
+  .st-key-ca-execute-clone-actions {{
+      margin-top: 0.35rem;
+  }}
+  .st-key-ca-execute-clone-actions .stButton button {{
+      font-weight: 700 !important;
   }}
 
   /* ---------- Sidebar bottom status card ---------- */

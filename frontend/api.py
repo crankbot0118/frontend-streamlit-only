@@ -143,3 +143,26 @@ def skip_run(clone_run_id: int, clone_function_run_id: int | None = None) -> dic
     if clone_function_run_id is not None:
         body["clone_function_run_id"] = clone_function_run_id
     return _post_json(f"/api/v1/runs/{clone_run_id}/skip", body)
+
+
+def get_execute_clone_options() -> dict:
+    """Fetch users and environments for the Execute Clone form."""
+    data = _get_json("/api/v1/execute-clone/options")
+    if isinstance(data, dict):
+        return {
+            "users": data.get("users") or [],
+            "environments": data.get("environments") or [],
+        }
+    return {"users": [], "environments": []}
+
+
+def trigger_clone_run(user_id: int, source_env_id: int, target_env_id: int) -> dict:
+    """Trigger a clone run (locks target via ``create_clone_run``)."""
+    return _post_json(
+        "/api/v1/execute-clone/trigger",
+        {
+            "user_id": user_id,
+            "source_env_id": source_env_id,
+            "target_env_id": target_env_id,
+        },
+    )

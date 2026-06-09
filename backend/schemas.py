@@ -48,6 +48,55 @@ class RunActionOut(BaseModel):
     clone_function_run_id: int | None = None
 
 
+class UserOption(BaseModel):
+    """User available for triggering a clone run."""
+
+    user_id: int
+    user_name: str
+    client_id: int
+    client_name: str
+
+    model_config = {"from_attributes": True}
+
+
+class EnvironmentOption(BaseModel):
+    """Environment that can be selected as a clone source or target."""
+
+    env_id: int
+    env_name: str
+    client_id: int
+    client_name: str
+    locked: bool
+
+    model_config = {"from_attributes": True}
+
+
+class ExecuteCloneOptionsOut(BaseModel):
+    """Dropdown options for the Execute Clone page."""
+
+    users: list[UserOption]
+    environments: list[EnvironmentOption]
+
+
+class CreateCloneRunIn(BaseModel):
+    """Body for triggering a new clone run."""
+
+    user_id: int
+    source_env_id: int
+    target_env_id: int
+
+
+class CreateCloneRunOut(BaseModel):
+    """Response after ``create_clone_run`` succeeds."""
+
+    clone_run_id: int
+    status: str
+    source_name: str
+    target_name: str
+    user_name: str
+    message: str
+
+
 class CloneFunctionRunOut(BaseModel):
     """One step row from ``clone_function_run_status`` (latest attempt)."""
 

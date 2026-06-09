@@ -1,7 +1,9 @@
-"""Read helpers for clone run data."""
+"""Read helpers and write actions for clone run data."""
 
 from datetime import date
+
 from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 # Latest ``clone_run_status`` row per ``clone_run_id`` (append-only status history).
@@ -227,6 +229,132 @@ def _get_failed_function_step(
 
     row = db.execute(query, params).mappings().first()
     return dict(row) if row else None
+
+
+def get_execute_clone_options(db: Session) -> dict:
+    """Users and environments for the Execute Clone form."""
+    users = db.execute(
+        text(
+            """
+            SELECT u.user_id, u.user_name, u.client_id, c.client_name
+            FROM users u
+            JOIN clients c ON c.client_id = u.client_id
+            ORDER BY u.user_name
+            """
+        )
+    ).mappings().all()
+    environments = db.execute(
+        text(
+            """
+            SELECT e.env_id, e.env_name, e.client_id, e.locked, c.client_name
+            FROM environments e
+            JOIN clients c ON c.client_id = e.client_id
+            ORDER BY e.env_name
+            """
+        )
+    ).mappings().all()
+    return {
+        "users": [dict(row) for row in users],
+        "environments": [dict(row) for row in environments],
+    }
+
+
+def _get_user(db: Session, user_id: int) -> dict | None:
+    row = db.execute(
+        text(
+            """
+            SELECT u.user_id, u.user_name, u.client_id, c.client_name
+            FROM users u
+            JOIN clients c ON c.client_id = u.client_id
+            WHERE u.user_id = :user_id
+            """
+        ),
+        {"user_id": user_id},
+    ).mappings().first()
+    return dict(row) if row else None
+
+
+def _get_environment(db: Session, env_id: int) -> dict | None:
+    row = db.execute(
+        text(
+            """
+            SELECT e.env_id, e.env_name, e.client_id, e.locked, c.client_name
+            FROM environments e
+            JOIN clients c ON c.client_id = e.client_id
+            WHERE e.env_id = :env_id
+            """
+        ),
+        {"env_id": env_id},
+    ).mappings().first()
+    return dict(row) if row else None
+
+
+def _is_prod_env(env_name: str) -> bool:
+    return (env_name or "").strip().upper() == "PROD"
+
+
+def trigger_clone_run(
+    db: Session,
+    user_id: int,
+    source_env_id: int,
+    target_env_id: int,
+) -> dict:
+    """Validate inputs and invoke ``create_clone_run`` (locks target atomically).
+
+    Raises ``ValueError`` for business-rule violations or DB errors surfaced by
+    the SQL function (e.g. target already locked).
+    """
+    user = _get_user(db, user_id)
+    if user is None:
+        raise ValueError("User not found")
+
+    source = _get_environment(db, source_env_id)
+    if source is None:
+        raise ValueError("Source environment not found")
+
+    target = _get_environment(db, target_env_id)
+    if target is None:
+        raise ValueError("Target environment not found")
+
+    client_id = user["client_id"]
+    if source["client_id"] != client_id or target["client_id"] != client_id:
+        raise ValueError("Source and target must belong to the selected user's client")
+
+    if source_env_id == target_env_id:
+        raise ValueError("Source and target must be different environments")
+
+    if _is_prod_env(target["env_name"]):
+        raise ValueError("Target cannot be PROD")
+
+    try:
+        run_id = db.execute(
+            text(
+                """
+                SELECT create_clone_run(
+                    :client_id,
+                    :user_id,
+                    :source_env_id,
+                    :target_env_id
+                )
+                """
+            ),
+            {
+                "client_id": client_id,
+                "user_id": user_id,
+                "source_env_id": source_env_id,
+                "target_env_id": target_env_id,
+            },
+        ).scalar_one()
+        db.commit()
+    except SQLAlchemyError as exc:
+        db.rollback()
+        detail = str(exc.orig).strip() if exc.orig else str(exc)
+        raise ValueError(detail) from exc
+
+    run = get_clone_run(db, run_id)
+    if run is None:
+        raise ValueError("Clone run was created but could not be loaded")
+    return run
 
 
 def mark_run_action(
