@@ -31,6 +31,24 @@ _GLOBAL_CSS = f"""
       display: none !important;
   }}
 
+  /* Fixed-width, non-resizable sidebar. */
+  [data-testid="stSidebarResizeHandle"] {{
+      display: none !important;
+  }}
+
+  [data-testid="stSidebar"] {{
+      width: 244px !important;
+      min-width: 244px !important;
+      max-width: 244px !important;
+  }}
+
+  /* Collapse the empty sidebar header so content sits at the very top. */
+  [data-testid="stSidebarHeader"] {{
+      height: 0;
+      min-height: 0;
+      padding: 0;
+  }}
+
   /* Sidebar content top-flush, matching the main title. */
   [data-testid="stSidebarUserContent"] {{
       padding-top: 1.2rem;
