@@ -414,11 +414,22 @@ _GLOBAL_CSS = f"""
       color: #8a9097;
       padding: 0.3rem;
   }}
+  /* Make the redirect arrow noticeably larger, sized relative to the text. */
+  [class*="st-key-runcard_"] .stButton button [data-testid="stIconMaterial"] {{
+      font-size: 1.9rem !important;
+      width: 1.9rem !important;
+      height: 1.9rem !important;
+  }}
+  [class*="st-key-runcard_"] .stButton button svg {{
+      width: 1.9rem !important;
+      height: 1.9rem !important;
+  }}
   [class*="st-key-runcard_"] .stButton button:hover {{
       background: transparent !important;
       color: {BRAND_ORANGE};
   }}
-  [class*="st-key-runcard_"] .stButton button:hover svg {{
+  [class*="st-key-runcard_"] .stButton button:hover svg,
+  [class*="st-key-runcard_"] .stButton button:hover [data-testid="stIconMaterial"] {{
       color: {BRAND_ORANGE};
   }}
 
@@ -501,17 +512,26 @@ _GLOBAL_CSS = f"""
       border: none !important;
       box-shadow: none !important;
       outline: none !important;
-      padding: 0.2rem 0.1rem !important;
-      color: #6b7177;
+      padding: 0.3rem 0.2rem !important;
+      color: {BRAND_ORANGE} !important;
       font-weight: 600;
+      cursor: pointer !important;
+      opacity: 1 !important;
+  }}
+  .st-key-back_to_runs .stButton button p,
+  .st-key-back_to_runs .stButton button svg,
+  .st-key-back_to_runs .stButton button [data-testid="stIconMaterial"] {{
+      color: {BRAND_ORANGE} !important;
+      fill: {BRAND_ORANGE} !important;
   }}
   .st-key-back_to_runs .stButton button:hover {{
-      background: transparent !important;
-      color: {BRAND_ORANGE};
+      background: rgba(232, 117, 17, 0.12) !important;
+      color: {BRAND_ORANGE} !important;
   }}
   .st-key-back_to_runs .stButton button:hover svg,
-  .st-key-back_to_runs .stButton button:hover p {{
-      color: {BRAND_ORANGE};
+  .st-key-back_to_runs .stButton button:hover p,
+  .st-key-back_to_runs .stButton button:hover [data-testid="stIconMaterial"] {{
+      color: {BRAND_ORANGE} !important;
   }}
 
   /* ---------- Step rows (run details) ---------- */

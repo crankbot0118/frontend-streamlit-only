@@ -37,7 +37,11 @@ if run_id and (not run or run.get("clone_run_id") != run_id):
 if run_id:
     st.query_params["run"] = str(run_id)
 
-if st.button(":material/arrow_back: Back to Run History", key="back_to_runs"):
+if st.button(
+    "Back to Run History",
+    icon=":material/arrow_back:",
+    key="back_to_runs",
+):
     st.query_params.clear()
     goto_page("Run History")
 
