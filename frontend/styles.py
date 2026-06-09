@@ -548,9 +548,17 @@ _GLOBAL_CSS = f"""
       color: {BRAND_ORANGE} !important;
       fill: {BRAND_ORANGE} !important;
   }}
-  .st-key-back_to_runs .stButton button:hover {{
-      background: rgba(232, 117, 17, 0.12) !important;
+  .st-key-back_to_runs .stButton button:hover,
+  .st-key-back_to_runs .stButton button:focus,
+  .st-key-back_to_runs .stButton button:active {{
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      outline: none !important;
       color: {BRAND_ORANGE} !important;
+  }}
+  .st-key-back_to_runs .stButton button:hover p {{
+      text-decoration: underline;
   }}
   .st-key-back_to_runs .stButton button:hover svg,
   .st-key-back_to_runs .stButton button:hover p,
