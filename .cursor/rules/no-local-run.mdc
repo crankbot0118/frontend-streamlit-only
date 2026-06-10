@@ -1,9 +1,6 @@
 ---
-description: Never execute the app or commands on the user's local machine
-globs:
 alwaysApply: true
 ---
-
 - Do NOT run, start, build, or execute anything on the user's local machine
   (no `streamlit run`, no servers, no installs, no test executions, no curl/health checks).
 - Only generate and edit code. The user runs things themselves.
