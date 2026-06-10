@@ -179,14 +179,6 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Sidebar navigation ---------- */
 
-  /* Shared column grid: chevron/icon column + label column align across all rows. */
-  .st-key-ca-nav {{
-      --ca-nav-pad-x: 0.55rem;
-      --ca-nav-icon-col: 1.25rem;
-      --ca-nav-gap: 0.7rem;
-      --ca-nav-row-pad-y: 0.35rem;
-  }}
-
   /* Tighten vertical spacing and keep every block left-aligned. */
   .st-key-ca-nav > [data-testid="stVerticalBlock"] {{
       gap: 0 !important;
@@ -212,27 +204,17 @@ _GLOBAL_CSS = f"""
       border: none !important;
       box-shadow: none !important;
       outline: none !important;
-      gap: var(--ca-nav-gap) !important;
-      padding: var(--ca-nav-row-pad-y) var(--ca-nav-pad-x) !important;
+      gap: 0.7rem;
+      padding: 0.35rem 0.55rem;
       border-radius: 8px;
       color: {BRAND_INK};
-  }}
-
-  .st-key-ca-nav .stButton button svg {{
-      width: var(--ca-nav-icon-col) !important;
-      height: var(--ca-nav-icon-col) !important;
-      min-width: var(--ca-nav-icon-col) !important;
-      flex: 0 0 var(--ca-nav-icon-col) !important;
-      margin: 0 !important;
   }}
 
   /* Stop Streamlit from centering the label inside the button. */
   .st-key-ca-nav .stButton button > div,
   .st-key-ca-nav .stButton button [data-testid="stMarkdownContainer"] {{
-      width: auto;
-      flex: 1 1 auto;
+      width: 100%;
       display: flex !important;
-      align-items: center !important;
       justify-content: flex-start !important;
       text-align: left !important;
   }}
@@ -242,7 +224,6 @@ _GLOBAL_CSS = f"""
       font-weight: 600;
       font-size: 0.98rem;
       text-align: left !important;
-      line-height: 1.25;
   }}
 
   .st-key-ca-nav .stButton button:hover {{
@@ -287,9 +268,10 @@ _GLOBAL_CSS = f"""
       fill: #9aa0a6 !important;
   }}
 
-  /* Small yellow "Coming soon!" badge — inline beside group title when marked. */
+  /* Small yellow "Coming soon!" highlight at the top of the Admin group. */
   .ca-soon {{
       display: inline-block;
+      margin: 0 0 0.4rem 0.55rem;
       padding: 0.05rem 0.45rem;
       border-radius: 6px;
       background: #fff3cd;
@@ -297,49 +279,6 @@ _GLOBAL_CSS = f"""
       font-size: 0.66rem;
       font-weight: 700;
       letter-spacing: 0.02em;
-      line-height: 1.3;
-      white-space: nowrap;
-  }}
-
-  .ca-soon--inline {{
-      margin: 0 0 0 0.4rem;
-  }}
-
-  /* Group header row (Admin + badge) — matches expander summary alignment. */
-  .ca-nav-group-head {{
-      display: flex;
-      align-items: center;
-      gap: var(--ca-nav-gap);
-      padding: var(--ca-nav-row-pad-y) var(--ca-nav-pad-x);
-      user-select: none;
-  }}
-
-  .ca-nav-group-chevron {{
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: var(--ca-nav-icon-col);
-      min-width: var(--ca-nav-icon-col);
-      flex: 0 0 var(--ca-nav-icon-col);
-      color: {BRAND_ORANGE};
-      font-size: 0.95rem;
-      line-height: 1;
-  }}
-
-  .ca-nav-group-label-row {{
-      display: inline-flex;
-      align-items: center;
-      flex-wrap: nowrap;
-      min-width: 0;
-  }}
-
-  .ca-nav-group-title {{
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      font-size: 0.78rem;
-      color: #6b7177;
-      line-height: 1.25;
   }}
 
   /* Group dropdowns: fully borderless / no box, blend into the sidebar. */
@@ -355,8 +294,8 @@ _GLOBAL_CSS = f"""
       display: flex !important;
       align-items: center !important;
       justify-content: flex-start !important;
-      gap: var(--ca-nav-gap) !important;
-      padding: var(--ca-nav-row-pad-y) var(--ca-nav-pad-x) !important;
+      gap: 0.5rem;
+      padding: 0.35rem 0.55rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.03em;
@@ -366,7 +305,6 @@ _GLOBAL_CSS = f"""
       border: none !important;
       box-shadow: none !important;
       outline: none !important;
-      list-style: none;
   }}
 
   .st-key-ca-nav [data-testid="stExpander"] summary:hover,
@@ -379,29 +317,23 @@ _GLOBAL_CSS = f"""
       outline: none !important;
   }}
 
-  /* Chevron in the same column as nav icons. */
+  /* Brand-colored chevron, moved to the left of the label. */
   .st-key-ca-nav [data-testid="stExpander"] summary svg {{
       order: -1;
-      width: var(--ca-nav-icon-col) !important;
-      height: var(--ca-nav-icon-col) !important;
-      min-width: var(--ca-nav-icon-col) !important;
-      flex: 0 0 var(--ca-nav-icon-col) !important;
-      margin: 0 !important;
       color: {BRAND_ORANGE};
       fill: {BRAND_ORANGE};
   }}
 
-  /* Left-align the summary label text with nav item labels. */
+  /* Left-align the summary label text too. */
   .st-key-ca-nav [data-testid="stExpander"] summary p,
   .st-key-ca-nav [data-testid="stExpander"] summary span {{
       text-align: left !important;
-      margin: 0 !important;
-      line-height: 1.25;
   }}
 
-  /* No extra indent — icons share the same left column as Home / Execute Clone. */
+  /* Indent the items nested inside a group, with tight vertical padding.
+     Remove the separator border between the header and the content. */
   .st-key-ca-nav [data-testid="stExpanderDetails"] {{
-      padding-left: 0 !important;
+      padding-left: 0.6rem;
       padding-top: 0.1rem;
       padding-bottom: 0;
       border: none !important;
@@ -413,13 +345,13 @@ _GLOBAL_CSS = f"""
       margin-bottom: 0 !important;
   }}
 
-  /* Thin black divider before Execute Clone / Run History. */
+  /* Thin divider line before Execute Clone (no st.divider wrapper gap). */
   .ca-nav-divider-line {{
       display: block;
       height: 1px;
       border: none;
-      margin: 0.12rem var(--ca-nav-pad-x);
-      background: {BRAND_INK};
+      margin: 0.12rem 0.55rem 0.12rem 0.55rem;
+      background: rgba(232, 117, 17, 0.25);
   }}
 
   /* ---------- Run History filters + Execute Clone form ---------- */
@@ -1783,25 +1715,6 @@ def _nav_link(pages: dict, item: dict, current_title: str) -> None:
         st.switch_page(pages[item["title"]])
 
 
-def _nav_group_header(title: str, badge: str | None = None) -> None:
-    """Section label row with chevron; optional badge sits beside the title."""
-    safe_title = html.escape(title.upper())
-    badge_html = ""
-    if badge:
-        badge_html = (
-            f'<span class="ca-soon ca-soon--inline">{html.escape(badge)}</span>'
-        )
-    st.html(
-        f'<div class="ca-nav-group-head">'
-        f'<span class="ca-nav-group-chevron" aria-hidden="true">&#9662;</span>'
-        f'<span class="ca-nav-group-label-row">'
-        f'<span class="ca-nav-group-title">{safe_title}</span>'
-        f"{badge_html}"
-        f"</span>"
-        f"</div>"
-    )
-
-
 def render_sidebar_nav(pages: dict, current_title: str) -> None:
     """Render the sidebar navigation: link-style items with Material icons
     and collapsible groups, styled to look borderless and clean.
@@ -1815,14 +1728,11 @@ def render_sidebar_nav(pages: dict, current_title: str) -> None:
             if entry["kind"] == "item":
                 _nav_link(pages, entry, current_title)
             elif entry["kind"] == "group":
-                if entry.get("badge"):
-                    _nav_group_header(entry["title"], entry["badge"])
+                with st.expander(entry["title"], expanded=True):
+                    if entry.get("badge"):
+                        st.html(f'<span class="ca-soon">{entry["badge"]}</span>')
                     for item in entry["items"]:
                         _nav_link(pages, item, current_title)
-                else:
-                    with st.expander(entry["title"], expanded=True):
-                        for item in entry["items"]:
-                            _nav_link(pages, item, current_title)
             elif entry["kind"] == "divider":
                 st.html('<hr class="ca-nav-divider-line" />')
 
