@@ -6,6 +6,7 @@ import streamlit as st
 
 from api import get_run_filters, get_runs
 from styles import goto_page, render_run_card, render_title
+from ui_errors import show_error
 
 render_title(
     "Run History",
@@ -16,8 +17,8 @@ ALL = "All"
 
 try:
     filter_opts = get_run_filters()
-except Exception:
-    st.error("Could not reach the backend to load filter options. Is the API running?")
+except Exception as exc:
+    show_error(exc, context="Could not load filter options")
     filter_opts = {"clients": [], "targets": [], "users": []}
 
 with st.container(key="ca-run-filters"):
@@ -61,8 +62,8 @@ try:
         user=user_val,
         start_date=start_val,
     )
-except Exception:
-    st.error("Could not reach the backend to load runs. Is the API running?")
+except Exception as exc:
+    show_error(exc, context="Could not load runs")
     runs = []
 
 runs = sorted(

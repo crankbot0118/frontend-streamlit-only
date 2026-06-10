@@ -12,6 +12,7 @@ if str(_ROOT) not in sys.path:
 from api import get_execute_clone_options, get_run, trigger_clone_run
 from config.settings import frontend, is_protected_target_env
 from styles import goto_page, render_title
+from ui_errors import show_error
 
 _cfg = frontend()
 _PROTECTED_TARGET = _cfg.protected_target_env_name
@@ -30,8 +31,8 @@ def _is_protected_target(name: str) -> bool:
 
 try:
     options = get_execute_clone_options()
-except Exception:
-    st.error("Could not reach the backend to load options. Is the API running?")
+except Exception as exc:
+    show_error(exc, context="Could not load Execute Clone options")
     st.stop()
 
 users = options.get("users") or []
@@ -161,4 +162,4 @@ with st.container(key="ca-execute-clone-actions"):
             )
             goto_page("Run details")
         except Exception as exc:
-            st.error(str(exc))
+            show_error(exc, context="Could not trigger clone run")

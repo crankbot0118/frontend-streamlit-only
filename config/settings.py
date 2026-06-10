@@ -7,6 +7,7 @@ All values are read from the repo-root ``.env`` file. Copy ``.env.example`` to
 
 from __future__ import annotations
 
+import logging
 import os
 from dataclasses import dataclass
 from functools import lru_cache
@@ -14,27 +15,38 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from config.errors import ConfigurationError
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 ENV_FILE = REPO_ROOT / ".env"
+ENV_EXAMPLE = REPO_ROOT / ".env.example"
 
 _env_loaded = False
 
 
-def load_env() -> None:
+def load_env(*, require_file: bool = True) -> None:
     """Load repo-root ``.env`` once (idempotent)."""
     global _env_loaded
-    if not _env_loaded:
-        load_dotenv(ENV_FILE, override=False)
-        _env_loaded = True
+    if _env_loaded:
+        return
+    if require_file and not ENV_FILE.is_file():
+        hint = (
+            f"Copy {ENV_EXAMPLE} to {ENV_FILE} and set your values."
+            if ENV_EXAMPLE.is_file()
+            else f"Create {ENV_FILE} with the required environment variables."
+        )
+        raise ConfigurationError(f"Missing configuration file: {ENV_FILE}. {hint}")
+    load_dotenv(ENV_FILE, override=False)
+    _env_loaded = True
 
 
 def _require(name: str) -> str:
     load_env()
     value = os.getenv(name, "").strip()
     if not value:
-        raise RuntimeError(
+        raise ConfigurationError(
             f"Missing required environment variable {name!r}. "
-            f"Copy {REPO_ROOT / '.env.example'} to {ENV_FILE} and set it."
+            f"Set it in {ENV_FILE} (see {ENV_EXAMPLE})."
         )
     return value
 
@@ -50,11 +62,23 @@ def _bool(name: str) -> bool:
 
 
 def _int(name: str) -> int:
-    return int(_require(name))
+    raw = _require(name)
+    try:
+        return int(raw)
+    except ValueError as exc:
+        raise ConfigurationError(
+            f"Environment variable {name!r} must be an integer, got {raw!r}."
+        ) from exc
 
 
 def _float(name: str) -> float:
-    return float(_require(name))
+    raw = _require(name)
+    try:
+        return float(raw)
+    except ValueError as exc:
+        raise ConfigurationError(
+            f"Environment variable {name!r} must be a number, got {raw!r}."
+        ) from exc
 
 
 def _split_csv(name: str) -> list[str]:
@@ -71,6 +95,15 @@ def _split_path_list(name: str) -> list[str]:
 def is_protected_target_env(env_name: str, protected_name: str) -> bool:
     """Return True when ``env_name`` matches the protected target label (e.g. PROD)."""
     return (env_name or "").strip().upper() == protected_name.strip().upper()
+
+
+@dataclass(frozen=True)
+class LoggingSettings:
+    level: int
+    directory: Path
+    to_file: bool
+    max_bytes: int
+    backup_count: int
 
 
 @dataclass(frozen=True)
@@ -115,6 +148,8 @@ class ApiSecuritySettings:
     enable_docs: bool
     max_run_limit: int
     protected_target_env_name: str
+    host: str
+    port: int
 
 
 @dataclass(frozen=True)
@@ -147,6 +182,21 @@ class AgentSettings:
 
 
 @lru_cache(maxsize=1)
+def logging_config() -> LoggingSettings:
+    load_env()
+    level_name = (_optional("LOG_LEVEL") or "INFO").upper()
+    level = getattr(logging, level_name, logging.INFO)
+    log_dir = Path(_optional("LOG_DIR") or str(REPO_ROOT / "logs"))
+    return LoggingSettings(
+        level=level,
+        directory=log_dir,
+        to_file=_bool("LOG_TO_FILE"),
+        max_bytes=_int("LOG_MAX_BYTES"),
+        backup_count=_int("LOG_BACKUP_COUNT"),
+    )
+
+
+@lru_cache(maxsize=1)
 def database() -> DatabaseSettings:
     return DatabaseSettings(
         host=_require("DB_HOST"),
@@ -172,6 +222,8 @@ def api_security() -> ApiSecuritySettings:
         enable_docs=_bool("ENABLE_DOCS"),
         max_run_limit=_int("API_MAX_RUN_LIMIT"),
         protected_target_env_name=_require("PROTECTED_TARGET_ENV_NAME"),
+        host=_require("API_HOST"),
+        port=_int("API_PORT"),
     )
 
 
@@ -192,20 +244,47 @@ def frontend() -> FrontendSettings:
 
 @lru_cache(maxsize=1)
 def agent() -> AgentSettings:
+    """Load agent-only settings. Call only from ``agent.py``."""
+    def _require_agent(name: str) -> str:
+        value = _optional(name)
+        if not value:
+            raise ConfigurationError(
+                f"Agent setting {name!r} is required to run agent.py. Set it in {ENV_FILE}."
+            )
+        return value
+
     timeout_raw = _optional("SUBPROCESS_TIMEOUT_SEC")
     subprocess_timeout = int(timeout_raw) if timeout_raw else None
     if subprocess_timeout is not None and subprocess_timeout <= 0:
         subprocess_timeout = None
 
+    script_paths = {
+        "MASTER_CLONE_SH": _require_agent("MASTER_CLONE_SH"),
+        "SKIP_FUNCTION_SH": _require_agent("SKIP_FUNCTION_SH"),
+        "NULLIFY_CLONE_SH": _require_agent("NULLIFY_CLONE_SH"),
+        "ABORT_CLONE_SH": _require_agent("ABORT_CLONE_SH"),
+    }
+    for path_name, path_value in script_paths.items():
+        if not Path(path_value).is_file():
+            logging.getLogger("vigt.config").warning(
+                "%s points to a missing file: %s", path_name, path_value
+            )
+
+    clone_dir = _require_agent("INSTANCE_CLONE_DIR")
+    if not Path(clone_dir).is_dir():
+        logging.getLogger("vigt.config").warning(
+            "INSTANCE_CLONE_DIR is not a directory: %s", clone_dir
+        )
+
     return AgentSettings(
         instance_env_id=_int("INSTANCE_ENV_ID"),
         instance_dbname=_optional("INSTANCE_DBNAME"),
-        master_clone_sh=_require("MASTER_CLONE_SH"),
-        skip_function_sh=_require("SKIP_FUNCTION_SH"),
-        nullify_clone_sh=_require("NULLIFY_CLONE_SH"),
-        abort_clone_sh=_require("ABORT_CLONE_SH"),
+        master_clone_sh=script_paths["MASTER_CLONE_SH"],
+        skip_function_sh=script_paths["SKIP_FUNCTION_SH"],
+        nullify_clone_sh=script_paths["NULLIFY_CLONE_SH"],
+        abort_clone_sh=script_paths["ABORT_CLONE_SH"],
         poll_interval_sec=_int("POLL_INTERVAL_SEC"),
-        instance_clone_dir=_require("INSTANCE_CLONE_DIR"),
+        instance_clone_dir=clone_dir,
         clone_log_template=_optional("CLONE_LOG") or _optional("CLONE_LOG_PATH"),
         subprocess_timeout_sec=subprocess_timeout,
         log_location_max_len=_int("LOG_LOCATION_MAX_LEN"),
@@ -215,7 +294,7 @@ def agent() -> AgentSettings:
 
 
 def agent_subprocess_env() -> dict[str, str]:
-    """Environment dict for shell scripts launched by ``agent.py``."""
+    """Environment dict for shell scripts launched by the target agent."""
     cfg = agent()
     db = cfg.database
     env = os.environ.copy()

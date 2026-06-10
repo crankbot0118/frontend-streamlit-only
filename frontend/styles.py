@@ -25,7 +25,11 @@ DEFAULT_LOGO_PATH = REPO_ROOT / "assets" / "logo.svg"
 @lru_cache(maxsize=None)
 def _asset_data_uri(filename: str) -> str:
     """Read a file from ``assets/`` and return it as a base64 data URI."""
-    data = (REPO_ROOT / "assets" / filename).read_bytes()
+    path = REPO_ROOT / "assets" / filename
+    try:
+        data = path.read_bytes()
+    except OSError:
+        return ""
     b64 = base64.b64encode(data).decode("ascii")
     suffix = Path(filename).suffix.lower()
     mime = "image/svg+xml" if suffix == ".svg" else "image/png"
@@ -1221,7 +1225,12 @@ def render_logo(path: str | Path | None = None, width: int = 170) -> None:
     it works regardless of the current working directory) and embeds it as a
     data URI so it renders inline (typically inside the sidebar).
     """
-    svg = Path(path or DEFAULT_LOGO_PATH).read_text(encoding="utf-8")
+    logo_path = Path(path or DEFAULT_LOGO_PATH)
+    try:
+        svg = logo_path.read_text(encoding="utf-8")
+    except OSError:
+        st.caption("Logo not found.")
+        return
     b64 = base64.b64encode(svg.encode("utf-8")).decode("ascii")
     st.html(
         f"""
@@ -1504,6 +1513,13 @@ def render_run_card(run: dict) -> bool:
         or run.get("client")
         or "—"
     )
+    failed_step = run.get("failed_function_name")
+    failed_step_html = ""
+    if failed_step:
+        failed_step_html = (
+            f'<span class="sepm">&middot;</span>'
+            f'<span class="ca-run-metaline">Failed step: {_esc(failed_step)}</span>'
+        )
     info_html = f"""
         <div class="ca-run">
           <div class="ca-run-line1">
@@ -1529,6 +1545,7 @@ def render_run_card(run: dict) -> bool:
             <span class="ca-run-metaline">
               <span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}
             </span>
+            {failed_step_html}
           </div>
         </div>
     """

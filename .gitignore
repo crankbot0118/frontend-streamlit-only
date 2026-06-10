@@ -1,2 +1,5 @@
 .cursor/
-.env*
+.env
+.env.*
+!.env.example
+logs/

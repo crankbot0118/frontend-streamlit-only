@@ -33,6 +33,7 @@ from styles import (
     step_detail_dialog_html,
     _esc,
 )
+from ui_errors import show_error
 
 _RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
 
@@ -59,7 +60,8 @@ run = st.session_state.get("selected_run")
 if run_id and (not run or run.get("clone_run_id") != run_id):
     try:
         run = get_run(run_id)
-    except Exception:
+    except Exception as exc:
+        show_error(exc, context=f"Could not load run #{run_id}")
         run = None
     if run:
         st.session_state["selected_run"] = run
@@ -88,8 +90,8 @@ if not run_id:
 
 try:
     steps = get_run_steps(run_id)
-except Exception:
-    st.error("Could not reach the backend to load steps. Is the API running?")
+except Exception as exc:
+    show_error(exc, context="Could not load run steps")
     steps = []
 
 failed_steps = [
@@ -140,7 +142,7 @@ if run:
                         st.session_state.pop("selected_run", None)
                         st.rerun()
                     except Exception as exc:
-                        st.error(f"Could not abort run: {exc}")
+                        show_error(exc, context="Could not abort run")
                 if st.button(
                     "Skip",
                     key="detail_skip",
@@ -152,7 +154,7 @@ if run:
                         st.session_state.pop("selected_run", None)
                         st.rerun()
                     except Exception as exc:
-                        st.error(f"Could not skip run: {exc}")
+                        show_error(exc, context="Could not skip run")
 
         with st.container(key="ca-detail-meta-row"):
             st.html(

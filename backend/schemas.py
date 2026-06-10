@@ -21,6 +21,7 @@ class CloneRunOut(BaseModel):
     start_date: datetime | None = None
     last_update: datetime | None = None
     log_location: str | None = None
+    failed_function_name: str | None = None
 
     model_config = {"from_attributes": True}
 
@@ -141,5 +142,27 @@ class FunctionStepDetailOut(BaseModel):
     base_pk: int
     attempt_number: int
     attempts: list[FunctionStepAttemptOut]
+
+    model_config = {"from_attributes": True}
+
+
+class StepFailureSummaryOut(BaseModel):
+    """Failure count for one clone step across all runs (``idx_cfrs_status``)."""
+
+    function_id: int
+    function_name: str
+    failure_count: int
+
+    model_config = {"from_attributes": True}
+
+
+class FunctionFailureHistoryOut(BaseModel):
+    """One FAILED attempt for a step across runs (``idx_cfrs_function_id``)."""
+
+    clone_run_id: int
+    clone_function_run_id: int
+    status: str
+    start_time: datetime | None = None
+    end_time: datetime | None = None
 
     model_config = {"from_attributes": True}

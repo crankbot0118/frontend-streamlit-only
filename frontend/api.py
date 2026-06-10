@@ -1,9 +1,6 @@
-"""Tiny client for talking to the FastAPI backend from the Streamlit app.
+"""HTTP client for the FastAPI backend from the Streamlit app."""
 
-Uses the standard library (``urllib``) so the frontend needs no extra
-dependencies beyond ``python-dotenv`` (via ``config.settings``). All settings
-are loaded from the repo-root ``.env`` file.
-"""
+from __future__ import annotations
 
 import json
 import sys
@@ -17,9 +14,19 @@ _ROOT = Path(__file__).resolve().parent.parent
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from config.settings import frontend
+from config.errors import BackendError, ConfigurationError
+from config.logging import setup_logging
+from config.settings import frontend, load_env
 
-_cfg = frontend()
+log = setup_logging("frontend.api")
+
+try:
+    load_env()
+    _cfg = frontend()
+except ConfigurationError as exc:
+    log.critical("Frontend configuration failed: %s", exc)
+    raise
+
 BACKEND_URL = _cfg.backend_url
 API_KEY = _cfg.api_key
 _HEALTH_TIMEOUT = _cfg.health_timeout_sec
@@ -43,26 +50,51 @@ def _signed_url(path: str) -> str:
     return f"{url}{sep}{urllib.parse.urlencode({'api_key': API_KEY})}"
 
 
+def _backend_error(path: str, exc: Exception) -> BackendError:
+    if isinstance(exc, urllib.error.HTTPError):
+        body = exc.read().decode("utf-8", errors="replace")
+        try:
+            detail = json.loads(body).get("detail", body)
+        except json.JSONDecodeError:
+            detail = body
+        return BackendError(str(detail), status_code=exc.code, path=path)
+    if isinstance(exc, urllib.error.URLError):
+        return BackendError(
+            f"Cannot reach backend at {BACKEND_URL}. Is the API running?",
+            path=path,
+        )
+    if isinstance(exc, TimeoutError):
+        return BackendError(f"Request timed out: {path}", path=path)
+    return BackendError(str(exc), path=path)
+
+
 def check_backend_health(timeout: float | None = None) -> bool:
     """Return ``True`` if the backend ``/health`` endpoint responds with 200."""
     url = f"{BACKEND_URL}/health"
     try:
         with urllib.request.urlopen(url, timeout=timeout or _HEALTH_TIMEOUT) as resp:
             return resp.status == 200
-    except Exception:
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError) as exc:
+        log.debug("Backend health check failed: %s", exc)
         return False
 
 
 def _get_json(path: str, timeout: float | None = None):
-    """GET a JSON resource from the backend. Raises on failure."""
+    """GET a JSON resource from the backend."""
     url = f"{BACKEND_URL}{path}"
     req = urllib.request.Request(url, headers=_api_key_header())
-    with urllib.request.urlopen(req, timeout=timeout or _GET_TIMEOUT) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=timeout or _GET_TIMEOUT) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except json.JSONDecodeError as exc:
+        log.error("Invalid JSON from %s: %s", path, exc)
+        raise BackendError(f"Invalid JSON response from backend: {path}", path=path) from exc
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as exc:
+        raise _backend_error(path, exc) from exc
 
 
 def _post_json(path: str, body: dict | None = None, timeout: float | None = None) -> dict:
-    """POST JSON to the backend. Raises on failure."""
+    """POST JSON to the backend."""
     url = f"{BACKEND_URL}{path}"
     payload = json.dumps(body or {}).encode("utf-8")
     req = urllib.request.Request(
@@ -75,18 +107,17 @@ def _post_json(path: str, body: dict | None = None, timeout: float | None = None
         with urllib.request.urlopen(req, timeout=timeout or _POST_TIMEOUT) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             return data if isinstance(data, dict) else {}
+    except json.JSONDecodeError as exc:
+        log.error("Invalid JSON from %s: %s", path, exc)
+        raise BackendError(f"Invalid JSON response from backend: {path}", path=path) from exc
     except urllib.error.HTTPError as exc:
-        body = exc.read().decode("utf-8", errors="replace")
-        try:
-            detail = json.loads(body).get("detail", body)
-        except json.JSONDecodeError:
-            detail = body
-        raise RuntimeError(detail) from exc
+        raise _backend_error(path, exc) from exc
+    except (urllib.error.URLError, TimeoutError) as exc:
+        raise _backend_error(path, exc) from exc
 
 
 def _as_list(data, *keys: str) -> list[dict]:
-    """Normalize a response that may be a bare list or a wrapped object
-    like ``{"runs": [...]}`` into a plain list of dicts."""
+    """Normalize a response that may be a bare list or a wrapped object."""
     if isinstance(data, list):
         return data
     if isinstance(data, dict):
@@ -131,17 +162,15 @@ def get_runs(
 
 
 def get_run(clone_run_id: int) -> dict | None:
-    """Fetch a single clone run by id.
-
-    Tries the dedicated ``/api/v1/runs/{id}`` endpoint first; if that is
-    unavailable (older backend) it falls back to scanning the runs list.
-    """
+    """Fetch a single clone run by id."""
     try:
         data = _get_json(f"/api/v1/runs/{clone_run_id}")
         if isinstance(data, dict) and data.get("clone_run_id") is not None:
             return data
-    except Exception:
-        pass
+    except BackendError as exc:
+        if exc.status_code == 404:
+            return None
+        log.debug("Dedicated run fetch failed for %s: %s", clone_run_id, exc)
     for run in get_runs():
         if run.get("clone_run_id") == clone_run_id:
             return run
@@ -149,7 +178,7 @@ def get_run(clone_run_id: int) -> dict | None:
 
 
 def get_run_steps(clone_run_id: int) -> list[dict]:
-    """Fetch the step rows (clone_function_run_status) for a clone run."""
+    """Fetch the step rows for a clone run."""
     return _as_list(_get_json(f"/api/v1/runs/{clone_run_id}/steps"), "steps")
 
 
@@ -160,7 +189,7 @@ def get_step_detail(clone_run_id: int, clone_function_run_id: int) -> dict:
 
 
 def run_log_url(clone_run_id: int) -> str:
-    """Backend download URL for a run's log (serves ``log_location``)."""
+    """Backend download URL for a run's log."""
     return _signed_url(f"/api/v1/runs/{clone_run_id}/log")
 
 

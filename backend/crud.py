@@ -13,6 +13,17 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from config.settings import api_security, is_protected_target_env
+from step_queries import (
+    GET_ATTEMPTS_FOR_FUNCTION,
+    GET_FAILED_STEP_BY_PK,
+    GET_FAILED_STEP_FOR_RUN,
+    GET_STEP_BY_PK,
+    GET_STEP_LOG_LOCATION,
+    fetch_failed_step_names_for_runs,
+    fetch_function_failure_history,
+    fetch_run_steps,
+    fetch_step_failure_summary,
+)
 
 _PROTECTED_TARGET = api_security().protected_target_env_name
 
@@ -130,7 +141,21 @@ def get_clone_runs(
     )
     results = db.execute(query, params)
     columns = list(results.keys())
-    return [dict(zip(columns, row)) for row in results.fetchall()]
+    runs = [dict(zip(columns, row)) for row in results.fetchall()]
+
+    failed_run_ids = [
+        run["clone_run_id"]
+        for run in runs
+        if (run.get("status") or "").upper() == "FAILED"
+    ]
+    if failed_run_ids:
+        failed_steps = fetch_failed_step_names_for_runs(db, failed_run_ids)
+        for run in runs:
+            name = failed_steps.get(run["clone_run_id"])
+            if name:
+                run["failed_function_name"] = name
+
+    return runs
 
 
 def get_clone_run(db: Session, clone_run_id: int) -> dict | None:
@@ -162,7 +187,14 @@ def get_clone_run(db: Session, clone_run_id: int) -> dict | None:
     results = db.execute(query, {"clone_run_id": clone_run_id})
     columns = list(results.keys())
     row = results.fetchone()
-    return dict(zip(columns, row)) if row else None
+    if row is None:
+        return None
+    run = dict(zip(columns, row))
+    if (run.get("status") or "").upper() == "FAILED":
+        failed_steps = fetch_failed_step_names_for_runs(db, [clone_run_id])
+        if clone_run_id in failed_steps:
+            run["failed_function_name"] = failed_steps[clone_run_id]
+    return run
 
 
 def function_run_base_pk(clone_run_id: int, function_id: int) -> int:
@@ -182,23 +214,7 @@ def get_function_step_detail(
 ) -> dict | None:
     """Return one function-step row plus all attempts for the same function."""
     current_row = db.execute(
-        text(
-            """
-            SELECT
-                cfrs.clone_function_run_id,
-                cfrs.clone_run_id,
-                cfrs.function_id,
-                cf.function_name,
-                cfrs.status,
-                cfrs.start_time,
-                cfrs.end_time,
-                cfrs.step_func_log_location
-            FROM clone_function_run_status cfrs
-            JOIN clone_functions cf ON cf.function_id = cfrs.function_id
-            WHERE cfrs.clone_run_id = :clone_run_id
-              AND cfrs.clone_function_run_id = :clone_function_run_id
-            """
-        ),
+        GET_STEP_BY_PK,
         {
             "clone_run_id": clone_run_id,
             "clone_function_run_id": clone_function_run_id,
@@ -210,22 +226,7 @@ def get_function_step_detail(
     current = dict(current_row)
     base_pk = function_run_base_pk(clone_run_id, current["function_id"])
     attempt_rows = db.execute(
-        text(
-            """
-            SELECT
-                clone_function_run_id,
-                status,
-                start_time,
-                end_time,
-                step_func_log_location,
-                (clone_function_run_id - :base_pk) AS attempt_number
-            FROM clone_function_run_status
-            WHERE clone_run_id = :clone_run_id
-              AND function_id = :function_id
-            ORDER BY COALESCE(end_time, start_time) DESC NULLS LAST,
-                     clone_function_run_id DESC
-            """
-        ),
+        GET_ATTEMPTS_FOR_FUNCTION,
         {
             "clone_run_id": clone_run_id,
             "function_id": current["function_id"],
@@ -254,14 +255,7 @@ def get_function_step_log_location(
 ) -> str | None:
     """Resolve ``step_func_log_location`` for a specific function-step row."""
     row = db.execute(
-        text(
-            """
-            SELECT step_func_log_location
-            FROM clone_function_run_status
-            WHERE clone_run_id = :clone_run_id
-              AND clone_function_run_id = :clone_function_run_id
-            """
-        ),
+        GET_STEP_LOG_LOCATION,
         {
             "clone_run_id": clone_run_id,
             "clone_function_run_id": clone_function_run_id,
@@ -273,35 +267,8 @@ def get_function_step_log_location(
 
 
 def get_run_steps(db: Session, clone_run_id: int) -> list[dict]:
-    """Fetch the latest attempt of each step for a clone run.
-
-    Returns rows from ``clone_function_run_status`` (joined with
-    ``clone_functions`` for the function name), one row per function showing the
-    most recent attempt, ordered by ``function_id``. ``retry_count`` is the
-    number of prior attempts for that function.
-    """
-    query = text(
-        """
-        SELECT DISTINCT ON (cf.function_id)
-            cfrs.clone_function_run_id,
-            cfrs.clone_run_id,
-            cfrs.function_id,
-            cf.function_name,
-            cfrs.status,
-            cfrs.start_time,
-            cfrs.end_time,
-            cfrs.step_func_log_location,
-            COUNT(*) OVER (PARTITION BY cfrs.clone_run_id, cfrs.function_id) - 1
-                AS retry_count
-        FROM clone_function_run_status cfrs
-        JOIN clone_functions cf ON cf.function_id = cfrs.function_id
-        WHERE cfrs.clone_run_id = :clone_run_id
-        ORDER BY cf.function_id ASC, cfrs.clone_function_run_id DESC
-        """
-    )
-    results = db.execute(query, {"clone_run_id": clone_run_id})
-    columns = list(results.keys())
-    return [dict(zip(columns, row)) for row in results.fetchall()]
+    """Fetch the latest attempt of each step for a clone run."""
+    return fetch_run_steps(db, clone_run_id)
 
 
 def _get_failed_function_step(
@@ -309,41 +276,29 @@ def _get_failed_function_step(
 ) -> dict | None:
     """Return the failed function step to act on (latest FAILED unless id given)."""
     if clone_function_run_id is not None:
-        query = text(
-            """
-            SELECT
-                clone_function_run_id,
-                clone_run_id,
-                function_id,
-                step_func_log_location
-            FROM clone_function_run_status
-            WHERE clone_function_run_id = :clone_function_run_id
-              AND clone_run_id = :clone_run_id
-              AND status = 'FAILED'
-            """
-        )
+        query = GET_FAILED_STEP_BY_PK
         params = {
             "clone_function_run_id": clone_function_run_id,
             "clone_run_id": clone_run_id,
         }
     else:
-        query = text(
-            """
-            SELECT
-                clone_function_run_id,
-                clone_run_id,
-                function_id,
-                step_func_log_location
-            FROM clone_function_run_status
-            WHERE clone_run_id = :clone_run_id AND status = 'FAILED'
-            ORDER BY clone_function_run_id DESC
-            LIMIT 1
-            """
-        )
+        query = GET_FAILED_STEP_FOR_RUN
         params = {"clone_run_id": clone_run_id}
 
     row = db.execute(query, params).mappings().first()
     return dict(row) if row else None
+
+
+def get_step_failure_summary(db: Session, limit: int = 50) -> list[dict]:
+    """Cross-run failure counts per clone step (uses ``idx_cfrs_status``)."""
+    return fetch_step_failure_summary(db, limit)
+
+
+def get_function_failure_history(
+    db: Session, function_id: int, limit: int = 50
+) -> list[dict]:
+    """Recent FAILED attempts for one step across runs (uses ``idx_cfrs_function_id``)."""
+    return fetch_function_failure_history(db, function_id, limit)
 
 
 def get_execute_clone_options(db: Session) -> dict:

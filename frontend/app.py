@@ -1,16 +1,31 @@
-"""Clone Automation dashboard — multipage entry point.
+"""Clone Automation dashboard — multipage entry point."""
 
-Defines the page registry and renders the shared, custom-styled sidebar.
-The default Streamlit nav is hidden (``position="hidden"``) so our own
-sidebar in ``render_sidebar_nav`` is the only navigation.
-"""
-
+import sys
 from datetime import datetime
+from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 import streamlit as st
 
-# Force light theme in-app so we never follow OS/browser dark mode when
-# Streamlit is started from ``frontend/`` (no local ``.streamlit`` there).
+from config.errors import ConfigurationError
+from config.logging import setup_logging
+
+log = setup_logging("frontend")
+
+try:
+    from config.settings import ENV_EXAMPLE, ENV_FILE, load_env
+
+    load_env()
+except ConfigurationError as exc:
+    st.set_page_config(page_title="Clone automation dashboard", layout="wide")
+    st.error(str(exc))
+    if ENV_EXAMPLE.is_file():
+        st.info(f"Copy `{ENV_EXAMPLE.name}` to `{ENV_FILE.name}` in the repo root, then restart.")
+    st.stop()
+
 if hasattr(st, "set_theme"):
     st.set_theme(
         base="light",
@@ -45,6 +60,9 @@ pg = st.navigation(list(pages.values()), position="hidden")
 with st.sidebar:
     render_logo()
     render_sidebar_nav(pages, current_title=pg.title)
-    render_status(check_backend_health(), datetime.now())
+    is_live = check_backend_health()
+    if not is_live:
+        log.warning("Backend health check failed for %s", pg.title)
+    render_status(is_live, datetime.now())
 
 pg.run()
