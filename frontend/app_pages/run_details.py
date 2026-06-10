@@ -19,11 +19,12 @@ from api import (
 from config.settings import frontend
 from log_download import cached_run_log, cached_step_log
 from styles import (
+    emit_html,
     fmt_duration,
-    fmt_relative_update,
-    fmt_started,
     goto_page,
+    relative_update_html,
     render_title,
+    started_html,
     status_badge_html,
     status_image_html,
     step_detail_dialog_error_html,
@@ -150,15 +151,15 @@ if run:
                         show_error(exc, context="Could not skip run")
 
         with st.container(key="ca-detail-meta-row"):
-            st.html(
+            emit_html(
                 f"""
                 <div class="ca-detail-meta-bar">
                   <div class="ca-detail-meta">
                     <span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>
                     <span class="ca-detail-sep">&middot;</span>
-                    <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {fmt_started(run.get('start_date'))}</span>
+                    <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(run.get('start_date'))}</span>
                     <span class="ca-detail-sep">&middot;</span>
-                    <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {fmt_relative_update(run.get('last_update'))}</span>
+                    <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(run.get('last_update'))}</span>
                     <span class="ca-detail-sep">&middot;</span>
                     <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}</span>
                     <span class="ca-detail-sep">&middot;</span>
@@ -209,14 +210,14 @@ else:
         try:
             detail = get_step_detail(clone_run_id, clone_function_run_id)
         except Exception as exc:
-            st.html(step_detail_dialog_error_html(f"Could not load step details: {exc}"))
+            emit_html(step_detail_dialog_error_html(f"Could not load step details: {exc}"))
             return
 
         if not detail:
-            st.html(step_detail_dialog_error_html("No details found for this step."))
+            emit_html(step_detail_dialog_error_html("No details found for this step."))
             return
 
-        st.html(step_detail_dialog_html(detail, function_name))
+        emit_html(step_detail_dialog_html(detail, function_name))
 
     def _render_step_cards(step_rows: list[dict]) -> None:
         for i, step in enumerate(step_rows):

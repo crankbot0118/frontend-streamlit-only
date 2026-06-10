@@ -12,6 +12,18 @@ from pathlib import Path
 
 import streamlit as st
 
+from datetime_local import (
+    dt_html,
+    emit_html,
+    fmt_dt_fallback,
+    fmt_relative_update_fallback,
+    fmt_started_fallback,
+    inject_local_datetime_js,
+    refresh_html,
+    relative_update_html,
+    started_html,
+)
+
 BRAND_ORANGE = "#e87511"
 BRAND_INK = "#131516"
 STATUS_ICON_PX = 18
@@ -1271,6 +1283,7 @@ def apply_global_styles() -> None:
     DOM but no longer takes effect, which silently drops all custom styling.
     """
     st.markdown(_GLOBAL_CSS, unsafe_allow_html=True)
+    inject_local_datetime_js()
 
 
 def render_logo(path: str | Path | None = None, width: int = 170) -> None:
@@ -1338,8 +1351,8 @@ def step_attempts_table_html(attempts: list[dict]) -> str:
             f"<td>{html.escape(str(row.get('attempt_number', '')))}</td>"
             f"<td>{html.escape(str(row.get('clone_function_run_id', '')))}</td>"
             f"<td>{html.escape(str(row.get('status', '')))}</td>"
-            f"<td>{html.escape(fmt_dt(row.get('start_time')))}</td>"
-            f"<td>{html.escape(fmt_dt(row.get('end_time')))}</td>"
+            f"<td>{dt_html(row.get('start_time'))}</td>"
+            f"<td>{dt_html(row.get('end_time'))}</td>"
             f"<td>{html.escape(fmt_duration(row.get('start_time'), row.get('end_time')))}</td>"
             f"<td>{html.escape(current)}</td>"
             "</tr>"
@@ -1374,8 +1387,8 @@ def step_detail_dialog_html(detail: dict, function_name: str) -> str:
         f"<dt>Clone function run ID</dt>"
         f"<dd>{html.escape(str(detail.get('clone_function_run_id', '—')))}</dd>"
         f"<dt>Status</dt><dd>{status}</dd>"
-        f"<dt>Start</dt><dd>{html.escape(fmt_dt(detail.get('start_time')))}</dd>"
-        f"<dt>End</dt><dd>{html.escape(fmt_dt(detail.get('end_time')))}</dd>"
+        f"<dt>Start</dt><dd>{dt_html(detail.get('start_time'))}</dd>"
+        f"<dt>End</dt><dd>{dt_html(detail.get('end_time'))}</dd>"
         f"<dt>Duration</dt>"
         f"<dd>{html.escape(fmt_duration(detail.get('start_time'), detail.get('end_time')))}</dd>"
         f"</dl>"
@@ -1436,8 +1449,8 @@ def step_detail_panel_html(
     panel_class = "ca-step-detail-panel--open" if is_open else "ca-step-detail-panel--closed"
     panel_id = f"step-panel-{run_id}-{index}"
     store_key = f"ca-step-{run_id}-{index}"
-    start = fmt_dt(start_time)
-    end = fmt_dt(end_time)
+    start = dt_html(start_time)
+    end = dt_html(end_time)
     return f"""
 <div id="{panel_id}" class="ca-step-detail-panel {panel_class}">
   <div class="ca-step-detail">
@@ -1462,6 +1475,7 @@ def step_detail_panel_html(
     panel.classList.remove("ca-step-detail-panel--open");
   }}
   sessionStorage.setItem(key, isOpen ? "1" : "0");
+  if (window.caFormatLocalDatetimes) window.caFormatLocalDatetimes(panel);
 }})();
 </script>
 """
@@ -1469,12 +1483,7 @@ def step_detail_panel_html(
 
 def fmt_dt(value) -> str:
     """Format an ISO datetime string (or None) for display."""
-    if not value:
-        return "—"
-    try:
-        return datetime.fromisoformat(str(value)).strftime("%b %d, %Y %I:%M %p")
-    except (ValueError, TypeError):
-        return str(value)
+    return fmt_dt_fallback(value)
 
 
 def fmt_dt_compact(value) -> str:
@@ -1482,38 +1491,22 @@ def fmt_dt_compact(value) -> str:
     if not value:
         return "—"
     try:
-        return datetime.fromisoformat(str(value)).strftime("%d%m%y %H%M%S")
+        dt = datetime.fromisoformat(str(value))
+        if dt.tzinfo is not None:
+            dt = dt.astimezone()
+        return dt.strftime("%d%m%y %H%M%S")
     except (ValueError, TypeError):
         return str(value)
 
 
 def fmt_relative_update(value) -> str:
-    """Human-friendly update time, e.g. "Updated today at 2:18 PM",
-    "Updated yesterday at 9:05 AM", or "Updated on Jun 08 at 1:09 PM"."""
-    if not value:
-        return "Not updated yet"
-    try:
-        dt = datetime.fromisoformat(str(value))
-    except (ValueError, TypeError):
-        return f"Updated {value}"
-    time_str = dt.strftime("%I:%M %p").lstrip("0")
-    days = (datetime.now().date() - dt.date()).days
-    if days == 0:
-        return f"Updated today at {time_str}"
-    if days == 1:
-        return f"Updated yesterday at {time_str}"
-    return f"Updated on {dt.strftime('%b %d')} at {time_str}"
+    """Human-friendly update time (server-local fallback for plain text)."""
+    return fmt_relative_update_fallback(value)
 
 
 def fmt_started(value) -> str:
-    """Format a start timestamp as "08 Jun 2026, 1:08 PM" (local time)."""
-    if not value:
-        return "Not started"
-    try:
-        dt = datetime.fromisoformat(str(value))
-    except (ValueError, TypeError):
-        return str(value)
-    return dt.strftime("%d %b %Y, ") + dt.strftime("%I:%M %p").lstrip("0")
+    """Format a start timestamp (server-local fallback for plain text)."""
+    return fmt_started_fallback(value)
 
 
 def fmt_duration(start, end) -> str:
@@ -1573,11 +1566,11 @@ def render_run_card(run: dict) -> bool:
           </div>
           <div class="ca-run-meta">
             <span class="ca-run-metaline">
-              <span class="mi mi-start">&#9654;</span> Started {fmt_started(run.get('start_date'))}
+              <span class="mi mi-start">&#9654;</span> Started {started_html(run.get('start_date'))}
             </span>
             <span class="sepm">&middot;</span>
             <span class="ca-run-metaline">
-              <span class="mi mi-upd">&#8635;</span> {fmt_relative_update(run.get('last_update'))}
+              <span class="mi mi-upd">&#8635;</span> {relative_update_html(run.get('last_update'))}
             </span>
             <span class="sepm">&middot;</span>
             <span class="ca-run-metaline">
@@ -1588,7 +1581,7 @@ def render_run_card(run: dict) -> bool:
         </div>
     """
     with st.container(key=f"runcard_{rid}"):
-        st.html(info_html)
+        emit_html(info_html)
         return st.button(
             "",
             key=f"open_run_{rid}",
@@ -1597,74 +1590,24 @@ def render_run_card(run: dict) -> bool:
         )
 
 
-def _utc_iso(value: datetime) -> str:
-    """Normalize a datetime to a UTC ISO-8601 string for client-side formatting."""
-    if value.tzinfo is None:
-        value = value.replace(tzinfo=timezone.utc)
-    else:
-        value = value.astimezone(timezone.utc)
-    return value.isoformat()
-
-
-def _format_refresh_label(dt: datetime) -> str:
-    """Format a refresh timestamp for display (server-local fallback)."""
-    if dt.tzinfo is not None:
-        dt = dt.astimezone()
-    return dt.strftime("%b %d, %Y at %I:%M %p")
-
-
 def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
     """Render the bottom-of-sidebar backend status card.
 
     A glowing green dot (live) or red dot (offline) sits to the left of a
-    "Last refresh on ..." line. The timestamp is formatted in the browser's
-    local timezone when JavaScript is allowed; otherwise server-local time is
-    shown. Call inside a ``with st.sidebar:`` block, after nav.
+    "Last refresh on ..." line formatted in the browser's local timezone.
+    Call inside a ``with st.sidebar:`` block, after nav.
     """
     last_refresh = last_refresh or datetime.now(timezone.utc)
     state = "is-live" if is_live else "is-offline"
-    refresh_iso = html.escape(_utc_iso(last_refresh), quote=True)
-    fallback_label = html.escape(
-        f"Last refresh on {_format_refresh_label(last_refresh)}"
-    )
-    status_html = f"""
+    with st.container(key="ca-status"):
+        emit_html(
+            f"""
             <div class="ca-status {state}">
               <span class="ca-dot"></span>
-              <span class="ca-refresh-text" data-refresh-iso="{refresh_iso}">
-                {fallback_label}
-              </span>
+              {refresh_html(last_refresh)}
             </div>
-            <script>
-            (function () {{
-              var script = document.currentScript;
-              if (!script) return;
-              var root = script.previousElementSibling;
-              if (!root) return;
-              var el = root.querySelector("[data-refresh-iso]");
-              if (!el) return;
-              function formatLocalRefresh(iso) {{
-                var dt = new Date(iso);
-                if (Number.isNaN(dt.getTime())) return null;
-                var month = dt.toLocaleString(undefined, {{ month: "short" }});
-                var day = dt.getDate();
-                var year = dt.getFullYear();
-                var time = dt.toLocaleString(undefined, {{
-                  hour: "numeric",
-                  minute: "2-digit",
-                  hour12: true,
-                }});
-                return "Last refresh on " + month + " " + day + ", " + year + " at " + time;
-              }}
-              var label = formatLocalRefresh(el.getAttribute("data-refresh-iso"));
-              if (label) el.textContent = label;
-            }})();
-            </script>
             """
-    with st.container(key="ca-status"):
-        try:
-            st.html(status_html, unsafe_allow_javascript=True)
-        except TypeError:
-            st.html(status_html)
+        )
 
 
 DEFAULT_PAGE = "Home"
