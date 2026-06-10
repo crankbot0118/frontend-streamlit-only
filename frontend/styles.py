@@ -1606,27 +1606,42 @@ def _utc_iso(value: datetime) -> str:
     return value.isoformat()
 
 
+def _format_refresh_label(dt: datetime) -> str:
+    """Format a refresh timestamp for display (server-local fallback)."""
+    if dt.tzinfo is not None:
+        dt = dt.astimezone()
+    return dt.strftime("%b %d, %Y at %I:%M %p")
+
+
 def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
     """Render the bottom-of-sidebar backend status card.
 
     A glowing green dot (live) or red dot (offline) sits to the left of a
     "Last refresh on ..." line. The timestamp is formatted in the browser's
-    local timezone. Call inside a ``with st.sidebar:`` block, after nav.
+    local timezone when JavaScript is allowed; otherwise server-local time is
+    shown. Call inside a ``with st.sidebar:`` block, after nav.
     """
     last_refresh = last_refresh or datetime.now(timezone.utc)
     state = "is-live" if is_live else "is-offline"
     refresh_iso = html.escape(_utc_iso(last_refresh), quote=True)
-    with st.container(key="ca-status"):
-        st.html(
-            f"""
+    fallback_label = html.escape(
+        f"Last refresh on {_format_refresh_label(last_refresh)}"
+    )
+    status_html = f"""
             <div class="ca-status {state}">
               <span class="ca-dot"></span>
               <span class="ca-refresh-text" data-refresh-iso="{refresh_iso}">
-                Last refresh on …
+                {fallback_label}
               </span>
             </div>
             <script>
             (function () {{
+              var script = document.currentScript;
+              if (!script) return;
+              var root = script.previousElementSibling;
+              if (!root) return;
+              var el = root.querySelector("[data-refresh-iso]");
+              if (!el) return;
               function formatLocalRefresh(iso) {{
                 var dt = new Date(iso);
                 if (Number.isNaN(dt.getTime())) return null;
@@ -1640,14 +1655,16 @@ def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
                 }});
                 return "Last refresh on " + month + " " + day + ", " + year + " at " + time;
               }}
-              document.querySelectorAll("[data-refresh-iso]").forEach(function (el) {{
-                var label = formatLocalRefresh(el.getAttribute("data-refresh-iso"));
-                if (label) el.textContent = label;
-              }});
+              var label = formatLocalRefresh(el.getAttribute("data-refresh-iso"));
+              if (label) el.textContent = label;
             }})();
             </script>
             """
-        )
+    with st.container(key="ca-status"):
+        try:
+            st.html(status_html, unsafe_allow_javascript=True)
+        except TypeError:
+            st.html(status_html)
 
 
 DEFAULT_PAGE = "Home"
