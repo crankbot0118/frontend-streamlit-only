@@ -42,10 +42,14 @@ _VALIDATE_DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
 . "${_VALIDATE_DIR}/vigt_validate_args.sh"
 vigt_validate_shell_args "$1" "$2"
 
+if [ -z "${INSTANCE_CLONE_DIR:-}" ]; then
+echo "INSTANCE_CLONE_DIR is not set. Export it from the repo .env before running this script."
+exit 1
+fi
+
 set -x
 CLONE_RUN_ID=$2
 
-INSTANCE_CLONE_DIR=/u02/shared/AUTOMATION/Clone_Auto/Instances
 . ${INSTANCE_CLONE_DIR}/${1}/env/DB/${1}_db.env
 caps_pdb_name=`echo ${TARGET_PDB_NAME}|tr 'a-z' 'A-Z'`
 
@@ -66,11 +70,15 @@ vigt_load_db_env()
 {
 if [ -z "$PGHOST" ]
 then
-    PGHOST=${DB_HOST:-}
-    PGPORT=${DB_PORT:-5432}
-    PGDATABASE=${DB_NAME:-}
-    PGUSER=${DB_USER:-}
-    PGPASSWORD=${DB_PASSWORD:-}
+    if [ -z "${DB_HOST:-}" ] || [ -z "${DB_PORT:-}" ] || [ -z "${DB_NAME:-}" ] || [ -z "${DB_USER:-}" ] || [ -z "${DB_PASSWORD:-}" ]; then
+        echo "Database connection env is not set. Export DB_HOST, DB_PORT, DB_NAME, DB_USER, and DB_PASSWORD."
+        exit 1
+    fi
+    PGHOST=${DB_HOST}
+    PGPORT=${DB_PORT}
+    PGDATABASE=${DB_NAME}
+    PGUSER=${DB_USER}
+    PGPASSWORD=${DB_PASSWORD}
     export PGHOST PGPORT PGDATABASE PGUSER PGPASSWORD
 fi
 }

@@ -1,15 +1,11 @@
 """FastAPI backend for the Clone Automation dashboard.
 
-Run locally with:
-    uvicorn main:app --reload --port 8000
-(from inside the ``backend/`` directory)
+Configuration is loaded from the repo-root ``.env`` (see ``.env.example``).
 
-Set ``API_KEY`` in the environment before deployment. The Streamlit frontend
-must send the same value via ``X-API-Key`` (and ``api_key`` query param for
-log download links opened in the browser).
+Run locally from ``backend/``:
+    uvicorn main:app --reload --host 0.0.0.0 --port 8000
 """
 
-import os
 from datetime import date, datetime, timezone
 
 from fastapi import Depends, FastAPI, HTTPException, Query
@@ -42,6 +38,7 @@ from schemas import (
 )
 from security import (
     ALLOWED_ORIGINS,
+    API_MAX_RUN_LIMIT,
     ENABLE_DOCS,
     RATE_LIMIT_REQUESTS,
     RATE_LIMIT_WINDOW_SEC,
@@ -70,9 +67,6 @@ app.add_middleware(
 )
 app.add_middleware(RateLimitMiddleware, RATE_LIMIT_REQUESTS, RATE_LIMIT_WINDOW_SEC)
 app.add_middleware(SecurityHeadersMiddleware)
-
-_MAX_RUN_LIMIT = 200
-
 
 @app.get("/health")
 def health() -> dict:
@@ -148,7 +142,7 @@ def create_clone_run_endpoint(
     "in descending order — most recently updated runs first, regardless of status.",
 )
 def list_clone_runs(
-    limit: int = Query(50, ge=1, le=_MAX_RUN_LIMIT),
+    limit: int = Query(50, ge=1, le=API_MAX_RUN_LIMIT),
     client: str | None = Query(None, description="Filter by client name"),
     target: str | None = Query(None, description="Filter by target name"),
     user: str | None = Query(None, description="Filter by user name"),

@@ -1,10 +1,20 @@
 """Read helpers and write actions for clone run data."""
 
+import sys
 from datetime import date
+from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
+
+from config.settings import api_security, is_protected_target_env
+
+_PROTECTED_TARGET = api_security().protected_target_env_name
 
 # Latest ``clone_run_status`` row per ``clone_run_id`` (append-only status history).
 _LATEST_RUNS_CTE = """
@@ -395,7 +405,7 @@ def _get_environment(db: Session, env_id: int) -> dict | None:
 
 
 def _is_prod_env(env_name: str) -> bool:
-    return (env_name or "").strip().upper() == "PROD"
+    return is_protected_target_env(env_name, _PROTECTED_TARGET)
 
 
 def trigger_clone_run(
@@ -429,7 +439,7 @@ def trigger_clone_run(
         raise ValueError("Source and target must be different environments")
 
     if _is_prod_env(target["env_name"]):
-        raise ValueError("Target cannot be PROD")
+        raise ValueError(f"Target cannot be {_PROTECTED_TARGET}")
 
     try:
         run_id = db.execute(

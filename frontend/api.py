@@ -1,19 +1,31 @@
 """Tiny client for talking to the FastAPI backend from the Streamlit app.
 
 Uses the standard library (``urllib``) so the frontend needs no extra
-dependencies. The backend base URL can be overridden with the ``BACKEND_URL``
-environment variable.
+dependencies beyond ``python-dotenv`` (via ``config.settings``). All settings
+are loaded from the repo-root ``.env`` file.
 """
 
 import json
-import os
+import sys
 import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import date
+from pathlib import Path
 
-BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
-API_KEY = os.getenv("API_KEY", "").strip()
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+from config.settings import frontend
+
+_cfg = frontend()
+BACKEND_URL = _cfg.backend_url
+API_KEY = _cfg.api_key
+_HEALTH_TIMEOUT = _cfg.health_timeout_sec
+_GET_TIMEOUT = _cfg.get_timeout_sec
+_POST_TIMEOUT = _cfg.post_timeout_sec
+_MAX_RUN_LIMIT = _cfg.max_run_limit
 
 
 def _api_key_header() -> dict[str, str]:
@@ -24,34 +36,34 @@ def _api_key_header() -> dict[str, str]:
 
 def _signed_url(path: str) -> str:
     """Build a backend URL, appending ``api_key`` for browser download links."""
-    url = f"{BACKEND_URL.rstrip('/')}{path}"
+    url = f"{BACKEND_URL}{path}"
     if not API_KEY:
         return url
     sep = "&" if "?" in url else "?"
     return f"{url}{sep}{urllib.parse.urlencode({'api_key': API_KEY})}"
 
 
-def check_backend_health(timeout: float = 2.0) -> bool:
+def check_backend_health(timeout: float | None = None) -> bool:
     """Return ``True`` if the backend ``/health`` endpoint responds with 200."""
-    url = f"{BACKEND_URL.rstrip('/')}/health"
+    url = f"{BACKEND_URL}/health"
     try:
-        with urllib.request.urlopen(url, timeout=timeout) as resp:
+        with urllib.request.urlopen(url, timeout=timeout or _HEALTH_TIMEOUT) as resp:
             return resp.status == 200
     except Exception:
         return False
 
 
-def _get_json(path: str, timeout: float = 5.0):
+def _get_json(path: str, timeout: float | None = None):
     """GET a JSON resource from the backend. Raises on failure."""
-    url = f"{BACKEND_URL.rstrip('/')}{path}"
+    url = f"{BACKEND_URL}{path}"
     req = urllib.request.Request(url, headers=_api_key_header())
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
+    with urllib.request.urlopen(req, timeout=timeout or _GET_TIMEOUT) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
 
-def _post_json(path: str, body: dict | None = None, timeout: float = 10.0) -> dict:
+def _post_json(path: str, body: dict | None = None, timeout: float | None = None) -> dict:
     """POST JSON to the backend. Raises on failure."""
-    url = f"{BACKEND_URL.rstrip('/')}{path}"
+    url = f"{BACKEND_URL}{path}"
     payload = json.dumps(body or {}).encode("utf-8")
     req = urllib.request.Request(
         url,
@@ -60,7 +72,7 @@ def _post_json(path: str, body: dict | None = None, timeout: float = 10.0) -> di
         headers={"Content-Type": "application/json", **_api_key_header()},
     )
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
+        with urllib.request.urlopen(req, timeout=timeout or _POST_TIMEOUT) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             return data if isinstance(data, dict) else {}
     except urllib.error.HTTPError as exc:
@@ -98,14 +110,14 @@ def get_run_filters() -> dict[str, list[str]]:
 
 
 def get_runs(
-    limit: int = 200,
+    limit: int | None = None,
     client: str | None = None,
     target: str | None = None,
     user: str | None = None,
     start_date: date | None = None,
 ) -> list[dict]:
     """Fetch clone runs (newest execution first), optionally filtered."""
-    params: dict[str, str | int] = {"limit": limit}
+    params: dict[str, str | int] = {"limit": limit if limit is not None else _MAX_RUN_LIMIT}
     if client:
         params["client"] = client
     if target:
@@ -130,7 +142,7 @@ def get_run(clone_run_id: int) -> dict | None:
             return data
     except Exception:
         pass
-    for run in get_runs(limit=200):
+    for run in get_runs():
         if run.get("clone_run_id") == clone_run_id:
             return run
     return None

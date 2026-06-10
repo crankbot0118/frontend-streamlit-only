@@ -1,0 +1,4 @@
+# Shared Python dependencies for the repo-root config loader and Streamlit UI.
+# Install backend deps separately: pip install -r backend/requirements.txt
+python-dotenv>=1.0,<2.0
+streamlit

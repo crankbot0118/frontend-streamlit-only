@@ -21,9 +21,13 @@ _VALIDATE_DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
 . "${_VALIDATE_DIR}/vigt_validate_args.sh"
 vigt_validate_shell_args "$1" "$2"
 
+if [ -z "${INSTANCE_CLONE_DIR:-}" ]; then
+echo "INSTANCE_CLONE_DIR is not set. Export it from the repo .env before running this script."
+exit 1
+fi
+
 CLONE_RUN_ID=$2
 
-INSTANCE_CLONE_DIR=/u02/shared/AUTOMATION/Clone_Auto/Instances
 . ${INSTANCE_CLONE_DIR}/${1}/env/DB/${1}_db.env
 
 SKIP_LOG=${LOG_DIR}/skip_function_${CLONE_RUN_ID}_`date +"%Y%m%d_%H%M%S"`.log

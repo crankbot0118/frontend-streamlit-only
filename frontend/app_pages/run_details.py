@@ -1,8 +1,14 @@
 """Run details page — shows the steps (clone_function_run_status) for a run."""
 
 import html
+import sys
+from pathlib import Path
 
 import streamlit as st
+
+_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 from api import (
     abort_run,
@@ -13,6 +19,7 @@ from api import (
     skip_run,
     step_log_url,
 )
+from config.settings import frontend
 from styles import (
     fmt_duration,
     fmt_relative_update,
@@ -26,6 +33,8 @@ from styles import (
     step_detail_dialog_html,
     _esc,
 )
+
+_RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
 
 
 def _toggle_step(open_key: str) -> None:
@@ -243,7 +252,7 @@ else:
     with st.container(key="ca-steps"):
         if st.session_state.get(refresh_key):
 
-            @st.fragment(run_every=3)
+            @st.fragment(run_every=_RUN_DETAILS_REFRESH_SEC)
             def _auto_refresh_steps() -> None:
                 _render_live_steps()
 

@@ -1,43 +1,26 @@
 """SQLAlchemy engine + session factory.
 
-All DB interaction goes through ``get_db()``. Connection settings are read
-from environment variables (loaded from ``~/.env`` if present).
+Connection settings are loaded from the repo-root ``.env`` via ``config.settings``.
 """
 
-import os
+import sys
 from pathlib import Path
-from urllib.parse import quote_plus
 
-from dotenv import load_dotenv
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
-load_dotenv(Path.home() / ".env")
+from config.settings import database
 
-
-def _require_env(name: str) -> str:
-    value = os.getenv(name)
-    if not value:
-        raise RuntimeError(f"Missing required environment variable: {name}")
-    return value
-
-
-def _build_database_url() -> str:
-    user = _require_env("DB_USER")
-    password = quote_plus(_require_env("DB_PASSWORD"))
-    host = _require_env("DB_HOST")
-    port = _require_env("DB_PORT")
-    database = _require_env("DB_NAME")
-    return f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}"
-
-
-pool_size = int(os.getenv("DB_MIN_CONN", "1"))
-max_connections = int(os.getenv("DB_MAX_CONN", "10"))
+_db = database()
 
 engine = create_engine(
-    _build_database_url(),
-    pool_size=pool_size,
-    max_overflow=max(0, max_connections - pool_size),
+    _db.sqlalchemy_url,
+    pool_size=_db.min_conn,
+    max_overflow=max(0, _db.max_conn - _db.min_conn),
     pool_pre_ping=True,
     echo=False,
 )

@@ -1,0 +1,238 @@
+"""Central configuration for frontend, backend, agent, and shell scripts.
+
+All values are read from the repo-root ``.env`` file. Copy ``.env.example`` to
+``.env`` and adjust for your environment. Defaults live in ``.env.example`` only
+— application code does not hardcode URLs, paths, or secrets.
+"""
+
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass
+from functools import lru_cache
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+ENV_FILE = REPO_ROOT / ".env"
+
+_env_loaded = False
+
+
+def load_env() -> None:
+    """Load repo-root ``.env`` once (idempotent)."""
+    global _env_loaded
+    if not _env_loaded:
+        load_dotenv(ENV_FILE, override=False)
+        _env_loaded = True
+
+
+def _require(name: str) -> str:
+    load_env()
+    value = os.getenv(name, "").strip()
+    if not value:
+        raise RuntimeError(
+            f"Missing required environment variable {name!r}. "
+            f"Copy {REPO_ROOT / '.env.example'} to {ENV_FILE} and set it."
+        )
+    return value
+
+
+def _optional(name: str) -> str | None:
+    load_env()
+    value = os.getenv(name, "").strip()
+    return value or None
+
+
+def _bool(name: str) -> bool:
+    return _require(name).lower() in ("1", "true", "yes")
+
+
+def _int(name: str) -> int:
+    return int(_require(name))
+
+
+def _float(name: str) -> float:
+    return float(_require(name))
+
+
+def _split_csv(name: str) -> list[str]:
+    return [part.strip() for part in _require(name).split(",") if part.strip()]
+
+
+def _split_path_list(name: str) -> list[str]:
+    """Split a path list using OS path separator and ``:`` (for cross-platform)."""
+    raw = _require(name)
+    normalized = raw.replace(":", os.pathsep)
+    return [part.strip() for part in normalized.split(os.pathsep) if part.strip()]
+
+
+def is_protected_target_env(env_name: str, protected_name: str) -> bool:
+    """Return True when ``env_name`` matches the protected target label (e.g. PROD)."""
+    return (env_name or "").strip().upper() == protected_name.strip().upper()
+
+
+@dataclass(frozen=True)
+class DatabaseSettings:
+    host: str
+    port: int
+    name: str
+    user: str
+    password: str
+    min_conn: int
+    max_conn: int
+
+    @property
+    def sqlalchemy_url(self) -> str:
+        from urllib.parse import quote_plus
+
+        password = quote_plus(self.password)
+        return (
+            f"postgresql+psycopg2://{self.user}:{password}"
+            f"@{self.host}:{self.port}/{self.name}"
+        )
+
+    def as_psycopg2_kwargs(self) -> dict:
+        return {
+            "host": self.host,
+            "port": self.port,
+            "dbname": self.name,
+            "user": self.user,
+            "password": self.password,
+        }
+
+
+@dataclass(frozen=True)
+class ApiSecuritySettings:
+    api_key: str
+    require_api_key: bool
+    allowed_origins: list[str]
+    log_allowed_roots: list[Path]
+    allow_log_url_redirect: bool
+    rate_limit_requests: int
+    rate_limit_window_sec: int
+    enable_docs: bool
+    max_run_limit: int
+    protected_target_env_name: str
+
+
+@dataclass(frozen=True)
+class FrontendSettings:
+    backend_url: str
+    api_key: str
+    health_timeout_sec: float
+    get_timeout_sec: float
+    post_timeout_sec: float
+    max_run_limit: int
+    run_details_refresh_sec: int
+    protected_target_env_name: str
+
+
+@dataclass(frozen=True)
+class AgentSettings:
+    instance_env_id: int
+    instance_dbname: str | None
+    master_clone_sh: str
+    skip_function_sh: str
+    nullify_clone_sh: str
+    abort_clone_sh: str
+    poll_interval_sec: int
+    instance_clone_dir: str
+    clone_log_template: str | None
+    subprocess_timeout_sec: int | None
+    log_location_max_len: int
+    protected_target_env_name: str
+    database: DatabaseSettings
+
+
+@lru_cache(maxsize=1)
+def database() -> DatabaseSettings:
+    return DatabaseSettings(
+        host=_require("DB_HOST"),
+        port=_int("DB_PORT"),
+        name=_require("DB_NAME"),
+        user=_require("DB_USER"),
+        password=_require("DB_PASSWORD"),
+        min_conn=_int("DB_MIN_CONN"),
+        max_conn=_int("DB_MAX_CONN"),
+    )
+
+
+@lru_cache(maxsize=1)
+def api_security() -> ApiSecuritySettings:
+    return ApiSecuritySettings(
+        api_key=_optional("API_KEY") or "",
+        require_api_key=_bool("REQUIRE_API_KEY"),
+        allowed_origins=_split_csv("ALLOWED_ORIGINS"),
+        log_allowed_roots=[Path(p).resolve() for p in _split_path_list("LOG_ALLOWED_ROOTS")],
+        allow_log_url_redirect=_bool("ALLOW_LOG_URL_REDIRECT"),
+        rate_limit_requests=_int("RATE_LIMIT_REQUESTS"),
+        rate_limit_window_sec=_int("RATE_LIMIT_WINDOW_SEC"),
+        enable_docs=_bool("ENABLE_DOCS"),
+        max_run_limit=_int("API_MAX_RUN_LIMIT"),
+        protected_target_env_name=_require("PROTECTED_TARGET_ENV_NAME"),
+    )
+
+
+@lru_cache(maxsize=1)
+def frontend() -> FrontendSettings:
+    sec = api_security()
+    return FrontendSettings(
+        backend_url=_require("BACKEND_URL").rstrip("/"),
+        api_key=sec.api_key,
+        health_timeout_sec=_float("API_HEALTH_TIMEOUT_SEC"),
+        get_timeout_sec=_float("API_GET_TIMEOUT_SEC"),
+        post_timeout_sec=_float("API_POST_TIMEOUT_SEC"),
+        max_run_limit=sec.max_run_limit,
+        run_details_refresh_sec=_int("RUN_DETAILS_REFRESH_SEC"),
+        protected_target_env_name=sec.protected_target_env_name,
+    )
+
+
+@lru_cache(maxsize=1)
+def agent() -> AgentSettings:
+    timeout_raw = _optional("SUBPROCESS_TIMEOUT_SEC")
+    subprocess_timeout = int(timeout_raw) if timeout_raw else None
+    if subprocess_timeout is not None and subprocess_timeout <= 0:
+        subprocess_timeout = None
+
+    return AgentSettings(
+        instance_env_id=_int("INSTANCE_ENV_ID"),
+        instance_dbname=_optional("INSTANCE_DBNAME"),
+        master_clone_sh=_require("MASTER_CLONE_SH"),
+        skip_function_sh=_require("SKIP_FUNCTION_SH"),
+        nullify_clone_sh=_require("NULLIFY_CLONE_SH"),
+        abort_clone_sh=_require("ABORT_CLONE_SH"),
+        poll_interval_sec=_int("POLL_INTERVAL_SEC"),
+        instance_clone_dir=_require("INSTANCE_CLONE_DIR"),
+        clone_log_template=_optional("CLONE_LOG") or _optional("CLONE_LOG_PATH"),
+        subprocess_timeout_sec=subprocess_timeout,
+        log_location_max_len=_int("LOG_LOCATION_MAX_LEN"),
+        protected_target_env_name=_require("PROTECTED_TARGET_ENV_NAME"),
+        database=database(),
+    )
+
+
+def agent_subprocess_env() -> dict[str, str]:
+    """Environment dict for shell scripts launched by ``agent.py``."""
+    cfg = agent()
+    db = cfg.database
+    env = os.environ.copy()
+    env.update(
+        {
+            "PGHOST": db.host,
+            "PGPORT": str(db.port),
+            "PGDATABASE": db.name,
+            "PGUSER": db.user,
+            "PGPASSWORD": db.password,
+            "DB_HOST": db.host,
+            "DB_PORT": str(db.port),
+            "DB_NAME": db.name,
+            "DB_USER": db.user,
+            "DB_PASSWORD": db.password,
+            "INSTANCE_CLONE_DIR": cfg.instance_clone_dir,
+            "PROTECTED_TARGET_ENV_NAME": cfg.protected_target_env_name,
+        }
+    )
+    return env

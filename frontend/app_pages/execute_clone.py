@@ -1,9 +1,20 @@
 """Execute Clone page — trigger a new clone run."""
 
+import sys
+from pathlib import Path
+
 import streamlit as st
 
+_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
 from api import get_execute_clone_options, get_run, trigger_clone_run
+from config.settings import frontend, is_protected_target_env
 from styles import goto_page, render_title
+
+_cfg = frontend()
+_PROTECTED_TARGET = _cfg.protected_target_env_name
 
 render_title(
     "Execute Clone",
@@ -13,8 +24,8 @@ render_title(
 PLACEHOLDER = "Select…"
 
 
-def _is_prod(name: str) -> bool:
-    return (name or "").strip().upper() == "PROD"
+def _is_protected_target(name: str) -> bool:
+    return is_protected_target_env(name, _PROTECTED_TARGET)
 
 
 try:
@@ -64,7 +75,7 @@ with st.container(key="ca-execute-clone-form"):
     target_candidates = [
         e
         for e in client_envs
-        if not _is_prod(e["env_name"])
+        if not _is_protected_target(e["env_name"])
         and (source_name == PLACEHOLDER or e["env_name"] != source_name)
     ]
     target_options = [PLACEHOLDER, *[e["env_name"] for e in target_candidates]]
@@ -102,8 +113,8 @@ if (
     and selected_source["env_id"] == selected_target["env_id"]
 ):
     validation_msgs.append("Source and target must be different.")
-if selected_target and _is_prod(selected_target["env_name"]):
-    validation_msgs.append("Target cannot be PROD.")
+if selected_target and _is_protected_target(selected_target["env_name"]):
+    validation_msgs.append(f"Target cannot be {_PROTECTED_TARGET}.")
 if selected_target and selected_target.get("locked"):
     validation_msgs.append(
         f"Target {selected_target['env_name']} is locked by an active clone run."

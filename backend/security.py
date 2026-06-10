@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import os
 import secrets
+import sys
 import time
 from collections import defaultdict
 from pathlib import Path
@@ -13,29 +13,24 @@ from fastapi import Depends, Header, HTTPException, Query, Request, status
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 
-API_KEY = os.getenv("API_KEY", "").strip()
-REQUIRE_API_KEY = os.getenv("REQUIRE_API_KEY", "true").lower() in ("1", "true", "yes")
-ALLOWED_ORIGINS = [
-    origin.strip()
-    for origin in os.getenv(
-        "ALLOWED_ORIGINS",
-        "http://localhost:8501,http://127.0.0.1:8501",
-    ).split(",")
-    if origin.strip()
-]
-LOG_ALLOWED_ROOTS = [
-    Path(root).resolve()
-    for root in os.getenv("LOG_ALLOWED_ROOTS", "/u02/shared").split(":")
-    if root.strip()
-]
-ALLOW_LOG_URL_REDIRECT = os.getenv("ALLOW_LOG_URL_REDIRECT", "false").lower() in (
-    "1",
-    "true",
-    "yes",
-)
-RATE_LIMIT_REQUESTS = int(os.getenv("RATE_LIMIT_REQUESTS", "120"))
-RATE_LIMIT_WINDOW_SEC = int(os.getenv("RATE_LIMIT_WINDOW_SEC", "60"))
-ENABLE_DOCS = os.getenv("ENABLE_DOCS", "false").lower() in ("1", "true", "yes")
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+from config.settings import api_security
+
+_sec = api_security()
+
+API_KEY = _sec.api_key
+REQUIRE_API_KEY = _sec.require_api_key
+ALLOWED_ORIGINS = _sec.allowed_origins
+LOG_ALLOWED_ROOTS = _sec.log_allowed_roots
+ALLOW_LOG_URL_REDIRECT = _sec.allow_log_url_redirect
+RATE_LIMIT_REQUESTS = _sec.rate_limit_requests
+RATE_LIMIT_WINDOW_SEC = _sec.rate_limit_window_sec
+ENABLE_DOCS = _sec.enable_docs
+API_MAX_RUN_LIMIT = _sec.max_run_limit
+PROTECTED_TARGET_ENV_NAME = _sec.protected_target_env_name
 
 _PUBLIC_PATHS = {"/health"}
 

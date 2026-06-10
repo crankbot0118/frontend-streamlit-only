@@ -3,25 +3,7 @@
 # agent.py
 # VIGT Clone Automation — Target Instance Agent
 #
-# One agent per target instance. Polls clone_run_status for PENDING jobs
-# assigned to this instance (target_env_id) and fires master_clone.sh.
-#
-# Run status is derived from clone_function_run_status via trg_sync_run_status;
-# master_clone.sh owns step rows. This agent reads the latest status row per
-# clone_run_id (append-only history) and calls finish_clone_run() when a job
-# reaches a terminal state so environments.locked stays in sync.
-#
-# ~/.env required keys:
-#   DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
-#   INSTANCE_ENV_ID     — env_id of THIS machine in the environments table
-#   INSTANCE_DBNAME     — optional override for script arg $1 (default: lowercased env_name)
-#   MASTER_CLONE_SH     — full path to master_clone.sh
-#   SKIP_FUNCTION_SH    — full path to skip_function.sh
-#   NULLIFY_CLONE_SH    — full path to nullify_clone_control.sh
-#   ABORT_CLONE_SH      — full path to abort_clone.sh
-#   POLL_INTERVAL       — seconds between polls (default: 10)
-#   INSTANCE_CLONE_DIR  — instance root (default: /u02/shared/AUTOMATION/Clone_Auto/Instances)
-#   CLONE_LOG           — optional override for log file path ({run_id}, {dbname} placeholders)
+# Configuration is loaded from the repo-root ``.env`` (see ``.env.example``).
 # =============================================================================
 
 from __future__ import annotations
@@ -37,9 +19,28 @@ from pathlib import Path
 
 import psycopg2
 import psycopg2.extras
-from dotenv import load_dotenv
 
-load_dotenv(Path.home() / ".env")
+from config.settings import agent, agent_subprocess_env, is_protected_target_env
+
+try:
+    _AGENT = agent()
+except RuntimeError as exc:
+    print(f"[AGENT] FATAL: {exc}", flush=True)
+    sys.exit(1)
+
+DB_CONFIG = _AGENT.database.as_psycopg2_kwargs()
+INSTANCE_ENV_ID = _AGENT.instance_env_id
+INSTANCE_DBNAME = _AGENT.instance_dbname
+MASTER_CLONE_SH = _AGENT.master_clone_sh
+SKIP_FUNCTION_SH = _AGENT.skip_function_sh
+NULLIFY_CLONE_SH = _AGENT.nullify_clone_sh
+ABORT_CLONE_SH = _AGENT.abort_clone_sh
+POLL_INTERVAL = _AGENT.poll_interval_sec
+INSTANCE_CLONE_DIR = _AGENT.instance_clone_dir
+CLONE_LOG_TEMPLATE = _AGENT.clone_log_template
+LOG_LOCATION_MAX = _AGENT.log_location_max_len
+_PROTECTED_TARGET = _AGENT.protected_target_env_name
+_SUBPROCESS_TIMEOUT = _AGENT.subprocess_timeout_sec
 
 # Latest clone_run_status row per clone_run_id (matches backend crud.py).
 _LATEST_RUNS_CTE = """
@@ -61,35 +62,6 @@ _LATEST_RUNS_CTE = """
 """
 
 
-def _require(name: str) -> str:
-    val = os.environ.get(name)
-    if not val:
-        print(f"[AGENT] FATAL: missing env var: {name}", flush=True)
-        sys.exit(1)
-    return val
-
-
-DB_CONFIG = {
-    "host": _require("DB_HOST"),
-    "port": int(os.environ.get("DB_PORT", "5432")),
-    "dbname": _require("DB_NAME"),
-    "user": _require("DB_USER"),
-    "password": _require("DB_PASSWORD"),
-}
-
-INSTANCE_ENV_ID = int(_require("INSTANCE_ENV_ID"))
-INSTANCE_DBNAME = os.environ.get("INSTANCE_DBNAME")
-MASTER_CLONE_SH = _require("MASTER_CLONE_SH")
-SKIP_FUNCTION_SH = _require("SKIP_FUNCTION_SH")
-NULLIFY_CLONE_SH = _require("NULLIFY_CLONE_SH")
-ABORT_CLONE_SH = _require("ABORT_CLONE_SH")
-POLL_INTERVAL = int(os.environ.get("POLL_INTERVAL", "10"))
-INSTANCE_CLONE_DIR = os.environ.get(
-    "INSTANCE_CLONE_DIR",
-    "/u02/shared/AUTOMATION/Clone_Auto/Instances",
-)
-LOG_LOCATION_MAX = 100
-
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s  [%(levelname)s]  %(message)s",
@@ -100,7 +72,6 @@ log = logging.getLogger("vigt_agent")
 
 _shutdown = False
 _SAFE_DBNAME_RE = re.compile(r"^[a-zA-Z0-9_-]+$")
-_SUBPROCESS_TIMEOUT = int(os.environ.get("SUBPROCESS_TIMEOUT", "0")) or None
 
 
 def validate_dbname(dbname: str) -> str:
@@ -132,7 +103,7 @@ def get_conn():
 
 
 def verify_instance_env(conn) -> dict:
-    """Ensure INSTANCE_ENV_ID exists. Target agents must not run on PROD."""
+    """Ensure INSTANCE_ENV_ID exists. Target agents must not run on protected envs."""
     with conn.cursor() as cur:
         cur.execute(
             """
@@ -147,10 +118,11 @@ def verify_instance_env(conn) -> dict:
         log.error("INSTANCE_ENV_ID=%s not found in environments table.", INSTANCE_ENV_ID)
         sys.exit(1)
     env = dict(row)
-    if env["env_name"].strip().upper() == "PROD":
+    if is_protected_target_env(env["env_name"], _PROTECTED_TARGET):
         log.error(
-            "INSTANCE_ENV_ID=%s is PROD (%s). Clone agents run on targets only.",
+            "INSTANCE_ENV_ID=%s is %s (%s). Clone agents run on targets only.",
             INSTANCE_ENV_ID,
+            _PROTECTED_TARGET,
             env["env_name"],
         )
         sys.exit(1)
@@ -201,14 +173,15 @@ def expand_shell_vars(value: str, ctx: dict[str, str]) -> str:
 def resolve_clone_log_path(dbname: str, clone_run_id: int) -> str | None:
     """
     Resolve CLONE_LOG the same way master_clone.sh does after sourcing db.env.
-    Optional ~/.env CLONE_LOG override supports {run_id} and {dbname}.
+    Optional CLONE_LOG from repo ``.env`` supports {run_id} and {dbname}.
     """
     validate_dbname(dbname)
     validate_clone_run_id(clone_run_id)
-    override = os.environ.get("CLONE_LOG") or os.environ.get("CLONE_LOG_PATH")
-    if override:
+    if CLONE_LOG_TEMPLATE:
         return (
-            override.replace("{run_id}", str(clone_run_id)).replace("{dbname}", dbname)
+            CLONE_LOG_TEMPLATE.replace("{run_id}", str(clone_run_id)).replace(
+                "{dbname}", dbname
+            )
         )
 
     env_file = Path(INSTANCE_CLONE_DIR) / dbname / "env" / "DB" / f"{dbname}_db.env"
@@ -246,19 +219,8 @@ def set_run_log_location(conn, clone_run_id: int, log_path: str) -> None:
 
 
 def pg_subprocess_env() -> dict[str, str]:
-    """Export DB creds for shell scripts (PG* with DB_* fallbacks)."""
-    env = os.environ.copy()
-    env["PGHOST"] = env.get("PGHOST") or DB_CONFIG["host"]
-    env["PGPORT"] = str(env.get("PGPORT") or DB_CONFIG["port"])
-    env["PGDATABASE"] = env.get("PGDATABASE") or DB_CONFIG["dbname"]
-    env["PGUSER"] = env.get("PGUSER") or DB_CONFIG["user"]
-    env["PGPASSWORD"] = env.get("PGPASSWORD") or DB_CONFIG["password"]
-    env["DB_HOST"] = env["PGHOST"]
-    env["DB_PORT"] = env["PGPORT"]
-    env["DB_NAME"] = env["PGDATABASE"]
-    env["DB_USER"] = env["PGUSER"]
-    env["DB_PASSWORD"] = env["PGPASSWORD"]
-    return env
+    """Export DB and clone paths for shell scripts."""
+    return agent_subprocess_env()
 
 
 def fetch_pending_job(conn) -> dict | None:
