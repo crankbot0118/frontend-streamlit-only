@@ -179,6 +179,14 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Sidebar navigation ---------- */
 
+  /* Shared column grid: chevron/icon column + label column align across all rows. */
+  .st-key-ca-nav {{
+      --ca-nav-pad-x: 0.55rem;
+      --ca-nav-icon-col: 1.25rem;
+      --ca-nav-gap: 0.7rem;
+      --ca-nav-row-pad-y: 0.35rem;
+  }}
+
   /* Tighten vertical spacing and keep every block left-aligned. */
   .st-key-ca-nav > [data-testid="stVerticalBlock"] {{
       gap: 0 !important;
@@ -204,17 +212,27 @@ _GLOBAL_CSS = f"""
       border: none !important;
       box-shadow: none !important;
       outline: none !important;
-      gap: 0.7rem;
-      padding: 0.35rem 0.55rem;
+      gap: var(--ca-nav-gap) !important;
+      padding: var(--ca-nav-row-pad-y) var(--ca-nav-pad-x) !important;
       border-radius: 8px;
       color: {BRAND_INK};
+  }}
+
+  .st-key-ca-nav .stButton button svg {{
+      width: var(--ca-nav-icon-col) !important;
+      height: var(--ca-nav-icon-col) !important;
+      min-width: var(--ca-nav-icon-col) !important;
+      flex: 0 0 var(--ca-nav-icon-col) !important;
+      margin: 0 !important;
   }}
 
   /* Stop Streamlit from centering the label inside the button. */
   .st-key-ca-nav .stButton button > div,
   .st-key-ca-nav .stButton button [data-testid="stMarkdownContainer"] {{
-      width: 100%;
+      width: auto;
+      flex: 1 1 auto;
       display: flex !important;
+      align-items: center !important;
       justify-content: flex-start !important;
       text-align: left !important;
   }}
@@ -224,6 +242,7 @@ _GLOBAL_CSS = f"""
       font-weight: 600;
       font-size: 0.98rem;
       text-align: left !important;
+      line-height: 1.25;
   }}
 
   .st-key-ca-nav .stButton button:hover {{
@@ -268,10 +287,10 @@ _GLOBAL_CSS = f"""
       fill: #9aa0a6 !important;
   }}
 
-  /* Small yellow "Coming soon!" highlight at the top of the Admin group. */
+  /* Small yellow "Coming soon!" highlight — aligned with nav label column. */
   .ca-soon {{
       display: inline-block;
-      margin: 0 0 0.4rem 0.55rem;
+      margin: 0 0 0.4rem calc(var(--ca-nav-pad-x) + var(--ca-nav-icon-col) + var(--ca-nav-gap));
       padding: 0.05rem 0.45rem;
       border-radius: 6px;
       background: #fff3cd;
@@ -294,8 +313,8 @@ _GLOBAL_CSS = f"""
       display: flex !important;
       align-items: center !important;
       justify-content: flex-start !important;
-      gap: 0.5rem;
-      padding: 0.35rem 0.55rem;
+      gap: var(--ca-nav-gap) !important;
+      padding: var(--ca-nav-row-pad-y) var(--ca-nav-pad-x) !important;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.03em;
@@ -305,6 +324,7 @@ _GLOBAL_CSS = f"""
       border: none !important;
       box-shadow: none !important;
       outline: none !important;
+      list-style: none;
   }}
 
   .st-key-ca-nav [data-testid="stExpander"] summary:hover,
@@ -317,23 +337,29 @@ _GLOBAL_CSS = f"""
       outline: none !important;
   }}
 
-  /* Brand-colored chevron, moved to the left of the label. */
+  /* Chevron in the same column as nav icons. */
   .st-key-ca-nav [data-testid="stExpander"] summary svg {{
       order: -1;
+      width: var(--ca-nav-icon-col) !important;
+      height: var(--ca-nav-icon-col) !important;
+      min-width: var(--ca-nav-icon-col) !important;
+      flex: 0 0 var(--ca-nav-icon-col) !important;
+      margin: 0 !important;
       color: {BRAND_ORANGE};
       fill: {BRAND_ORANGE};
   }}
 
-  /* Left-align the summary label text too. */
+  /* Left-align the summary label text with nav item labels. */
   .st-key-ca-nav [data-testid="stExpander"] summary p,
   .st-key-ca-nav [data-testid="stExpander"] summary span {{
       text-align: left !important;
+      margin: 0 !important;
+      line-height: 1.25;
   }}
 
-  /* Indent the items nested inside a group, with tight vertical padding.
-     Remove the separator border between the header and the content. */
+  /* No extra indent — icons share the same left column as Home / Execute Clone. */
   .st-key-ca-nav [data-testid="stExpanderDetails"] {{
-      padding-left: 0.6rem;
+      padding-left: 0 !important;
       padding-top: 0.1rem;
       padding-bottom: 0;
       border: none !important;
@@ -345,13 +371,13 @@ _GLOBAL_CSS = f"""
       margin-bottom: 0 !important;
   }}
 
-  /* Thin divider line before Execute Clone (no st.divider wrapper gap). */
+  /* Thin black divider before Execute Clone / Run History. */
   .ca-nav-divider-line {{
       display: block;
       height: 1px;
       border: none;
-      margin: 0.12rem 0.55rem 0.12rem 0.55rem;
-      background: rgba(232, 117, 17, 0.25);
+      margin: 0.12rem var(--ca-nav-pad-x);
+      background: {BRAND_INK};
   }}
 
   /* ---------- Run History filters + Execute Clone form ---------- */
