@@ -978,6 +978,12 @@ _GLOBAL_CSS = f"""
       gap: 0.4rem;
   }}
 
+  /* Stable shell while the steps fragment mounts or polls. */
+  .st-key-ca-steps [data-testid="stFragment"] {{
+      display: block;
+      width: 100%;
+  }}
+
   /* Each step is a bordered card. Right padding reserves room for the toggle
      arrow, which is pinned to the card's right edge (like Run History cards). */
   [class*="st-key-stepcard_"] {{
@@ -986,6 +992,26 @@ _GLOBAL_CSS = f"""
       border-radius: 10px;
       padding: 0.5rem 2.8rem 0.5rem 1.1rem;
       background: #ffffff;
+      min-height: 2.9rem;
+  }}
+
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] {{
+      position: relative !important;
+  }}
+
+  /* Pin the expand control immediately (avoids one-frame stack before key CSS). */
+  [class*="st-key-stepcard_"] > [data-testid="stElementContainer"]:has(.stButton) {{
+      position: absolute !important;
+      right: 0.5rem;
+      top: 0.5rem;
+      width: auto !important;
+      height: 1.9rem;
+      margin: 0 !important;
+      padding: 0 !important;
+      z-index: 3;
+      display: flex !important;
+      align-items: center;
   }}
 
   /* Header row: name + status icon on the left, "More actions" on the right. */
@@ -1368,7 +1394,6 @@ def step_attempts_table_html(attempts: list[dict]) -> str:
 
     rows = []
     for row in attempts:
-        current = "Yes" if row.get("is_current") else ""
         rows.append(
             "<tr>"
             f"<td>{html.escape(str(row.get('attempt_number', '')))}</td>"
@@ -1377,7 +1402,6 @@ def step_attempts_table_html(attempts: list[dict]) -> str:
             f"<td>{dt_html(row.get('start_time'))}</td>"
             f"<td>{dt_html(row.get('end_time'))}</td>"
             f"<td>{html.escape(fmt_duration(row.get('start_time'), row.get('end_time')))}</td>"
-            f"<td>{html.escape(current)}</td>"
             "</tr>"
         )
     return (
@@ -1390,7 +1414,6 @@ def step_attempts_table_html(attempts: list[dict]) -> str:
         "<th>Start</th>"
         "<th>End</th>"
         "<th>Duration</th>"
-        "<th>Current</th>"
         "</tr></thead>"
         f"<tbody>{''.join(rows)}</tbody>"
         "</table></div>"

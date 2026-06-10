@@ -101,13 +101,35 @@ failed_step_id = (
     else None
 )
 
+# Always use latest clone_run_status for operator actions (session run can be stale).
+latest_run = run
+if run_id:
+    try:
+        latest_run = get_run(run_id)
+        if latest_run:
+            st.session_state["selected_run"] = latest_run
+    except Exception:
+        latest_run = run
+
+run_status = (latest_run.get("status") or "").upper() if latest_run else ""
+can_abort_skip = run_status == "FAILED" and failed_step_id is not None
+
+if can_abort_skip:
+    _abort_skip_help = "Mark this failed run as ABORTED"
+    _skip_help = "Mark this failed run as SKIPPED"
+elif run_status != "FAILED":
+    _abort_skip_help = "Only available when clone run status is FAILED"
+    _skip_help = _abort_skip_help
+else:
+    _abort_skip_help = "No failed function step found for this run"
+    _skip_help = _abort_skip_help
+
 if run:
     src = _esc(run.get("source_name", "—"))
     tgt = _esc(run.get("target_name", "—"))
     user = _esc(run.get("user_name", "—"))
     safe_run_id = _esc(run_id)
-    is_failed = (run.get("status") or "").upper() == "FAILED"
-    has_run_log = bool(run.get("log_location"))
+    has_run_log = bool(latest_run.get("log_location"))
 
     with st.container(key="ca-detail-header"):
         with st.container(key="ca-detail-title-row"):
@@ -128,27 +150,39 @@ if run:
                 if st.button(
                     "Abort",
                     key="detail_abort",
-                    disabled=not is_failed,
-                    help="Mark this failed run as ABORTED",
+                    disabled=not can_abort_skip,
+                    help=_abort_skip_help,
                 ):
-                    try:
-                        abort_run(run_id, failed_step_id)
-                        st.session_state.pop("selected_run", None)
-                        st.rerun()
-                    except Exception as exc:
-                        show_error(exc, context="Could not abort run")
+                    if not can_abort_skip:
+                        show_error(
+                            "Abort is only allowed when clone run status is FAILED.",
+                            context="Cannot abort run",
+                        )
+                    else:
+                        try:
+                            abort_run(run_id, failed_step_id)
+                            st.session_state.pop("selected_run", None)
+                            st.rerun()
+                        except Exception as exc:
+                            show_error(exc, context="Could not abort run")
                 if st.button(
                     "Skip",
                     key="detail_skip",
-                    disabled=not is_failed,
-                    help="Mark this failed run as SKIPPED",
+                    disabled=not can_abort_skip,
+                    help=_skip_help,
                 ):
-                    try:
-                        skip_run(run_id, failed_step_id)
-                        st.session_state.pop("selected_run", None)
-                        st.rerun()
-                    except Exception as exc:
-                        show_error(exc, context="Could not skip run")
+                    if not can_abort_skip:
+                        show_error(
+                            "Skip is only allowed when clone run status is FAILED.",
+                            context="Cannot skip run",
+                        )
+                    else:
+                        try:
+                            skip_run(run_id, failed_step_id)
+                            st.session_state.pop("selected_run", None)
+                            st.rerun()
+                        except Exception as exc:
+                            show_error(exc, context="Could not skip run")
 
         with st.container(key="ca-detail-meta-row"):
             emit_html(
@@ -157,13 +191,13 @@ if run:
                   <div class="ca-detail-meta">
                     <span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>
                     <span class="ca-detail-sep">&middot;</span>
-                    <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(run.get('start_date'))}</span>
+                    <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(latest_run.get('start_date'))}</span>
                     <span class="ca-detail-sep">&middot;</span>
-                    <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(run.get('last_update'))}</span>
+                    <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(latest_run.get('last_update'))}</span>
                     <span class="ca-detail-sep">&middot;</span>
-                    <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}</span>
+                    <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(latest_run.get('start_date'), latest_run.get('last_update'))}</span>
                     <span class="ca-detail-sep">&middot;</span>
-                    {status_badge_html(run.get('status', ''))}
+                    {status_badge_html(latest_run.get('status', ''))}
                   </div>
                 </div>
                 """
@@ -273,18 +307,17 @@ else:
                                 unsafe_allow_html=True,
                             )
 
-    def _render_live_steps() -> None:
-        st.session_state.pop("selected_run", None)
-        live_steps = get_run_steps(run_id)
-        _render_step_cards(live_steps)
-
     with st.container(key="ca-steps"):
-        if st.session_state.get(refresh_key):
+        auto_on = bool(st.session_state.get(refresh_key))
+        poll_every = _RUN_DETAILS_REFRESH_SEC if auto_on else None
 
-            @st.fragment(run_every=_RUN_DETAILS_REFRESH_SEC)
-            def _auto_refresh_steps() -> None:
-                _render_live_steps()
+        @st.fragment(run_every=poll_every)
+        def _steps_panel() -> None:
+            if auto_on:
+                st.session_state.pop("selected_run", None)
+                panel_steps = get_run_steps(run_id)
+            else:
+                panel_steps = steps
+            _render_step_cards(panel_steps)
 
-            _auto_refresh_steps()
-        else:
-            _render_step_cards(steps)
+        _steps_panel()
