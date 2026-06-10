@@ -6,7 +6,7 @@ Import and call ``apply_global_styles()`` once near the top of any page
 
 import base64
 import html
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 
@@ -1597,23 +1597,55 @@ def render_run_card(run: dict) -> bool:
         )
 
 
+def _utc_iso(value: datetime) -> str:
+    """Normalize a datetime to a UTC ISO-8601 string for client-side formatting."""
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    else:
+        value = value.astimezone(timezone.utc)
+    return value.isoformat()
+
+
 def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
     """Render the bottom-of-sidebar backend status card.
 
     A glowing green dot (live) or red dot (offline) sits to the left of a
-    "Last refresh on ..." line. Call inside a ``with st.sidebar:`` block,
-    after the navigation.
+    "Last refresh on ..." line. The timestamp is formatted in the browser's
+    local timezone. Call inside a ``with st.sidebar:`` block, after nav.
     """
-    last_refresh = last_refresh or datetime.now()
+    last_refresh = last_refresh or datetime.now(timezone.utc)
     state = "is-live" if is_live else "is-offline"
-    stamp = last_refresh.strftime("%b %d, %Y at %I:%M %p")
+    refresh_iso = html.escape(_utc_iso(last_refresh), quote=True)
     with st.container(key="ca-status"):
         st.html(
             f"""
             <div class="ca-status {state}">
               <span class="ca-dot"></span>
-              <span class="ca-refresh-text">Last refresh on {stamp}</span>
+              <span class="ca-refresh-text" data-refresh-iso="{refresh_iso}">
+                Last refresh on …
+              </span>
             </div>
+            <script>
+            (function () {{
+              function formatLocalRefresh(iso) {{
+                var dt = new Date(iso);
+                if (Number.isNaN(dt.getTime())) return null;
+                var month = dt.toLocaleString(undefined, {{ month: "short" }});
+                var day = dt.getDate();
+                var year = dt.getFullYear();
+                var time = dt.toLocaleString(undefined, {{
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                }});
+                return "Last refresh on " + month + " " + day + ", " + year + " at " + time;
+              }}
+              document.querySelectorAll("[data-refresh-iso]").forEach(function (el) {{
+                var label = formatLocalRefresh(el.getAttribute("data-refresh-iso"));
+                if (label) el.textContent = label;
+              }});
+            }})();
+            </script>
             """
         )
 

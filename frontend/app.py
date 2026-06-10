@@ -1,7 +1,7 @@
 """Clone Automation dashboard — multipage entry point."""
 
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parent.parent
@@ -63,6 +63,6 @@ with st.sidebar:
     is_live = check_backend_health()
     if not is_live:
         log.warning("Backend health check failed for %s", pg.title)
-    render_status(is_live, datetime.now())
+    render_status(is_live, datetime.now(timezone.utc))
 
 pg.run()
