@@ -287,10 +287,9 @@ _GLOBAL_CSS = f"""
       fill: #9aa0a6 !important;
   }}
 
-  /* Small yellow "Coming soon!" highlight — aligned with nav label column. */
+  /* Small yellow "Coming soon!" badge — inline beside group title when marked. */
   .ca-soon {{
       display: inline-block;
-      margin: 0 0 0.4rem calc(var(--ca-nav-pad-x) + var(--ca-nav-icon-col) + var(--ca-nav-gap));
       padding: 0.05rem 0.45rem;
       border-radius: 6px;
       background: #fff3cd;
@@ -298,6 +297,49 @@ _GLOBAL_CSS = f"""
       font-size: 0.66rem;
       font-weight: 700;
       letter-spacing: 0.02em;
+      line-height: 1.3;
+      white-space: nowrap;
+  }}
+
+  .ca-soon--inline {{
+      margin: 0 0 0 0.4rem;
+  }}
+
+  /* Group header row (Admin + badge) — matches expander summary alignment. */
+  .ca-nav-group-head {{
+      display: flex;
+      align-items: center;
+      gap: var(--ca-nav-gap);
+      padding: var(--ca-nav-row-pad-y) var(--ca-nav-pad-x);
+      user-select: none;
+  }}
+
+  .ca-nav-group-chevron {{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--ca-nav-icon-col);
+      min-width: var(--ca-nav-icon-col);
+      flex: 0 0 var(--ca-nav-icon-col);
+      color: {BRAND_ORANGE};
+      font-size: 0.95rem;
+      line-height: 1;
+  }}
+
+  .ca-nav-group-label-row {{
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: nowrap;
+      min-width: 0;
+  }}
+
+  .ca-nav-group-title {{
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: 0.78rem;
+      color: #6b7177;
+      line-height: 1.25;
   }}
 
   /* Group dropdowns: fully borderless / no box, blend into the sidebar. */
@@ -1741,6 +1783,25 @@ def _nav_link(pages: dict, item: dict, current_title: str) -> None:
         st.switch_page(pages[item["title"]])
 
 
+def _nav_group_header(title: str, badge: str | None = None) -> None:
+    """Section label row with chevron; optional badge sits beside the title."""
+    safe_title = html.escape(title.upper())
+    badge_html = ""
+    if badge:
+        badge_html = (
+            f'<span class="ca-soon ca-soon--inline">{html.escape(badge)}</span>'
+        )
+    st.html(
+        f'<div class="ca-nav-group-head">'
+        f'<span class="ca-nav-group-chevron" aria-hidden="true">&#9662;</span>'
+        f'<span class="ca-nav-group-label-row">'
+        f'<span class="ca-nav-group-title">{safe_title}</span>'
+        f"{badge_html}"
+        f"</span>"
+        f"</div>"
+    )
+
+
 def render_sidebar_nav(pages: dict, current_title: str) -> None:
     """Render the sidebar navigation: link-style items with Material icons
     and collapsible groups, styled to look borderless and clean.
@@ -1754,11 +1815,14 @@ def render_sidebar_nav(pages: dict, current_title: str) -> None:
             if entry["kind"] == "item":
                 _nav_link(pages, entry, current_title)
             elif entry["kind"] == "group":
-                with st.expander(entry["title"], expanded=True):
-                    if entry.get("badge"):
-                        st.html(f'<span class="ca-soon">{entry["badge"]}</span>')
+                if entry.get("badge"):
+                    _nav_group_header(entry["title"], entry["badge"])
                     for item in entry["items"]:
                         _nav_link(pages, item, current_title)
+                else:
+                    with st.expander(entry["title"], expanded=True):
+                        for item in entry["items"]:
+                            _nav_link(pages, item, current_title)
             elif entry["kind"] == "divider":
                 st.html('<hr class="ca-nav-divider-line" />')
 
