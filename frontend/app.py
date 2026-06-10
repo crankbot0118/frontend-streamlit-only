@@ -58,12 +58,11 @@ st.session_state["_pages"] = pages
 pg = st.navigation(list(pages.values()), position="hidden")
 
 with st.sidebar:
-    with st.container(key="ca-sidebar-shell"):
-        render_logo()
-        render_sidebar_nav(pages, current_title=pg.title)
-        is_live = check_backend_health()
-        if not is_live:
-            log.warning("Backend health check failed for %s", pg.title)
-        render_status(is_live, datetime.now(timezone.utc))
+    render_logo()
+    render_sidebar_nav(pages, current_title=pg.title)
+    is_live = check_backend_health()
+    if not is_live:
+        log.warning("Backend health check failed for %s", pg.title)
+    render_status(is_live, datetime.now(timezone.utc))
 
 pg.run()

@@ -112,16 +112,9 @@ _GLOBAL_CSS = f"""
   }}
 
   [data-testid="stSidebar"] {{
-      width: 268px !important;
-      min-width: 268px !important;
-      max-width: 268px !important;
-      background: #ffffff !important;
-      border-right: 1px solid #eceeef !important;
-  }}
-
-  [data-testid="stSidebarContent"],
-  [data-testid="stSidebarUserContent"] {{
-      background: #ffffff !important;
+      width: 264px !important;
+      min-width: 264px !important;
+      max-width: 264px !important;
   }}
 
   /* Collapse the empty sidebar header so content sits at the very top. */
@@ -133,37 +126,17 @@ _GLOBAL_CSS = f"""
 
   /* Sidebar content top-flush, matching the main title. */
   [data-testid="stSidebarUserContent"] {{
-      padding-top: 1rem;
-      padding-bottom: 0.75rem;
-  }}
-
-  /* Full-height sidebar column: nav grows, status pinned to bottom. */
-  .st-key-ca-sidebar-shell > [data-testid="stVerticalBlock"],
-  .st-key-ca-sidebar-shell > [data-testid="stVerticalBlockBorderWrapper"] {{
-      display: flex !important;
-      flex-direction: column !important;
-      min-height: calc(100vh - 2.5rem) !important;
-      gap: 0 !important;
-  }}
-
-  .st-key-ca-sidebar-shell .st-key-ca-nav {{
-      flex: 1 1 auto !important;
-  }}
-
-  .st-key-ca-sidebar-shell .st-key-ca-status {{
-      flex: 0 0 auto !important;
-      margin-top: auto !important;
-      padding-top: 0.75rem !important;
+      padding-top: 1.2rem;
   }}
 
   /* Logo block, left-aligned to match render_title. */
   .ca-logo {{
-      margin: 0 0 0.65rem 0.35rem;
+      margin: 0 0 0.9rem 0;
       padding: 0;
   }}
 
   .ca-logo img {{
-      width: 148px;
+      width: 170px;
       max-width: 100%;
       height: auto;
       display: block;
@@ -206,13 +179,9 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Sidebar navigation ---------- */
 
-  .st-key-ca-nav {{
-      padding: 0 0.35rem;
-  }}
-
   /* Tighten vertical spacing and keep every block left-aligned. */
   .st-key-ca-nav > [data-testid="stVerticalBlock"] {{
-      gap: 0.05rem !important;
+      gap: 0 !important;
       align-items: stretch;
   }}
 
@@ -223,30 +192,22 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
 
-  /* Borderless, left-aligned link-style nav buttons. */
+  /* Borderless, left-aligned link-style nav buttons (descendant selectors so
+     we catch the button regardless of intermediate wrappers). */
   .st-key-ca-nav .stButton button {{
       display: flex !important;
       align-items: center !important;
       justify-content: flex-start !important;
       text-align: left !important;
       width: 100% !important;
-      min-height: 2.05rem !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
       outline: none !important;
-      gap: 0.72rem;
-      padding: 0.42rem 0.72rem !important;
+      gap: 0.7rem;
+      padding: 0.35rem 0.55rem;
       border-radius: 8px;
-      color: #4a4a4a;
-      transition: background 0.15s ease, color 0.15s ease;
-  }}
-
-  .st-key-ca-nav .stButton button svg {{
-      width: 1.12rem !important;
-      height: 1.12rem !important;
-      color: #5f6368 !important;
-      fill: #5f6368 !important;
+      color: {BRAND_INK};
   }}
 
   /* Stop Streamlit from centering the label inside the button. */
@@ -260,33 +221,31 @@ _GLOBAL_CSS = f"""
 
   .st-key-ca-nav .stButton button p {{
       margin: 0;
-      font-weight: 500;
-      font-size: 0.92rem;
+      font-weight: 600;
+      font-size: 0.98rem;
       text-align: left !important;
-      color: inherit !important;
   }}
 
   .st-key-ca-nav .stButton button:hover {{
-      background: rgba(232, 117, 17, 0.08) !important;
-      color: {BRAND_ORANGE} !important;
+      background: rgba(232, 117, 17, 0.12) !important;
+      color: {BRAND_ORANGE};
   }}
 
   .st-key-ca-nav .stButton button:hover svg,
   .st-key-ca-nav .stButton button:hover p {{
-      color: {BRAND_ORANGE} !important;
-      fill: {BRAND_ORANGE} !important;
+      color: {BRAND_ORANGE};
   }}
 
-  /* Active item — cream fill + orange left accent bar (matches reference). */
+  /* Active item (rendered as a primary button) — brand highlight. */
   .st-key-ca-nav .stButton button[kind="primary"] {{
-      background: #fff4eb !important;
-      box-shadow: inset 4px 0 0 {BRAND_ORANGE} !important;
+      background: rgba(232, 117, 17, 0.14) !important;
+      box-shadow: inset 3px 0 0 {BRAND_ORANGE} !important;
       color: {BRAND_ORANGE} !important;
   }}
 
   .st-key-ca-nav .stButton button[kind="primary"] p {{
       color: {BRAND_ORANGE} !important;
-      font-weight: 600;
+      font-weight: 700;
   }}
 
   .st-key-ca-nav .stButton button[kind="primary"] svg {{
@@ -294,7 +253,7 @@ _GLOBAL_CSS = f"""
       fill: {BRAND_ORANGE} !important;
   }}
 
-  /* Disabled ("coming soon") items: muted, not clickable. */
+  /* Disabled ("coming soon") items: muted, not clickable, no hover accent. */
   .st-key-ca-nav .stButton button:disabled,
   .st-key-ca-nav .stButton button[disabled] {{
       opacity: 1 !important;
@@ -307,36 +266,22 @@ _GLOBAL_CSS = f"""
   .st-key-ca-nav .stButton button:disabled svg {{
       color: #9aa0a6 !important;
       fill: #9aa0a6 !important;
-      font-weight: 500 !important;
   }}
 
-  .st-key-ca-nav .stButton button:disabled:hover,
-  .st-key-ca-nav .stButton button[disabled]:hover {{
-      background: transparent !important;
-      color: #9aa0a6 !important;
-  }}
-
-  .st-key-ca-nav .stButton button:disabled:hover svg,
-  .st-key-ca-nav .stButton button[disabled]:hover svg {{
-      color: #9aa0a6 !important;
-      fill: #9aa0a6 !important;
-  }}
-
-  /* "Coming soon!" pill under Admin. */
+  /* Small yellow "Coming soon!" highlight at the top of the Admin group. */
   .ca-soon {{
       display: inline-block;
-      margin: 0.05rem 0 0.45rem 0.72rem;
-      padding: 0.14rem 0.55rem;
-      border-radius: 999px;
-      background: #fff6d8;
+      margin: 0 0 0.4rem 0.55rem;
+      padding: 0.05rem 0.45rem;
+      border-radius: 6px;
+      background: #fff3cd;
       color: #8a6500;
-      font-size: 0.64rem;
+      font-size: 0.66rem;
       font-weight: 700;
-      letter-spacing: 0.01em;
-      line-height: 1.2;
+      letter-spacing: 0.02em;
   }}
 
-  /* Group dropdowns: borderless, blend into sidebar. */
+  /* Group dropdowns: fully borderless / no box, blend into the sidebar. */
   .st-key-ca-nav [data-testid="stExpander"],
   .st-key-ca-nav [data-testid="stExpander"] details {{
       border: none !important;
@@ -345,31 +290,16 @@ _GLOBAL_CSS = f"""
       background: transparent !important;
   }}
 
-  .st-key-ca-nav [data-testid="stExpander"] {{
-      margin: 0.55rem 0 0.1rem 0 !important;
-  }}
-
   .st-key-ca-nav [data-testid="stExpander"] summary {{
       display: flex !important;
       align-items: center !important;
       justify-content: flex-start !important;
-      gap: 0.35rem;
-      padding: 0.35rem 0.72rem;
-      font-weight: 600;
+      gap: 0.5rem;
+      padding: 0.35rem 0.55rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.07em;
-      font-size: 0.68rem;
-      color: #9aa0a6;
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      outline: none !important;
-      list-style: none;
-  }}
-
-  .st-key-ca-nav [data-testid="stExpander"] summary:hover,
-  .st-key-ca-nav [data-testid="stExpander"] summary:focus,
-  .st-key-ca-nav [data-testid="stExpander"] summary:focus-visible {{
+      letter-spacing: 0.03em;
+      font-size: 0.78rem;
       color: #6b7177;
       background: transparent !important;
       border: none !important;
@@ -377,36 +307,51 @@ _GLOBAL_CSS = f"""
       outline: none !important;
   }}
 
-  /* Gray chevron to the left of section labels. */
-  .st-key-ca-nav [data-testid="stExpander"] summary svg {{
-      order: -1;
-      width: 0.95rem !important;
-      height: 0.95rem !important;
-      color: #b0b5ba !important;
-      fill: #b0b5ba !important;
+  .st-key-ca-nav [data-testid="stExpander"] summary:hover,
+  .st-key-ca-nav [data-testid="stExpander"] summary:focus,
+  .st-key-ca-nav [data-testid="stExpander"] summary:focus-visible {{
+      color: {BRAND_INK};
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      outline: none !important;
   }}
 
+  /* Brand-colored chevron, moved to the left of the label. */
+  .st-key-ca-nav [data-testid="stExpander"] summary svg {{
+      order: -1;
+      color: {BRAND_ORANGE};
+      fill: {BRAND_ORANGE};
+  }}
+
+  /* Left-align the summary label text too. */
   .st-key-ca-nav [data-testid="stExpander"] summary p,
   .st-key-ca-nav [data-testid="stExpander"] summary span {{
       text-align: left !important;
   }}
 
-  /* Nested group items — slight indent. */
+  /* Indent the items nested inside a group, with tight vertical padding.
+     Remove the separator border between the header and the content. */
   .st-key-ca-nav [data-testid="stExpanderDetails"] {{
-      padding-left: 0.35rem;
-      padding-top: 0.05rem;
+      padding-left: 0.6rem;
+      padding-top: 0.1rem;
       padding-bottom: 0;
       border: none !important;
       box-shadow: none !important;
   }}
 
-  /* Thin divider before Execute Clone / Run History. */
+  /* Remove the expander's own trailing space before the divider. */
+  .st-key-ca-nav [data-testid="stExpander"] {{
+      margin-bottom: 0 !important;
+  }}
+
+  /* Thin divider line before Execute Clone (no st.divider wrapper gap). */
   .ca-nav-divider-line {{
       display: block;
       height: 1px;
       border: none;
-      margin: 0.65rem 0.72rem 0.45rem 0.72rem;
-      background: #eceeef;
+      margin: 0.12rem 0.55rem 0.12rem 0.55rem;
+      background: rgba(232, 117, 17, 0.25);
   }}
 
   /* ---------- Run History filters + Execute Clone form ---------- */
@@ -455,35 +400,48 @@ _GLOBAL_CSS = f"""
       font-weight: 700 !important;
   }}
 
-  /* ---------- Sidebar bottom status ---------- */
+  /* ---------- Sidebar bottom status card ---------- */
 
+  /* Make the sidebar a full-height column so the status can sit at the bottom. */
+  [data-testid="stSidebarUserContent"] {{
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 5.5rem);
+  }}
+
+  [data-testid="stSidebarUserContent"] > [data-testid="stVerticalBlock"] {{
+      flex: 1 1 auto;
+  }}
+
+  /* Push the status block to the very bottom. */
+  [data-testid="stSidebarUserContent"] :has(> .st-key-ca-status) {{
+      margin-top: auto;
+  }}
+
+  /* Single inline row: glowing dot + last-refresh text. No card. */
   .ca-status {{
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.15rem 0.35rem 0.1rem 0.35rem;
+      gap: 0.55rem;
+      padding: 0.2rem 0.15rem;
   }}
 
   .ca-status .ca-dot {{
-      width: 9px;
-      height: 9px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       flex: 0 0 auto;
   }}
 
-  .ca-status .ca-refresh-text,
-  .ca-status .ca-local-dt {{
-      font-size: 0.72rem;
-      color: #9aa0a6;
-      font-weight: 400;
-      line-height: 1.35;
+  .ca-status .ca-refresh-text {{
+      font-size: 0.75rem;
+      color: #6b7177;
   }}
 
-  /* Live: steady green dot with a soft pulse. */
+  /* Live: glowing green with a pulse. */
   .ca-status.is-live .ca-dot {{
       background: #22c55e;
-      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45);
-      animation: ca-pulse 2s ease-out infinite;
+      animation: ca-pulse 1.6s ease-out infinite;
   }}
 
   /* Offline: red with a steady glow. */
