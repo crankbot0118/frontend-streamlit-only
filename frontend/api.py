@@ -41,13 +41,48 @@ def _api_key_header() -> dict[str, str]:
     return {"X-API-Key": API_KEY}
 
 
-def _signed_url(path: str) -> str:
-    """Build a backend URL, appending ``api_key`` for browser download links."""
+def _filename_from_response(resp, default: str) -> str:
+    disposition = resp.headers.get("Content-Disposition", "")
+    if "filename=" in disposition:
+        for part in disposition.split(";"):
+            part = part.strip()
+            if part.startswith("filename="):
+                name = part.split("=", 1)[1].strip().strip('"')
+                if name:
+                    return name
+    return default
+
+
+def _download_file(path: str, default_filename: str, timeout: float | None = None) -> tuple[bytes, str]:
+    """Fetch a binary file from the backend using ``X-API-Key`` (never in the URL)."""
     url = f"{BACKEND_URL}{path}"
-    if not API_KEY:
-        return url
-    sep = "&" if "?" in url else "?"
-    return f"{url}{sep}{urllib.parse.urlencode({'api_key': API_KEY})}"
+    req = urllib.request.Request(url, headers=_api_key_header())
+    download_timeout = timeout or max(_GET_TIMEOUT, 30.0)
+    try:
+        with urllib.request.urlopen(req, timeout=download_timeout) as resp:
+            return resp.read(), _filename_from_response(resp, default_filename)
+    except urllib.error.HTTPError as exc:
+        raise _backend_error(path, exc) from exc
+    except (urllib.error.URLError, TimeoutError) as exc:
+        raise _backend_error(path, exc) from exc
+
+
+def fetch_run_log(clone_run_id: int) -> tuple[bytes, str]:
+    """Download a clone run log via authenticated backend request."""
+    return _download_file(
+        f"/api/v1/runs/{clone_run_id}/log",
+        default_filename=f"clone_run_{clone_run_id}.log",
+    )
+
+
+def fetch_step_log(clone_run_id: int, clone_function_run_id: int) -> tuple[bytes, str]:
+    """Download a function-step log via authenticated backend request."""
+    return _download_file(
+        f"/api/v1/runs/{clone_run_id}/steps/{clone_function_run_id}/log",
+        default_filename=(
+            f"clone_run_{clone_run_id}_step_{clone_function_run_id}.log"
+        ),
+    )
 
 
 def _backend_error(path: str, exc: Exception) -> BackendError:
@@ -186,18 +221,6 @@ def get_step_detail(clone_run_id: int, clone_function_run_id: int) -> dict:
     """Fetch one function-step row and all attempts for that function."""
     data = _get_json(f"/api/v1/runs/{clone_run_id}/steps/{clone_function_run_id}")
     return data if isinstance(data, dict) else {}
-
-
-def run_log_url(clone_run_id: int) -> str:
-    """Backend download URL for a run's log."""
-    return _signed_url(f"/api/v1/runs/{clone_run_id}/log")
-
-
-def step_log_url(clone_run_id: int, clone_function_run_id: int) -> str:
-    """Backend download URL for a function-step log."""
-    return _signed_url(
-        f"/api/v1/runs/{clone_run_id}/steps/{clone_function_run_id}/log"
-    )
 
 
 def abort_run(clone_run_id: int, clone_function_run_id: int | None = None) -> dict:

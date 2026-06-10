@@ -1,6 +1,5 @@
 """Run details page — shows the steps (clone_function_run_status) for a run."""
 
-import html
 import sys
 from pathlib import Path
 
@@ -15,11 +14,10 @@ from api import (
     get_run,
     get_run_steps,
     get_step_detail,
-    run_log_url,
     skip_run,
-    step_log_url,
 )
 from config.settings import frontend
+from log_download import cached_run_log, cached_step_log
 from styles import (
     fmt_duration,
     fmt_relative_update,
@@ -28,7 +26,6 @@ from styles import (
     render_title,
     status_badge_html,
     status_image_html,
-    step_action_link_html,
     step_detail_dialog_error_html,
     step_detail_dialog_html,
     _esc,
@@ -109,11 +106,7 @@ if run:
     user = _esc(run.get("user_name", "—"))
     safe_run_id = _esc(run_id)
     is_failed = (run.get("status") or "").upper() == "FAILED"
-    log_href = html.escape(run_log_url(run_id), quote=True)
-    log_link_html = (
-        '<span class="ca-log-sep">&middot;</span>'
-        f'<a class="ca-loglink" href="{log_href}" download>Download Log</a>'
-    )
+    has_run_log = bool(run.get("log_location"))
 
     with st.container(key="ca-detail-header"):
         with st.container(key="ca-detail-title-row"):
@@ -170,11 +163,28 @@ if run:
                     <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}</span>
                     <span class="ca-detail-sep">&middot;</span>
                     {status_badge_html(run.get('status', ''))}
-                    {log_link_html}
                   </div>
                 </div>
                 """
             )
+            with st.container(key="detail-download-log"):
+                if has_run_log:
+                    try:
+                        log_bytes, log_name = cached_run_log(run_id)
+                        st.download_button(
+                            "Download Log",
+                            data=log_bytes,
+                            file_name=log_name,
+                            key=f"download_run_log_{run_id}",
+                            type="secondary",
+                        )
+                    except Exception as exc:
+                        show_error(exc, context="Could not load run log")
+                else:
+                    st.markdown(
+                        '<span class="ca-step-link-disabled">Download Log</span>',
+                        unsafe_allow_html=True,
+                    )
             with st.container(key="detail-refresh"):
                 st.toggle(
                     "Auto refresh",
@@ -238,13 +248,29 @@ else:
                     with st.container(key=f"step_links_{i}"):
                         if st.button("Details", key=f"step_details_{run_id}_{i}"):
                             _show_step_detail_dialog(run_id, step_pk, name)
-                        st.html(
-                            step_action_link_html(
-                                step_log_url(run_id, step_pk)
-                                if step.get("step_func_log_location")
-                                else None,
+                        if step.get("step_func_log_location"):
+                            try:
+                                step_bytes, step_name = cached_step_log(
+                                    run_id, step_pk
+                                )
+                                st.download_button(
+                                    "Download Step Log",
+                                    data=step_bytes,
+                                    file_name=step_name,
+                                    key=f"download_step_log_{run_id}_{i}",
+                                    type="secondary",
+                                )
+                            except Exception as exc:
+                                show_error(
+                                    exc,
+                                    context=f"Could not load log for {name}",
+                                )
+                        else:
+                            st.markdown(
+                                '<span class="ca-step-link-disabled">'
+                                "Download Step Log</span>",
+                                unsafe_allow_html=True,
                             )
-                        )
 
     def _render_live_steps() -> None:
         st.session_state.pop("selected_run", None)

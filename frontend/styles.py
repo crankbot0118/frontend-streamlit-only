@@ -748,6 +748,44 @@ _GLOBAL_CSS = f"""
       visibility: visible !important;
       flex: 0 0 auto !important;
   }}
+  .st-key-ca-detail-meta-row .st-key-detail-download-log {{
+      position: absolute !important;
+      right: 9.5rem !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      width: auto !important;
+      margin: 0 !important;
+      z-index: 2;
+      display: flex !important;
+      align-items: center;
+      justify-content: flex-end;
+      background: #ffffff !important;
+      padding-left: 0.75rem !important;
+      flex: 0 0 auto !important;
+  }}
+  .st-key-detail-download-log [data-testid="stElementContainer"],
+  .st-key-detail-download-log [data-testid="stVerticalBlock"] {{
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-detail-download-log .stDownloadButton,
+  .st-key-detail-download-log .stDownloadButton button {{
+      width: auto !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: {BRAND_ORANGE} !important;
+      font-size: 0.86rem !important;
+      font-weight: 600 !important;
+  }}
+  .st-key-detail-download-log .stDownloadButton button:hover {{
+      text-decoration: underline;
+      color: {BRAND_ORANGE} !important;
+  }}
   .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stVerticalBlock"],
   .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stElementContainer"] {{
       display: flex !important;
@@ -1035,6 +1073,23 @@ _GLOBAL_CSS = f"""
       font-weight: 600 !important;
   }}
   [class*="st-key-step_details_"] .stButton button:hover {{
+      text-decoration: underline;
+      color: {BRAND_ORANGE} !important;
+  }}
+  [class*="st-key-step_links_"] .stDownloadButton,
+  [class*="st-key-step_links_"] .stDownloadButton button {{
+      width: auto !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: {BRAND_ORANGE} !important;
+      font-size: 0.86rem !important;
+      font-weight: 600 !important;
+  }}
+  [class*="st-key-step_links_"] .stDownloadButton button:hover {{
       text-decoration: underline;
       color: {BRAND_ORANGE} !important;
   }}
@@ -1367,23 +1422,6 @@ def status_image_html(status: str, size: int = STATUS_ICON_PX) -> str:
         f'<img class="ca-step-status-img" src="{uri}" '
         f'alt="{label}" title="{label}" '
         f'style="width:{size}px;height:{size}px;" />'
-    )
-
-
-def step_action_link_html(step_log_href: str | None) -> str:
-    """Download Step Log link with middot spacing matching the title row."""
-    if step_log_href:
-        safe_href = html.escape(step_log_href, quote=True)
-        link = (
-            f'<a class="ca-loglink" href="{safe_href}" download>'
-            f"Download Step Log</a>"
-        )
-    else:
-        link = '<span class="ca-step-link-disabled">Download Step Log</span>'
-    return (
-        f'<span class="ca-step-links-inline">'
-        f'<span class="ca-detail-sep">&middot;</span>{link}'
-        f"</span>"
     )
 
 

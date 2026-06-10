@@ -9,7 +9,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import Depends, Header, HTTPException, Query, Request, status
+from fastapi import Depends, Header, HTTPException, Request, status
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 
@@ -38,9 +38,8 @@ _PUBLIC_PATHS = {"/health"}
 def verify_api_key(
     request: Request,
     x_api_key: Annotated[str | None, Header()] = None,
-    api_key: Annotated[str | None, Query(alias="api_key")] = None,
 ) -> None:
-    """Require ``X-API-Key`` header (or ``api_key`` query param for browser downloads)."""
+    """Require ``X-API-Key`` header on protected routes."""
     if request.url.path in _PUBLIC_PATHS:
         return
     if not API_KEY:
@@ -50,8 +49,7 @@ def verify_api_key(
                 detail="API authentication is not configured",
             )
         return
-    provided = x_api_key or api_key
-    if not provided or not secrets.compare_digest(provided, API_KEY):
+    if not x_api_key or not secrets.compare_digest(x_api_key, API_KEY):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or missing API key",
