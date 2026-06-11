@@ -168,47 +168,55 @@ if run:
                             show_error(exc, context="Could not abort run")
 
         with st.container(key="ca-detail-meta-row"):
-            emit_html(
-                f"""
-                <div class="ca-detail-meta-bar">
-                  <div class="ca-detail-meta">
-                    <span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>
-                    <span class="ca-detail-sep">&middot;</span>
-                    <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(latest_run.get('start_date'))}</span>
-                    <span class="ca-detail-sep">&middot;</span>
-                    <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(latest_run.get('last_update'))}</span>
-                    <span class="ca-detail-sep">&middot;</span>
-                    <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(latest_run.get('start_date'), latest_run.get('last_update'))}</span>
-                    <span class="ca-detail-sep">&middot;</span>
-                    {status_badge_html(latest_run.get('status', ''))}
-                  </div>
-                </div>
-                """
+            col_meta, col_dl, col_ref = st.columns(
+                [6, 1, 1.35],
+                gap="small",
+                vertical_alignment="center",
             )
-            with st.container(key="detail-download-log"):
-                if has_run_log:
-                    try:
-                        log_bytes, log_name = cached_run_log(run_id)
-                        st.download_button(
-                            "Download Log",
-                            data=log_bytes,
-                            file_name=log_name,
-                            key=f"download_run_log_{run_id}",
-                            type="secondary",
-                        )
-                    except Exception as exc:
-                        show_error(exc, context="Could not load run log")
-                else:
-                    st.markdown(
-                        '<span class="ca-step-link-disabled">Download Log</span>',
-                        unsafe_allow_html=True,
-                    )
-            with st.container(key="detail-refresh"):
-                st.toggle(
-                    "Auto refresh",
-                    key=refresh_key,
-                    label_visibility="visible",
+            with col_meta:
+                emit_html(
+                    f"""
+                    <div class="ca-detail-meta-bar">
+                      <div class="ca-detail-meta">
+                        <span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>
+                        <span class="ca-detail-sep">&middot;</span>
+                        <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(latest_run.get('start_date'))}</span>
+                        <span class="ca-detail-sep">&middot;</span>
+                        <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(latest_run.get('last_update'))}</span>
+                        <span class="ca-detail-sep">&middot;</span>
+                        <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(latest_run.get('start_date'), latest_run.get('last_update'))}</span>
+                        <span class="ca-detail-sep">&middot;</span>
+                        {status_badge_html(latest_run.get('status', ''))}
+                      </div>
+                    </div>
+                    """
                 )
+            with col_dl:
+                with st.container(key="detail-download-log"):
+                    if has_run_log:
+                        try:
+                            log_bytes, log_name = cached_run_log(run_id)
+                            st.download_button(
+                                "Download Log",
+                                data=log_bytes,
+                                file_name=log_name,
+                                key=f"download_run_log_{run_id}",
+                                type="secondary",
+                            )
+                        except Exception as exc:
+                            show_error(exc, context="Could not load run log")
+                    else:
+                        st.markdown(
+                            '<span class="ca-step-link-disabled">Download Log</span>',
+                            unsafe_allow_html=True,
+                        )
+            with col_ref:
+                with st.container(key="detail-refresh"):
+                    st.toggle(
+                        "Auto refresh",
+                        key=refresh_key,
+                        label_visibility="visible",
+                    )
 
         st.html('<hr class="ca-title-rule" />')
 else:

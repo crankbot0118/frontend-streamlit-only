@@ -152,6 +152,7 @@ _GLOBAL_CSS = f"""
       --ca-nav-font-size: var(--ca-body-size);
       --ca-nav-item-gap: 0.18rem;
       --ca-nav-highlight-bg: rgba(232, 117, 17, 0.12);
+      --ca-detail-meta-height: 1.6rem;
   }}
   [data-testid="stAppViewContainer"],
   .stApp,
@@ -393,7 +394,7 @@ _GLOBAL_CSS = f"""
   /* ---------- Sidebar navigation ---------- */
 
   .st-key-ca-nav {{
-      --ca-nav-x: 0;
+      --ca-nav-x: 0.75rem;
       --ca-nav-icon: 1rem;
       --ca-nav-gap: 0.45rem;
       --ca-nav-text: calc(var(--ca-nav-icon) + var(--ca-nav-gap));
@@ -443,16 +444,21 @@ _GLOBAL_CSS = f"""
       box-shadow: none !important;
       outline: none !important;
       gap: var(--ca-nav-gap) !important;
-      padding: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x) !important;
+      padding: 0.24rem var(--ca-nav-x) 0.24rem var(--ca-nav-x) !important;
       border-radius: 5px;
       color: {BRAND_INK};
   }}
 
-  .st-key-ca-nav .stButton button svg {{
+  .st-key-ca-nav .stButton button svg,
+  .st-key-ca-nav .stButton button [data-testid="stIconMaterial"] {{
       flex: 0 0 var(--ca-nav-icon) !important;
       width: var(--ca-nav-icon) !important;
       height: var(--ca-nav-icon) !important;
       margin: 0 !important;
+      align-self: center !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
   }}
 
   /* Stop Streamlit from centering the label inside the button. */
@@ -470,7 +476,8 @@ _GLOBAL_CSS = f"""
       font-weight: 600;
       font-size: var(--ca-nav-font-size);
       text-align: left !important;
-      line-height: 1.25;
+      line-height: 1;
+      align-self: center !important;
   }}
 
   .st-key-ca-nav .stButton button:hover {{
@@ -543,7 +550,7 @@ _GLOBAL_CSS = f"""
       justify-content: flex-start !important;
       gap: var(--ca-nav-gap) !important;
       min-height: 1.7rem !important;
-      padding: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x) !important;
+      padding: 0.24rem var(--ca-nav-x) 0.24rem var(--ca-nav-x) !important;
       font-weight: 600;
       text-transform: none;
       letter-spacing: normal;
@@ -1112,14 +1119,14 @@ _GLOBAL_CSS = f"""
       accent=BRAND_RED,
       accent_bg=BRAND_RED_BG,
   )}
-  /* Meta row: one line — facts · Download Log · Auto refresh. */
+  /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
       margin: 0 !important;
       padding: 0 !important;
+      min-height: var(--ca-detail-meta-height);
   }}
-  .st-key-ca-detail-meta-row > [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-meta-row > [data-testid="stVerticalBlockBorderWrapper"] {{
+  .st-key-ca-detail-meta-row [data-testid="stHorizontalBlock"] {{
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
@@ -1128,33 +1135,42 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
       gap: 0.45rem !important;
+      min-height: var(--ca-detail-meta-height) !important;
   }}
-  .st-key-ca-detail-meta-row > [data-testid="stElementContainer"] {{
-      margin: 0 !important;
-      padding: 0 !important;
-      flex: 0 0 auto !important;
-      width: auto !important;
+  .st-key-ca-detail-meta-row [data-testid="column"] {{
       display: flex !important;
       align-items: center !important;
+      justify-content: flex-start !important;
+      min-height: var(--ca-detail-meta-height) !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
   }}
-  .st-key-ca-detail-meta-row > [data-testid="stElementContainer"]:first-child {{
-      flex: 1 1 auto !important;
-      min-width: 0 !important;
+  .st-key-ca-detail-meta-row [data-testid="column"]:last-child {{
+      justify-content: flex-end !important;
   }}
-  .ca-detail-meta-bar {{
-      width: 100%;
-      box-sizing: border-box;
-      padding: 0;
+  .st-key-ca-detail-meta-row [data-testid="column"] [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-meta-row [data-testid="column"] [data-testid="stElementContainer"] {{
+      display: flex !important;
+      align-items: center !important;
+      justify-content: inherit !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+  }}
+  .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stElementContainer"],
+  .st-key-ca-detail-meta-row [data-testid="column"]:first-child iframe {{
+      display: flex !important;
+      align-items: center !important;
+      width: 100% !important;
+      min-height: var(--ca-detail-meta-height) !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
   .st-key-ca-detail-meta-row .st-key-detail-refresh,
   .st-key-ca-detail-meta-row .st-key-detail-download-log {{
-      position: static !important;
-      transform: none !important;
       width: auto !important;
       margin: 0 !important;
       padding: 0 !important;
-      flex: 0 0 auto !important;
-      background: transparent !important;
   }}
   .st-key-detail-download-log [data-testid="stElementContainer"],
   .st-key-detail-download-log [data-testid="stVerticalBlock"] {{
@@ -1165,7 +1181,8 @@ _GLOBAL_CSS = f"""
   .st-key-detail-download-log .stDownloadButton,
   .st-key-detail-download-log .stDownloadButton button {{
       width: auto !important;
-      min-height: 0 !important;
+      min-height: var(--ca-detail-meta-height) !important;
+      height: var(--ca-detail-meta-height) !important;
       margin: 0 !important;
       padding: 0 !important;
       background: transparent !important;
@@ -1174,7 +1191,9 @@ _GLOBAL_CSS = f"""
       color: {BRAND_ORANGE} !important;
       font-size: var(--ca-run-meta-size) !important;
       font-weight: 600 !important;
-      line-height: 1.35 !important;
+      line-height: 1 !important;
+      display: inline-flex !important;
+      align-items: center !important;
   }}
   .st-key-detail-download-log .stDownloadButton button:hover {{
       text-decoration: underline;
@@ -1183,12 +1202,13 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stVerticalBlock"],
   .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stElementContainer"] {{
       display: flex !important;
-      align-items: center;
-      justify-content: flex-end;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
       width: auto !important;
       margin: 0 !important;
-      opacity: 1 !important;
-      visibility: visible !important;
+      gap: 0.35rem !important;
+      min-height: var(--ca-detail-meta-height) !important;
   }}
   .st-key-detail-refresh [data-testid="stWidgetLabel"],
   .st-key-detail-refresh [data-testid="stWidgetLabel"] p,
@@ -1205,7 +1225,10 @@ _GLOBAL_CSS = f"""
       font-size: var(--ca-run-meta-size) !important;
       font-weight: 600 !important;
       white-space: nowrap;
-      line-height: 1.35 !important;
+      line-height: 1 !important;
+      margin: 0 !important;
+      display: flex !important;
+      align-items: center !important;
   }}
   .st-key-detail-refresh [data-testid="stToggle"],
   .st-key-detail-refresh [data-testid="stCheckbox"],
@@ -1215,12 +1238,15 @@ _GLOBAL_CSS = f"""
       visibility: visible !important;
       margin: 0 !important;
       min-height: 0 !important;
+      align-self: center !important;
   }}
   .st-key-detail-refresh [data-baseweb="switch"] {{
       background-color: #c4c9ce !important;
       border: 1px solid #aeb4ba !important;
-      min-width: 2.1rem !important;
-      min-height: 1.15rem !important;
+      min-width: 2.25rem !important;
+      min-height: 1.2rem !important;
+      padding: 0.2rem !important;
+      box-sizing: border-box !important;
   }}
   .st-key-detail-refresh [data-baseweb="switch"][aria-checked="true"] {{
       background-color: {BRAND_ORANGE} !important;
@@ -1234,7 +1260,15 @@ _GLOBAL_CSS = f"""
       margin: 0;
       max-width: 100%;
   }}
-  /* Meta line — single compact row. */
+  .ca-detail-meta-bar {{
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      min-height: var(--ca-detail-meta-height);
+  }}
+  /* Meta line — single compact row, vertically centered. */
   .ca-detail-meta {{
       display: flex;
       flex-direction: row;
@@ -1245,15 +1279,61 @@ _GLOBAL_CSS = f"""
       color: #7a8086;
       font-style: italic;
       width: 100%;
-      line-height: 1.35;
+      line-height: 1;
+      height: var(--ca-detail-meta-height);
+      min-height: var(--ca-detail-meta-height);
       min-width: 0;
+  }}
+  .ca-detail-meta > * {{
+      display: inline-flex;
+      align-items: center;
+      align-self: center;
+      flex: 0 0 auto;
+      line-height: 1;
+      margin: 0;
   }}
   .ca-detail-meta .ca-badge {{
       font-style: normal;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      align-self: center;
+      height: 1.15rem;
+      padding: 0 0.42rem;
+      line-height: 1;
+      margin: 0;
+      vertical-align: middle;
+  }}
+  .ca-detail-meta .ca-run-metaline {{
+      display: inline-flex;
+      align-items: center;
+      align-self: center;
+      gap: 0.2rem;
+      white-space: nowrap;
+      line-height: 1;
   }}
   .ca-detail-meta .ca-run-metaline .mi {{
       font-style: normal;
       font-size: 0.88em;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1em;
+      height: 1em;
+      flex: 0 0 1em;
+  }}
+  .ca-detail-meta .ca-local-dt {{
+      display: inline-flex;
+      align-items: center;
+      line-height: 1;
+  }}
+  .ca-detail-meta .ca-detail-sep {{
+      line-height: 1;
+      align-self: center;
+  }}
+  .ca-detail-meta .ca-trigger-user {{
+      line-height: 1;
   }}
   .ca-detail-meta .ca-run-metaline,
   .ca-detail-meta .ca-badge,
@@ -1263,10 +1343,12 @@ _GLOBAL_CSS = f"""
       flex: 0 0 auto;
       white-space: nowrap;
   }}
-  .ca-detail-meta .ca-run-metaline {{
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
+  .st-key-detail-download-log .ca-step-link-disabled {{
+      display: inline-flex !important;
+      align-items: center !important;
+      min-height: var(--ca-detail-meta-height) !important;
+      line-height: 1 !important;
+      font-size: var(--ca-run-meta-size) !important;
   }}
   .ca-detail-sep {{
       color: #c2c7cc;
