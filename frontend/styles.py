@@ -156,6 +156,7 @@ _GLOBAL_CSS = f"""
       --ca-run-meta-size: calc(var(--ca-title-size) * 0.4);     /* ~0.7rem card meta */
       --ca-nav-font-size: var(--ca-body-size);
       --ca-nav-item-gap: 0.18rem;
+      --ca-nav-highlight-bg: rgba(232, 117, 17, 0.12);
   }}
   [data-testid="stAppViewContainer"],
   .stApp,
@@ -466,7 +467,7 @@ _GLOBAL_CSS = f"""
   }}
 
   .st-key-ca-nav .stButton button:hover {{
-      background: rgba(232, 117, 17, 0.12) !important;
+      background: var(--ca-nav-highlight-bg) !important;
       color: {BRAND_ORANGE};
   }}
 
@@ -477,7 +478,7 @@ _GLOBAL_CSS = f"""
 
   /* Active item — same look as hover (no left accent bar). */
   .st-key-ca-nav .stButton button[kind="primary"] {{
-      background: rgba(232, 117, 17, 0.12) !important;
+      background: var(--ca-nav-highlight-bg) !important;
       box-shadow: none !important;
       color: {BRAND_ORANGE} !important;
   }}
@@ -640,28 +641,72 @@ _GLOBAL_CSS = f"""
       color: #6b7177 !important;
       fill: #6b7177 !important;
   }}
-  .st-key-ca-execute-clone-actions {{
-      display: flex !important;
-      justify-content: flex-end !important;
-      align-items: center !important;
-      width: 100% !important;
-      margin: 0.35rem 0 0.15rem 0 !important;
-      padding: 0 !important;
+
+  /* Open select control — same peach highlight as sidebar nav active item. */
+  .st-key-ca-run-filters [data-testid="stSelectbox"] [data-baseweb="select"]:focus-within > div,
+  .st-key-ca-run-filters [data-testid="stSelectbox"] [data-baseweb="select"] > div[aria-expanded="true"],
+  .st-key-ca-execute-clone-form [data-testid="stSelectbox"] [data-baseweb="select"]:focus-within > div,
+  .st-key-ca-execute-clone-form [data-testid="stSelectbox"] [data-baseweb="select"] > div[aria-expanded="true"] {{
+      background-color: var(--ca-nav-highlight-bg) !important;
+      border-color: rgba(232, 117, 17, 0.35) !important;
+      color: {BRAND_ORANGE} !important;
   }}
-  .st-key-ca-execute-clone-actions > [data-testid="stVerticalBlock"],
-  .st-key-ca-execute-clone-actions > [data-testid="stVerticalBlockBorderWrapper"] {{
+  .st-key-ca-run-filters [data-testid="stSelectbox"] [data-baseweb="select"]:focus-within svg,
+  .st-key-ca-run-filters [data-testid="stSelectbox"] [data-baseweb="select"] > div[aria-expanded="true"] svg,
+  .st-key-ca-execute-clone-form [data-testid="stSelectbox"] [data-baseweb="select"]:focus-within svg,
+  .st-key-ca-execute-clone-form [data-testid="stSelectbox"] [data-baseweb="select"] > div[aria-expanded="true"] svg {{
+      color: {BRAND_ORANGE} !important;
+      fill: {BRAND_ORANGE} !important;
+  }}
+
+  /* Dropdown list — hover / keyboard focus / selected option. */
+  div[data-baseweb="popover"] [role="listbox"] [role="option"]:hover,
+  div[data-baseweb="popover"] [role="listbox"] [role="option"][aria-selected="true"],
+  div[data-baseweb="popover"] [role="listbox"] [role="option"][data-highlighted="true"],
+  div[data-baseweb="popover"] [role="listbox"] li[data-highlighted="true"] {{
+      background-color: var(--ca-nav-highlight-bg) !important;
+      color: {BRAND_ORANGE} !important;
+  }}
+  div[data-baseweb="popover"] [role="listbox"] [role="option"] {{
+      color: {BRAND_INK} !important;
+      border-radius: 5px !important;
+  }}
+
+  /* Execute Clone page shell — pin Trigger job to bottom-right. */
+  .st-key-ca-execute-clone-page,
+  .st-key-ca-execute-clone-page > [data-testid="stVerticalBlock"],
+  .st-key-ca-execute-clone-page > [data-testid="stVerticalBlockBorderWrapper"] {{
       display: flex !important;
-      flex-direction: row !important;
-      justify-content: flex-end !important;
+      flex-direction: column !important;
+      flex: 1 1 auto !important;
       width: 100% !important;
+      min-height: calc(100vh - 9.5rem) !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
-  .st-key-ca-execute-clone-actions > [data-testid="stElementContainer"] {{
+  .st-key-ca-execute-clone-page > [data-testid="stVerticalBlock"] {{
+      gap: 0.25rem !important;
+  }}
+  .st-key-ca-execute-clone-actions,
+  .st-key-ca-execute-clone-actions [data-testid="stVerticalBlock"],
+  .st-key-ca-execute-clone-actions [data-testid="stVerticalBlockBorderWrapper"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      justify-content: flex-end !important;
+      align-items: center !important;
+      width: 100% !important;
+      margin-top: auto !important;
+      margin-bottom: 0.15rem !important;
+      padding: 0 !important;
+      flex: 0 0 auto !important;
+  }}
+  .st-key-ca-execute-clone-actions [data-testid="stElementContainer"] {{
       width: auto !important;
       flex: 0 0 auto !important;
       margin: 0 !important;
       padding: 0 !important;
+      display: flex !important;
+      justify-content: flex-end !important;
   }}
   {_nav_action_button_css(
       ".st-key-ca-execute-clone-actions",
