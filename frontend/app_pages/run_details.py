@@ -123,7 +123,7 @@ if run:
     user = _esc(run.get("user_name", "—"))
     safe_run_id = _esc(run_id)
 
-    @st.dialog(" ", width="large")
+    @st.dialog(" ", width="small")
     def _show_step_detail_dialog(
         clone_run_id: int,
         clone_function_run_id: int,

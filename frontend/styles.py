@@ -2068,8 +2068,11 @@ _GLOBAL_CSS = f"""
       color: {BRAND_INK} !important;
       color-scheme: light only !important;
       border: 1px solid rgba(227, 230, 232, 0.95) !important;
-      border-radius: 12px !important;
-      box-shadow: 0 22px 64px rgba(19, 21, 22, 0.22) !important;
+      border-radius: 10px !important;
+      box-shadow: 0 16px 40px rgba(19, 21, 22, 0.18) !important;
+      max-width: min(92vw, 28rem) !important;
+      width: min(92vw, 28rem) !important;
+      padding: 0 !important;
       --background-color: #ffffff !important;
       --secondary-background-color: #f6f7f8 !important;
       --text-color: {BRAND_INK} !important;
@@ -2078,6 +2081,18 @@ _GLOBAL_CSS = f"""
   [data-testid="stDialog"] [data-testid="stModalHeader"] {{
       background: transparent !important;
       border-bottom: 1px solid #eef0f2 !important;
+      min-height: 0 !important;
+      padding: 0.35rem 0.55rem 0.25rem 0.65rem !important;
+  }}
+  [data-testid="stDialog"] [data-testid="stModalBody"],
+  [data-testid="stDialog"] [data-testid="stDialogBody"],
+  [data-testid="stDialog"] section[data-testid="stMain"] {{
+      padding: 0.55rem 0.75rem 0.7rem 0.75rem !important;
+  }}
+  [data-testid="stDialog"] [data-testid="stHtml"],
+  [data-testid="stDialog"] [data-testid="stHtml"] iframe {{
+      margin: 0 !important;
+      padding: 0 !important;
   }}
   [data-testid="stDialog"] header h1,
   [data-testid="stDialog"] [data-testid="stModalHeader"] h1 {{
@@ -2089,58 +2104,70 @@ _GLOBAL_CSS = f"""
       background: transparent !important;
   }}
   .ca-step-dialog-title {{
-      font-size: 1.35rem;
+      font-size: 0.92rem;
       font-weight: 700;
       color: {BRAND_INK};
-      margin: 0 0 1rem 0;
+      margin: 0 0 0.45rem 0;
       padding: 0;
+      line-height: 1.25;
   }}
   .ca-step-dialog-body {{
       color: {BRAND_INK};
       background: transparent;
+      font-size: 0.78rem;
+      line-height: 1.3;
+  }}
+  .ca-step-dialog-body .ca-badge {{
+      font-size: calc(var(--ca-caption-size) * 0.82);
+      padding: 0.03rem 0.32rem;
   }}
   .ca-step-dialog-fields {{
       display: grid;
       grid-template-columns: max-content 1fr;
-      gap: 0.45rem 1rem;
-      margin: 0 0 1.25rem 0;
-      font-size: 0.92rem;
+      gap: 0.22rem 0.65rem;
+      margin: 0 0 0.55rem 0;
+      font-size: 0.78rem;
   }}
   .ca-step-dialog-fields dt {{
       margin: 0;
       font-weight: 600;
-      color: {BRAND_INK};
+      color: #6b7177;
+      white-space: nowrap;
   }}
   .ca-step-dialog-fields dd {{
       margin: 0;
       color: #3d4348;
+      min-width: 0;
   }}
   .ca-step-dialog-section {{
-      font-size: 1rem;
+      font-size: 0.8rem;
       font-weight: 700;
       color: {BRAND_INK};
-      margin: 0 0 0.55rem 0;
+      margin: 0 0 0.28rem 0;
   }}
   .ca-step-dialog-table-wrap {{
       overflow-x: auto;
       border: 1px solid #e3e6e8;
-      border-radius: 8px;
+      border-radius: 6px;
       background: #ffffff;
+      max-height: 12rem;
+      overflow-y: auto;
   }}
   .ca-step-dialog-table {{
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.82rem;
+      font-size: 0.68rem;
       background: #ffffff;
       color: {BRAND_INK};
   }}
   .ca-step-dialog-table th,
   .ca-step-dialog-table td {{
-      padding: 0.45rem 0.65rem;
+      padding: 0.28rem 0.42rem;
       text-align: left;
       border-bottom: 1px solid #eef0f2;
       color: {BRAND_INK};
       background: #ffffff;
+      white-space: nowrap;
   }}
   .ca-step-dialog-table th {{
       background: #f6f7f8 !important;
@@ -2152,16 +2179,16 @@ _GLOBAL_CSS = f"""
   }}
   .ca-step-dialog-empty {{
       color: #6b7177;
-      font-size: 0.88rem;
+      font-size: 0.74rem;
       margin: 0;
   }}
   .ca-step-dialog-error {{
       color: #cf222e;
       background: #ffebe9;
       border: 1px solid #ff8182;
-      border-radius: 8px;
-      padding: 0.65rem 0.85rem;
-      font-size: 0.9rem;
+      border-radius: 6px;
+      padding: 0.4rem 0.55rem;
+      font-size: 0.76rem;
   }}
 </style>
 """
