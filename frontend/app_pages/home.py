@@ -5,8 +5,8 @@ import streamlit as st
 from styles import render_title
 
 render_title(
-    "Clone automation dashboard",
-    subtitle="Monitor, run, and review your automated clone jobs.",
+    "VClone",
+    subtitle="Orchestrate, monitor, and audit end-to-end Oracle EBS clone pipelines with full lifecycle visibility.",
 )
 
 st.write("Home content goes here.")

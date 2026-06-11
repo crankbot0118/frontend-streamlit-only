@@ -266,9 +266,11 @@ _GLOBAL_CSS = f"""
   /* Borderless, left-aligned link-style nav buttons (descendant selectors so
      we catch the button regardless of intermediate wrappers). */
   .st-key-ca-nav .stButton button {{
-      display: flex !important;
+      display: grid !important;
+      grid-template-columns: var(--ca-nav-icon) minmax(0, 1fr);
+      column-gap: var(--ca-nav-gap) !important;
       align-items: center !important;
-      justify-content: flex-start !important;
+      justify-items: start !important;
       text-align: left !important;
       width: 100% !important;
       min-height: 1.7rem !important;
@@ -276,24 +278,43 @@ _GLOBAL_CSS = f"""
       border: none !important;
       box-shadow: none !important;
       outline: none !important;
-      gap: var(--ca-nav-gap) !important;
       padding: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x) !important;
       border-radius: 5px;
       color: {BRAND_INK};
   }}
 
-  .st-key-ca-nav .stButton button svg {{
-      flex: 0 0 var(--ca-nav-icon) !important;
+  /* Icon column — same slot for Home, group items, Execute Clone, Run History. */
+  .st-key-ca-nav .stButton button svg,
+  .st-key-ca-nav .stButton button [data-testid="stIconMaterial"] {{
+      grid-column: 1;
+      grid-row: 1;
+      justify-self: center;
+      align-self: center;
+      flex: unset !important;
       width: var(--ca-nav-icon) !important;
       height: var(--ca-nav-icon) !important;
+      max-width: var(--ca-nav-icon) !important;
+      max-height: var(--ca-nav-icon) !important;
       margin: 0 !important;
+      font-size: var(--ca-nav-icon) !important;
+      line-height: 1 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
   }}
 
-  /* Stop Streamlit from centering the label inside the button. */
+  .st-key-ca-nav .stButton button svg {{
+      display: block !important;
+  }}
+
+  /* Label column — shared text start edge for every row. */
   .st-key-ca-nav .stButton button > div,
   .st-key-ca-nav .stButton button [data-testid="stMarkdownContainer"] {{
+      grid-column: 2;
+      grid-row: 1;
       width: auto;
-      flex: 1 1 auto;
+      min-width: 0;
+      flex: unset !important;
       display: flex !important;
       justify-content: flex-start !important;
       text-align: left !important;
@@ -372,10 +393,11 @@ _GLOBAL_CSS = f"""
   }}
 
   .st-key-ca-nav [data-testid="stExpander"] summary {{
-      display: flex !important;
+      display: grid !important;
+      grid-template-columns: var(--ca-nav-icon) minmax(0, 1fr);
+      column-gap: var(--ca-nav-gap) !important;
       align-items: center !important;
-      justify-content: flex-start !important;
-      gap: var(--ca-nav-gap) !important;
+      justify-items: start !important;
       min-height: 1.7rem !important;
       padding: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x) !important;
       font-weight: 600;
@@ -399,34 +421,53 @@ _GLOBAL_CSS = f"""
       outline: none !important;
   }}
 
-  /* Chevron in the same column as nav icons. */
+  /* Chevron shares the same icon column as Material icons on nav buttons. */
   .st-key-ca-nav [data-testid="stExpander"] summary svg {{
-      order: -1;
-      flex: 0 0 var(--ca-nav-icon) !important;
-      width: var(--ca-nav-icon) !important;
-      height: var(--ca-nav-icon) !important;
+      grid-column: 1;
+      grid-row: 1;
+      justify-self: center;
+      align-self: center;
+      order: unset !important;
+      flex: unset !important;
+      width: 0.875rem !important;
+      height: 0.875rem !important;
       margin: 0 !important;
       color: {BRAND_ORANGE};
       fill: {BRAND_ORANGE};
   }}
 
-  /* Left-align the summary label text too. */
+  /* Left-align the summary label in the shared text column. */
   .st-key-ca-nav [data-testid="stExpander"] summary p,
-  .st-key-ca-nav [data-testid="stExpander"] summary span {{
-      flex: 1 1 auto;
+  .st-key-ca-nav [data-testid="stExpander"] summary span,
+  .st-key-ca-nav [data-testid="stExpander"] summary [data-testid="stMarkdownContainer"],
+  .st-key-ca-nav [data-testid="stExpander"] summary > div:not(:has(svg)) {{
+      grid-column: 2;
+      grid-row: 1;
+      min-width: 0;
+      flex: unset !important;
       text-align: left !important;
       line-height: 1.25;
       font-size: var(--ca-nav-font-size);
       font-weight: 600;
   }}
 
-  /* Group items use the same left edge as top-level nav rows. */
+  /* Group items use the same left edge and icon column as top-level nav rows. */
   .st-key-ca-nav [data-testid="stExpanderDetails"] {{
       padding-left: 0 !important;
       padding-top: 0;
       padding-bottom: 0;
       border: none !important;
       box-shadow: none !important;
+  }}
+
+  .st-key-ca-nav [data-testid="stExpanderDetails"] [data-testid="stElementContainer"] {{
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+
+  .st-key-ca-nav [data-testid="stExpanderDetails"] .stButton,
+  .st-key-ca-nav [data-testid="stExpanderDetails"] .stButton button {{
+      width: 100% !important;
   }}
 
   /* Remove the expander's own trailing space before the divider. */
