@@ -65,8 +65,10 @@ _GLOBAL_CSS = f"""
       --secondary-background-color: #f6f7f8;
       --text-color: {BRAND_INK};
       --ca-detail-inline-gap: 0.45rem;
-      --ca-page-inset-top: 0.35rem;
-      --ca-sidebar-inset-x: 0.45rem;
+      --ca-page-inset-top: 0.5rem;
+      --ca-sidebar-inset-x: 0.65rem;
+      --ca-main-inset-x: 1rem;
+      --ca-main-inset-right: 1.25rem;
       --ca-header-row-height: 2rem;
       /* Type scale — all page text derives from the heading size. */
       --ca-title-size: 1.75rem;
@@ -74,6 +76,7 @@ _GLOBAL_CSS = f"""
       --ca-body-size: calc(var(--ca-title-size) * 0.5);         /* ~0.875rem body */
       --ca-label-size: calc(var(--ca-title-size) * 0.486);        /* ~0.85rem labels */
       --ca-caption-size: calc(var(--ca-title-size) * 0.457);    /* ~0.8rem captions */
+      --ca-run-meta-size: calc(var(--ca-title-size) * 0.4);     /* ~0.7rem card meta */
       --ca-nav-font-size: var(--ca-body-size);
       --ca-nav-item-gap: 0.18rem;
   }}
@@ -123,18 +126,19 @@ _GLOBAL_CSS = f"""
       visibility: hidden !important;
   }}
 
-  /* Pull content flush to the top; padding lives on block-container only. */
-  section.main > .block-container {{
+  /* Main content insets — modest gutter beside sidebar, still compact vertically. */
+  section.main .block-container,
+  section.main > .block-container,
+  [data-testid="stMainBlockContainer"] {{
       padding-top: var(--ca-page-inset-top) !important;
       padding-bottom: 1.25rem !important;
-      padding-left: 1.25rem !important;
-      padding-right: 1.5rem !important;
+      padding-left: var(--ca-main-inset-x) !important;
+      padding-right: var(--ca-main-inset-right) !important;
       max-width: none !important;
   }}
 
-  [data-testid="stMainBlockContainer"] {{
+  section.main .block-container [data-testid="stMainBlockContainer"] {{
       padding: 0 !important;
-      max-width: none !important;
   }}
 
   [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] {{
@@ -826,24 +830,30 @@ _GLOBAL_CSS = f"""
       margin: 0 0.3rem;
   }}
   .ca-run-meta {{
-      margin-top: 0.15rem;
+      margin-top: 0.12rem;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.3rem;
-      font-size: var(--ca-caption-size);
-      color: #6b7177;
-      font-style: italic;
-      line-height: 1.25;
+      gap: 0.25rem;
+      font-size: var(--ca-run-meta-size);
+      color: #7a8086;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 1.2;
   }}
   .ca-run-meta .sepm {{
       color: #c2c7cc;
       font-style: normal;
+      font-size: 0.85em;
   }}
   .ca-run-metaline {{
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.22rem;
+  }}
+  .ca-run-meta .ca-run-metaline .mi {{
+      font-size: 0.85em;
+      line-height: 1;
   }}
   .ca-run-metaline .mi {{
       font-size: 0.92rem;
