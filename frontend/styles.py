@@ -1036,61 +1036,21 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       max-width: none !important;
   }}
-  .st-key-ca-detail-title-row .st-key-back_to_runs,
-  .st-key-ca-detail-title-row .st-key-back_to_runs [data-testid="stElementContainer"],
-  .st-key-ca-detail-title-row [data-testid="stPageLink"],
-  .st-key-ca-detail-title-row [data-testid="stPageLink"] [data-testid="stElementContainer"] {{
+  .st-key-ca-detail-title-row .st-key-ca-detail-back,
+  .st-key-ca-detail-title-row .st-key-ca-detail-back [data-testid="stElementContainer"] {{
       position: relative !important;
-      z-index: 5 !important;
+      z-index: 10 !important;
       flex: 0 0 auto !important;
       pointer-events: auto !important;
       width: auto !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
-  .st-key-ca-detail-title-row [data-testid="stPageLink"] a {{
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      min-width: var(--ca-header-row-height) !important;
-      min-height: var(--ca-header-row-height) !important;
-      padding: 0 0.15rem !important;
-      border-radius: 5px !important;
-      text-decoration: none !important;
-      color: {BRAND_ORANGE} !important;
-      background: transparent !important;
-      gap: 0 !important;
-  }}
-  .st-key-ca-detail-title-row [data-testid="stPageLink"] a:hover {{
-      background: var(--ca-nav-highlight-bg) !important;
-      color: {BRAND_ORANGE} !important;
-  }}
-  .st-key-ca-detail-title-row [data-testid="stPageLink"] a svg,
-  .st-key-ca-detail-title-row [data-testid="stPageLink"] a [data-testid="stIconMaterial"] {{
-      width: 1.35rem !important;
-      height: 1.35rem !important;
-      font-size: 1.35rem !important;
-      color: {BRAND_ORANGE} !important;
-      fill: {BRAND_ORANGE} !important;
-  }}
-  /* Icon-only back link — label stays for accessibility, hidden visually. */
-  .st-key-ca-detail-title-row [data-testid="stPageLink"] a [data-testid="stMarkdownContainer"],
-  .st-key-ca-detail-title-row [data-testid="stPageLink"] a p {{
-      position: absolute !important;
-      width: 1px !important;
-      height: 1px !important;
-      padding: 0 !important;
-      margin: -1px !important;
-      overflow: hidden !important;
-      clip: rect(0, 0, 0, 0) !important;
-      white-space: nowrap !important;
-      border: 0 !important;
-  }}
-  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton {{
+  .st-key-ca-detail-back .stButton {{
       width: auto !important;
       margin: 0 !important;
   }}
-  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button {{
+  .st-key-ca-detail-back .stButton button {{
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -1106,20 +1066,19 @@ _GLOBAL_CSS = f"""
       cursor: pointer !important;
       opacity: 1 !important;
       border-radius: 5px !important;
-      pointer-events: auto !important;
   }}
-  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button svg,
-  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button [data-testid="stIconMaterial"] {{
+  .st-key-ca-detail-back .stButton button svg,
+  .st-key-ca-detail-back .stButton button [data-testid="stIconMaterial"] {{
       width: 1.35rem !important;
       height: 1.35rem !important;
       font-size: 1.35rem !important;
       color: {BRAND_ORANGE} !important;
       fill: {BRAND_ORANGE} !important;
   }}
-  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button:hover {{
+  .st-key-ca-detail-back .stButton button:hover {{
       background: var(--ca-nav-highlight-bg) !important;
   }}
-  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button p {{
+  .st-key-ca-detail-back .stButton button p {{
       position: absolute !important;
       width: 1px !important;
       height: 1px !important;
@@ -1153,9 +1112,8 @@ _GLOBAL_CSS = f"""
       accent=BRAND_RED,
       accent_bg=BRAND_RED_BG,
   )}
-  /* Meta row: full-width facts + Download Log; Auto refresh pinned far right. */
+  /* Meta row: one line — facts · Download Log · Auto refresh. */
   .st-key-ca-detail-meta-row {{
-      position: relative;
       width: 100%;
       margin: 0 !important;
       padding: 0 !important;
@@ -1169,53 +1127,34 @@ _GLOBAL_CSS = f"""
       width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      gap: 0 !important;
+      gap: 0.45rem !important;
   }}
   .st-key-ca-detail-meta-row > [data-testid="stElementContainer"] {{
       margin: 0 !important;
       padding: 0 !important;
+      flex: 0 0 auto !important;
+      width: auto !important;
+      display: flex !important;
+      align-items: center !important;
   }}
   .st-key-ca-detail-meta-row > [data-testid="stElementContainer"]:first-child {{
       flex: 1 1 auto !important;
-      width: 100% !important;
       min-width: 0 !important;
   }}
   .ca-detail-meta-bar {{
       width: 100%;
       box-sizing: border-box;
-      padding-right: 10rem;
+      padding: 0;
   }}
-  .st-key-ca-detail-meta-row .st-key-detail-refresh {{
-      position: absolute !important;
-      right: 0 !important;
-      top: 50% !important;
-      transform: translateY(-50%) !important;
-      width: auto !important;
-      margin: 0 !important;
-      z-index: 2;
-      display: flex !important;
-      align-items: center;
-      justify-content: flex-end;
-      background: #ffffff !important;
-      padding-left: 0.75rem !important;
-      opacity: 1 !important;
-      visibility: visible !important;
-      flex: 0 0 auto !important;
-  }}
+  .st-key-ca-detail-meta-row .st-key-detail-refresh,
   .st-key-ca-detail-meta-row .st-key-detail-download-log {{
-      position: absolute !important;
-      right: 9.5rem !important;
-      top: 50% !important;
-      transform: translateY(-50%) !important;
+      position: static !important;
+      transform: none !important;
       width: auto !important;
       margin: 0 !important;
-      z-index: 2;
-      display: flex !important;
-      align-items: center;
-      justify-content: flex-end;
-      background: #ffffff !important;
-      padding-left: 0.75rem !important;
+      padding: 0 !important;
       flex: 0 0 auto !important;
+      background: transparent !important;
   }}
   .st-key-detail-download-log [data-testid="stElementContainer"],
   .st-key-detail-download-log [data-testid="stVerticalBlock"] {{
@@ -1233,8 +1172,9 @@ _GLOBAL_CSS = f"""
       border: none !important;
       box-shadow: none !important;
       color: {BRAND_ORANGE} !important;
-      font-size: 0.86rem !important;
+      font-size: var(--ca-run-meta-size) !important;
       font-weight: 600 !important;
+      line-height: 1.35 !important;
   }}
   .st-key-detail-download-log .stDownloadButton button:hover {{
       text-decoration: underline;
@@ -1262,9 +1202,10 @@ _GLOBAL_CSS = f"""
       visibility: visible !important;
   }}
   .st-key-detail-refresh [data-testid="stWidgetLabel"] p {{
-      font-size: 0.82rem !important;
+      font-size: var(--ca-run-meta-size) !important;
       font-weight: 600 !important;
       white-space: nowrap;
+      line-height: 1.35 !important;
   }}
   .st-key-detail-refresh [data-testid="stToggle"],
   .st-key-detail-refresh [data-testid="stCheckbox"],
@@ -1272,12 +1213,14 @@ _GLOBAL_CSS = f"""
   .st-key-detail-refresh [data-baseweb="switch"] {{
       opacity: 1 !important;
       visibility: visible !important;
+      margin: 0 !important;
+      min-height: 0 !important;
   }}
   .st-key-detail-refresh [data-baseweb="switch"] {{
       background-color: #c4c9ce !important;
       border: 1px solid #aeb4ba !important;
-      min-width: 2.35rem !important;
-      min-height: 1.35rem !important;
+      min-width: 2.1rem !important;
+      min-height: 1.15rem !important;
   }}
   .st-key-detail-refresh [data-baseweb="switch"][aria-checked="true"] {{
       background-color: {BRAND_ORANGE} !important;
@@ -1291,18 +1234,26 @@ _GLOBAL_CSS = f"""
       margin: 0;
       max-width: 100%;
   }}
-  /* Meta line: Triggered by · Started · Updated · Duration · status · Download Log */
+  /* Meta line — single compact row. */
   .ca-detail-meta {{
       display: flex;
       flex-direction: row;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       align-items: center;
-      gap: var(--ca-detail-inline-gap);
-      row-gap: 0.2rem;
-      font-size: var(--ca-caption-size);
-      color: #6b7177;
+      gap: 0.38rem;
+      font-size: var(--ca-run-meta-size);
+      color: #7a8086;
       font-style: italic;
       width: 100%;
+      line-height: 1.35;
+      min-width: 0;
+  }}
+  .ca-detail-meta .ca-badge {{
+      font-style: normal;
+  }}
+  .ca-detail-meta .ca-run-metaline .mi {{
+      font-style: normal;
+      font-size: 0.88em;
   }}
   .ca-detail-meta .ca-run-metaline,
   .ca-detail-meta .ca-badge,
@@ -1346,10 +1297,10 @@ _GLOBAL_CSS = f"""
   }}
   /* Tighter gap between meta row and orange accent bar on run details. */
   .st-key-ca-detail-header .ca-title-rule {{
-      margin: 0.08rem 0 0.12rem 0;
+      margin: 0.06rem 0 0.1rem 0;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] {{
-      gap: 0.08rem !important;
+      gap: 0.02rem !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="stElementContainer"] {{
       margin-bottom: 0 !important;
@@ -2118,6 +2069,33 @@ def goto_page(title: str) -> None:
     """
     pages = st.session_state.get("_pages") or build_pages()
     st.switch_page(pages[title])
+
+
+def clear_run_details_state() -> None:
+    """Remove run-details keys from session state and URL query params."""
+    rid = st.session_state.get("selected_run_id")
+    if rid is not None:
+        st.session_state.pop(f"auto_refresh_{rid}", None)
+    st.session_state.pop("selected_run_id", None)
+    st.session_state.pop("selected_run", None)
+    st.session_state.pop("_auto_refresh_run", None)
+    if "run" in st.query_params:
+        del st.query_params["run"]
+
+
+def consume_pending_navigation() -> None:
+    """Honour a pending page switch requested by a widget on the prior rerun."""
+    target = st.session_state.pop("_ca_navigate", None)
+    if not target:
+        return
+    clear_run_details_state()
+    goto_page(target)
+
+
+def request_page(title: str) -> None:
+    """Queue navigation to ``title``; call ``consume_pending_navigation()`` early on rerun."""
+    st.session_state["_ca_navigate"] = title
+    st.rerun()
 
 
 def _nav_link(pages: dict, item: dict, current_title: str) -> None:

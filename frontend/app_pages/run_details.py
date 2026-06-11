@@ -22,6 +22,7 @@ from styles import (
     fmt_duration,
     relative_update_html,
     render_title,
+    request_page,
     started_html,
     status_badge_html,
     status_image_html,
@@ -117,18 +118,18 @@ if run:
     user = _esc(run.get("user_name", "—"))
     safe_run_id = _esc(run_id)
     has_run_log = bool(latest_run.get("log_location"))
-    _pages = st.session_state.get("_pages") or {}
-    _run_history_page = _pages.get("Run History")
 
     with st.container(key="ca-detail-header"):
         with st.container(key="ca-detail-title-row"):
-            if _run_history_page is not None:
-                st.page_link(
-                    _run_history_page,
-                    label="Back",
+            with st.container(key="ca-detail-back"):
+                if st.button(
+                    "Back",
                     icon=":material/arrow_back:",
+                    key="ca_back_history",
                     help="Back to Run History",
-                )
+                    type="tertiary",
+                ):
+                    request_page("Run History")
             st.html(
                 f"""
                 <div class="ca-page-header ca-detail-page-header">

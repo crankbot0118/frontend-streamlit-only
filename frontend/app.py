@@ -39,6 +39,7 @@ from api import check_backend_health
 from styles import (
     apply_global_styles,
     build_pages,
+    consume_pending_navigation,
     render_logo,
     render_sidebar_nav,
     render_status,
@@ -65,4 +66,5 @@ with st.sidebar:
         log.warning("Backend health check failed for %s", pg.title)
     render_status(is_live, datetime.now(timezone.utc))
 
+consume_pending_navigation()
 pg.run()
