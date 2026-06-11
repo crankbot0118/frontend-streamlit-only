@@ -179,6 +179,10 @@ if run:
                     with st.container(key=f"step_links_{i}"):
                         if st.button("Details", key=f"step_details_{run_id}_{i}"):
                             _show_step_detail_dialog(run_id, step_pk, name)
+                        st.markdown(
+                            '<span class="ca-step-link-sep">&middot;</span>',
+                            unsafe_allow_html=True,
+                        )
                         if step.get("step_func_log_location"):
                             try:
                                 step_bytes, step_name = cached_step_log(

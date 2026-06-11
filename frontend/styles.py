@@ -1893,10 +1893,10 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: var(--ca-detail-inline-gap) !important;
+      gap: 0.22rem !important;
       width: 100% !important;
-      margin: 0.5rem 0 0 0 !important;
-      padding: 0.5rem 0 0 0 !important;
+      margin: 0.18rem 0 0 0 !important;
+      padding: 0.22rem 0 0 0 !important;
       border-top: 1px solid #eef0f2;
   }}
   [class*="st-key-step_links_"] > [data-testid="stElementContainer"] {{
@@ -1905,6 +1905,22 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
       position: static !important;
+  }}
+  [class*="st-key-step_links_"] [data-testid="stElementContainer"]:has(.ca-step-link-sep) {{
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: auto !important;
+      min-width: 0 !important;
+      padding: 0 0.06rem !important;
+  }}
+  .ca-step-link-sep {{
+      color: #c2c7cc;
+      font-size: var(--ca-run-meta-size);
+      font-weight: 600;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
   }}
   .ca-step-links-inline {{
       display: inline-flex;
