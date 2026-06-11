@@ -26,11 +26,8 @@ from datetime_local import (
 
 BRAND_ORANGE = "#e87511"
 BRAND_INK = "#131516"
-UI_SCALE = 0.5
-STATUS_ICON_PX = round(18 * UI_SCALE)
+STATUS_ICON_PX = 18
 ACTION_ICON_REM = "1.1rem"
-LOGO_WIDTH_PX = round(170 * UI_SCALE)
-SIDEBAR_WIDTH_PX = round(264 * UI_SCALE)
 
 # Repo root is the parent of the ``frontend/`` package that holds this file.
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -65,13 +62,7 @@ _GLOBAL_CSS = f"""
       --background-color: #ffffff;
       --secondary-background-color: #f6f7f8;
       --text-color: {BRAND_INK};
-      --ca-scale: {UI_SCALE};
       --ca-detail-inline-gap: 0.45rem;
-  }}
-
-  /* Global 50% density — scales all rem-based typography and spacing. */
-  html {{
-      font-size: calc(16px * var(--ca-scale));
   }}
   [data-testid="stAppViewContainer"],
   .stApp,
@@ -121,9 +112,9 @@ _GLOBAL_CSS = f"""
   }}
 
   [data-testid="stSidebar"] {{
-      width: {SIDEBAR_WIDTH_PX}px !important;
-      min-width: {SIDEBAR_WIDTH_PX}px !important;
-      max-width: {SIDEBAR_WIDTH_PX}px !important;
+      width: 264px !important;
+      min-width: 264px !important;
+      max-width: 264px !important;
   }}
 
   /* Collapse the empty sidebar header so content sits at the very top. */
@@ -145,7 +136,7 @@ _GLOBAL_CSS = f"""
   }}
 
   .ca-logo img {{
-      width: {LOGO_WIDTH_PX}px;
+      width: 170px;
       max-width: 100%;
       height: auto;
       display: block;
@@ -459,8 +450,8 @@ _GLOBAL_CSS = f"""
   }}
 
   .ca-status .ca-dot {{
-      width: calc(10px * var(--ca-scale));
-      height: calc(10px * var(--ca-scale));
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       flex: 0 0 auto;
   }}
@@ -507,7 +498,7 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run cards (Run History) ---------- */
   .st-key-ca-runs > [data-testid="stVerticalBlock"] {{
-      gap: 0.35rem;
+      gap: 0.7rem;
   }}
 
   /* Card container: two-line info on the left, redirect button at far right. */
@@ -515,7 +506,7 @@ _GLOBAL_CSS = f"""
       position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 12px;
-      padding: 0.4rem 2.2rem 0.4rem 0.75rem;
+      padding: 0.75rem 3rem 0.75rem 1.1rem;
       background: #ffffff;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }}
@@ -590,7 +581,7 @@ _GLOBAL_CSS = f"""
       margin: 0 0.3rem;
   }}
   .ca-run-meta {{
-      margin-top: 0.2rem;
+      margin-top: 0.45rem;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -1344,7 +1335,7 @@ def apply_global_styles() -> None:
     inject_local_datetime_js()
 
 
-def render_logo(path: str | Path | None = None, width: int | None = None) -> None:
+def render_logo(path: str | Path | None = None, width: int = 170) -> None:
     """Render the SVG logo, top-flush and left-aligned like ``render_title``.
 
     Reads the SVG from the repo-root ``assets/`` folder (resolved absolutely so
@@ -1352,7 +1343,6 @@ def render_logo(path: str | Path | None = None, width: int | None = None) -> Non
     data URI so it renders inline (typically inside the sidebar).
     """
     logo_path = Path(path or DEFAULT_LOGO_PATH)
-    logo_width = LOGO_WIDTH_PX if width is None else width
     try:
         svg = logo_path.read_text(encoding="utf-8")
     except OSError:
@@ -1363,7 +1353,7 @@ def render_logo(path: str | Path | None = None, width: int | None = None) -> Non
         f"""
         <div class="ca-logo">
           <img src="data:image/svg+xml;base64,{b64}" alt="Clone automation logo"
-               style="width:{logo_width}px;" />
+               style="width:{width}px;" />
         </div>
         """
     )
