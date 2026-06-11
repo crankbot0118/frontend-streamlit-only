@@ -67,10 +67,13 @@ _GLOBAL_CSS = f"""
       --ca-detail-inline-gap: 0.45rem;
       --ca-page-inset-top: 0.75rem;
       --ca-sidebar-inset-x: 0.45rem;
+      /* Type scale — all page text derives from the heading size. */
       --ca-title-size: 1.75rem;
-      --ca-subtitle-size: 0.82rem;
-      --ca-nav-font-size: 0.82rem;
-      --ca-nav-group-size: 0.82rem;
+      --ca-subtitle-size: calc(var(--ca-title-size) * 0.571);   /* ~1rem lead line */
+      --ca-body-size: calc(var(--ca-title-size) * 0.5);         /* ~0.875rem body */
+      --ca-label-size: calc(var(--ca-title-size) * 0.486);        /* ~0.85rem labels */
+      --ca-caption-size: calc(var(--ca-title-size) * 0.457);    /* ~0.8rem captions */
+      --ca-nav-font-size: var(--ca-body-size);
       --ca-nav-item-gap: 0.18rem;
   }}
   [data-testid="stAppViewContainer"],
@@ -224,9 +227,49 @@ _GLOBAL_CSS = f"""
   }}
 
   .ca-subtitle {{
-      margin: 0 0 0.1rem 0;
+      margin: 0 0 0.2rem 0;
       color: #5b6166;
       font-size: var(--ca-subtitle-size);
+      font-weight: 400;
+      line-height: 1.45;
+      max-width: 52rem;
+  }}
+
+  /* ---------- Main content typography (body, captions, alerts) ---------- */
+  [data-testid="stMainBlockContainer"] {{
+      font-size: var(--ca-body-size);
+      line-height: 1.5;
+  }}
+
+  [data-testid="stMainBlockContainer"] [data-testid="stMarkdownContainer"] p,
+  [data-testid="stMainBlockContainer"] [data-testid="stMarkdownContainer"] li,
+  [data-testid="stMainBlockContainer"] [data-testid="stText"] p,
+  [data-testid="stMainBlockContainer"] .stMarkdown p,
+  [data-testid="stMainBlockContainer"] .stMarkdown li {{
+      font-size: var(--ca-body-size);
+      line-height: 1.5;
+      color: #3d4348;
+  }}
+
+  [data-testid="stMainBlockContainer"] [data-testid="stCaptionContainer"],
+  [data-testid="stMainBlockContainer"] [data-testid="stCaptionContainer"] p,
+  [data-testid="stMainBlockContainer"] [data-testid="stCaptionContainer"] small,
+  [data-testid="stMainBlockContainer"] .stCaption {{
+      font-size: var(--ca-caption-size) !important;
+      line-height: 1.4;
+      color: #6b7177 !important;
+  }}
+
+  [data-testid="stMainBlockContainer"] [data-testid="stAlert"] p,
+  [data-testid="stMainBlockContainer"] [data-testid="stAlert"] [data-testid="stMarkdownContainer"] p,
+  [data-testid="stMainBlockContainer"] [data-testid="stNotification"] p {{
+      font-size: var(--ca-body-size);
+      line-height: 1.45;
+  }}
+
+  [data-testid="stMainBlockContainer"] [data-testid="stWidgetLabel"] p,
+  [data-testid="stMainBlockContainer"] [data-testid="stWidgetLabel"] span {{
+      font-size: var(--ca-label-size) !important;
       line-height: 1.35;
   }}
 
@@ -461,7 +504,7 @@ _GLOBAL_CSS = f"""
   .st-key-ca-run-filters [data-testid="stWidgetLabel"] p,
   .st-key-ca-execute-clone-form [data-testid="stWidgetLabel"] p {{
       color: #6b7177 !important;
-      font-size: 0.82rem;
+      font-size: var(--ca-label-size);
       font-weight: 600;
   }}
   /* Force white filter controls (select + date) on light background. */
@@ -669,7 +712,7 @@ _GLOBAL_CSS = f"""
       flex-wrap: wrap;
       align-items: center;
       gap: 0.45rem;
-      font-size: 0.92rem;
+      font-size: var(--ca-body-size);
       font-weight: 600;
       color: {BRAND_INK};
   }}
@@ -690,7 +733,7 @@ _GLOBAL_CSS = f"""
       flex-wrap: wrap;
       align-items: center;
       gap: 0.45rem;
-      font-size: 0.78rem;
+      font-size: var(--ca-caption-size);
       color: #6b7177;
       font-style: italic;
   }}
@@ -984,7 +1027,7 @@ _GLOBAL_CSS = f"""
       align-items: center;
       gap: var(--ca-detail-inline-gap);
       row-gap: 0.2rem;
-      font-size: 0.86rem;
+      font-size: var(--ca-caption-size);
       color: #6b7177;
       font-style: italic;
       width: 100%;
