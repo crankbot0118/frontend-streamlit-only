@@ -150,7 +150,7 @@ _GLOBAL_CSS = f"""
       --ca-caption-size: calc(var(--ca-title-size) * 0.457);    /* ~0.8rem captions */
       --ca-run-meta-size: calc(var(--ca-title-size) * 0.4);     /* ~0.7rem card meta */
       --ca-nav-font-size: var(--ca-body-size);
-      --ca-nav-item-gap: 0.18rem;
+      --ca-nav-item-gap: 0.32rem;
       --ca-nav-highlight-bg: rgba(232, 117, 17, 0.12);
       --ca-detail-meta-height: 1.6rem;
   }}
@@ -1759,6 +1759,18 @@ _GLOBAL_CSS = f"""
       object-fit: contain;
       display: block;
   }}
+  .ca-step-status-img--running {{
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 0;
+  }}
+  .ca-step-status-img--running svg {{
+      display: block;
+      width: 100%;
+      height: 100%;
+  }}
   .ca-step-more {{
       flex: 0 0 auto;
       font-size: 13px;
@@ -2233,12 +2245,33 @@ STATUS_ASSETS = {
 
 
 def status_image_html(status: str, size: int = STATUS_ICON_PX) -> str:
-    """Return a square ``<img>`` of the status icon (falls back to text badge).
+    """Return a square status icon (falls back to text badge).
 
     The icons are square, so a fixed ``size`` keeps every icon — and the
     function name beside it — aligned in a clean vertical column across rows.
+    RUNNING uses an inline SVG so the spinner animates inside ``st.html`` iframes.
     """
-    filename = STATUS_ASSETS.get((status or "").upper())
+    key = (status or "").upper()
+    if key == "RUNNING":
+        label = _esc((status or "unknown").title())
+        return (
+            f'<span class="ca-step-status-img ca-step-status-img--running" '
+            f'style="width:{size}px;height:{size}px;" '
+            f'title="{label}" aria-label="{label}" role="img">'
+            f'<svg width="{size}" height="{size}" viewBox="0 0 52 52" '
+            f'fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+            f'<circle cx="26" cy="26" r="22" fill="#1a6fdb"/>'
+            f'<g>'
+            f'<circle cx="26" cy="26" r="22" stroke="#ffffff" stroke-width="3.5" '
+            f'stroke-dasharray="28 70" stroke-linecap="round" fill="none" opacity="0.4"/>'
+            f'<animateTransform attributeName="transform" type="rotate" '
+            f'from="0 26 26" to="360 26 26" dur="1.1s" repeatCount="indefinite"/>'
+            f"</g>"
+            f'<circle cx="26" cy="26" r="8" fill="#fff"/>'
+            f"</svg></span>"
+        )
+
+    filename = STATUS_ASSETS.get(key)
     if not filename:
         return status_badge_html(status)
     try:
