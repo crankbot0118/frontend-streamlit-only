@@ -886,6 +886,7 @@ _GLOBAL_CSS = f"""
       display: block !important;
       box-sizing: border-box;
       min-height: 0 !important;
+      overflow: hidden !important;
   }}
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlock"],
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
@@ -920,6 +921,7 @@ _GLOBAL_CSS = f"""
       flex: 1 1 auto !important;
       min-width: 0 !important;
       width: auto !important;
+      overflow: hidden !important;
   }}
   [class*="st-key-runcard_"] [data-testid="column"]:last-child {{
       flex: 0 0 auto !important;
@@ -927,16 +929,23 @@ _GLOBAL_CSS = f"""
       min-width: 1.75rem !important;
       max-width: 2rem !important;
       justify-content: center !important;
+      position: relative !important;
+      z-index: 2 !important;
   }}
-  [class*="st-key-runcard_"] [data-testid="column"] [data-testid="stVerticalBlock"],
-  [class*="st-key-runcard_"] [data-testid="column"] [data-testid="stElementContainer"] {{
+  [class*="st-key-runcard_"] [data-testid="column"]:first-child [data-testid="stVerticalBlock"],
+  [class*="st-key-runcard_"] [data-testid="column"]:first-child [data-testid="stElementContainer"] {{
       margin: 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
       width: 100% !important;
+      max-width: 100% !important;
+      overflow: hidden !important;
   }}
   [class*="st-key-runcard_"] [data-testid="column"]:last-child [data-testid="stVerticalBlock"],
   [class*="st-key-runcard_"] [data-testid="column"]:last-child [data-testid="stElementContainer"] {{
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
       width: auto !important;
       justify-content: center !important;
   }}
@@ -962,14 +971,20 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
+      max-height: var(--ca-run-card-line) !important;
+      height: var(--ca-run-card-line) !important;
       line-height: 0 !important;
       flex: 0 0 auto !important;
+      overflow: hidden !important;
   }}
   [class*="st-key-runcard_"] [data-testid="stHtml"] {{
       display: block !important;
       margin: 0 !important;
       padding: 0 !important;
       line-height: 0 !important;
+      max-height: var(--ca-run-card-line) !important;
+      height: var(--ca-run-card-line) !important;
+      overflow: hidden !important;
   }}
   [class*="st-key-runcard_"] [data-testid="stHtml"] iframe {{
       display: block !important;
@@ -977,6 +992,7 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
       border: none !important;
+      background: transparent !important;
       min-height: var(--ca-run-card-line) !important;
       max-height: var(--ca-run-card-line) !important;
       height: var(--ca-run-card-line) !important;
@@ -987,9 +1003,11 @@ _GLOBAL_CSS = f"""
       box-shadow: 0 1px 8px rgba(19, 21, 22, 0.06);
   }}
 
-  /* Redirect arrow — right column, vertically centered with card line. */
+  /* Redirect arrow — icon-only tertiary button in the right column. */
+  [class*="st-key-runcard_"] [class*="st-key-open_run_"],
   [class*="st-key-runcard_"] [data-testid="column"]:last-child [data-testid="stElementContainer"]:has(.stButton) {{
-      position: static !important;
+      position: relative !important;
+      z-index: 3 !important;
       width: auto !important;
       height: auto !important;
       margin: 0 !important;
@@ -997,7 +1015,9 @@ _GLOBAL_CSS = f"""
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
+      overflow: visible !important;
   }}
+  [class*="st-key-runcard_"] [class*="st-key-open_run_"] .stButton,
   [class*="st-key-runcard_"] [data-testid="column"]:last-child .stButton {{
       width: auto !important;
       margin: 0 !important;
@@ -1005,37 +1025,61 @@ _GLOBAL_CSS = f"""
       display: flex !important;
       align-items: center !important;
   }}
+  [class*="st-key-runcard_"] [class*="st-key-open_run_"] .stButton button,
   [class*="st-key-runcard_"] [data-testid="column"]:last-child .stButton button {{
       width: auto !important;
       min-width: 1.65rem !important;
       min-height: var(--ca-run-card-line) !important;
       height: var(--ca-run-card-line) !important;
       background: transparent !important;
+      background-color: transparent !important;
       border: none !important;
       box-shadow: none !important;
-      color: #8a9097;
+      color: #8a9097 !important;
       padding: 0 !important;
+      gap: 0 !important;
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
   }}
+  [class*="st-key-runcard_"] [class*="st-key-open_run_"] .stButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-runcard_"] [data-testid="column"]:last-child .stButton button [data-testid="stMarkdownContainer"] {{
+      display: none !important;
+      width: 0 !important;
+      min-width: 0 !important;
+      max-width: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+  }}
+  [class*="st-key-runcard_"] [class*="st-key-open_run_"] .stButton button [data-testid="stIconMaterial"],
   [class*="st-key-runcard_"] [data-testid="column"]:last-child .stButton button [data-testid="stIconMaterial"] {{
       font-size: 1.2rem !important;
       width: 1.2rem !important;
       height: 1.2rem !important;
       line-height: 1 !important;
+      color: #8a9097 !important;
+      flex: 0 0 auto !important;
   }}
+  [class*="st-key-runcard_"] [class*="st-key-open_run_"] .stButton button svg,
   [class*="st-key-runcard_"] [data-testid="column"]:last-child .stButton button svg {{
       width: 1.2rem !important;
       height: 1.2rem !important;
+      color: #8a9097 !important;
+      fill: currentColor !important;
   }}
+  [class*="st-key-runcard_"] [class*="st-key-open_run_"] .stButton button:hover,
   [class*="st-key-runcard_"] [data-testid="column"]:last-child .stButton button:hover {{
       background: transparent !important;
-      color: {BRAND_ORANGE};
+      background-color: transparent !important;
+      color: {BRAND_ORANGE} !important;
   }}
+  [class*="st-key-runcard_"] [class*="st-key-open_run_"] .stButton button:hover svg,
+  [class*="st-key-runcard_"] [class*="st-key-open_run_"] .stButton button:hover [data-testid="stIconMaterial"],
   [class*="st-key-runcard_"] [data-testid="column"]:last-child .stButton button:hover svg,
   [class*="st-key-runcard_"] [data-testid="column"]:last-child .stButton button:hover [data-testid="stIconMaterial"] {{
-      color: {BRAND_ORANGE};
+      color: {BRAND_ORANGE} !important;
+      fill: {BRAND_ORANGE} !important;
   }}
 
   .ca-run {{
@@ -2207,6 +2251,7 @@ def render_run_card(run: dict) -> bool:
                 key=f"open_run_{rid}",
                 icon=":material/arrow_right:",
                 help="View run details",
+                type="tertiary",
             )
     return clicked
 
