@@ -19,19 +19,6 @@ render_title(
 ALL = "All"
 
 
-def _parse_date_range(value) -> tuple[date | None, date | None]:
-    if not value:
-        return None, None
-    if isinstance(value, tuple):
-        if len(value) >= 2:
-            return value[0], value[1]
-        if len(value) == 1:
-            return value[0], value[0]
-    if isinstance(value, date):
-        return value, value
-    return None, None
-
-
 try:
     filter_opts = get_run_filters()
 except Exception as exc:
@@ -39,7 +26,7 @@ except Exception as exc:
     filter_opts = {"targets": [], "users": []}
 
 with st.container(key="ca-run-filters"):
-    c_target, c_user, c_range = st.columns(3)
+    c_target, c_user, c_from, c_to = st.columns(4)
     with c_target:
         target = st.selectbox(
             "Target",
@@ -52,18 +39,27 @@ with st.container(key="ca-run-filters"):
             options=[ALL, *filter_opts["users"]],
             key="filter_user",
         )
-    with c_range:
-        date_range = st.date_input(
-            "Date range",
-            value=(),
+    with c_from:
+        range_from = st.date_input(
+            "From",
+            value=None,
             format="DD/MM/YYYY",
-            key="filter_date_range",
-            selection_mode="range",
+            key="filter_date_from",
+        )
+    with c_to:
+        range_to = st.date_input(
+            "To",
+            value=None,
+            format="DD/MM/YYYY",
+            key="filter_date_to",
         )
 
 target_val = None if target == ALL else target
 user_val = None if user == ALL else user
-start_val, end_val = _parse_date_range(date_range)
+start_val = range_from if isinstance(range_from, date) else None
+end_val = range_to if isinstance(range_to, date) else None
+if start_val and end_val and start_val > end_val:
+    start_val, end_val = end_val, start_val
 filters_active = any([target_val, user_val, start_val, end_val])
 
 try:
