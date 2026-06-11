@@ -889,16 +889,56 @@ _GLOBAL_CSS = f"""
   }}
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlock"],
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      display: grid !important;
-      grid-template-columns: minmax(0, 1fr) auto !important;
-      align-items: center !important;
-      column-gap: 0.35rem !important;
       gap: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
       position: relative !important;
-      min-height: var(--ca-run-card-line) !important;
+      min-height: 0 !important;
       height: auto !important;
+  }}
+  [class*="st-key-runcard_"] [data-testid="stHorizontalBlock"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      align-items: center !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      gap: 0.25rem !important;
+      min-height: var(--ca-run-card-line) !important;
+  }}
+  [class*="st-key-runcard_"] [data-testid="column"] {{
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      min-height: var(--ca-run-card-line) !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      margin: 0 !important;
+  }}
+  [class*="st-key-runcard_"] [data-testid="column"]:first-child {{
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+      width: auto !important;
+  }}
+  [class*="st-key-runcard_"] [data-testid="column"]:last-child {{
+      flex: 0 0 auto !important;
+      width: auto !important;
+      min-width: 1.75rem !important;
+      max-width: 2rem !important;
+      justify-content: center !important;
+  }}
+  [class*="st-key-runcard_"] [data-testid="column"] [data-testid="stVerticalBlock"],
+  [class*="st-key-runcard_"] [data-testid="column"] [data-testid="stElementContainer"] {{
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      width: 100% !important;
+  }}
+  [class*="st-key-runcard_"] [data-testid="column"]:last-child [data-testid="stVerticalBlock"],
+  [class*="st-key-runcard_"] [data-testid="column"]:last-child [data-testid="stElementContainer"] {{
+      width: auto !important;
+      justify-content: center !important;
   }}
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
@@ -908,18 +948,9 @@ _GLOBAL_CSS = f"""
   }}
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child,
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {{
-      grid-column: 1 !important;
       width: 100% !important;
       min-width: 0 !important;
-      flex: 1 1 auto !important;
       min-height: 0 !important;
-      align-self: center !important;
-  }}
-  [class*="st-key-runcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.stButton),
-  [class*="st-key-runcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.stButton) {{
-      grid-column: 2 !important;
-      align-self: center !important;
-      justify-self: end !important;
   }}
   [class*="st-key-runcard_"] [data-testid="stMarkdownContainer"],
   [class*="st-key-runcard_"] [data-testid="stMarkdownContainer"] p {{
@@ -956,17 +987,13 @@ _GLOBAL_CSS = f"""
       box-shadow: 0 1px 8px rgba(19, 21, 22, 0.06);
   }}
 
-  /* Redirect arrow — same row as card details, right column of card grid. */
-  [class*="st-key-runcard_"] [data-testid="stElementContainer"]:has(.stButton) {{
+  /* Redirect arrow — right column, vertically centered with card line. */
+  [class*="st-key-runcard_"] [data-testid="column"]:last-child [data-testid="stElementContainer"]:has(.stButton) {{
       position: static !important;
       width: auto !important;
       height: auto !important;
-      min-height: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
-      overflow: visible !important;
-      z-index: 3;
-      transform: none !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -2167,13 +2194,21 @@ def render_run_card(run: dict) -> bool:
         f'</span></div></div>'
     )
     with st.container(key=f"runcard_{rid}"):
-        st.html(info_html)
-        return st.button(
-            "",
-            key=f"open_run_{rid}",
-            icon=":material/arrow_right:",
-            help="View run details",
+        detail_col, arrow_col = st.columns(
+            [1, 0.06],
+            gap="small",
+            vertical_alignment="center",
         )
+        with detail_col:
+            st.html(info_html)
+        with arrow_col:
+            clicked = st.button(
+                "",
+                key=f"open_run_{rid}",
+                icon=":material/arrow_right:",
+                help="View run details",
+            )
+    return clicked
 
 
 def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
