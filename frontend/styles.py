@@ -137,7 +137,6 @@ _GLOBAL_CSS = f"""
       --secondary-background-color: #f6f7f8;
       --text-color: {BRAND_INK};
       --ca-detail-inline-gap: 0.45rem;
-      --ca-detail-back-gap: 0.08rem;
       --ca-page-inset-top: 0.5rem;
       --ca-sidebar-inset-x: 0.5rem;
       --ca-main-inset-x: 1rem;
@@ -1010,10 +1009,10 @@ _GLOBAL_CSS = f"""
       padding: 0;
       flex: 0 1 auto;
       min-width: 0;
-      pointer-events: none;
+      width: auto;
   }}
   .ca-detail-page-header .ca-title {{
-      min-height: 0;
+      min-height: var(--ca-header-row-height);
   }}
   .ca-detail-title-parts .ca-run-sep {{
       flex: 0 0 auto;
@@ -1022,7 +1021,7 @@ _GLOBAL_CSS = f"""
   .ca-detail-title-parts .arrow {{
       color: {BRAND_ORANGE};
   }}
-  /* Title row: back arrow · page-style heading · · Abort (inline). */
+  /* Title row: page-style Run # heading · Abort inline after target. */
   .st-key-ca-detail-title-row,
   .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"],
   .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] {{
@@ -1030,15 +1029,12 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: var(--ca-detail-back-gap) !important;
-      width: fit-content !important;
+      gap: 0 !important;
+      width: 100% !important;
       max-width: 100% !important;
-      min-height: 0 !important;
+      min-height: var(--ca-header-row-height) !important;
       margin: 0 !important;
       padding: 0 !important;
-  }}
-  .st-key-ca-detail-title-row > [data-testid="stElementContainer"]:not(.st-key-ca-detail-back):not(.st-key-detail-actions) {{
-      pointer-events: none !important;
   }}
   .st-key-ca-detail-title-row > [data-testid="stElementContainer"] {{
       width: auto !important;
@@ -1047,59 +1043,9 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       max-width: none !important;
   }}
-  .st-key-ca-detail-title-row .st-key-ca-detail-back,
-  .st-key-ca-detail-title-row .st-key-ca-detail-back [data-testid="stElementContainer"] {{
-      position: relative !important;
-      z-index: 10 !important;
-      flex: 0 0 auto !important;
-      pointer-events: auto !important;
-      width: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-ca-detail-back .stButton {{
-      width: auto !important;
-      margin: 0 !important;
-  }}
-  .st-key-ca-detail-back .stButton button {{
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      position: relative !important;
-      width: auto !important;
-      min-width: 1.5rem !important;
-      min-height: 1.5rem !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      color: {BRAND_ORANGE} !important;
-      cursor: pointer !important;
-      opacity: 1 !important;
-      border-radius: 5px !important;
-  }}
-  .st-key-ca-detail-back .stButton button svg,
-  .st-key-ca-detail-back .stButton button [data-testid="stIconMaterial"] {{
-      width: 1.35rem !important;
-      height: 1.35rem !important;
-      font-size: 1.35rem !important;
-      color: {BRAND_ORANGE} !important;
-      fill: {BRAND_ORANGE} !important;
-  }}
-  .st-key-ca-detail-back .stButton button:hover {{
-      background: var(--ca-nav-highlight-bg) !important;
-  }}
-  .st-key-ca-detail-back .stButton button p {{
-      position: absolute !important;
-      width: 1px !important;
-      height: 1px !important;
-      padding: 0 !important;
-      margin: -1px !important;
-      overflow: hidden !important;
-      clip: rect(0, 0, 0, 0) !important;
-      white-space: nowrap !important;
-      border: 0 !important;
+  .st-key-ca-detail-title-row > [data-testid="stElementContainer"]:first-child {{
+      flex: 0 1 auto !important;
+      min-width: 0 !important;
   }}
   .st-key-detail-actions,
   .st-key-detail-actions [data-testid="stVerticalBlock"],
@@ -1108,16 +1054,34 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: var(--ca-detail-inline-gap) !important;
+      gap: 0 !important;
       width: auto !important;
-      margin-left: 0.45rem !important;
+      margin: 0 !important;
       flex: 0 0 auto !important;
   }}
+  .st-key-detail-actions [data-testid="stElementContainer"]::before {{
+      content: "\\00b7";
+      color: #c2c7cc;
+      font-weight: 400;
+      font-size: var(--ca-title-size);
+      line-height: 1;
+      margin: 0 var(--ca-detail-inline-gap);
+      align-self: center;
+  }}
   .st-key-detail-actions [data-testid="stElementContainer"] {{
+      display: inline-flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
       width: auto !important;
       flex: 0 0 auto !important;
       margin: 0 !important;
       padding: 0 !important;
+  }}
+  .st-key-ca-detail-title-row .st-key-detail_abort .stButton button,
+  .st-key-ca-detail-title-row .st-key-detail_abort .stDownloadButton button {{
+      min-height: calc(var(--ca-header-row-height) - 0.15rem) !important;
+      padding: 0.1rem 0.55rem !important;
+      line-height: 1 !important;
   }}
   {_nav_action_button_css(
       ".st-key-detail_abort",
@@ -1127,7 +1091,7 @@ _GLOBAL_CSS = f"""
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
-      margin: -0.08rem 0 0 0 !important;
+      margin: -0.22rem 0 -0.1rem 0 !important;
       padding: 0 !important;
       min-height: var(--ca-detail-meta-height);
   }}
@@ -1384,7 +1348,7 @@ _GLOBAL_CSS = f"""
   }}
   /* Tighter gap between title, meta row, and orange accent bar on run details. */
   .st-key-ca-detail-header .ca-title-rule {{
-      margin: 0.04rem 0 0.08rem 0;
+      margin: 0 0 0.08rem 0;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] {{
       gap: 0 !important;

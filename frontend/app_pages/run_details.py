@@ -18,10 +18,8 @@ from api import (
 from config.settings import frontend
 from log_download import cached_run_log, cached_step_log
 from styles import (
-    clear_run_details_state,
     emit_html,
     fmt_duration,
-    goto_page,
     relative_update_html,
     render_title,
     started_html,
@@ -122,16 +120,6 @@ if run:
 
     with st.container(key="ca-detail-header"):
         with st.container(key="ca-detail-title-row"):
-            with st.container(key="ca-detail-back"):
-                if st.button(
-                    "Back",
-                    icon=":material/arrow_back:",
-                    key="ca_back_history",
-                    help="Back to Run History",
-                    type="tertiary",
-                ):
-                    clear_run_details_state()
-                    goto_page("Run History")
             st.html(
                 f"""
                 <div class="ca-page-header ca-detail-page-header">
