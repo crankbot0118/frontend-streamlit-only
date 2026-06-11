@@ -597,7 +597,7 @@ _GLOBAL_CSS = f"""
   /* Group items use the same left edge as top-level nav rows. */
   .st-key-ca-nav [data-testid="stExpanderDetails"] {{
       padding-left: 0 !important;
-      padding-top: 0;
+      padding-top: var(--ca-nav-item-gap);
       padding-bottom: 0;
       border: none !important;
       box-shadow: none !important;
