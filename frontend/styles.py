@@ -1273,7 +1273,7 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: 0 !important;
+      gap: 0.28rem !important;
       width: auto !important;
       margin: 0 !important;
       flex: 0 0 auto !important;
@@ -1301,6 +1301,29 @@ _GLOBAL_CSS = f"""
       ".st-key-detail_abort",
       accent=BRAND_RED,
       accent_bg=BRAND_RED_BG,
+  )}
+  .st-key-ca-detail-title-row .st-key-detail_close .stButton button {{
+      min-height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
+      height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
+      min-width: calc(var(--ca-detail-title-height) - 0.2rem) !important;
+      width: calc(var(--ca-detail-title-height) - 0.2rem) !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      justify-content: center !important;
+  }}
+  .st-key-detail_close .stButton button [data-testid="stMarkdownContainer"],
+  .st-key-detail_close .stButton button p {{
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  {_nav_action_button_css(
+      ".st-key-detail_close",
+      accent="#6b7177",
+      accent_bg="transparent",
   )}
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{

@@ -27,6 +27,7 @@ from styles import (
     status_image_html,
     step_detail_dialog_error_html,
     step_detail_dialog_html,
+    request_page,
     _esc,
 )
 from ui_errors import show_error
@@ -157,6 +158,14 @@ if run:
                             st.rerun()
                         except Exception as exc:
                             show_error(exc, context="Could not abort run")
+                if st.button(
+                    "",
+                    key="detail_close",
+                    icon=":material/tab_close:",
+                    help="Back to Run History",
+                    type="secondary",
+                ):
+                    request_page("Run History")
 
         with st.container(key="ca-detail-meta-row"):
             col_meta, col_dl, col_ref = st.columns(
