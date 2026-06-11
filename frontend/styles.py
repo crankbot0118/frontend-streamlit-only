@@ -1330,7 +1330,13 @@ _GLOBAL_CSS = f"""
       padding-top: 0 !important;
       padding-bottom: 0 !important;
   }}
+  .st-key-ca-detail-meta-row [data-testid="column"]:first-child {{
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+  }}
   .st-key-ca-detail-meta-row [data-testid="column"]:last-child {{
+      flex: 0 0 auto !important;
+      margin-left: auto !important;
       justify-content: flex-end !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"] [data-testid="stVerticalBlock"],
@@ -1350,6 +1356,33 @@ _GLOBAL_CSS = f"""
       min-height: var(--ca-detail-meta-height) !important;
       margin: 0 !important;
       padding: 0 !important;
+  }}
+  .st-key-detail-meta-actions,
+  .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
+  .st-key-detail-meta-actions [data-testid="stVerticalBlockBorderWrapper"] {{
+      width: auto !important;
+      margin: 0 0 0 auto !important;
+      padding: 0 !important;
+  }}
+  .st-key-detail-meta-actions [data-testid="stHorizontalBlock"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      flex-wrap: nowrap !important;
+      width: auto !important;
+      margin-left: auto !important;
+      gap: 0.28rem !important;
+  }}
+  .st-key-detail-meta-actions [data-testid="column"] {{
+      flex: 0 0 auto !important;
+      width: auto !important;
+      min-width: 0 !important;
+      justify-content: flex-end !important;
+  }}
+  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stElementContainer"],
+  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
+      justify-content: flex-end !important;
   }}
   .st-key-ca-detail-meta-row .st-key-detail-refresh,
   .st-key-ca-detail-meta-row .st-key-detail-download-log {{

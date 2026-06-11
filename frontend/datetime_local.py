@@ -63,6 +63,8 @@ _LOCAL_DT_JS = """
       " " +
       dt.getDate() +
       ", " +
+      dt.getFullYear() +
+      " " +
       formatTime(dt)
     );
   }
@@ -165,7 +167,7 @@ def fmt_refresh_fallback(value: datetime) -> str:
     dt = parse_client_datetime(value) or datetime.now(timezone.utc)
     local = dt.astimezone()
     time_str = local.strftime("%I:%M %p").lstrip("0")
-    return f"Last refresh {local.strftime('%b %d')}, {time_str}"
+    return f"Last refresh {local.strftime('%b %d, %Y')}, {time_str}"
 
 
 def local_dt_span(

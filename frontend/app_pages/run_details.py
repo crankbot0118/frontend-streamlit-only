@@ -257,8 +257,8 @@ if run:
                                 show_error(exc, context="Could not abort run")
 
             with st.container(key="ca-detail-meta-row"):
-                col_meta, col_dl, col_ref = st.columns(
-                    [6, 1, 1.35],
+                col_meta, col_actions = st.columns(
+                    [1, 0.32],
                     gap="small",
                     vertical_alignment="center",
                 )
@@ -280,32 +280,39 @@ if run:
                         </div>
                         """
                     )
-                with col_dl:
-                    with st.container(key="detail-download-log"):
-                        if has_run_log:
-                            try:
-                                log_bytes, log_name = cached_run_log(run_id)
-                                st.download_button(
-                                    "View Log",
-                                    data=log_bytes,
-                                    file_name=log_name,
-                                    key=f"download_run_log_{run_id}",
-                                    type="secondary",
-                                )
-                            except Exception as exc:
-                                show_error(exc, context="Could not load run log")
-                        else:
-                            st.markdown(
-                                '<span class="ca-step-link-disabled">View Log</span>',
-                                unsafe_allow_html=True,
-                            )
-                with col_ref:
-                    with st.container(key="detail-refresh"):
-                        st.toggle(
-                            "Auto refresh",
-                            key=refresh_key,
-                            label_visibility="visible",
+                with col_actions:
+                    with st.container(key="detail-meta-actions"):
+                        col_dl, col_ref = st.columns(
+                            [1, 1.15],
+                            gap="small",
+                            vertical_alignment="center",
                         )
+                        with col_dl:
+                            with st.container(key="detail-download-log"):
+                                if has_run_log:
+                                    try:
+                                        log_bytes, log_name = cached_run_log(run_id)
+                                        st.download_button(
+                                            "View Log",
+                                            data=log_bytes,
+                                            file_name=log_name,
+                                            key=f"download_run_log_{run_id}",
+                                            type="secondary",
+                                        )
+                                    except Exception as exc:
+                                        show_error(exc, context="Could not load run log")
+                                else:
+                                    st.markdown(
+                                        '<span class="ca-step-link-disabled">View Log</span>',
+                                        unsafe_allow_html=True,
+                                    )
+                        with col_ref:
+                            with st.container(key="detail-refresh"):
+                                st.toggle(
+                                    "Auto refresh",
+                                    key=refresh_key,
+                                    label_visibility="visible",
+                                )
 
             st.html('<hr class="ca-title-rule" />')
 
