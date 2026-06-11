@@ -27,6 +27,8 @@ from styles import (
     status_image_html,
     step_detail_dialog_error_html,
     step_detail_dialog_html,
+    clear_run_details_state,
+    goto_page,
     _esc,
 )
 from ui_errors import show_error
@@ -36,10 +38,6 @@ _RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
 
 def _toggle_step(open_key: str) -> None:
     st.session_state[open_key] = not st.session_state.get(open_key, False)
-
-
-def _close_to_run_history() -> None:
-    st.session_state["_ca_navigate"] = "Run History"
 
 run_id = st.session_state.get("selected_run_id")
 
@@ -161,14 +159,15 @@ if run:
                             st.rerun()
                         except Exception as exc:
                             show_error(exc, context="Could not abort run")
-                st.button(
-                    "Close",
+                if st.button(
+                    "",
                     key="detail_close",
                     icon=":material/tab_close:",
                     help="Back to Run History",
-                    type="secondary",
-                    on_click=_close_to_run_history,
-                )
+                    type="tertiary",
+                ):
+                    clear_run_details_state()
+                    goto_page("Run History")
 
         with st.container(key="ca-detail-meta-row"):
             col_meta, col_dl, col_ref = st.columns(

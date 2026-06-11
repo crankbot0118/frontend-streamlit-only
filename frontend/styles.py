@@ -1312,6 +1312,12 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       gap: 0 !important;
       justify-content: center !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: #8a9097 !important;
+      cursor: pointer !important;
+      opacity: 1 !important;
   }}
   .st-key-detail_close .stButton button [data-testid="stMarkdownContainer"],
   .st-key-detail_close .stButton button p {{
@@ -1322,11 +1328,22 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
   }}
-  {_nav_action_button_css(
-      ".st-key-detail_close",
-      accent="#6b7177",
-      accent_bg="transparent",
-  )}
+  .st-key-detail_close .stButton button [data-testid="stIconMaterial"],
+  .st-key-detail_close .stButton button svg {{
+      width: 1rem !important;
+      height: 1rem !important;
+      font-size: 1rem !important;
+      color: #8a9097 !important;
+      fill: currentColor !important;
+      transition: color 0.15s ease, fill 0.15s ease;
+  }}
+  .st-key-detail_close .stButton button:hover,
+  .st-key-detail_close .stButton button:hover [data-testid="stIconMaterial"],
+  .st-key-detail_close .stButton button:hover svg {{
+      background: transparent !important;
+      color: {BRAND_ORANGE} !important;
+      fill: {BRAND_ORANGE} !important;
+  }}
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
