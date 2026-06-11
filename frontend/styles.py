@@ -31,7 +31,6 @@ BRAND_RED_BG = "rgba(207, 34, 46, 0.12)"
 STATUS_ICON_PX = 18
 ACTION_ICON_REM = "1.1rem"
 SIDEBAR_WIDTH_PX = 200
-LOGO_WIDTH_PX = 170
 
 # Repo root is the parent of the ``frontend/`` package that holds this file.
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -143,7 +142,7 @@ _GLOBAL_CSS = f"""
       --text-color: {BRAND_INK};
       --ca-detail-inline-gap: 0.45rem;
       --ca-page-inset-top: 0.5rem;
-      --ca-sidebar-inset-x: 0.65rem;
+      --ca-sidebar-inset-x: 0.5rem;
       --ca-main-inset-x: 1rem;
       --ca-main-inset-right: 1.25rem;
       --ca-header-row-height: 2rem;
@@ -277,6 +276,10 @@ _GLOBAL_CSS = f"""
   [data-testid="stSidebarUserContent"] [data-testid="stElementContainer"] {{
       margin-bottom: 0 !important;
       padding-bottom: 0 !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      max-width: 100% !important;
+      box-sizing: border-box;
   }}
 
   [data-testid="stSidebarUserContent"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {{
@@ -284,22 +287,24 @@ _GLOBAL_CSS = f"""
       padding-top: 0 !important;
   }}
 
-  /* Logo block — fixed row height matches page title row. */
+  /* Logo — scale to sidebar content width; never clip or overflow. */
   .ca-logo {{
       margin: 0 0 0.35rem 0;
       padding: 0;
       flex: 0 0 auto;
-      min-height: var(--ca-header-row-height);
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
       display: flex;
       align-items: center;
+      overflow: visible;
   }}
 
   .ca-logo img {{
-      width: {LOGO_WIDTH_PX}px;
-      min-width: 0;
-      max-width: {LOGO_WIDTH_PX}px;
-      height: var(--ca-header-row-height);
-      max-height: var(--ca-header-row-height);
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      max-height: 2.35rem;
       object-fit: contain;
       object-position: left center;
       display: block;
@@ -392,13 +397,16 @@ _GLOBAL_CSS = f"""
   /* ---------- Sidebar navigation ---------- */
 
   .st-key-ca-nav {{
-      --ca-nav-x: 0.35rem;
+      --ca-nav-x: 0;
       --ca-nav-icon: 1rem;
       --ca-nav-gap: 0.45rem;
-      --ca-nav-text: calc(var(--ca-nav-x) + var(--ca-nav-icon) + var(--ca-nav-gap));
+      --ca-nav-text: calc(var(--ca-nav-icon) + var(--ca-nav-gap));
       flex: 1 1 auto;
       min-height: 0;
       overflow: hidden;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
   }}
 
   /* Consistent vertical gap between every nav row (Home, groups, Execute Clone, etc.). */
@@ -412,6 +420,9 @@ _GLOBAL_CSS = f"""
       text-align: left;
       margin: 0 !important;
       padding: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box;
   }}
 
   .st-key-ca-nav .stButton {{
@@ -741,7 +752,7 @@ _GLOBAL_CSS = f"""
       width: {SIDEBAR_WIDTH_PX}px !important;
       z-index: 1000;
       margin: 0 !important;
-      padding: 0.35rem 0.75rem 0.45rem 0.75rem !important;
+      padding: 0.35rem var(--ca-sidebar-inset-x) 0.45rem var(--ca-sidebar-inset-x) !important;
       box-sizing: border-box;
       height: auto !important;
       flex: 0 0 auto !important;
@@ -1700,7 +1711,9 @@ def render_logo(path: str | Path | None = None, width: int | None = None) -> Non
     data URI so it renders inline (typically inside the sidebar).
     """
     logo_path = Path(path or DEFAULT_LOGO_PATH)
-    logo_width = LOGO_WIDTH_PX if width is None else width
+    width_attr = ""
+    if width is not None:
+        width_attr = f' style="width:{int(width)}px;max-width:100%;height:auto;"'
     try:
         svg = logo_path.read_text(encoding="utf-8")
     except OSError:
@@ -1710,8 +1723,7 @@ def render_logo(path: str | Path | None = None, width: int | None = None) -> Non
     st.html(
         f"""
         <div class="ca-logo">
-          <img src="data:image/svg+xml;base64,{b64}" alt="Clone automation logo"
-               style="width:{logo_width}px;min-width:{logo_width}px;" />
+          <img src="data:image/svg+xml;base64,{b64}" alt="Clone automation logo"{width_attr} />
         </div>
         """
     )
