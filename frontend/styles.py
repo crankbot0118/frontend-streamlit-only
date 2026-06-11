@@ -1136,18 +1136,19 @@ _GLOBAL_CSS = f"""
       line-height: 1.15;
   }}
   .ca-run-oneline .ca-run-meta-part {{
-      display: inline-flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: var(--ca-run-inline-gap);
-      flex: 0 0 auto;
       margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 420px;
+      justify-content: flex-end;
+      flex: 0 0 auto;
+      box-sizing: border-box;
       padding-right: 0.12rem;
       font-size: var(--ca-run-meta-size);
       font-weight: 400;
       font-style: italic;
       color: #7a8086;
-      text-align: right;
       white-space: nowrap;
   }}
   .ca-run-oneline .ca-run-meta-part .sep {{
@@ -2231,7 +2232,9 @@ def render_run_card(run: dict) -> bool:
         f'<span class="sep">&middot;</span>'
         f'{status_badge_html(run.get("status", ""))}'
         f'</span>'
-        f'<span class="ca-run-meta-part">'
+        f'<div class="ca-run-meta-part" '
+        f'style="margin-left:auto;display:flex;align-items:center;gap:12px;'
+        f'min-width:420px;justify-content:flex-end;box-sizing:border-box;">'
         f'<span class="ca-run-metaline">'
         f'<span class="mi mi-start">&#9654;</span> Started {started_html(run.get("start_date"))}'
         f'</span>'
@@ -2245,7 +2248,7 @@ def render_run_card(run: dict) -> bool:
         f'{fmt_duration(run.get("start_date"), run.get("last_update"))}'
         f'</span>'
         f'{failed_step_html}'
-        f'</span></div></div>'
+        f'</div></div></div>'
     )
     with st.container(key=f"runcard_{rid}"):
         detail_col, arrow_col = st.columns(
