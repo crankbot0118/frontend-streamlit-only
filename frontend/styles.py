@@ -1609,14 +1609,15 @@ _GLOBAL_CSS = f"""
       width: 100%;
   }}
 
-  /* Each step is a bordered card — detail row + arrow in columns. */
+  /* Each step is a bordered card — flex row: left (icon+name) | right (actions+arrow). */
   [class*="st-key-stepcard_"] {{
       position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
-      padding: 8px 16px;
+      padding: 6px 12px;
       background: #ffffff;
-      min-height: 0;
+      min-height: 36px;
+      box-sizing: border-box;
   }}
 
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"],
@@ -1636,8 +1637,12 @@ _GLOBAL_CSS = f"""
       width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      gap: 0.25rem !important;
+      gap: 8px !important;
       min-height: 0 !important;
+  }}
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] {{
+      min-height: 24px !important;
   }}
   [class*="st-key-stepcard_"] [data-testid="column"] {{
       display: flex !important;
@@ -1648,20 +1653,24 @@ _GLOBAL_CSS = f"""
       padding-bottom: 0 !important;
       margin: 0 !important;
   }}
-  [class*="st-key-stepcard_"] [data-testid="column"]:first-child {{
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child,
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child {{
       flex: 1 1 auto !important;
       min-width: 0 !important;
       width: auto !important;
   }}
-  [class*="st-key-stepcard_"] [data-testid="column"]:last-child {{
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child,
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child {{
       flex: 0 0 auto !important;
       width: auto !important;
-      min-width: 1.5rem !important;
-      max-width: 1.75rem !important;
-      justify-content: center !important;
+      min-width: 0 !important;
+      max-width: none !important;
+      justify-content: flex-end !important;
   }}
-  [class*="st-key-stepcard_"] [data-testid="column"]:first-child [data-testid="stVerticalBlock"],
-  [class*="st-key-stepcard_"] [data-testid="column"]:first-child [data-testid="stElementContainer"] {{
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stVerticalBlock"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stElementContainer"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stVerticalBlock"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stElementContainer"] {{
       margin: 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
@@ -1669,12 +1678,14 @@ _GLOBAL_CSS = f"""
       max-width: 100% !important;
       overflow: hidden !important;
   }}
-  [class*="st-key-stepcard_"] [data-testid="column"]:last-child [data-testid="stVerticalBlock"],
-  [class*="st-key-stepcard_"] [data-testid="column"]:last-child [data-testid="stElementContainer"] {{
+  /* Right-side actions group: "More actions" + arrow with 8px gap. */
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] {{
+      gap: 8px !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      flex-wrap: nowrap !important;
       width: auto !important;
-      justify-content: center !important;
-      margin: 0 !important;
-      padding: 0 !important;
   }}
   [class*="st-key-stepcard_"] [data-testid="column"]:first-child [data-testid="stHtml"] iframe {{
       display: block !important;
@@ -1688,20 +1699,26 @@ _GLOBAL_CSS = f"""
       height: auto !important;
       overflow: hidden !important;
   }}
-
-  /* Header row: name + status icon on the left, "More actions" before the arrow column. */
-  .ca-step-head {{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      min-height: 18px;
+  [class*="st-key-stepcard_"] [data-testid="column"]:last-child [data-testid="stHtml"] iframe {{
+      display: block !important;
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      background: transparent !important;
+      min-height: 0 !important;
+      max-height: 24px !important;
+      height: auto !important;
+      overflow: hidden !important;
   }}
+
   .ca-step-left {{
       display: flex;
       align-items: center;
       gap: 8px;
+      flex: 1;
       min-width: 0;
+      width: 100%;
   }}
   .ca-step-name {{
       font-size: 14px;
@@ -1722,7 +1739,7 @@ _GLOBAL_CSS = f"""
       font-weight: 600;
       color: #6b7177;
       white-space: nowrap;
-      margin-left: 8px;
+      line-height: 1.25;
   }}
   .ca-step-detail-panel {{
       display: grid;
@@ -1835,29 +1852,27 @@ _GLOBAL_CSS = f"""
       color: {BRAND_ORANGE} !important;
   }}
 
-  /* Expand/collapse arrow — right column only (not Details / Download Step Log). */
-  [class*="st-key-stepcard_"] [data-testid="column"]:last-child [data-testid="stElementContainer"]:has(.stButton) {{
-      position: static !important;
+  /* Expand/collapse arrow in the actions group (scoped by widget key). */
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] [data-testid="stElementContainer"] {{
       width: auto !important;
-      height: auto !important;
       margin: 0 !important;
       padding: 0 !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
   }}
-  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton {{
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton {{
       width: auto !important;
       margin: 0 !important;
       min-height: 0 !important;
       display: flex !important;
       align-items: center !important;
   }}
-  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton button {{
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button {{
       width: auto !important;
-      min-width: 1.25rem !important;
-      min-height: 18px !important;
-      height: 18px !important;
+      min-width: 16px !important;
+      min-height: 16px !important;
+      height: 16px !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
@@ -1867,26 +1882,22 @@ _GLOBAL_CSS = f"""
       align-items: center !important;
       justify-content: center !important;
   }}
-  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton button [data-testid="stMarkdownContainer"] {{
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button [data-testid="stMarkdownContainer"] {{
       display: none !important;
   }}
-  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton button [data-testid="stIconMaterial"] {{
-      font-size: 1.15rem !important;
-      width: 1.15rem !important;
-      height: 1.15rem !important;
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button [data-testid="stIconMaterial"] {{
+      font-size: 16px !important;
+      width: 16px !important;
+      height: 16px !important;
       line-height: 1 !important;
-      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   }}
-  [class*="st-key-stepcard_"]:has(.ca-step-head--open) [data-testid="column"]:last-child .stButton button [data-testid="stIconMaterial"] {{
-      transform: rotate(90deg);
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button svg {{
+      width: 16px !important;
+      height: 16px !important;
   }}
-  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton button svg {{
-      width: 1.15rem !important;
-      height: 1.15rem !important;
-  }}
-  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton button:hover,
-  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton button:hover [data-testid="stIconMaterial"],
-  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton button:hover svg {{
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover,
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover [data-testid="stIconMaterial"],
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover svg {{
       color: {BRAND_ORANGE} !important;
       fill: {BRAND_ORANGE} !important;
   }}
