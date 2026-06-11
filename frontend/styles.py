@@ -1372,13 +1372,17 @@ _GLOBAL_CSS = f"""
       flex-wrap: nowrap !important;
       width: auto !important;
       margin-left: auto !important;
-      gap: 0.28rem !important;
+      gap: 0.75rem !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"] {{
       flex: 0 0 auto !important;
       width: auto !important;
       min-width: 0 !important;
       justify-content: flex-end !important;
+      align-items: center !important;
+  }}
+  .st-key-detail-meta-actions [data-testid="column"]:first-child {{
+      margin-right: 0.15rem !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stElementContainer"],
   .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
@@ -1425,8 +1429,29 @@ _GLOBAL_CSS = f"""
       justify-content: flex-end !important;
       width: auto !important;
       margin: 0 !important;
-      gap: 0.22rem !important;
+      gap: 0.35rem !important;
       min-height: var(--ca-detail-meta-height) !important;
+      height: var(--ca-detail-meta-height) !important;
+  }}
+  .st-key-detail-refresh [data-testid="stToggle"],
+  .st-key-detail-refresh [data-testid="stCheckbox"] {{
+      display: flex !important;
+      align-items: center !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: var(--ca-detail-meta-height) !important;
+      height: var(--ca-detail-meta-height) !important;
+  }}
+  .st-key-detail-refresh label,
+  .st-key-detail-refresh [data-testid="stWidgetLabel"] {{
+      display: inline-flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      align-self: center !important;
+      gap: 0.35rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 1 !important;
   }}
   .st-key-detail-refresh [data-testid="stWidgetLabel"],
   .st-key-detail-refresh [data-testid="stWidgetLabel"] p,
@@ -1445,8 +1470,17 @@ _GLOBAL_CSS = f"""
       white-space: nowrap;
       line-height: 1 !important;
       margin: 0 !important;
+      padding: 0 !important;
       display: flex !important;
       align-items: center !important;
+      align-self: center !important;
+  }}
+  .st-key-detail-refresh [data-testid="stToggle"] [data-testid="stMarkdownContainer"],
+  .st-key-detail-refresh [data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] {{
+      display: flex !important;
+      align-items: center !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
   .st-key-detail-refresh [data-testid="stToggle"],
   .st-key-detail-refresh [data-testid="stCheckbox"],
@@ -1455,8 +1489,8 @@ _GLOBAL_CSS = f"""
       opacity: 1 !important;
       visibility: visible !important;
       margin: 0 !important;
-      min-height: 0 !important;
       align-self: center !important;
+      flex: 0 0 auto !important;
   }}
   .st-key-detail-refresh [data-baseweb="switch"] {{
       background-color: #c4c9ce !important;
@@ -1465,6 +1499,9 @@ _GLOBAL_CSS = f"""
       min-height: 1rem !important;
       padding: 0.12rem !important;
       box-sizing: border-box !important;
+      align-self: center !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
   }}
   .st-key-detail-refresh [data-baseweb="switch"][aria-checked="true"] {{
       background-color: {BRAND_ORANGE} !important;
