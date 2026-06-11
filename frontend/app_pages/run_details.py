@@ -188,7 +188,7 @@ if run:
                         try:
                             log_bytes, log_name = cached_run_log(run_id)
                             st.download_button(
-                                "Download Log",
+                                "View Log",
                                 data=log_bytes,
                                 file_name=log_name,
                                 key=f"download_run_log_{run_id}",
@@ -279,7 +279,7 @@ else:
                                     run_id, step_pk
                                 )
                                 st.download_button(
-                                    "Download Step Log",
+                                    "View Step Log",
                                     data=step_bytes,
                                     file_name=step_name,
                                     key=f"download_step_log_{run_id}_{i}",
