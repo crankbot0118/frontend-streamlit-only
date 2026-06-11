@@ -672,41 +672,45 @@ _GLOBAL_CSS = f"""
       border-radius: 5px !important;
   }}
 
-  /* Execute Clone page shell — pin Trigger job to bottom-right. */
+  /* Execute Clone — reserve space; Trigger job fixed to viewport bottom-right. */
   .st-key-ca-execute-clone-page,
   .st-key-ca-execute-clone-page > [data-testid="stVerticalBlock"],
   .st-key-ca-execute-clone-page > [data-testid="stVerticalBlockBorderWrapper"] {{
-      display: flex !important;
-      flex-direction: column !important;
-      flex: 1 1 auto !important;
       width: 100% !important;
-      min-height: calc(100vh - 9.5rem) !important;
       margin: 0 !important;
-      padding: 0 !important;
+      padding: 0 0 3.5rem 0 !important;
   }}
   .st-key-ca-execute-clone-page > [data-testid="stVerticalBlock"] {{
       gap: 0.25rem !important;
   }}
-  .st-key-ca-execute-clone-actions,
+  .st-key-ca-execute-clone-page > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-execute-clone-actions),
+  .st-key-ca-execute-clone-actions {{
+      position: fixed !important;
+      right: var(--ca-main-inset-right) !important;
+      bottom: 1rem !important;
+      left: auto !important;
+      top: auto !important;
+      width: auto !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      z-index: 120;
+      pointer-events: none;
+  }}
+  .st-key-ca-execute-clone-actions [data-testid="stVerticalBlock"],
+  .st-key-ca-execute-clone-actions [data-testid="stVerticalBlockBorderWrapper"],
+  .st-key-ca-execute-clone-actions [data-testid="stElementContainer"] {{
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      pointer-events: auto;
+  }}
   .st-key-ca-execute-clone-actions [data-testid="stVerticalBlock"],
   .st-key-ca-execute-clone-actions [data-testid="stVerticalBlockBorderWrapper"] {{
       display: flex !important;
       flex-direction: row !important;
       justify-content: flex-end !important;
       align-items: center !important;
-      width: 100% !important;
-      margin-top: auto !important;
-      margin-bottom: 0.15rem !important;
-      padding: 0 !important;
-      flex: 0 0 auto !important;
-  }}
-  .st-key-ca-execute-clone-actions [data-testid="stElementContainer"] {{
-      width: auto !important;
-      flex: 0 0 auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      display: flex !important;
-      justify-content: flex-end !important;
   }}
   {_nav_action_button_css(
       ".st-key-ca-execute-clone-actions",

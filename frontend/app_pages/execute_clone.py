@@ -130,20 +130,6 @@ with st.container(key="ca-execute-clone-page"):
         and not validation_msgs
     )
 
-    if selected_user and selected_source and selected_target and not validation_msgs:
-        src = html.escape(selected_source["env_name"])
-        tgt = html.escape(selected_target["env_name"])
-        usr = html.escape(selected_user["user_name"])
-        emit_html(
-            "<p class='ca-exec-ready'>"
-            f"Ready to clone <strong>{src}</strong> "
-            f"→ <strong>{tgt}</strong> "
-            f"as <strong>{usr}</strong>."
-            "</p>"
-        )
-    elif validation_msgs and user_name != PLACEHOLDER:
-        st.info(" ".join(validation_msgs))
-
     with st.container(key="ca-execute-clone-actions"):
         if st.button(
             "Trigger job",
@@ -171,3 +157,17 @@ with st.container(key="ca-execute-clone-page"):
                 goto_page("Run details")
             except Exception as exc:
                 show_error(exc, context="Could not trigger clone run")
+
+    if selected_user and selected_source and selected_target and not validation_msgs:
+        src = html.escape(selected_source["env_name"])
+        tgt = html.escape(selected_target["env_name"])
+        usr = html.escape(selected_user["user_name"])
+        emit_html(
+            "<p class='ca-exec-ready'>"
+            f"Ready to clone <strong>{src}</strong> "
+            f"→ <strong>{tgt}</strong> "
+            f"as <strong>{usr}</strong>."
+            "</p>"
+        )
+    elif validation_msgs and user_name != PLACEHOLDER:
+        st.info(" ".join(validation_msgs))
