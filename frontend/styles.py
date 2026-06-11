@@ -1037,11 +1037,54 @@ _GLOBAL_CSS = f"""
       max-width: none !important;
   }}
   .st-key-ca-detail-title-row .st-key-back_to_runs,
-  .st-key-ca-detail-title-row .st-key-back_to_runs [data-testid="stElementContainer"] {{
+  .st-key-ca-detail-title-row .st-key-back_to_runs [data-testid="stElementContainer"],
+  .st-key-ca-detail-title-row [data-testid="stPageLink"],
+  .st-key-ca-detail-title-row [data-testid="stPageLink"] [data-testid="stElementContainer"] {{
       position: relative !important;
       z-index: 5 !important;
       flex: 0 0 auto !important;
       pointer-events: auto !important;
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca-detail-title-row [data-testid="stPageLink"] a {{
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      min-width: var(--ca-header-row-height) !important;
+      min-height: var(--ca-header-row-height) !important;
+      padding: 0 0.15rem !important;
+      border-radius: 5px !important;
+      text-decoration: none !important;
+      color: {BRAND_ORANGE} !important;
+      background: transparent !important;
+      gap: 0 !important;
+  }}
+  .st-key-ca-detail-title-row [data-testid="stPageLink"] a:hover {{
+      background: var(--ca-nav-highlight-bg) !important;
+      color: {BRAND_ORANGE} !important;
+  }}
+  .st-key-ca-detail-title-row [data-testid="stPageLink"] a svg,
+  .st-key-ca-detail-title-row [data-testid="stPageLink"] a [data-testid="stIconMaterial"] {{
+      width: 1.35rem !important;
+      height: 1.35rem !important;
+      font-size: 1.35rem !important;
+      color: {BRAND_ORANGE} !important;
+      fill: {BRAND_ORANGE} !important;
+  }}
+  /* Icon-only back link — label stays for accessibility, hidden visually. */
+  .st-key-ca-detail-title-row [data-testid="stPageLink"] a [data-testid="stMarkdownContainer"],
+  .st-key-ca-detail-title-row [data-testid="stPageLink"] a p {{
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
   }}
   .st-key-ca-detail-title-row .st-key-back_to_runs .stButton {{
       width: auto !important;
@@ -1051,6 +1094,7 @@ _GLOBAL_CSS = f"""
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
+      position: relative !important;
       width: auto !important;
       min-width: var(--ca-header-row-height) !important;
       min-height: var(--ca-header-row-height) !important;
@@ -1076,26 +1120,15 @@ _GLOBAL_CSS = f"""
       background: var(--ca-nav-highlight-bg) !important;
   }}
   .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button p {{
-      font-size: 0 !important;
-      width: 0 !important;
-      overflow: hidden !important;
-      margin: 0 !important;
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
       padding: 0 !important;
-  }}
-  .ca-detail-action-sep {{
-      color: #c2c7cc;
-      font-size: var(--ca-title-size);
-      font-weight: 400;
-      line-height: 1;
-      display: inline-flex;
-      align-items: center;
-      flex: 0 0 auto;
-      user-select: none;
-  }}
-  .st-key-ca-detail-title-row > [data-testid="stElementContainer"]:has(.ca-detail-action-sep) {{
-      flex: 0 0 auto !important;
-      display: flex !important;
-      align-items: center !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
   }}
   .st-key-detail-actions,
   .st-key-detail-actions [data-testid="stVerticalBlock"],
@@ -1106,7 +1139,7 @@ _GLOBAL_CSS = f"""
       flex-wrap: nowrap !important;
       gap: var(--ca-detail-inline-gap) !important;
       width: auto !important;
-      margin-left: 0 !important;
+      margin-left: 0.45rem !important;
       flex: 0 0 auto !important;
   }}
   .st-key-detail-actions [data-testid="stElementContainer"] {{

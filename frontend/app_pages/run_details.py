@@ -20,7 +20,6 @@ from log_download import cached_run_log, cached_step_log
 from styles import (
     emit_html,
     fmt_duration,
-    goto_page,
     relative_update_html,
     render_title,
     started_html,
@@ -37,18 +36,6 @@ _RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
 
 def _toggle_step(open_key: str) -> None:
     st.session_state[open_key] = not st.session_state.get(open_key, False)
-
-
-def _back_to_run_history() -> None:
-    """Clear run selection and return to Run History."""
-    rid = st.session_state.get("selected_run_id")
-    if rid is not None:
-        st.session_state.pop(f"auto_refresh_{rid}", None)
-    st.session_state.pop("selected_run_id", None)
-    st.session_state.pop("selected_run", None)
-    st.session_state.pop("_auto_refresh_run", None)
-    st.query_params.clear()
-    goto_page("Run History")
 
 run_id = st.session_state.get("selected_run_id")
 
@@ -130,16 +117,18 @@ if run:
     user = _esc(run.get("user_name", "—"))
     safe_run_id = _esc(run_id)
     has_run_log = bool(latest_run.get("log_location"))
+    _pages = st.session_state.get("_pages") or {}
+    _run_history_page = _pages.get("Run History")
 
     with st.container(key="ca-detail-header"):
         with st.container(key="ca-detail-title-row"):
-            st.button(
-                " ",
-                icon=":material/arrow_back:",
-                key="back_to_runs",
-                help="Back to Run History",
-                on_click=_back_to_run_history,
-            )
+            if _run_history_page is not None:
+                st.page_link(
+                    _run_history_page,
+                    label="Back",
+                    icon=":material/arrow_back:",
+                    help="Back to Run History",
+                )
             st.html(
                 f"""
                 <div class="ca-page-header ca-detail-page-header">
@@ -155,7 +144,6 @@ if run:
                 </div>
                 """
             )
-            st.html('<span class="ca-detail-action-sep">&middot;</span>')
             with st.container(key="detail-actions"):
                 if st.button(
                     "Abort",

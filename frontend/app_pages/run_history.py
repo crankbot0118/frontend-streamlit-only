@@ -11,6 +11,14 @@ from ui_errors import show_error
 
 _RUN_HISTORY_LIMIT = min(frontend().max_run_limit, 25)
 
+if "run" in st.query_params:
+    del st.query_params["run"]
+_rid = st.session_state.pop("selected_run_id", None)
+if _rid is not None:
+    st.session_state.pop(f"auto_refresh_{_rid}", None)
+st.session_state.pop("selected_run", None)
+st.session_state.pop("_auto_refresh_run", None)
+
 render_title(
     "Run History",
     subtitle="Review past clone runs and their outcomes.",
