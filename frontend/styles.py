@@ -2223,12 +2223,12 @@ def step_detail_dialog_error_html(message: str) -> str:
 # Status -> PNG asset in the repo-root ``assets/`` folder. Used on the run
 # details step rows in place of the text badge.
 STATUS_ASSETS = {
-    "COMPLETED": "completed.png",
-    "RUNNING": "running.png",
-    "PENDING": "pending.png",
-    "FAILED": "failed.png",
-    "SKIPPED": "skipped.png",
-    "ABORTED": "aborted.png",
+    "COMPLETED":"status-completed.svg",
+    "RUNNING": "status-running.svg",
+    "PENDING": "status-pending.svg",
+    "FAILED": "status-failed.svg",
+    "SKIPPED": "status-skipped.svg",
+    "ABORTED": "status-aborted.svg",
 }
 
 
