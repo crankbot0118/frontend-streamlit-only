@@ -1837,12 +1837,15 @@ _GLOBAL_CSS = f"""
   }}
   .ca-step-link-disabled {{
       color: #b0b5ba;
-      font-size: 0.86rem;
+      font-size: var(--ca-run-meta-size);
       font-weight: 600;
       cursor: not-allowed;
+      line-height: 1;
   }}
   [class*="st-key-step_details_"] .stButton,
-  [class*="st-key-step_details_"] .stButton button {{
+  [class*="st-key-step_details_"] .stButton button,
+  [class*="st-key-step_details_"] .stButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_details_"] .stButton button p {{
       width: auto !important;
       min-height: 0 !important;
       margin: 0 !important;
@@ -1851,15 +1854,21 @@ _GLOBAL_CSS = f"""
       border: none !important;
       box-shadow: none !important;
       color: {BRAND_ORANGE} !important;
-      font-size: 0.86rem !important;
+      font-size: var(--ca-run-meta-size) !important;
       font-weight: 600 !important;
+      line-height: 1 !important;
+      text-decoration: none !important;
   }}
-  [class*="st-key-step_details_"] .stButton button:hover {{
-      text-decoration: underline;
+  [class*="st-key-step_details_"] .stButton button:hover,
+  [class*="st-key-step_details_"] .stButton button:hover [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_details_"] .stButton button:hover p {{
+      text-decoration: none !important;
       color: {BRAND_ORANGE} !important;
   }}
   [class*="st-key-step_links_"] .stDownloadButton,
-  [class*="st-key-step_links_"] .stDownloadButton button {{
+  [class*="st-key-step_links_"] .stDownloadButton button,
+  [class*="st-key-step_links_"] .stDownloadButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_links_"] .stDownloadButton button p {{
       width: auto !important;
       min-height: 0 !important;
       margin: 0 !important;
@@ -1868,12 +1877,20 @@ _GLOBAL_CSS = f"""
       border: none !important;
       box-shadow: none !important;
       color: {BRAND_ORANGE} !important;
-      font-size: 0.86rem !important;
+      font-size: var(--ca-run-meta-size) !important;
       font-weight: 600 !important;
+      line-height: 1 !important;
+      text-decoration: none !important;
   }}
-  [class*="st-key-step_links_"] .stDownloadButton button:hover {{
-      text-decoration: underline;
+  [class*="st-key-step_links_"] .stDownloadButton button:hover,
+  [class*="st-key-step_links_"] .stDownloadButton button:hover [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_links_"] .stDownloadButton button:hover p {{
+      text-decoration: none !important;
       color: {BRAND_ORANGE} !important;
+  }}
+  [class*="st-key-step_links_"] .ca-step-link-disabled {{
+      font-size: var(--ca-run-meta-size) !important;
+      line-height: 1 !important;
   }}
 
   /* Expand/collapse arrow in the actions group (scoped by widget key). */
