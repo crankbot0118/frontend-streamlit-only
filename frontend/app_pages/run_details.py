@@ -265,7 +265,6 @@ else:
                         "",
                         key=f"more_{run_id}_{i}",
                         icon=":material/arrow_right:",
-                        help="More actions",
                         type="tertiary",
                         on_click=_toggle_step,
                         args=(open_key,),
