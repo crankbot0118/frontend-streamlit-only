@@ -857,7 +857,12 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run cards (Run History) ---------- */
   .st-key-ca-runs {{
-      --ca-run-card-gap: 0.35rem;
+      --ca-run-card-gap: 0.12rem;
+      --ca-run-card-pad-y: 0.2rem;
+      --ca-run-card-pad-x: 0.62rem;
+      --ca-run-card-pad-right: 2rem;
+      --ca-run-inline-gap: 0.28rem;
+      margin-top: 0.12rem !important;
   }}
   .st-key-ca-runs > [data-testid="stVerticalBlock"],
   .st-key-ca-runs > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
@@ -867,21 +872,19 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
   }}
-  .st-key-ca-runs [class*="st-key-runcard_"] {{
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
 
-  /* Card container: single info line on the left, redirect button at far right. */
+  /* Card shell — compact single-line row. */
   [class*="st-key-runcard_"] {{
       position: relative;
       border: 1px solid #e3e6e8;
-      border-radius: 8px;
-      padding: 0.38rem 2.2rem 0.38rem 0.75rem;
+      border-radius: 6px;
+      padding: var(--ca-run-card-pad-y) var(--ca-run-card-pad-right) var(--ca-run-card-pad-y) var(--ca-run-card-pad-x) !important;
+      margin: 0 !important;
       background: #ffffff;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
       display: block !important;
       box-sizing: border-box;
+      min-height: 0 !important;
   }}
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlock"],
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
@@ -890,28 +893,35 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       position: relative !important;
       min-height: 0 !important;
+      height: auto !important;
   }}
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
       margin: 0 !important;
       padding: 0 !important;
+      min-height: 0 !important;
   }}
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child,
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {{
       width: 100% !important;
-      flex: 1 1 auto !important;
+      flex: 0 0 auto !important;
+      min-height: 0 !important;
+  }}
+  [class*="st-key-runcard_"] [data-testid="stMarkdownContainer"],
+  [class*="st-key-runcard_"] [data-testid="stMarkdownContainer"] p {{
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 1.2 !important;
   }}
   [class*="st-key-runcard_"]:hover {{
       border-color: {BRAND_ORANGE};
-      box-shadow: 0 2px 12px rgba(19, 21, 22, 0.07);
+      box-shadow: 0 1px 8px rgba(19, 21, 22, 0.06);
   }}
 
-  /* Pull the button's whole element container out of flow and pin it to the
-     card's right edge (Streamlit sets each element container position:relative,
-     so positioning the .stButton wrapper alone anchors it to the wrong box). */
+  /* Redirect arrow — out of flow, zero vertical footprint. */
   [class*="st-key-runcard_"] [data-testid="stElementContainer"]:has(.stButton) {{
       position: absolute !important;
-      right: 0.5rem;
+      right: 0.35rem;
       top: 50%;
       transform: translateY(-50%);
       width: auto !important;
@@ -925,26 +935,26 @@ _GLOBAL_CSS = f"""
   [class*="st-key-runcard_"] .stButton {{
       width: auto !important;
       margin: 0 !important;
+      min-height: 0 !important;
   }}
-  /* Borderless icon button, pinned to the extreme right, vertically centered. */
   [class*="st-key-runcard_"] .stButton button {{
       width: auto !important;
       min-height: 0 !important;
+      height: auto !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
       color: #8a9097;
-      padding: 0.3rem;
+      padding: 0.15rem !important;
   }}
-  /* Make the redirect arrow noticeably larger, sized relative to the text. */
   [class*="st-key-runcard_"] .stButton button [data-testid="stIconMaterial"] {{
-      font-size: 1.25rem !important;
-      width: 1.25rem !important;
-      height: 1.25rem !important;
+      font-size: 1.1rem !important;
+      width: 1.1rem !important;
+      height: 1.1rem !important;
   }}
   [class*="st-key-runcard_"] .stButton button svg {{
-      width: 1.25rem !important;
-      height: 1.25rem !important;
+      width: 1.1rem !important;
+      height: 1.1rem !important;
   }}
   [class*="st-key-runcard_"] .stButton button:hover {{
       background: transparent !important;
@@ -958,17 +968,17 @@ _GLOBAL_CSS = f"""
   .ca-run {{
       margin: 0;
       padding: 0;
-      line-height: 1.35;
+      line-height: 1.2;
   }}
   .ca-run-oneline {{
       display: flex;
       flex-wrap: nowrap;
       align-items: center;
-      gap: 0.38rem;
+      gap: var(--ca-run-inline-gap);
       font-size: var(--ca-body-size);
       font-weight: 600;
       color: {BRAND_INK};
-      line-height: 1.35;
+      line-height: 1.2;
       min-width: 0;
   }}
   .ca-run-oneline .sep {{
@@ -983,18 +993,23 @@ _GLOBAL_CSS = f"""
   }}
   .ca-run-oneline .arrow {{
       color: {BRAND_ORANGE};
-      margin: 0 0.22rem;
+      margin: 0 0.12rem;
   }}
   .ca-run-oneline > span:not(.sep):not(.ca-run-meta-part),
   .ca-run-oneline .ca-badge {{
       flex-shrink: 0;
       white-space: nowrap;
   }}
+  .ca-run-oneline .ca-badge {{
+      padding: 0.04rem 0.34rem;
+      font-size: calc(var(--ca-caption-size) * 0.88);
+      line-height: 1.15;
+  }}
   .ca-run-oneline .ca-run-meta-part {{
       display: inline-flex;
       align-items: center;
-      gap: 0.38rem;
-      flex: 1 1 auto;
+      gap: var(--ca-run-inline-gap);
+      flex: 0 1 auto;
       min-width: 0;
       font-size: var(--ca-run-meta-size);
       font-weight: 400;
@@ -1007,7 +1022,7 @@ _GLOBAL_CSS = f"""
   .ca-run-oneline .ca-run-meta-part .ca-run-metaline {{
       display: inline-flex;
       align-items: center;
-      gap: 0.2rem;
+      gap: 0.12rem;
       white-space: nowrap;
       flex-shrink: 0;
   }}
@@ -2098,7 +2113,7 @@ def render_run_card(run: dict) -> bool:
         </div>
     """
     with st.container(key=f"runcard_{rid}"):
-        emit_html(info_html)
+        st.markdown(info_html, unsafe_allow_html=True)
         return st.button(
             "",
             key=f"open_run_{rid}",
