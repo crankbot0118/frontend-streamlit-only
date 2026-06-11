@@ -2070,8 +2070,8 @@ _GLOBAL_CSS = f"""
       border: 1px solid rgba(227, 230, 232, 0.95) !important;
       border-radius: 10px !important;
       box-shadow: 0 16px 40px rgba(19, 21, 22, 0.18) !important;
-      max-width: min(92vw, 28rem) !important;
-      width: min(92vw, 28rem) !important;
+      max-width: min(96vw, 44rem) !important;
+      width: min(96vw, 44rem) !important;
       padding: 0 !important;
       --background-color: #ffffff !important;
       --secondary-background-color: #f6f7f8 !important;
@@ -2146,23 +2146,22 @@ _GLOBAL_CSS = f"""
       margin: 0 0 0.28rem 0;
   }}
   .ca-step-dialog-table-wrap {{
-      overflow-x: auto;
+      overflow: visible;
       border: 1px solid #e3e6e8;
       border-radius: 6px;
       background: #ffffff;
-      max-height: 12rem;
-      overflow-y: auto;
   }}
   .ca-step-dialog-table {{
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.68rem;
+      font-size: 0.72rem;
       background: #ffffff;
       color: {BRAND_INK};
+      table-layout: auto;
   }}
   .ca-step-dialog-table th,
   .ca-step-dialog-table td {{
-      padding: 0.28rem 0.42rem;
+      padding: 0.32rem 0.5rem;
       text-align: left;
       border-bottom: 1px solid #eef0f2;
       color: {BRAND_INK};
@@ -2171,8 +2170,12 @@ _GLOBAL_CSS = f"""
   }}
   .ca-step-dialog-table th {{
       background: #f6f7f8 !important;
-      font-weight: 600;
+      font-weight: 700;
       color: #3d4348;
+  }}
+  .ca-step-dialog-table td {{
+      font-weight: 600;
+      color: {BRAND_INK};
   }}
   .ca-step-dialog-table tr:last-child td {{
       border-bottom: none;
