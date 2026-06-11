@@ -1278,6 +1278,8 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       flex: 0 0 auto !important;
       flex-shrink: 0 !important;
+      position: relative !important;
+      z-index: 4 !important;
   }}
   .st-key-detail-actions [data-testid="stElementContainer"] {{
       display: inline-flex !important;
