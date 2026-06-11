@@ -28,6 +28,8 @@ BRAND_ORANGE = "#e87511"
 BRAND_INK = "#131516"
 STATUS_ICON_PX = 18
 ACTION_ICON_REM = "1.1rem"
+SIDEBAR_WIDTH_PX = 200
+LOGO_WIDTH_PX = 170
 
 # Repo root is the parent of the ``frontend/`` package that holds this file.
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -75,6 +77,29 @@ _GLOBAL_CSS = f"""
       background-color: #f6f7f8 !important;
   }}
 
+  /* Sidebar shell: fixed width, full viewport height, no scroll bar. */
+  [data-testid="stSidebar"] {{
+      width: {SIDEBAR_WIDTH_PX}px !important;
+      min-width: {SIDEBAR_WIDTH_PX}px !important;
+      max-width: {SIDEBAR_WIDTH_PX}px !important;
+      height: 100vh !important;
+      max-height: 100vh !important;
+      overflow: hidden !important;
+  }}
+
+  [data-testid="stSidebar"] > div,
+  [data-testid="stSidebarContent"] {{
+      height: 100% !important;
+      max-height: 100vh !important;
+      overflow: hidden !important;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+  }}
+
+  [data-testid="stSidebar"] ::-webkit-scrollbar {{
+      display: none;
+  }}
+
   /* Hide the top-right toolbar (theme toggle + app menu with the
      Light/Dark/System theme picker) and the "Made with Streamlit" footer. */
   [data-testid="stToolbar"],
@@ -111,12 +136,6 @@ _GLOBAL_CSS = f"""
       display: none !important;
   }}
 
-  [data-testid="stSidebar"] {{
-      width: 264px !important;
-      min-width: 264px !important;
-      max-width: 264px !important;
-  }}
-
   /* Collapse the empty sidebar header so content sits at the very top. */
   [data-testid="stSidebarHeader"] {{
       height: 0;
@@ -124,20 +143,43 @@ _GLOBAL_CSS = f"""
       padding: 0;
   }}
 
-  /* Sidebar content top-flush, matching the main title. */
+  /* Sidebar content: flex column that fits the viewport without scrolling. */
   [data-testid="stSidebarUserContent"] {{
-      padding-top: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-height: 100vh;
+      min-height: 0;
+      padding-top: 0.85rem;
+      padding-bottom: 0.35rem;
+      box-sizing: border-box;
+      overflow: hidden;
   }}
 
-  /* Logo block, left-aligned to match render_title. */
+  [data-testid="stSidebarUserContent"] > [data-testid="stVerticalBlock"] {{
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0 !important;
+  }}
+
+  [data-testid="stSidebarUserContent"] [data-testid="stElementContainer"] {{
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+  }}
+
+  /* Logo block, left-aligned — width stays fixed while sidebar narrows. */
   .ca-logo {{
-      margin: 0 0 0.9rem 0;
+      margin: 0 0 0.5rem 0;
       padding: 0;
+      flex: 0 0 auto;
   }}
 
   .ca-logo img {{
-      width: 170px;
-      max-width: 100%;
+      width: {LOGO_WIDTH_PX}px;
+      min-width: {LOGO_WIDTH_PX}px;
+      max-width: none;
       height: auto;
       display: block;
   }}
@@ -180,10 +222,13 @@ _GLOBAL_CSS = f"""
   /* ---------- Sidebar navigation ---------- */
 
   .st-key-ca-nav {{
-      --ca-nav-x: 0.55rem;
-      --ca-nav-icon: 1.25rem;
-      --ca-nav-gap: 0.7rem;
+      --ca-nav-x: 0.35rem;
+      --ca-nav-icon: 1.1rem;
+      --ca-nav-gap: 0.5rem;
       --ca-nav-text: calc(var(--ca-nav-x) + var(--ca-nav-icon) + var(--ca-nav-gap));
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
   }}
 
   /* Tighten vertical spacing and keep every block left-aligned. */
@@ -207,14 +252,14 @@ _GLOBAL_CSS = f"""
       justify-content: flex-start !important;
       text-align: left !important;
       width: 100% !important;
-      min-height: 2.1rem !important;
+      min-height: 1.75rem !important;
       background: transparent !important;
       border: none !important;
       box-shadow: inset 3px 0 0 transparent !important;
       outline: none !important;
       gap: var(--ca-nav-gap) !important;
-      padding: 0.35rem var(--ca-nav-x) 0.35rem var(--ca-nav-x) !important;
-      border-radius: 8px;
+      padding: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x) !important;
+      border-radius: 6px;
       color: {BRAND_INK};
   }}
 
@@ -238,9 +283,9 @@ _GLOBAL_CSS = f"""
   .st-key-ca-nav .stButton button p {{
       margin: 0;
       font-weight: 600;
-      font-size: 0.98rem;
+      font-size: 0.88rem;
       text-align: left !important;
-      line-height: 1.25;
+      line-height: 1.2;
   }}
 
   .st-key-ca-nav .stButton button:hover {{
@@ -288,12 +333,12 @@ _GLOBAL_CSS = f"""
   /* Small yellow "Coming soon!" highlight — aligned with nav labels. */
   .ca-soon {{
       display: inline-block;
-      margin: 0 0 0.4rem var(--ca-nav-text);
-      padding: 0.05rem 0.45rem;
-      border-radius: 6px;
+      margin: 0 0 0.25rem var(--ca-nav-text);
+      padding: 0.04rem 0.35rem;
+      border-radius: 5px;
       background: #fff3cd;
       color: #8a6500;
-      font-size: 0.66rem;
+      font-size: 0.62rem;
       font-weight: 700;
       letter-spacing: 0.02em;
   }}
@@ -312,12 +357,12 @@ _GLOBAL_CSS = f"""
       align-items: center !important;
       justify-content: flex-start !important;
       gap: var(--ca-nav-gap) !important;
-      min-height: 2.1rem !important;
-      padding: 0.35rem var(--ca-nav-x) 0.35rem var(--ca-nav-x) !important;
+      min-height: 1.75rem !important;
+      padding: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x) !important;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.03em;
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       color: #6b7177;
       background: transparent !important;
       border: none !important;
