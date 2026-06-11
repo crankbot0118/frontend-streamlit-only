@@ -18,11 +18,12 @@ from api import (
 from config.settings import frontend
 from log_download import cached_run_log, cached_step_log
 from styles import (
+    clear_run_details_state,
     emit_html,
     fmt_duration,
+    goto_page,
     relative_update_html,
     render_title,
-    request_page,
     started_html,
     status_badge_html,
     status_image_html,
@@ -129,7 +130,8 @@ if run:
                     help="Back to Run History",
                     type="tertiary",
                 ):
-                    request_page("Run History")
+                    clear_run_details_state()
+                    goto_page("Run History")
             st.html(
                 f"""
                 <div class="ca-page-header ca-detail-page-header">

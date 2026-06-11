@@ -137,6 +137,7 @@ _GLOBAL_CSS = f"""
       --secondary-background-color: #f6f7f8;
       --text-color: {BRAND_INK};
       --ca-detail-inline-gap: 0.45rem;
+      --ca-detail-back-gap: 0.08rem;
       --ca-page-inset-top: 0.5rem;
       --ca-sidebar-inset-x: 0.5rem;
       --ca-main-inset-x: 1rem;
@@ -1012,7 +1013,7 @@ _GLOBAL_CSS = f"""
       pointer-events: none;
   }}
   .ca-detail-page-header .ca-title {{
-      min-height: var(--ca-header-row-height);
+      min-height: 0;
   }}
   .ca-detail-title-parts .ca-run-sep {{
       flex: 0 0 auto;
@@ -1029,12 +1030,15 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: var(--ca-detail-inline-gap) !important;
+      gap: var(--ca-detail-back-gap) !important;
       width: fit-content !important;
       max-width: 100% !important;
-      min-height: var(--ca-header-row-height) !important;
+      min-height: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
+  }}
+  .st-key-ca-detail-title-row > [data-testid="stElementContainer"]:not(.st-key-ca-detail-back):not(.st-key-detail-actions) {{
+      pointer-events: none !important;
   }}
   .st-key-ca-detail-title-row > [data-testid="stElementContainer"] {{
       width: auto !important;
@@ -1063,9 +1067,10 @@ _GLOBAL_CSS = f"""
       justify-content: center !important;
       position: relative !important;
       width: auto !important;
-      min-width: var(--ca-header-row-height) !important;
-      min-height: var(--ca-header-row-height) !important;
-      padding: 0 0.15rem !important;
+      min-width: 1.5rem !important;
+      min-height: 1.5rem !important;
+      padding: 0 !important;
+      margin: 0 !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
@@ -1122,7 +1127,7 @@ _GLOBAL_CSS = f"""
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
-      margin: 0 !important;
+      margin: -0.08rem 0 0 0 !important;
       padding: 0 !important;
       min-height: var(--ca-detail-meta-height);
   }}
@@ -1377,12 +1382,12 @@ _GLOBAL_CSS = f"""
   .ca-loglink:hover {{
       text-decoration: underline;
   }}
-  /* Tighter gap between meta row and orange accent bar on run details. */
+  /* Tighter gap between title, meta row, and orange accent bar on run details. */
   .st-key-ca-detail-header .ca-title-rule {{
-      margin: 0.06rem 0 0.1rem 0;
+      margin: 0.04rem 0 0.08rem 0;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] {{
-      gap: 0.02rem !important;
+      gap: 0 !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="stElementContainer"] {{
       margin-bottom: 0 !important;
