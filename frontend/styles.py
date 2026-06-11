@@ -69,7 +69,7 @@ _GLOBAL_CSS = f"""
       --ca-sidebar-inset-x: 0.45rem;
       /* Type scale — all page text derives from the heading size. */
       --ca-title-size: 1.75rem;
-      --ca-subtitle-size: calc(var(--ca-title-size) * 0.571);   /* ~1rem lead line */
+      --ca-subtitle-size: var(--ca-body-size);
       --ca-body-size: calc(var(--ca-title-size) * 0.5);         /* ~0.875rem body */
       --ca-label-size: calc(var(--ca-title-size) * 0.486);        /* ~0.85rem labels */
       --ca-caption-size: calc(var(--ca-title-size) * 0.457);    /* ~0.8rem captions */
@@ -227,11 +227,11 @@ _GLOBAL_CSS = f"""
   }}
 
   .ca-subtitle {{
-      margin: 0 0 0.2rem 0;
+      margin: 0 0 0.15rem 0;
       color: #5b6166;
       font-size: var(--ca-subtitle-size);
       font-weight: 400;
-      line-height: 1.45;
+      line-height: 1.5;
       max-width: 52rem;
   }}
 
@@ -526,10 +526,73 @@ _GLOBAL_CSS = f"""
       fill: #6b7177 !important;
   }}
   .st-key-ca-execute-clone-actions {{
-      margin-top: 0.35rem;
+      margin-top: 0.25rem;
   }}
+
+  .st-key-ca-execute-clone-actions .stButton {{
+      width: auto !important;
+  }}
+
+  /* Nav-style trigger control — compact, not default Streamlit primary pink. */
   .st-key-ca-execute-clone-actions .stButton button {{
-      font-weight: 700 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      width: auto !important;
+      min-height: 1.7rem !important;
+      padding: 0.2rem 0.65rem !important;
+      gap: 0.45rem !important;
+      font-size: var(--ca-nav-font-size) !important;
+      font-weight: 600 !important;
+      line-height: 1.25 !important;
+      border-radius: 5px !important;
+      border: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
+      color: #9aa0a6 !important;
+      cursor: not-allowed !important;
+      opacity: 0.55 !important;
+  }}
+
+  .st-key-ca-execute-clone-actions .stButton button p {{
+      margin: 0 !important;
+      font-size: var(--ca-nav-font-size) !important;
+      font-weight: 600 !important;
+  }}
+
+  .st-key-ca-execute-clone-actions .stButton button svg,
+  .st-key-ca-execute-clone-actions .stButton button [data-testid="stIconMaterial"] {{
+      width: 1rem !important;
+      height: 1rem !important;
+      font-size: 1rem !important;
+      color: inherit !important;
+      fill: currentColor !important;
+  }}
+
+  .st-key-ca-execute-clone-actions .stButton button:not(:disabled) {{
+      background: rgba(232, 117, 17, 0.12) !important;
+      color: {BRAND_ORANGE} !important;
+      cursor: pointer !important;
+      opacity: 1 !important;
+  }}
+
+  .st-key-ca-execute-clone-actions .stButton button:not(:disabled) p,
+  .st-key-ca-execute-clone-actions .stButton button:not(:disabled) svg,
+  .st-key-ca-execute-clone-actions .stButton button:not(:disabled) [data-testid="stIconMaterial"] {{
+      color: {BRAND_ORANGE} !important;
+      fill: {BRAND_ORANGE} !important;
+  }}
+
+  .ca-exec-ready {{
+      margin: 0.35rem 0 0.15rem 0;
+      font-size: var(--ca-body-size);
+      line-height: 1.5;
+      color: #5b6166;
+  }}
+
+  .ca-exec-ready strong {{
+      color: {BRAND_INK};
+      font-weight: 700;
   }}
 
   /* ---------- Sidebar bottom status (fixed to viewport) ---------- */
@@ -629,9 +692,9 @@ _GLOBAL_CSS = f"""
   /* ---------- Status badges (reused on cards + steps) ---------- */
   .ca-badge {{
       display: inline-block;
-      padding: 0.12rem 0.6rem;
+      padding: 0.06rem 0.45rem;
       border-radius: 999px;
-      font-size: 0.72rem;
+      font-size: calc(var(--ca-caption-size) * 0.92);
       font-weight: 700;
       letter-spacing: 0.02em;
       white-space: nowrap;
@@ -645,15 +708,15 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run cards (Run History) ---------- */
   .st-key-ca-runs > [data-testid="stVerticalBlock"] {{
-      gap: 0.7rem;
+      gap: 0.22rem;
   }}
 
   /* Card container: two-line info on the left, redirect button at far right. */
   [class*="st-key-runcard_"] {{
       position: relative;
       border: 1px solid #e3e6e8;
-      border-radius: 12px;
-      padding: 0.75rem 3rem 0.75rem 1.1rem;
+      border-radius: 8px;
+      padding: 0.38rem 2.2rem 0.38rem 0.75rem;
       background: #ffffff;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }}
@@ -690,13 +753,13 @@ _GLOBAL_CSS = f"""
   }}
   /* Make the redirect arrow noticeably larger, sized relative to the text. */
   [class*="st-key-runcard_"] .stButton button [data-testid="stIconMaterial"] {{
-      font-size: 1.9rem !important;
-      width: 1.9rem !important;
-      height: 1.9rem !important;
+      font-size: 1.25rem !important;
+      width: 1.25rem !important;
+      height: 1.25rem !important;
   }}
   [class*="st-key-runcard_"] .stButton button svg {{
-      width: 1.9rem !important;
-      height: 1.9rem !important;
+      width: 1.25rem !important;
+      height: 1.25rem !important;
   }}
   [class*="st-key-runcard_"] .stButton button:hover {{
       background: transparent !important;
@@ -711,10 +774,11 @@ _GLOBAL_CSS = f"""
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.45rem;
+      gap: 0.3rem;
       font-size: var(--ca-body-size);
       font-weight: 600;
       color: {BRAND_INK};
+      line-height: 1.3;
   }}
   .ca-run-line1 .sep {{
       color: #c2c7cc;
@@ -728,14 +792,15 @@ _GLOBAL_CSS = f"""
       margin: 0 0.3rem;
   }}
   .ca-run-meta {{
-      margin-top: 0.45rem;
+      margin-top: 0.15rem;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.45rem;
+      gap: 0.3rem;
       font-size: var(--ca-caption-size);
       color: #6b7177;
       font-style: italic;
+      line-height: 1.25;
   }}
   .ca-run-meta .sepm {{
       color: #c2c7cc;

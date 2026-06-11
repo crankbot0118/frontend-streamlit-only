@@ -5,8 +5,11 @@ from datetime import date
 import streamlit as st
 
 from api import get_run_filters, get_runs
+from config.settings import frontend
 from styles import goto_page, render_run_card, render_title
 from ui_errors import show_error
+
+_RUN_HISTORY_LIMIT = min(frontend().max_run_limit, 25)
 
 render_title(
     "Run History",
@@ -15,20 +18,28 @@ render_title(
 
 ALL = "All"
 
+
+def _parse_date_range(value) -> tuple[date | None, date | None]:
+    if not value:
+        return None, None
+    if isinstance(value, tuple):
+        if len(value) >= 2:
+            return value[0], value[1]
+        if len(value) == 1:
+            return value[0], value[0]
+    if isinstance(value, date):
+        return value, value
+    return None, None
+
+
 try:
     filter_opts = get_run_filters()
 except Exception as exc:
     show_error(exc, context="Could not load filter options")
-    filter_opts = {"clients": [], "targets": [], "users": []}
+    filter_opts = {"targets": [], "users": []}
 
 with st.container(key="ca-run-filters"):
-    c_client, c_target, c_user, c_date = st.columns(4)
-    with c_client:
-        client = st.selectbox(
-            "Client",
-            options=[ALL, *filter_opts["clients"]],
-            key="filter_client",
-        )
+    c_target, c_user, c_range = st.columns(3)
     with c_target:
         target = st.selectbox(
             "Target",
@@ -41,26 +52,27 @@ with st.container(key="ca-run-filters"):
             options=[ALL, *filter_opts["users"]],
             key="filter_user",
         )
-    with c_date:
-        start_date = st.date_input(
-            "Start date",
-            value=None,
+    with c_range:
+        date_range = st.date_input(
+            "Date range",
+            value=(),
             format="DD/MM/YYYY",
-            key="filter_start_date",
+            key="filter_date_range",
+            selection_mode="range",
         )
 
-client_val = None if client == ALL else client
 target_val = None if target == ALL else target
 user_val = None if user == ALL else user
-start_val = start_date if isinstance(start_date, date) else None
-filters_active = any([client_val, target_val, user_val, start_val])
+start_val, end_val = _parse_date_range(date_range)
+filters_active = any([target_val, user_val, start_val, end_val])
 
 try:
     runs = get_runs(
-        client=client_val,
+        limit=_RUN_HISTORY_LIMIT,
         target=target_val,
         user=user_val,
         start_date=start_val,
+        end_date=end_val,
     )
 except Exception as exc:
     show_error(exc, context="Could not load runs")
@@ -74,7 +86,9 @@ runs = sorted(
 
 if not runs:
     if filters_active:
-        st.info("No runs match your filters. Try a different client, target, user, or start date.")
+        st.info(
+            "No runs match your filters. Try a different target, user, or date range."
+        )
     else:
         st.caption("No runs to show yet.")
 else:

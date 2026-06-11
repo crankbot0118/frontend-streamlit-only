@@ -1,5 +1,6 @@
 """Execute Clone page — trigger a new clone run."""
 
+import html
 import sys
 from pathlib import Path
 
@@ -11,7 +12,7 @@ if str(_ROOT) not in sys.path:
 
 from api import get_execute_clone_options, get_run, trigger_clone_run
 from config.settings import frontend, is_protected_target_env
-from styles import goto_page, render_title
+from styles import emit_html, goto_page, render_title
 from ui_errors import show_error
 
 _cfg = frontend()
@@ -129,9 +130,15 @@ can_trigger = (
 )
 
 if selected_user and selected_source and selected_target and not validation_msgs:
-    st.caption(
-        f"Ready to clone **{selected_source['env_name']}** "
-        f"→ **{selected_target['env_name']}** as **{selected_user['user_name']}**."
+    src = html.escape(selected_source["env_name"])
+    tgt = html.escape(selected_target["env_name"])
+    usr = html.escape(selected_user["user_name"])
+    emit_html(
+        "<p class='ca-exec-ready'>"
+        f"Ready to clone <strong>{src}</strong> "
+        f"→ <strong>{tgt}</strong> "
+        f"as <strong>{usr}</strong>."
+        "</p>"
     )
 elif validation_msgs and user_name != PLACEHOLDER:
     st.info(" ".join(validation_msgs))
@@ -139,7 +146,7 @@ elif validation_msgs and user_name != PLACEHOLDER:
 with st.container(key="ca-execute-clone-actions"):
     if st.button(
         "Trigger job",
-        type="primary",
+        type="secondary",
         disabled=not can_trigger,
         key="exec_trigger",
         icon=":material/play_arrow:",

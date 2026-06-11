@@ -234,7 +234,8 @@ def list_clone_runs(
     client: str | None = Query(None, description="Filter by client name"),
     target: str | None = Query(None, description="Filter by target name"),
     user: str | None = Query(None, description="Filter by user name"),
-    start_date: date | None = Query(None, description="Filter by start date (calendar day)"),
+    start_date: date | None = Query(None, description="Filter runs on or after this date"),
+    end_date: date | None = Query(None, description="Filter runs on or before this date"),
     db: Session = Depends(get_db),
 ) -> list[CloneRunOut]:
     return get_clone_runs(
@@ -244,6 +245,7 @@ def list_clone_runs(
         target=target,
         user=user,
         start_date=start_date,
+        end_date=end_date,
     )
 
 

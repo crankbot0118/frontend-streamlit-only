@@ -94,6 +94,7 @@ def get_clone_runs(
     target: str | None = None,
     user: str | None = None,
     start_date: date | None = None,
+    end_date: date | None = None,
 ) -> list[dict]:
     """Fetch rows from ``clone_run_status`` ordered by ``last_update``, newest
     first, regardless of status. Rows with no ``last_update`` sort last;
@@ -112,8 +113,11 @@ def get_clone_runs(
         conditions.append("cr.user_name = :user")
         params["user"] = user
     if start_date:
-        conditions.append("cr.start_date::date = :start_date")
+        conditions.append("cr.start_date::date >= :start_date")
         params["start_date"] = start_date
+    if end_date:
+        conditions.append("cr.start_date::date <= :end_date")
+        params["end_date"] = end_date
 
     where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
     query = text(

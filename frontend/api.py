@@ -181,6 +181,7 @@ def get_runs(
     target: str | None = None,
     user: str | None = None,
     start_date: date | None = None,
+    end_date: date | None = None,
 ) -> list[dict]:
     """Fetch clone runs (newest execution first), optionally filtered."""
     params: dict[str, str | int] = {"limit": limit if limit is not None else _MAX_RUN_LIMIT}
@@ -192,6 +193,8 @@ def get_runs(
         params["user"] = user
     if start_date:
         params["start_date"] = start_date.isoformat()
+    if end_date:
+        params["end_date"] = end_date.isoformat()
     query = urllib.parse.urlencode(params)
     return _as_list(_get_json(f"/api/v1/runs?{query}"), "runs", "latest_runs")
 
