@@ -1086,18 +1086,35 @@ _GLOBAL_CSS = f"""
       margin: 0;
       padding: 0;
       line-height: 1.25;
+      width: 100%;
   }}
   .ca-run-oneline {{
       display: flex;
       flex-wrap: nowrap;
       align-items: center;
+      justify-content: flex-start;
       gap: var(--ca-run-inline-gap);
+      width: 100%;
+      box-sizing: border-box;
       font-size: var(--ca-body-size);
       font-weight: 600;
       color: {BRAND_INK};
       line-height: 1.25;
       min-width: 0;
       min-height: var(--ca-run-card-line);
+  }}
+  .ca-run-oneline .ca-run-primary {{
+      display: inline-flex;
+      align-items: center;
+      gap: var(--ca-run-inline-gap);
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+  }}
+  .ca-run-oneline .ca-run-primary > span:not(.sep),
+  .ca-run-oneline .ca-run-primary .ca-badge {{
+      flex-shrink: 0;
+      white-space: nowrap;
   }}
   .ca-run-oneline .sep {{
       color: #c2c7cc;
@@ -1113,12 +1130,7 @@ _GLOBAL_CSS = f"""
       color: {BRAND_ORANGE};
       margin: 0 0.12rem;
   }}
-  .ca-run-oneline > span:not(.sep):not(.ca-run-meta-part),
-  .ca-run-oneline .ca-badge {{
-      flex-shrink: 0;
-      white-space: nowrap;
-  }}
-  .ca-run-oneline .ca-badge {{
+  .ca-run-oneline .ca-run-primary .ca-badge {{
       padding: 0.04rem 0.34rem;
       font-size: calc(var(--ca-caption-size) * 0.88);
       line-height: 1.15;
@@ -1126,20 +1138,17 @@ _GLOBAL_CSS = f"""
   .ca-run-oneline .ca-run-meta-part {{
       display: inline-flex;
       align-items: center;
+      justify-content: flex-end;
       gap: var(--ca-run-inline-gap);
-      flex: 0 1 auto;
-      min-width: 0;
-      max-width: 100%;
-      overflow: hidden;
+      flex: 0 0 auto;
+      margin-left: auto;
+      padding-right: 0.12rem;
       font-size: var(--ca-run-meta-size);
       font-weight: 400;
       font-style: italic;
       color: #7a8086;
-  }}
-  .ca-run-oneline .ca-run-meta-part .ca-run-metaline:last-of-type {{
-      overflow: hidden;
-      text-overflow: ellipsis;
-      min-width: 0;
+      text-align: right;
+      white-space: nowrap;
   }}
   .ca-run-oneline .ca-run-meta-part .sep {{
       font-style: normal;
@@ -2209,7 +2218,8 @@ def render_run_card(run: dict) -> bool:
         )
     info_html = (
         f'<div class="ca-run"><div class="ca-run-oneline" '
-        f'style="display:flex;align-items:center;min-height:1.65rem;line-height:1.25;">'
+        f'style="display:flex;align-items:center;width:100%;min-height:1.65rem;line-height:1.25;">'
+        f'<span class="ca-run-primary">'
         f'<span class="ca-run-client">{_esc(client)}</span>'
         f'<span class="sep">&middot;</span>'
         f'<span>Run #{_esc(rid)}</span>'
@@ -2220,7 +2230,7 @@ def render_run_card(run: dict) -> bool:
         f'<span>{_esc(run.get("user_name", "—"))}</span>'
         f'<span class="sep">&middot;</span>'
         f'{status_badge_html(run.get("status", ""))}'
-        f'<span class="sep">&middot;</span>'
+        f'</span>'
         f'<span class="ca-run-meta-part">'
         f'<span class="ca-run-metaline">'
         f'<span class="mi mi-start">&#9654;</span> Started {started_html(run.get("start_date"))}'
