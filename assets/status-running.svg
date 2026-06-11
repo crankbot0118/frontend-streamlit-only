@@ -1,8 +1,5 @@
 <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
   <circle cx="26" cy="26" r="22" fill="#1a6fdb"/>
-  <g>
-    <circle cx="26" cy="26" r="22" stroke="#ffffff" stroke-width="3.5" stroke-dasharray="28 70" stroke-linecap="round" fill="none" opacity="0.4"/>
-    <animateTransform attributeName="transform" type="rotate" from="0 26 26" to="360 26 26" dur="1.1s" repeatCount="indefinite"/>
-  </g>
+  <circle cx="26" cy="26" r="22" stroke="#ffffff" stroke-width="3.5" stroke-dasharray="28 70" stroke-linecap="round" fill="none" opacity="0.4"/>
   <circle cx="26" cy="26" r="8" fill="#fff"/>
 </svg>

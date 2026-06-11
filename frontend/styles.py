@@ -1759,17 +1759,9 @@ _GLOBAL_CSS = f"""
       object-fit: contain;
       display: block;
   }}
-  .ca-step-status-img--running {{
+  .ca-step-status-wrap {{
       flex: 0 0 auto;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
       line-height: 0;
-  }}
-  .ca-step-status-img--running svg {{
-      display: block;
-      width: 100%;
-      height: 100%;
   }}
   .ca-step-more {{
       flex: 0 0 auto;
@@ -2235,7 +2227,7 @@ def step_detail_dialog_error_html(message: str) -> str:
 # Status -> PNG asset in the repo-root ``assets/`` folder. Used on the run
 # details step rows in place of the text badge.
 STATUS_ASSETS = {
-    "COMPLETED":"status-completed.svg",
+    "COMPLETED": "status-completed.svg",
     "RUNNING": "status-running.svg",
     "PENDING": "status-pending.svg",
     "FAILED": "status-failed.svg",
@@ -2243,48 +2235,76 @@ STATUS_ASSETS = {
     "ABORTED": "status-aborted.svg",
 }
 
+# Glow ring colors matched to each status SVG (inline styles — ``st.html`` iframes
+# do not inherit the app stylesheet).
+STATUS_GLOW = {
+    "COMPLETED": ("rgba(30, 122, 70, 0.55)", "rgba(30, 122, 70, 0.32)"),
+    "RUNNING": ("rgba(26, 111, 219, 0.6)", "rgba(26, 111, 219, 0.38)"),
+    "PENDING": ("rgba(217, 127, 0, 0.55)", "rgba(217, 127, 0, 0.32)"),
+    "FAILED": ("rgba(192, 57, 43, 0.55)", "rgba(192, 57, 43, 0.32)"),
+    "SKIPPED": ("rgba(46, 125, 50, 0.55)", "rgba(46, 125, 50, 0.32)"),
+    "ABORTED": ("rgba(192, 57, 43, 0.55)", "rgba(192, 57, 43, 0.32)"),
+}
 
-def status_image_html(status: str, size: int = STATUS_ICON_PX) -> str:
-    """Return a square status icon (falls back to text badge).
 
-    The icons are square, so a fixed ``size`` keeps every icon — and the
-    function name beside it — aligned in a clean vertical column across rows.
-    RUNNING uses an inline SVG so the spinner animates inside ``st.html`` iframes.
-    """
-    key = (status or "").upper()
-    if key == "RUNNING":
-        label = _esc((status or "unknown").title())
-        return (
-            f'<span class="ca-step-status-img ca-step-status-img--running" '
-            f'style="width:{size}px;height:{size}px;" '
-            f'title="{label}" aria-label="{label}" role="img">'
-            f'<svg width="{size}" height="{size}" viewBox="0 0 52 52" '
-            f'fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
-            f'<circle cx="26" cy="26" r="22" fill="#1a6fdb"/>'
-            f'<g>'
-            f'<circle cx="26" cy="26" r="22" stroke="#ffffff" stroke-width="3.5" '
-            f'stroke-dasharray="28 70" stroke-linecap="round" fill="none" opacity="0.4"/>'
-            f'<animateTransform attributeName="transform" type="rotate" '
-            f'from="0 26 26" to="360 26 26" dur="1.1s" repeatCount="indefinite"/>'
-            f"</g>"
-            f'<circle cx="26" cy="26" r="8" fill="#fff"/>'
-            f"</svg></span>"
+def _status_glow_html(key: str, size: int) -> tuple[str, str]:
+    """Return optional ``<style>`` tag and inline wrapper styles for a status glow."""
+    colors = STATUS_GLOW.get(key)
+    if not colors:
+        return "", (
+            f"display:inline-flex;align-items:center;justify-content:center;"
+            f"flex:0 0 auto;width:{size}px;height:{size}px;"
         )
 
+    ring, halo = colors
+    wrap_size = size + 4
+    if key == "RUNNING":
+        style_tag = (
+            "<style>"
+            "@keyframes ca-status-run-pulse{"
+            f"0%,100%{{box-shadow:0 0 0 1.5px {ring},0 0 6px {halo};}}"
+            f"50%{{box-shadow:0 0 0 2.5px {ring},0 0 11px {halo};}}"
+            "}"
+            "</style>"
+        )
+        wrap_style = (
+            f"display:inline-flex;align-items:center;justify-content:center;"
+            f"flex:0 0 auto;width:{wrap_size}px;height:{wrap_size}px;border-radius:50%;"
+            f"animation:ca-status-run-pulse 1.4s ease-in-out infinite;"
+        )
+        return style_tag, wrap_style
+
+    wrap_style = (
+        f"display:inline-flex;align-items:center;justify-content:center;"
+        f"flex:0 0 auto;width:{wrap_size}px;height:{wrap_size}px;border-radius:50%;"
+        f"box-shadow:0 0 0 1.5px {ring},0 0 7px {halo};"
+    )
+    return "", wrap_style
+
+
+def status_image_html(status: str, size: int = STATUS_ICON_PX) -> str:
+    """Return a square status icon with a colored glow ring (falls back to text badge).
+
+    Glow styles are inlined because step rows render inside ``st.html`` iframes.
+    """
+    key = (status or "").upper()
     filename = STATUS_ASSETS.get(key)
     if not filename:
         return status_badge_html(status)
     try:
         uri = _asset_data_uri(filename)
     except OSError:
-        # Asset missing/unreadable on this host — degrade to the text badge
-        # rather than crashing the whole page.
         return status_badge_html(status)
     label = _esc((status or "unknown").title())
+    style_tag, wrap_style = _status_glow_html(key, size)
     return (
+        f"{style_tag}"
+        f'<span class="ca-step-status-wrap ca-step-status-wrap--{key.lower()}" '
+        f'style="{wrap_style}">'
         f'<img class="ca-step-status-img" src="{uri}" '
         f'alt="{label}" title="{label}" '
-        f'style="width:{size}px;height:{size}px;" />'
+        f'style="width:{size}px;height:{size}px;display:block;object-fit:contain;" />'
+        f"</span>"
     )
 
 
