@@ -235,26 +235,26 @@ if run:
                     """
                 )
                 with st.container(key="detail-actions"):
-                if st.button(
-                    "Abort",
-                    key="detail_abort",
-                    type="secondary",
-                    icon=":material/stop:",
-                    disabled=not can_abort,
-                    help=abort_help,
-                ):
-                    if not can_abort:
-                        show_error(
-                            "Abort is only allowed when clone run status is FAILED.",
-                            context="Cannot abort run",
-                        )
-                    else:
-                        try:
-                            abort_run(run_id, failed_step_id)
-                            st.session_state.pop("selected_run", None)
-                            st.rerun()
-                        except Exception as exc:
-                            show_error(exc, context="Could not abort run")
+                    if st.button(
+                        "Abort",
+                        key="detail_abort",
+                        type="secondary",
+                        icon=":material/stop:",
+                        disabled=not can_abort,
+                        help=abort_help,
+                    ):
+                        if not can_abort:
+                            show_error(
+                                "Abort is only allowed when clone run status is FAILED.",
+                                context="Cannot abort run",
+                            )
+                        else:
+                            try:
+                                abort_run(run_id, failed_step_id)
+                                st.session_state.pop("selected_run", None)
+                                st.rerun()
+                            except Exception as exc:
+                                show_error(exc, context="Could not abort run")
 
             with st.container(key="ca-detail-meta-row"):
                 col_meta, col_dl, col_ref = st.columns(
