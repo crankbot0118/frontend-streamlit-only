@@ -65,8 +65,9 @@ _GLOBAL_CSS = f"""
       --secondary-background-color: #f6f7f8;
       --text-color: {BRAND_INK};
       --ca-detail-inline-gap: 0.45rem;
-      --ca-page-inset-top: 0.75rem;
+      --ca-page-inset-top: 0.35rem;
       --ca-sidebar-inset-x: 0.45rem;
+      --ca-header-row-height: 2rem;
       /* Type scale — all page text derives from the heading size. */
       --ca-title-size: 1.75rem;
       --ca-subtitle-size: var(--ca-body-size);
@@ -122,13 +123,27 @@ _GLOBAL_CSS = f"""
       visibility: hidden !important;
   }}
 
-  /* Pull the page content to the very top, no wasted space, and trim the
-     wide left/right gutters so content sits closer to the sidebar. */
+  /* Pull content flush to the top; padding lives on block-container only. */
+  section.main > .block-container {{
+      padding-top: var(--ca-page-inset-top) !important;
+      padding-bottom: 1.25rem !important;
+      padding-left: 1.25rem !important;
+      padding-right: 1.5rem !important;
+      max-width: none !important;
+  }}
+
   [data-testid="stMainBlockContainer"] {{
-      padding-top: var(--ca-page-inset-top);
-      padding-bottom: 2rem;
-      padding-left: 1.25rem;
-      padding-right: 1.5rem;
+      padding: 0 !important;
+      max-width: none !important;
+  }}
+
+  [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] {{
+      gap: 0.35rem !important;
+  }}
+
+  [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {{
+      margin-top: 0 !important;
+      padding-top: 0 !important;
   }}
 
   /* Collapse the empty default header bar that pushes content down. */
@@ -182,29 +197,46 @@ _GLOBAL_CSS = f"""
       padding-bottom: 0 !important;
   }}
 
-  /* Logo block, left-aligned — width stays fixed while sidebar narrows. */
+  [data-testid="stSidebarUserContent"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {{
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+  }}
+
+  /* Logo block — fixed row height matches page title row. */
   .ca-logo {{
-      margin: 0 0 0.45rem 0;
+      margin: 0 0 0.35rem 0;
       padding: 0;
       flex: 0 0 auto;
+      min-height: var(--ca-header-row-height);
+      display: flex;
+      align-items: center;
   }}
 
   .ca-logo img {{
       width: {LOGO_WIDTH_PX}px;
-      min-width: {LOGO_WIDTH_PX}px;
-      max-width: none;
-      height: auto;
+      min-width: 0;
+      max-width: {LOGO_WIDTH_PX}px;
+      height: var(--ca-header-row-height);
+      max-height: var(--ca-header-row-height);
+      object-fit: contain;
+      object-position: left center;
       display: block;
   }}
 
-  /* Page title row, flush to the top. */
+  /* Page title block — same vertical slot as the logo. */
+  .ca-page-header {{
+      margin: 0;
+      padding: 0;
+  }}
+
   .ca-title {{
       display: flex;
       align-items: center;
       gap: 0.65rem;
-      margin: 0 0 0.25rem 0;
+      margin: 0;
       padding: 0;
-      line-height: 1.1;
+      min-height: var(--ca-header-row-height);
+      line-height: 1;
   }}
 
   .ca-title h1 {{
@@ -214,24 +246,26 @@ _GLOBAL_CSS = f"""
       font-weight: 700;
       letter-spacing: -0.02em;
       color: {BRAND_INK};
+      line-height: 1;
   }}
 
-  /* Accent bar under the title. */
+  /* Accent bar under the title block. */
   .ca-title-rule {{
       height: 2px;
       width: 100%;
       border: none;
-      margin: 0.3rem 0 0.45rem 0;
+      margin: 0.08rem 0 0.12rem 0;
       border-radius: 999px;
       background: linear-gradient(90deg, {BRAND_ORANGE} 0%, rgba(232,117,17,0.15) 100%);
   }}
 
   .ca-subtitle {{
-      margin: 0 0 0.15rem 0;
+      margin: 0;
+      padding: 0 0 0.06rem 0;
       color: #5b6166;
       font-size: var(--ca-subtitle-size);
       font-weight: 400;
-      line-height: 1.5;
+      line-height: 1.35;
       max-width: 52rem;
   }}
 
@@ -489,8 +523,8 @@ _GLOBAL_CSS = f"""
   /* ---------- Run History filters + Execute Clone form ---------- */
   .st-key-ca-run-filters,
   .st-key-ca-execute-clone-form {{
-      margin-top: -0.35rem !important;
-      margin-bottom: 0.5rem;
+      margin-top: 0 !important;
+      margin-bottom: 0.25rem !important;
   }}
   .st-key-ca-run-filters [data-testid="stVerticalBlock"],
   .st-key-ca-execute-clone-form [data-testid="stVerticalBlock"] {{
@@ -1139,7 +1173,7 @@ _GLOBAL_CSS = f"""
   }}
   /* Tighter gap between meta row and orange accent bar on run details. */
   .st-key-ca-detail-header .ca-title-rule {{
-      margin: 0 0 0.35rem 0;
+      margin: 0.08rem 0 0.12rem 0;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] {{
       gap: 0.08rem !important;
@@ -2004,10 +2038,12 @@ def render_title(title: str, subtitle: str | None = None) -> None:
     subtitle_html = f'<p class="ca-subtitle">{subtitle}</p>' if subtitle else ""
     st.html(
         f"""
-        <div class="ca-title">
-          <h1>{title}</h1>
+        <div class="ca-page-header">
+          <div class="ca-title">
+            <h1>{title}</h1>
+          </div>
+          {subtitle_html}
+          <hr class="ca-title-rule" />
         </div>
-        {subtitle_html}
-        <hr class="ca-title-rule" />
         """
     )
