@@ -857,11 +857,12 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run cards (Run History) ---------- */
   .st-key-ca-runs {{
-      --ca-run-card-gap: 0.06rem;
-      --ca-run-card-pad-y: 0.16rem;
-      --ca-run-card-pad-x: 0.58rem;
-      --ca-run-card-pad-right: 2.55rem;
-      --ca-run-inline-gap: 0.26rem;
+      --ca-run-card-gap: 0.08rem;
+      --ca-run-card-pad-y: 0.28rem;
+      --ca-run-card-pad-x: 0.65rem;
+      --ca-run-card-pad-right: 0.45rem;
+      --ca-run-card-line: 1.65rem;
+      --ca-run-inline-gap: 0.28rem;
       margin-top: 0.18rem !important;
   }}
   .st-key-ca-runs > [data-testid="stVerticalBlock"],
@@ -888,11 +889,15 @@ _GLOBAL_CSS = f"""
   }}
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlock"],
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      align-items: center !important;
+      column-gap: 0.35rem !important;
       gap: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
       position: relative !important;
-      min-height: 0 !important;
+      min-height: var(--ca-run-card-line) !important;
       height: auto !important;
   }}
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
@@ -903,9 +908,18 @@ _GLOBAL_CSS = f"""
   }}
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child,
   [class*="st-key-runcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {{
+      grid-column: 1 !important;
       width: 100% !important;
-      flex: 0 0 auto !important;
+      min-width: 0 !important;
+      flex: 1 1 auto !important;
       min-height: 0 !important;
+      align-self: center !important;
+  }}
+  [class*="st-key-runcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.stButton),
+  [class*="st-key-runcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.stButton) {{
+      grid-column: 2 !important;
+      align-self: center !important;
+      justify-self: end !important;
   }}
   [class*="st-key-runcard_"] [data-testid="stMarkdownContainer"],
   [class*="st-key-runcard_"] [data-testid="stMarkdownContainer"] p {{
@@ -932,8 +946,9 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
       border: none !important;
-      min-height: 0 !important;
-      max-height: 1.4rem !important;
+      min-height: var(--ca-run-card-line) !important;
+      max-height: var(--ca-run-card-line) !important;
+      height: var(--ca-run-card-line) !important;
       overflow: hidden !important;
   }}
   [class*="st-key-runcard_"]:hover {{
@@ -941,47 +956,51 @@ _GLOBAL_CSS = f"""
       box-shadow: 0 1px 8px rgba(19, 21, 22, 0.06);
   }}
 
-  /* Redirect arrow — pinned inside reserved right gutter. */
+  /* Redirect arrow — same row as card details, right column of card grid. */
   [class*="st-key-runcard_"] [data-testid="stElementContainer"]:has(.stButton) {{
-      position: absolute !important;
-      right: 0.55rem;
-      top: 50%;
-      transform: translateY(-50%);
+      position: static !important;
       width: auto !important;
-      height: 0 !important;
+      height: auto !important;
       min-height: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
       overflow: visible !important;
       z-index: 3;
+      transform: none !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
   }}
   [class*="st-key-runcard_"] .stButton {{
       width: auto !important;
       margin: 0 !important;
       min-height: 0 !important;
+      display: flex !important;
+      align-items: center !important;
   }}
   [class*="st-key-runcard_"] .stButton button {{
       width: auto !important;
-      min-width: 1.5rem !important;
-      min-height: 1.5rem !important;
-      height: auto !important;
+      min-width: 1.65rem !important;
+      min-height: var(--ca-run-card-line) !important;
+      height: var(--ca-run-card-line) !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
       color: #8a9097;
-      padding: 0.2rem !important;
+      padding: 0 !important;
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
   }}
   [class*="st-key-runcard_"] .stButton button [data-testid="stIconMaterial"] {{
-      font-size: 1.1rem !important;
-      width: 1.1rem !important;
-      height: 1.1rem !important;
+      font-size: 1.2rem !important;
+      width: 1.2rem !important;
+      height: 1.2rem !important;
+      line-height: 1 !important;
   }}
   [class*="st-key-runcard_"] .stButton button svg {{
-      width: 1.1rem !important;
-      height: 1.1rem !important;
+      width: 1.2rem !important;
+      height: 1.2rem !important;
   }}
   [class*="st-key-runcard_"] .stButton button:hover {{
       background: transparent !important;
@@ -995,7 +1014,7 @@ _GLOBAL_CSS = f"""
   .ca-run {{
       margin: 0;
       padding: 0;
-      line-height: 1.2;
+      line-height: 1.25;
   }}
   .ca-run-oneline {{
       display: flex;
@@ -1005,8 +1024,9 @@ _GLOBAL_CSS = f"""
       font-size: var(--ca-body-size);
       font-weight: 600;
       color: {BRAND_INK};
-      line-height: 1.2;
+      line-height: 1.25;
       min-width: 0;
+      min-height: var(--ca-run-card-line);
   }}
   .ca-run-oneline .sep {{
       color: #c2c7cc;
@@ -2118,7 +2138,7 @@ def render_run_card(run: dict) -> bool:
         )
     info_html = (
         f'<div class="ca-run"><div class="ca-run-oneline" '
-        f'style="padding-right:1.5rem;box-sizing:border-box;">'
+        f'style="display:flex;align-items:center;min-height:1.65rem;line-height:1.25;">'
         f'<span class="ca-run-client">{_esc(client)}</span>'
         f'<span class="sep">&middot;</span>'
         f'<span>Run #{_esc(rid)}</span>'
