@@ -244,25 +244,38 @@ else:
             is_open = st.session_state.get(open_key, False)
             head_class = "ca-step-head ca-step-head--open" if is_open else "ca-step-head"
             with st.container(key=f"stepcard_{i}"):
-                st.html(
-                    f'<div class="{head_class}" '
-                    f'style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:18px;">'
-                    f'<div class="ca-step-left" style="display:flex;align-items:center;gap:8px;min-width:0;">'
-                    f'{status_image_html(step.get("status", ""), size=18)}'
-                    f'<span class="ca-step-name" style="font-size:14px;font-weight:600;line-height:1.25;">'
-                    f"{safe_name}</span>"
-                    f"</div>"
-                    f'<span class="ca-step-more">More actions</span>'
-                    f"</div>"
+                detail_col, arrow_col = st.columns(
+                    [1, 0.06],
+                    gap="small",
+                    vertical_alignment="center",
                 )
-                st.button(
-                    "",
-                    key=f"more_{run_id}_{i}",
-                    icon=":material/arrow_right:",
-                    help="More actions",
-                    on_click=_toggle_step,
-                    args=(open_key,),
-                )
+                with detail_col:
+                    st.html(
+                        f'<div class="{head_class}" '
+                        f'style="display:flex;align-items:center;justify-content:space-between;'
+                        f'gap:8px;width:100%;min-height:18px;">'
+                        f'<div class="ca-step-left" '
+                        f'style="display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 auto;">'
+                        f'{status_image_html(step.get("status", ""), size=18)}'
+                        f'<span class="ca-step-name" '
+                        f'style="font-size:14px;font-weight:600;line-height:1.25;">'
+                        f"{safe_name}</span>"
+                        f"</div>"
+                        f'<span class="ca-step-more" '
+                        f'style="flex:0 0 auto;font-size:13px;font-weight:600;color:#6b7177;'
+                        f'white-space:nowrap;margin-left:8px;">More actions</span>'
+                        f"</div>"
+                    )
+                with arrow_col:
+                    st.button(
+                        "",
+                        key=f"more_{run_id}_{i}",
+                        icon=":material/arrow_right:",
+                        help="More actions",
+                        type="tertiary",
+                        on_click=_toggle_step,
+                        args=(open_key,),
+                    )
                 if is_open:
                     with st.container(key=f"step_links_{i}"):
                         if st.button("Details", key=f"step_details_{run_id}_{i}"):

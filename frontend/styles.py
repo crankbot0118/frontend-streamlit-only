@@ -1597,7 +1597,7 @@ _GLOBAL_CSS = f"""
   .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
   .st-key-ca-steps [data-testid="stFragment"] > [data-testid="stVerticalBlock"],
   .st-key-ca-steps [data-testid="stVerticalBlock"]:has(> [class*="st-key-stepcard_"]) {{
-      gap: 6px !important;
+      gap: 4px !important;
       align-items: stretch !important;
       margin: 0 !important;
       padding: 0 !important;
@@ -1609,8 +1609,7 @@ _GLOBAL_CSS = f"""
       width: 100%;
   }}
 
-  /* Each step is a bordered card. Right padding reserves room for the toggle
-     arrow, which is pinned to the card's right edge (like Run History cards). */
+  /* Each step is a bordered card — detail row + arrow in columns. */
   [class*="st-key-stepcard_"] {{
       position: relative;
       border: 1px solid #e3e6e8;
@@ -1621,25 +1620,76 @@ _GLOBAL_CSS = f"""
   }}
 
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] {{
-      position: relative !important;
-  }}
-
-  /* Pin the expand control immediately (avoids one-frame stack before key CSS). */
-  [class*="st-key-stepcard_"] > [data-testid="stElementContainer"]:has(.stButton) {{
-      position: absolute !important;
-      right: 8px;
-      top: 8px;
-      width: auto !important;
-      height: 18px;
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      gap: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
-      z-index: 3;
+      position: relative !important;
+      min-height: 0 !important;
+      height: auto !important;
+  }}
+  [class*="st-key-stepcard_"] [data-testid="stHorizontalBlock"] {{
       display: flex !important;
-      align-items: center;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      align-items: center !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      gap: 0.25rem !important;
+      min-height: 0 !important;
+  }}
+  [class*="st-key-stepcard_"] [data-testid="column"] {{
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      min-height: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      margin: 0 !important;
+  }}
+  [class*="st-key-stepcard_"] [data-testid="column"]:first-child {{
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+      width: auto !important;
+  }}
+  [class*="st-key-stepcard_"] [data-testid="column"]:last-child {{
+      flex: 0 0 auto !important;
+      width: auto !important;
+      min-width: 1.5rem !important;
+      max-width: 1.75rem !important;
+      justify-content: center !important;
+  }}
+  [class*="st-key-stepcard_"] [data-testid="column"]:first-child [data-testid="stVerticalBlock"],
+  [class*="st-key-stepcard_"] [data-testid="column"]:first-child [data-testid="stElementContainer"] {{
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow: hidden !important;
+  }}
+  [class*="st-key-stepcard_"] [data-testid="column"]:last-child [data-testid="stVerticalBlock"],
+  [class*="st-key-stepcard_"] [data-testid="column"]:last-child [data-testid="stElementContainer"] {{
+      width: auto !important;
+      justify-content: center !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  [class*="st-key-stepcard_"] [data-testid="column"]:first-child [data-testid="stHtml"] iframe {{
+      display: block !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      background: transparent !important;
+      min-height: 18px !important;
+      max-height: 24px !important;
+      height: auto !important;
+      overflow: hidden !important;
   }}
 
-  /* Header row: name + status icon on the left, "More actions" on the right. */
+  /* Header row: name + status icon on the left, "More actions" before the arrow column. */
   .ca-step-head {{
       display: flex;
       align-items: center;
@@ -1667,10 +1717,12 @@ _GLOBAL_CSS = f"""
       display: block;
   }}
   .ca-step-more {{
-      font-size: 0.85rem;
+      flex: 0 0 auto;
+      font-size: 13px;
       font-weight: 600;
       color: #6b7177;
       white-space: nowrap;
+      margin-left: 8px;
   }}
   .ca-step-detail-panel {{
       display: grid;
@@ -1783,50 +1835,60 @@ _GLOBAL_CSS = f"""
       color: {BRAND_ORANGE} !important;
   }}
 
-  /* Expand/collapse arrow only — not Details or other step actions. */
-  [class*="st-key-stepcard_"] [class*="st-key-more_"],
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] > [data-testid="stElementContainer"] {{
-      position: absolute !important;
-      right: 8px;
-      top: 8px;
-      height: 18px;
-      display: flex;
-      align-items: center;
+  /* Expand/collapse arrow — right column only (not Details / Download Step Log). */
+  [class*="st-key-stepcard_"] [data-testid="column"]:last-child [data-testid="stElementContainer"]:has(.stButton) {{
+      position: static !important;
+      width: auto !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+  }}
+  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton {{
       width: auto !important;
       margin: 0 !important;
-      z-index: 3;
-  }}
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton {{
-      width: auto !important;
-      margin: 0 !important;
-  }}
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button {{
-      width: auto !important;
       min-height: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+  }}
+  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton button {{
+      width: auto !important;
+      min-width: 1.25rem !important;
+      min-height: 18px !important;
+      height: 18px !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
       color: #8a9097;
-      padding: 0.1rem;
+      padding: 0 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
   }}
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button [data-testid="stIconMaterial"] {{
-      font-size: 1.9rem !important;
-      width: 1.9rem !important;
-      height: 1.9rem !important;
+  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton button [data-testid="stMarkdownContainer"] {{
+      display: none !important;
+  }}
+  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton button [data-testid="stIconMaterial"] {{
+      font-size: 1.15rem !important;
+      width: 1.15rem !important;
+      height: 1.15rem !important;
       line-height: 1 !important;
       transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   }}
-  [class*="st-key-stepcard_"]:has(.ca-step-head--open) [class*="st-key-more_"] .stButton button [data-testid="stIconMaterial"] {{
+  [class*="st-key-stepcard_"]:has(.ca-step-head--open) [data-testid="column"]:last-child .stButton button [data-testid="stIconMaterial"] {{
       transform: rotate(90deg);
   }}
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button svg {{
-      width: 1.9rem !important;
-      height: 1.9rem !important;
+  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton button svg {{
+      width: 1.15rem !important;
+      height: 1.15rem !important;
   }}
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover,
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover [data-testid="stIconMaterial"],
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover svg {{
+  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton button:hover,
+  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton button:hover [data-testid="stIconMaterial"],
+  [class*="st-key-stepcard_"] [data-testid="column"]:last-child .stButton button:hover svg {{
       color: {BRAND_ORANGE} !important;
+      fill: {BRAND_ORANGE} !important;
   }}
 
   /* ---------- Step detail dialog — translucent overlay + strict light panel ---------- */
