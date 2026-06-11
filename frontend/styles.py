@@ -144,7 +144,7 @@ _GLOBAL_CSS = f"""
       --ca-header-row-height: 2rem;
       /* Type scale — all page text derives from the heading size. */
       --ca-title-size: 1.75rem;
-      --ca-subtitle-size: var(--ca-body-size);
+      --ca-subtitle-size: calc(var(--ca-title-size) * 0.43);   /* ~0.75rem subtitle */
       --ca-body-size: calc(var(--ca-title-size) * 0.5);         /* ~0.875rem body */
       --ca-label-size: calc(var(--ca-title-size) * 0.486);        /* ~0.85rem labels */
       --ca-caption-size: calc(var(--ca-title-size) * 0.457);    /* ~0.8rem captions */
@@ -349,6 +349,7 @@ _GLOBAL_CSS = f"""
       color: #5b6166;
       font-size: var(--ca-subtitle-size);
       font-weight: 400;
+      font-style: italic;
       line-height: 1.25;
       max-width: 52rem;
   }}
