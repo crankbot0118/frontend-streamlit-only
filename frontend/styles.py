@@ -338,18 +338,18 @@ _GLOBAL_CSS = f"""
       height: 2px;
       width: 100%;
       border: none;
-      margin: 0.08rem 0 0.12rem 0;
+      margin: 0.04rem 0 0.06rem 0;
       border-radius: 999px;
       background: linear-gradient(90deg, {BRAND_ORANGE} 0%, rgba(232,117,17,0.15) 100%);
   }}
 
   .ca-subtitle {{
       margin: 0;
-      padding: 0 0 0.06rem 0;
+      padding: 0;
       color: #5b6166;
       font-size: var(--ca-subtitle-size);
       font-weight: 400;
-      line-height: 1.35;
+      line-height: 1.25;
       max-width: 52rem;
   }}
 
@@ -619,12 +619,12 @@ _GLOBAL_CSS = f"""
   /* ---------- Run History filters + Execute Clone form ---------- */
   .st-key-ca-run-filters,
   .st-key-ca-execute-clone-form {{
-      margin-top: 0 !important;
-      margin-bottom: 0.25rem !important;
+      margin-top: -0.08rem !important;
+      margin-bottom: 0.06rem !important;
   }}
   .st-key-ca-run-filters [data-testid="stVerticalBlock"],
   .st-key-ca-execute-clone-form [data-testid="stVerticalBlock"] {{
-      gap: 0.25rem !important;
+      gap: 0.12rem !important;
   }}
   .st-key-ca-run-filters [data-testid="stHorizontalBlock"],
   .st-key-ca-execute-clone-form [data-testid="stHorizontalBlock"] {{
@@ -857,12 +857,12 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run cards (Run History) ---------- */
   .st-key-ca-runs {{
-      --ca-run-card-gap: 0.12rem;
-      --ca-run-card-pad-y: 0.2rem;
-      --ca-run-card-pad-x: 0.62rem;
-      --ca-run-card-pad-right: 2rem;
-      --ca-run-inline-gap: 0.28rem;
-      margin-top: 0.12rem !important;
+      --ca-run-card-gap: 0.1rem;
+      --ca-run-card-pad-y: 0.16rem;
+      --ca-run-card-pad-x: 0.58rem;
+      --ca-run-card-pad-right: 1.85rem;
+      --ca-run-inline-gap: 0.26rem;
+      margin-top: -0.06rem !important;
   }}
   .st-key-ca-runs > [data-testid="stVerticalBlock"],
   .st-key-ca-runs > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
@@ -912,6 +912,29 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
       line-height: 1.2 !important;
+  }}
+  [class*="st-key-runcard_"] [data-testid="stElementContainer"]:has([data-testid="stHtml"]) {{
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      line-height: 0 !important;
+      flex: 0 0 auto !important;
+  }}
+  [class*="st-key-runcard_"] [data-testid="stHtml"] {{
+      display: block !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 0 !important;
+  }}
+  [class*="st-key-runcard_"] [data-testid="stHtml"] iframe {{
+      display: block !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      min-height: 0 !important;
+      max-height: 1.35rem !important;
+      overflow: hidden !important;
   }}
   [class*="st-key-runcard_"]:hover {{
       border-color: {BRAND_ORANGE};
@@ -2082,38 +2105,37 @@ def render_run_card(run: dict) -> bool:
             f'<span class="sep">&middot;</span>'
             f'<span class="ca-run-metaline">Failed step: {_esc(failed_step)}</span>'
         )
-    info_html = f"""
-        <div class="ca-run">
-          <div class="ca-run-oneline">
-            <span class="ca-run-client">{_esc(client)}</span>
-            <span class="sep">&middot;</span>
-            <span>Run #{_esc(rid)}</span>
-            <span class="sep">&middot;</span>
-            <span>{_esc(run.get('source_name', '—'))}<span class="arrow">&#8594;</span>{_esc(run.get('target_name', '—'))}</span>
-            <span class="sep">&middot;</span>
-            <span>{_esc(run.get('user_name', '—'))}</span>
-            <span class="sep">&middot;</span>
-            {status_badge_html(run.get('status', ''))}
-            <span class="sep">&middot;</span>
-            <span class="ca-run-meta-part">
-              <span class="ca-run-metaline">
-                <span class="mi mi-start">&#9654;</span> Started {started_html(run.get('start_date'))}
-              </span>
-              <span class="sep">&middot;</span>
-              <span class="ca-run-metaline">
-                <span class="mi mi-upd">&#8635;</span> {relative_update_html(run.get('last_update'))}
-              </span>
-              <span class="sep">&middot;</span>
-              <span class="ca-run-metaline">
-                <span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}
-              </span>
-              {failed_step_html}
-            </span>
-          </div>
-        </div>
-    """
+    info_html = (
+        f'<div class="ca-run"><div class="ca-run-oneline">'
+        f'<span class="ca-run-client">{_esc(client)}</span>'
+        f'<span class="sep">&middot;</span>'
+        f'<span>Run #{_esc(rid)}</span>'
+        f'<span class="sep">&middot;</span>'
+        f'<span>{_esc(run.get("source_name", "—"))}'
+        f'<span class="arrow">&#8594;</span>{_esc(run.get("target_name", "—"))}</span>'
+        f'<span class="sep">&middot;</span>'
+        f'<span>{_esc(run.get("user_name", "—"))}</span>'
+        f'<span class="sep">&middot;</span>'
+        f'{status_badge_html(run.get("status", ""))}'
+        f'<span class="sep">&middot;</span>'
+        f'<span class="ca-run-meta-part">'
+        f'<span class="ca-run-metaline">'
+        f'<span class="mi mi-start">&#9654;</span> Started {started_html(run.get("start_date"))}'
+        f'</span>'
+        f'<span class="sep">&middot;</span>'
+        f'<span class="ca-run-metaline">'
+        f'<span class="mi mi-upd">&#8635;</span> {relative_update_html(run.get("last_update"))}'
+        f'</span>'
+        f'<span class="sep">&middot;</span>'
+        f'<span class="ca-run-metaline">'
+        f'<span class="mi mi-dur">&#9201;</span> '
+        f'{fmt_duration(run.get("start_date"), run.get("last_update"))}'
+        f'</span>'
+        f'{failed_step_html}'
+        f'</span></div></div>'
+    )
     with st.container(key=f"runcard_{rid}"):
-        st.markdown(info_html, unsafe_allow_html=True)
+        st.html(info_html)
         return st.button(
             "",
             key=f"open_run_{rid}",
