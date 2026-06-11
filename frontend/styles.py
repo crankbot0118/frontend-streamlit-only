@@ -620,7 +620,7 @@ _GLOBAL_CSS = f"""
   .st-key-ca-run-filters,
   .st-key-ca-execute-clone-form {{
       margin-top: -0.08rem !important;
-      margin-bottom: 0.06rem !important;
+      margin-bottom: 0.32rem !important;
   }}
   .st-key-ca-run-filters [data-testid="stVerticalBlock"],
   .st-key-ca-execute-clone-form [data-testid="stVerticalBlock"] {{
@@ -857,12 +857,12 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run cards (Run History) ---------- */
   .st-key-ca-runs {{
-      --ca-run-card-gap: 0.1rem;
+      --ca-run-card-gap: 0.06rem;
       --ca-run-card-pad-y: 0.16rem;
       --ca-run-card-pad-x: 0.58rem;
-      --ca-run-card-pad-right: 1.85rem;
+      --ca-run-card-pad-right: 2.55rem;
       --ca-run-inline-gap: 0.26rem;
-      margin-top: -0.06rem !important;
+      margin-top: 0.18rem !important;
   }}
   .st-key-ca-runs > [data-testid="stVerticalBlock"],
   .st-key-ca-runs > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
@@ -933,7 +933,7 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       border: none !important;
       min-height: 0 !important;
-      max-height: 1.35rem !important;
+      max-height: 1.4rem !important;
       overflow: hidden !important;
   }}
   [class*="st-key-runcard_"]:hover {{
@@ -941,10 +941,10 @@ _GLOBAL_CSS = f"""
       box-shadow: 0 1px 8px rgba(19, 21, 22, 0.06);
   }}
 
-  /* Redirect arrow — out of flow, zero vertical footprint. */
+  /* Redirect arrow — pinned inside reserved right gutter. */
   [class*="st-key-runcard_"] [data-testid="stElementContainer"]:has(.stButton) {{
       position: absolute !important;
-      right: 0.35rem;
+      right: 0.55rem;
       top: 50%;
       transform: translateY(-50%);
       width: auto !important;
@@ -962,13 +962,17 @@ _GLOBAL_CSS = f"""
   }}
   [class*="st-key-runcard_"] .stButton button {{
       width: auto !important;
-      min-height: 0 !important;
+      min-width: 1.5rem !important;
+      min-height: 1.5rem !important;
       height: auto !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
       color: #8a9097;
-      padding: 0.15rem !important;
+      padding: 0.2rem !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
   }}
   [class*="st-key-runcard_"] .stButton button [data-testid="stIconMaterial"] {{
       font-size: 1.1rem !important;
@@ -1034,10 +1038,17 @@ _GLOBAL_CSS = f"""
       gap: var(--ca-run-inline-gap);
       flex: 0 1 auto;
       min-width: 0;
+      max-width: 100%;
+      overflow: hidden;
       font-size: var(--ca-run-meta-size);
       font-weight: 400;
       font-style: italic;
       color: #7a8086;
+  }}
+  .ca-run-oneline .ca-run-meta-part .ca-run-metaline:last-of-type {{
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
   }}
   .ca-run-oneline .ca-run-meta-part .sep {{
       font-style: normal;
@@ -2106,7 +2117,8 @@ def render_run_card(run: dict) -> bool:
             f'<span class="ca-run-metaline">Failed step: {_esc(failed_step)}</span>'
         )
     info_html = (
-        f'<div class="ca-run"><div class="ca-run-oneline">'
+        f'<div class="ca-run"><div class="ca-run-oneline" '
+        f'style="padding-right:1.5rem;box-sizing:border-box;">'
         f'<span class="ca-run-client">{_esc(client)}</span>'
         f'<span class="sep">&middot;</span>'
         f'<span>Run #{_esc(rid)}</span>'
