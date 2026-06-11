@@ -12,11 +12,12 @@ render_title(
 if "ai_chat_messages" not in st.session_state:
     st.session_state.ai_chat_messages = []
 
-for message in st.session_state.ai_chat_messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+with st.container(key="ca-ai-chatbox"):
+    for message in st.session_state.ai_chat_messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
-if prompt := st.chat_input("Ask about clone automation…"):
+if prompt := st.chat_input("Ask about clone automation…", key="ca_ai_chat_input"):
     st.session_state.ai_chat_messages.append({"role": "user", "content": prompt})
     st.session_state.ai_chat_messages.append(
         {

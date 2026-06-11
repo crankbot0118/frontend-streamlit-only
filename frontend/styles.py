@@ -2209,6 +2209,87 @@ _GLOBAL_CSS = f"""
       padding: 0.4rem 0.55rem;
       font-size: 0.76rem;
   }}
+
+  /* ---------- AI Chatbox ---------- */
+  .st-key-ca-ai-chatbox {{
+      margin-top: 0.35rem !important;
+  }}
+  .st-key-ca-ai-chatbox [data-testid="stVerticalBlock"] {{
+      gap: 0.65rem !important;
+  }}
+  .st-key-ca-ai-chatbox [data-testid="stChatMessage"] {{
+      background: transparent !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+  }}
+  .st-key-ca-ai-chatbox [data-testid="stChatMessageContent"] {{
+      color: {BRAND_INK} !important;
+      font-size: var(--ca-body-size) !important;
+  }}
+
+  /* Bottom chat bar — light shell matching main content area. */
+  [data-testid="stBottom"]:has(.st-key-ca_ai_chat_input) {{
+      background: #ffffff !important;
+      border-top: 1px solid #e3e6e8 !important;
+      box-shadow: 0 -1px 8px rgba(19, 21, 22, 0.04) !important;
+  }}
+  [data-testid="stBottom"]:has(.st-key-ca_ai_chat_input) > div {{
+      background: #ffffff !important;
+  }}
+
+  .st-key-ca_ai_chat_input [data-testid="stChatInput"] {{
+      background-color: #ffffff !important;
+      border: 1px solid #e3e6e8 !important;
+      border-radius: 8px !important;
+      box-shadow: none !important;
+      color: {BRAND_INK} !important;
+  }}
+  .st-key-ca_ai_chat_input [data-testid="stChatInput"]:focus-within {{
+      background-color: #ffffff !important;
+      border-color: rgba(232, 117, 17, 0.45) !important;
+      box-shadow: 0 0 0 1px rgba(232, 117, 17, 0.12) !important;
+  }}
+  .st-key-ca_ai_chat_input [data-testid="stChatInputTextArea"],
+  .st-key-ca_ai_chat_input textarea {{
+      color: {BRAND_INK} !important;
+      background: transparent !important;
+      caret-color: {BRAND_ORANGE} !important;
+  }}
+  .st-key-ca_ai_chat_input textarea::placeholder {{
+      color: #9aa0a6 !important;
+      opacity: 1 !important;
+  }}
+
+  /* Send arrow — sidebar-style orange hover. */
+  .st-key-ca_ai_chat_input [data-testid="stChatInputSubmitButton"] {{
+      border-radius: 5px !important;
+      min-width: 1.85rem !important;
+      min-height: 1.85rem !important;
+      transition: background-color 0.15s ease, color 0.15s ease !important;
+  }}
+  .st-key-ca_ai_chat_input [data-testid="stChatInputSubmitButton"]:not(:disabled) {{
+      background: transparent !important;
+      color: #9aa0a6 !important;
+  }}
+  .st-key-ca_ai_chat_input [data-testid="stChatInputSubmitButton"]:not(:disabled) svg {{
+      color: #9aa0a6 !important;
+      fill: #9aa0a6 !important;
+  }}
+  .st-key-ca_ai_chat_input [data-testid="stChatInputSubmitButton"]:not(:disabled):hover,
+  .st-key-ca_ai_chat_input [data-testid="stChatInputSubmitButton"]:not(:disabled):focus-visible {{
+      background: var(--ca-nav-highlight-bg) !important;
+      color: {BRAND_ORANGE} !important;
+  }}
+  .st-key-ca_ai_chat_input [data-testid="stChatInputSubmitButton"]:not(:disabled):hover svg,
+  .st-key-ca_ai_chat_input [data-testid="stChatInputSubmitButton"]:not(:disabled):focus-visible svg {{
+      color: {BRAND_ORANGE} !important;
+      fill: {BRAND_ORANGE} !important;
+  }}
+  .st-key-ca_ai_chat_input [data-testid="stChatInputSubmitButton"]:disabled {{
+      background: transparent !important;
+      color: #c4c8cc !important;
+      opacity: 1 !important;
+  }}
 </style>
 """
 
