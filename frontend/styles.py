@@ -2235,13 +2235,11 @@ STATUS_ASSETS = {
     "ABORTED": "status-aborted.svg",
 }
 
-# Glow pulse RGB values — same expanding-ring effect as the sidebar live dot.
+# Glow pulse RGB — PENDING, RUNNING, FAILED, ABORTED only (sidebar live-dot style).
 STATUS_GLOW_RGB = {
-    "COMPLETED": (34, 197, 94),
     "RUNNING": (26, 111, 219),
     "PENDING": (217, 127, 0),
     "FAILED": (239, 68, 68),
-    "SKIPPED": (46, 125, 50),
     "ABORTED": (239, 68, 68),
 }
 
