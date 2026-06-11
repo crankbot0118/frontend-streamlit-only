@@ -198,7 +198,7 @@ if run:
                             show_error(exc, context="Could not load run log")
                     else:
                         st.markdown(
-                            '<span class="ca-step-link-disabled">Download Log</span>',
+                            '<span class="ca-step-link-disabled">View Log</span>',
                             unsafe_allow_html=True,
                         )
             with col_ref:
@@ -293,7 +293,7 @@ else:
                         else:
                             st.markdown(
                                 '<span class="ca-step-link-disabled">'
-                                "Download Step Log</span>",
+                                "View Step Log</span>",
                                 unsafe_allow_html=True,
                             )
 
