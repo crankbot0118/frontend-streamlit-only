@@ -2235,51 +2235,43 @@ STATUS_ASSETS = {
     "ABORTED": "status-aborted.svg",
 }
 
-# Glow ring colors matched to each status SVG (inline styles — ``st.html`` iframes
-# do not inherit the app stylesheet).
-STATUS_GLOW = {
-    "COMPLETED": ("rgba(30, 122, 70, 0.55)", "rgba(30, 122, 70, 0.32)"),
-    "RUNNING": ("rgba(26, 111, 219, 0.6)", "rgba(26, 111, 219, 0.38)"),
-    "PENDING": ("rgba(217, 127, 0, 0.55)", "rgba(217, 127, 0, 0.32)"),
-    "FAILED": ("rgba(192, 57, 43, 0.55)", "rgba(192, 57, 43, 0.32)"),
-    "SKIPPED": ("rgba(46, 125, 50, 0.55)", "rgba(46, 125, 50, 0.32)"),
-    "ABORTED": ("rgba(192, 57, 43, 0.55)", "rgba(192, 57, 43, 0.32)"),
+# Glow pulse RGB values — same expanding-ring effect as the sidebar live dot.
+STATUS_GLOW_RGB = {
+    "COMPLETED": (34, 197, 94),
+    "RUNNING": (26, 111, 219),
+    "PENDING": (217, 127, 0),
+    "FAILED": (239, 68, 68),
+    "SKIPPED": (46, 125, 50),
+    "ABORTED": (239, 68, 68),
 }
 
 
 def _status_glow_html(key: str, size: int) -> tuple[str, str]:
     """Return optional ``<style>`` tag and inline wrapper styles for a status glow."""
-    colors = STATUS_GLOW.get(key)
-    if not colors:
+    rgb = STATUS_GLOW_RGB.get(key)
+    if not rgb:
         return "", (
             f"display:inline-flex;align-items:center;justify-content:center;"
             f"flex:0 0 auto;width:{size}px;height:{size}px;"
         )
 
-    ring, halo = colors
-    wrap_size = size + 4
-    if key == "RUNNING":
-        style_tag = (
-            "<style>"
-            "@keyframes ca-status-run-pulse{"
-            f"0%,100%{{box-shadow:0 0 0 1.5px {ring},0 0 6px {halo};}}"
-            f"50%{{box-shadow:0 0 0 2.5px {ring},0 0 11px {halo};}}"
-            "}"
-            "</style>"
-        )
-        wrap_style = (
-            f"display:inline-flex;align-items:center;justify-content:center;"
-            f"flex:0 0 auto;width:{wrap_size}px;height:{wrap_size}px;border-radius:50%;"
-            f"animation:ca-status-run-pulse 1.4s ease-in-out infinite;"
-        )
-        return style_tag, wrap_style
-
+    r, g, b = rgb
+    wrap_size = size + 8
+    style_tag = (
+        "<style>"
+        "@keyframes ca-status-pulse{"
+        f"0%{{box-shadow:0 0 0 0 rgba({r},{g},{b},0.55);}}"
+        f"70%{{box-shadow:0 0 0 6px rgba({r},{g},{b},0);}}"
+        f"100%{{box-shadow:0 0 0 0 rgba({r},{g},{b},0);}}"
+        "}"
+        "</style>"
+    )
     wrap_style = (
         f"display:inline-flex;align-items:center;justify-content:center;"
         f"flex:0 0 auto;width:{wrap_size}px;height:{wrap_size}px;border-radius:50%;"
-        f"box-shadow:0 0 0 1.5px {ring},0 0 7px {halo};"
+        f"animation:ca-status-pulse 1.6s ease-out infinite;"
     )
-    return "", wrap_style
+    return style_tag, wrap_style
 
 
 def status_image_html(status: str, size: int = STATUS_ICON_PX) -> str:
