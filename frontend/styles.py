@@ -2235,12 +2235,14 @@ STATUS_ASSETS = {
     "ABORTED": "status-aborted.svg",
 }
 
-# Glow pulse RGB — PENDING, RUNNING, FAILED, ABORTED only (sidebar live-dot style).
+# Glow pulse RGB — matched to each status SVG fill color.
 STATUS_GLOW_RGB = {
-    "RUNNING": (26, 111, 219),
-    "PENDING": (217, 127, 0),
-    "FAILED": (239, 68, 68),
-    "ABORTED": (239, 68, 68),
+    "COMPLETED": (30, 122, 70),   # #1e7a46
+    "RUNNING": (26, 111, 219),    # #1a6fdb
+    "PENDING": (217, 127, 0),     # #d97f00
+    "FAILED": (192, 57, 43),      # #c0392b
+    "SKIPPED": (46, 125, 50),     # #2e7d32
+    "ABORTED": (192, 57, 43),     # #c0392b
 }
 
 
@@ -2254,10 +2256,11 @@ def _status_glow_html(key: str, size: int) -> tuple[str, str]:
         )
 
     r, g, b = rgb
+    anim = f"ca-status-pulse-{key.lower()}"
     wrap_size = size + 8
     style_tag = (
         "<style>"
-        "@keyframes ca-status-pulse{"
+        f"@keyframes {anim}{{"
         f"0%{{box-shadow:0 0 0 0 rgba({r},{g},{b},0.55);}}"
         f"70%{{box-shadow:0 0 0 6px rgba({r},{g},{b},0);}}"
         f"100%{{box-shadow:0 0 0 0 rgba({r},{g},{b},0);}}"
@@ -2267,7 +2270,7 @@ def _status_glow_html(key: str, size: int) -> tuple[str, str]:
     wrap_style = (
         f"display:inline-flex;align-items:center;justify-content:center;"
         f"flex:0 0 auto;width:{wrap_size}px;height:{wrap_size}px;border-radius:50%;"
-        f"animation:ca-status-pulse 1.6s ease-out infinite;"
+        f"animation:{anim} 1.6s ease-out infinite;"
     )
     return style_tag, wrap_style
 
