@@ -856,8 +856,20 @@ _GLOBAL_CSS = f"""
   .ca-badge.violet {{ background: #fbefff; color: #6639ba; }}
 
   /* ---------- Run cards (Run History) ---------- */
-  .st-key-ca-runs > [data-testid="stVerticalBlock"] {{
-      gap: 0.22rem;
+  .st-key-ca-runs {{
+      --ca-run-card-gap: 0.35rem;
+  }}
+  .st-key-ca-runs > [data-testid="stVerticalBlock"],
+  .st-key-ca-runs > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
+  .st-key-ca-runs [data-testid="stVerticalBlock"]:has(> [class*="st-key-runcard_"]) {{
+      gap: var(--ca-run-card-gap) !important;
+      align-items: stretch !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca-runs [class*="st-key-runcard_"] {{
+      margin: 0 !important;
+      padding: 0 !important;
   }}
 
   /* Card container: single info line on the left, redirect button at far right. */
@@ -868,6 +880,26 @@ _GLOBAL_CSS = f"""
       padding: 0.38rem 2.2rem 0.38rem 0.75rem;
       background: #ffffff;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      display: block !important;
+      box-sizing: border-box;
+  }}
+  [class*="st-key-runcard_"] > [data-testid="stVerticalBlock"],
+  [class*="st-key-runcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      gap: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      position: relative !important;
+      min-height: 0 !important;
+  }}
+  [class*="st-key-runcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  [class*="st-key-runcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  [class*="st-key-runcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child,
+  [class*="st-key-runcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {{
+      width: 100% !important;
+      flex: 1 1 auto !important;
   }}
   [class*="st-key-runcard_"]:hover {{
       border-color: {BRAND_ORANGE};
@@ -883,7 +915,11 @@ _GLOBAL_CSS = f"""
       top: 50%;
       transform: translateY(-50%);
       width: auto !important;
+      height: 0 !important;
+      min-height: 0 !important;
       margin: 0 !important;
+      padding: 0 !important;
+      overflow: visible !important;
       z-index: 3;
   }}
   [class*="st-key-runcard_"] .stButton {{
@@ -919,6 +955,11 @@ _GLOBAL_CSS = f"""
       color: {BRAND_ORANGE};
   }}
 
+  .ca-run {{
+      margin: 0;
+      padding: 0;
+      line-height: 1.35;
+  }}
   .ca-run-oneline {{
       display: flex;
       flex-wrap: nowrap;
