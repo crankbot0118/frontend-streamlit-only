@@ -1716,7 +1716,8 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
   }}
-  [class*="st-key-stepcard_"] [data-testid="column"]:first-child [data-testid="stHtml"] iframe {{
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe {{
       display: block !important;
       width: 100% !important;
       margin: 0 !important;
@@ -1724,18 +1725,6 @@ _GLOBAL_CSS = f"""
       border: none !important;
       background: transparent !important;
       min-height: 18px !important;
-      max-height: 24px !important;
-      height: auto !important;
-      overflow: hidden !important;
-  }}
-  [class*="st-key-stepcard_"] [data-testid="column"]:last-child [data-testid="stHtml"] iframe {{
-      display: block !important;
-      width: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      border: none !important;
-      background: transparent !important;
-      min-height: 0 !important;
       max-height: 24px !important;
       height: auto !important;
       overflow: hidden !important;
@@ -1899,32 +1888,49 @@ _GLOBAL_CSS = f"""
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button {{
       width: auto !important;
-      min-width: 16px !important;
-      min-height: 16px !important;
-      height: 16px !important;
+      min-width: 0 !important;
+      min-height: 24px !important;
+      height: auto !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
-      color: #8a9097;
+      color: #6b7177 !important;
       padding: 0 !important;
+      gap: 8px !important;
       display: inline-flex !important;
+      flex-direction: row-reverse !important;
       align-items: center !important;
-      justify-content: center !important;
+      justify-content: flex-end !important;
+      white-space: nowrap !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button [data-testid="stMarkdownContainer"] {{
-      display: none !important;
+      display: flex !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      width: auto !important;
+      flex: 0 0 auto !important;
+  }}
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button p {{
+      margin: 0 !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      color: #6b7177 !important;
+      line-height: 1.25 !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button [data-testid="stIconMaterial"] {{
       font-size: 16px !important;
       width: 16px !important;
       height: 16px !important;
       line-height: 1 !important;
+      flex: 0 0 auto !important;
+      color: #8a9097 !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button svg {{
       width: 16px !important;
       height: 16px !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover,
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover p,
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover [data-testid="stIconMaterial"],
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover svg {{
       color: {BRAND_ORANGE} !important;

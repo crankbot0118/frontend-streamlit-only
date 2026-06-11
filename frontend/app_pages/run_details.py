@@ -262,27 +262,15 @@ else:
                         f"</div>"
                     )
                 with actions_col:
-                    more_col, arrow_col = st.columns(
-                        [0.001, 0.001],
-                        gap="small",
-                        vertical_alignment="center",
+                    st.button(
+                        "More actions",
+                        key=f"more_{run_id}_{i}",
+                        icon=toggle_icon,
+                        help="More actions",
+                        type="tertiary",
+                        on_click=_toggle_step,
+                        args=(open_key,),
                     )
-                    with more_col:
-                        st.html(
-                            '<span class="ca-step-more" '
-                            'style="font-size:13px;font-weight:600;color:#6b7177;'
-                            'white-space:nowrap;line-height:1.25;">More actions</span>'
-                        )
-                    with arrow_col:
-                        st.button(
-                            "",
-                            key=f"more_{run_id}_{i}",
-                            icon=toggle_icon,
-                            help="More actions",
-                            type="tertiary",
-                            on_click=_toggle_step,
-                            args=(open_key,),
-                        )
                 if is_open:
                     with st.container(key=f"step_links_{i}"):
                         if st.button("Details", key=f"step_details_{run_id}_{i}"):
