@@ -38,6 +38,18 @@ _RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
 def _toggle_step(open_key: str) -> None:
     st.session_state[open_key] = not st.session_state.get(open_key, False)
 
+
+def _back_to_run_history() -> None:
+    """Clear run selection and return to Run History."""
+    rid = st.session_state.get("selected_run_id")
+    if rid is not None:
+        st.session_state.pop(f"auto_refresh_{rid}", None)
+    st.session_state.pop("selected_run_id", None)
+    st.session_state.pop("selected_run", None)
+    st.session_state.pop("_auto_refresh_run", None)
+    st.query_params.clear()
+    goto_page("Run History")
+
 run_id = st.session_state.get("selected_run_id")
 
 # On a hard refresh Streamlit starts a fresh session and session_state is empty,
@@ -121,14 +133,13 @@ if run:
 
     with st.container(key="ca-detail-header"):
         with st.container(key="ca-detail-title-row"):
-            if st.button(
-                "",
+            st.button(
+                " ",
                 icon=":material/arrow_back:",
                 key="back_to_runs",
                 help="Back to Run History",
-            ):
-                st.query_params.clear()
-                goto_page("Run History")
+                on_click=_back_to_run_history,
+            )
             st.html(
                 f"""
                 <div class="ca-page-header ca-detail-page-header">
@@ -144,6 +155,7 @@ if run:
                 </div>
                 """
             )
+            st.html('<span class="ca-detail-action-sep">&middot;</span>')
             with st.container(key="detail-actions"):
                 if st.button(
                     "Abort",

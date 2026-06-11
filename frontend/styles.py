@@ -1000,8 +1000,9 @@ _GLOBAL_CSS = f"""
   .ca-detail-page-header {{
       margin: 0;
       padding: 0;
-      flex: 1 1 auto;
+      flex: 0 1 auto;
       min-width: 0;
+      pointer-events: none;
   }}
   .ca-detail-page-header .ca-title {{
       min-height: var(--ca-header-row-height);
@@ -1013,7 +1014,7 @@ _GLOBAL_CSS = f"""
   .ca-detail-title-parts .arrow {{
       color: {BRAND_ORANGE};
   }}
-  /* Title row: back arrow · page-style heading · Abort. */
+  /* Title row: back arrow · page-style heading · · Abort (inline). */
   .st-key-ca-detail-title-row,
   .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"],
   .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] {{
@@ -1021,8 +1022,8 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: 0.45rem !important;
-      width: 100% !important;
+      gap: var(--ca-detail-inline-gap) !important;
+      width: fit-content !important;
       max-width: 100% !important;
       min-height: var(--ca-header-row-height) !important;
       margin: 0 !important;
@@ -1035,9 +1036,12 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       max-width: none !important;
   }}
-  .st-key-ca-detail-title-row > [data-testid="stElementContainer"]:nth-child(2) {{
-      flex: 1 1 auto !important;
-      min-width: 0 !important;
+  .st-key-ca-detail-title-row .st-key-back_to_runs,
+  .st-key-ca-detail-title-row .st-key-back_to_runs [data-testid="stElementContainer"] {{
+      position: relative !important;
+      z-index: 5 !important;
+      flex: 0 0 auto !important;
+      pointer-events: auto !important;
   }}
   .st-key-ca-detail-title-row .st-key-back_to_runs .stButton {{
       width: auto !important;
@@ -1058,6 +1062,7 @@ _GLOBAL_CSS = f"""
       cursor: pointer !important;
       opacity: 1 !important;
       border-radius: 5px !important;
+      pointer-events: auto !important;
   }}
   .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button svg,
   .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button [data-testid="stIconMaterial"] {{
@@ -1071,7 +1076,26 @@ _GLOBAL_CSS = f"""
       background: var(--ca-nav-highlight-bg) !important;
   }}
   .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button p {{
-      display: none !important;
+      font-size: 0 !important;
+      width: 0 !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .ca-detail-action-sep {{
+      color: #c2c7cc;
+      font-size: var(--ca-title-size);
+      font-weight: 400;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+      user-select: none;
+  }}
+  .st-key-ca-detail-title-row > [data-testid="stElementContainer"]:has(.ca-detail-action-sep) {{
+      flex: 0 0 auto !important;
+      display: flex !important;
+      align-items: center !important;
   }}
   .st-key-detail-actions,
   .st-key-detail-actions [data-testid="stVerticalBlock"],
@@ -1082,7 +1106,8 @@ _GLOBAL_CSS = f"""
       flex-wrap: nowrap !important;
       gap: var(--ca-detail-inline-gap) !important;
       width: auto !important;
-      margin-left: auto !important;
+      margin-left: 0 !important;
+      flex: 0 0 auto !important;
   }}
   .st-key-detail-actions [data-testid="stElementContainer"] {{
       width: auto !important;
