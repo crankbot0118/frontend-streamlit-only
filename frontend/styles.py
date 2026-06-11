@@ -749,7 +749,7 @@ _GLOBAL_CSS = f"""
       gap: 0.22rem;
   }}
 
-  /* Card container: two-line info on the left, redirect button at far right. */
+  /* Card container: single info line on the left, redirect button at far right. */
   [class*="st-key-runcard_"] {{
       position: relative;
       border: 1px solid #e3e6e8;
@@ -808,52 +808,66 @@ _GLOBAL_CSS = f"""
       color: {BRAND_ORANGE};
   }}
 
-  .ca-run-line1 {{
+  .ca-run-oneline {{
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.38rem;
       font-size: var(--ca-body-size);
       font-weight: 600;
       color: {BRAND_INK};
-      line-height: 1.3;
+      line-height: 1.35;
+      min-width: 0;
   }}
-  .ca-run-line1 .sep {{
+  .ca-run-oneline .sep {{
       color: #c2c7cc;
       font-weight: 400;
+      flex-shrink: 0;
+      user-select: none;
   }}
-  .ca-run-line1 .ca-run-client {{
+  .ca-run-oneline .ca-run-client {{
       font-weight: 700;
+      flex-shrink: 0;
   }}
-  .ca-run-line1 .arrow {{
+  .ca-run-oneline .arrow {{
       color: {BRAND_ORANGE};
-      margin: 0 0.3rem;
+      margin: 0 0.22rem;
   }}
-  .ca-run-meta {{
-      margin-top: 0.12rem;
-      display: flex;
-      flex-wrap: wrap;
+  .ca-run-oneline > span:not(.sep):not(.ca-run-meta-part),
+  .ca-run-oneline .ca-badge {{
+      flex-shrink: 0;
+      white-space: nowrap;
+  }}
+  .ca-run-oneline .ca-run-meta-part {{
+      display: inline-flex;
       align-items: center;
-      gap: 0.25rem;
+      gap: 0.38rem;
+      flex: 1 1 auto;
+      min-width: 0;
       font-size: var(--ca-run-meta-size);
-      color: #7a8086;
-      font-style: normal;
       font-weight: 400;
-      line-height: 1.2;
+      font-style: italic;
+      color: #7a8086;
   }}
-  .ca-run-meta .sepm {{
-      color: #c2c7cc;
+  .ca-run-oneline .ca-run-meta-part .sep {{
       font-style: normal;
-      font-size: 0.85em;
+  }}
+  .ca-run-oneline .ca-run-meta-part .ca-run-metaline {{
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+  }}
+  .ca-run-oneline .ca-run-meta-part .mi {{
+      font-style: normal;
+      font-size: 0.88em;
+      line-height: 1;
   }}
   .ca-run-metaline {{
       display: inline-flex;
       align-items: center;
       gap: 0.22rem;
-  }}
-  .ca-run-meta .ca-run-metaline .mi {{
-      font-size: 0.85em;
-      line-height: 1;
   }}
   .ca-run-metaline .mi {{
       font-size: 0.92rem;
@@ -1834,11 +1848,11 @@ def fmt_duration(start, end) -> str:
 
 
 def render_run_card(run: dict) -> bool:
-    """Render a run card with two info lines and a redirect button on the right.
+    """Render a run card as one line plus a redirect button on the right.
 
-    Line 1: client · Run # · source -> target · user · status (colored).
-    Line 2: started · last update (ddmmyy hhmmss). Returns ``True`` when the
-    redirect button is clicked.
+    client · Run # · source→target · user · status · started · updated · duration.
+    Meta segment (times) is smaller and italic. Returns ``True`` when the redirect
+    button is clicked.
     """
     rid = run.get("clone_run_id")
     client = (
@@ -1851,12 +1865,12 @@ def render_run_card(run: dict) -> bool:
     failed_step_html = ""
     if failed_step:
         failed_step_html = (
-            f'<span class="sepm">&middot;</span>'
+            f'<span class="sep">&middot;</span>'
             f'<span class="ca-run-metaline">Failed step: {_esc(failed_step)}</span>'
         )
     info_html = f"""
         <div class="ca-run">
-          <div class="ca-run-line1">
+          <div class="ca-run-oneline">
             <span class="ca-run-client">{_esc(client)}</span>
             <span class="sep">&middot;</span>
             <span>Run #{_esc(rid)}</span>
@@ -1866,20 +1880,21 @@ def render_run_card(run: dict) -> bool:
             <span>{_esc(run.get('user_name', '—'))}</span>
             <span class="sep">&middot;</span>
             {status_badge_html(run.get('status', ''))}
-          </div>
-          <div class="ca-run-meta">
-            <span class="ca-run-metaline">
-              <span class="mi mi-start">&#9654;</span> Started {started_html(run.get('start_date'))}
+            <span class="sep">&middot;</span>
+            <span class="ca-run-meta-part">
+              <span class="ca-run-metaline">
+                <span class="mi mi-start">&#9654;</span> Started {started_html(run.get('start_date'))}
+              </span>
+              <span class="sep">&middot;</span>
+              <span class="ca-run-metaline">
+                <span class="mi mi-upd">&#8635;</span> {relative_update_html(run.get('last_update'))}
+              </span>
+              <span class="sep">&middot;</span>
+              <span class="ca-run-metaline">
+                <span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}
+              </span>
+              {failed_step_html}
             </span>
-            <span class="sepm">&middot;</span>
-            <span class="ca-run-metaline">
-              <span class="mi mi-upd">&#8635;</span> {relative_update_html(run.get('last_update'))}
-            </span>
-            <span class="sepm">&middot;</span>
-            <span class="ca-run-metaline">
-              <span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}
-            </span>
-            {failed_step_html}
           </div>
         </div>
     """
