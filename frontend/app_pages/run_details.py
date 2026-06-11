@@ -73,14 +73,6 @@ if run_id:
 
 refresh_key = f"auto_refresh_{run_id}"
 
-if st.button(
-    "Back to Run History",
-    icon=":material/arrow_back:",
-    key="back_to_runs",
-):
-    st.query_params.clear()
-    goto_page("Run History")
-
 if not run_id:
     render_title("Run details")
     st.warning("No run selected. Go back to Run History and pick a run.")
@@ -129,10 +121,17 @@ if run:
     tgt = _esc(run.get("target_name", "—"))
     user = _esc(run.get("user_name", "—"))
     safe_run_id = _esc(run_id)
-    has_run_log = bool(latest_run.get("log_location"))
 
     with st.container(key="ca-detail-header"):
         with st.container(key="ca-detail-title-row"):
+            if st.button(
+                "",
+                icon=":material/arrow_back:",
+                key="back_to_runs",
+                help="Back to Run History",
+            ):
+                st.query_params.clear()
+                goto_page("Run History")
             st.html(
                 f"""
                 <div class="ca-title ca-detail-title">
@@ -150,6 +149,8 @@ if run:
                 if st.button(
                     "Abort",
                     key="detail_abort",
+                    type="secondary",
+                    icon=":material/cancel:",
                     disabled=not can_abort_skip,
                     help=_abort_skip_help,
                 ):
@@ -165,24 +166,6 @@ if run:
                             st.rerun()
                         except Exception as exc:
                             show_error(exc, context="Could not abort run")
-                if st.button(
-                    "Skip",
-                    key="detail_skip",
-                    disabled=not can_abort_skip,
-                    help=_skip_help,
-                ):
-                    if not can_abort_skip:
-                        show_error(
-                            "Skip is only allowed when clone run status is FAILED.",
-                            context="Cannot skip run",
-                        )
-                    else:
-                        try:
-                            skip_run(run_id, failed_step_id)
-                            st.session_state.pop("selected_run", None)
-                            st.rerun()
-                        except Exception as exc:
-                            show_error(exc, context="Could not skip run")
 
         with st.container(key="ca-detail-meta-row"):
             emit_html(
@@ -202,24 +185,6 @@ if run:
                 </div>
                 """
             )
-            with st.container(key="detail-download-log"):
-                if has_run_log:
-                    try:
-                        log_bytes, log_name = cached_run_log(run_id)
-                        st.download_button(
-                            "Download Log",
-                            data=log_bytes,
-                            file_name=log_name,
-                            key=f"download_run_log_{run_id}",
-                            type="secondary",
-                        )
-                    except Exception as exc:
-                        show_error(exc, context="Could not load run log")
-                else:
-                    st.markdown(
-                        '<span class="ca-step-link-disabled">Download Log</span>',
-                        unsafe_allow_html=True,
-                    )
             with st.container(key="detail-refresh"):
                 st.toggle(
                     "Auto refresh",
@@ -283,7 +248,30 @@ else:
                     with st.container(key=f"step_links_{i}"):
                         if st.button("Details", key=f"step_details_{run_id}_{i}"):
                             _show_step_detail_dialog(run_id, step_pk, name)
-                        if step.get("step_func_log_location"):
+                        if step_pk == failed_step_id:
+                            if st.button(
+                                "Skip",
+                                key=f"step_skip_{run_id}_{i}",
+                                type="secondary",
+                                icon=":material/skip_next:",
+                                disabled=not can_abort_skip,
+                                help=_skip_help,
+                            ):
+                                if not can_abort_skip:
+                                    show_error(
+                                        "Skip is only allowed when clone run status is FAILED.",
+                                        context="Cannot skip run",
+                                    )
+                                else:
+                                    try:
+                                        skip_run(run_id, failed_step_id)
+                                        st.session_state.pop("selected_run", None)
+                                        st.rerun()
+                                    except Exception as exc:
+                                        show_error(
+                                            exc, context="Could not skip run"
+                                        )
+                        elif step.get("step_func_log_location"):
                             try:
                                 step_bytes, step_name = cached_step_log(
                                     run_id, step_pk
@@ -321,3 +309,25 @@ else:
             _render_step_cards(panel_steps)
 
         _steps_panel()
+
+if run:
+    has_run_log = bool(latest_run and latest_run.get("log_location"))
+    with st.container(key="ca-detail-footer"):
+        if has_run_log:
+            try:
+                log_bytes, log_name = cached_run_log(run_id)
+                st.download_button(
+                    "Download Log",
+                    data=log_bytes,
+                    file_name=log_name,
+                    key=f"download_run_log_{run_id}",
+                    type="secondary",
+                    icon=":material/download:",
+                )
+            except Exception as exc:
+                show_error(exc, context="Could not load run log")
+        else:
+            st.markdown(
+                '<span class="ca-detail-footer-disabled">Download Log</span>',
+                unsafe_allow_html=True,
+            )

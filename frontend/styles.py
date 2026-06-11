@@ -26,6 +26,8 @@ from datetime_local import (
 
 BRAND_ORANGE = "#e87511"
 BRAND_INK = "#131516"
+BRAND_RED = "#cf222e"
+BRAND_RED_BG = "rgba(207, 34, 46, 0.12)"
 STATUS_ICON_PX = 18
 ACTION_ICON_REM = "1.1rem"
 SIDEBAR_WIDTH_PX = 200
@@ -50,8 +52,79 @@ def _asset_data_uri(filename: str) -> str:
     return f"data:{mime};base64,{b64}"
 
 
-_ABORT_BTN_ICON = _asset_data_uri("aborted.png")
-_SKIP_BTN_ICON = _asset_data_uri("skipped.png")
+def _nav_action_button_css(
+    container_selector: str,
+    *,
+    accent: str,
+    accent_bg: str,
+    disabled_opacity: str = "0.55",
+) -> str:
+    """Compact nav-style Streamlit button (Trigger job, Abort, Download Log, Skip)."""
+    return f"""
+  {container_selector} .stButton,
+  {container_selector} .stDownloadButton {{
+      width: auto !important;
+      margin: 0 !important;
+  }}
+
+  {container_selector} .stButton button,
+  {container_selector} .stDownloadButton button {{
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      width: auto !important;
+      min-height: 1.7rem !important;
+      padding: 0.2rem 0.65rem !important;
+      gap: 0.45rem !important;
+      font-size: var(--ca-nav-font-size) !important;
+      font-weight: 600 !important;
+      line-height: 1.25 !important;
+      border-radius: 5px !important;
+      border: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
+      color: #9aa0a6 !important;
+      cursor: not-allowed !important;
+      opacity: {disabled_opacity} !important;
+      white-space: nowrap !important;
+  }}
+
+  {container_selector} .stButton button p,
+  {container_selector} .stDownloadButton button p {{
+      margin: 0 !important;
+      font-size: var(--ca-nav-font-size) !important;
+      font-weight: 600 !important;
+  }}
+
+  {container_selector} .stButton button svg,
+  {container_selector} .stButton button [data-testid="stIconMaterial"],
+  {container_selector} .stDownloadButton button svg,
+  {container_selector} .stDownloadButton button [data-testid="stIconMaterial"] {{
+      width: 1rem !important;
+      height: 1rem !important;
+      font-size: 1rem !important;
+      color: inherit !important;
+      fill: currentColor !important;
+  }}
+
+  {container_selector} .stButton button:not(:disabled),
+  {container_selector} .stDownloadButton button:not(:disabled) {{
+      background: {accent_bg} !important;
+      color: {accent} !important;
+      cursor: pointer !important;
+      opacity: 1 !important;
+  }}
+
+  {container_selector} .stButton button:not(:disabled) p,
+  {container_selector} .stButton button:not(:disabled) svg,
+  {container_selector} .stButton button:not(:disabled) [data-testid="stIconMaterial"],
+  {container_selector} .stDownloadButton button:not(:disabled) p,
+  {container_selector} .stDownloadButton button:not(:disabled) svg,
+  {container_selector} .stDownloadButton button:not(:disabled) [data-testid="stIconMaterial"] {{
+      color: {accent} !important;
+      fill: {accent} !important;
+  }}
+"""
 
 _GLOBAL_CSS = f"""
 <style>
@@ -567,59 +640,11 @@ _GLOBAL_CSS = f"""
       margin-top: 0.25rem;
   }}
 
-  .st-key-ca-execute-clone-actions .stButton {{
-      width: auto !important;
-  }}
-
-  /* Nav-style trigger control — compact, not default Streamlit primary pink. */
-  .st-key-ca-execute-clone-actions .stButton button {{
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: flex-start !important;
-      width: auto !important;
-      min-height: 1.7rem !important;
-      padding: 0.2rem 0.65rem !important;
-      gap: 0.45rem !important;
-      font-size: var(--ca-nav-font-size) !important;
-      font-weight: 600 !important;
-      line-height: 1.25 !important;
-      border-radius: 5px !important;
-      border: none !important;
-      box-shadow: none !important;
-      background: transparent !important;
-      color: #9aa0a6 !important;
-      cursor: not-allowed !important;
-      opacity: 0.55 !important;
-  }}
-
-  .st-key-ca-execute-clone-actions .stButton button p {{
-      margin: 0 !important;
-      font-size: var(--ca-nav-font-size) !important;
-      font-weight: 600 !important;
-  }}
-
-  .st-key-ca-execute-clone-actions .stButton button svg,
-  .st-key-ca-execute-clone-actions .stButton button [data-testid="stIconMaterial"] {{
-      width: 1rem !important;
-      height: 1rem !important;
-      font-size: 1rem !important;
-      color: inherit !important;
-      fill: currentColor !important;
-  }}
-
-  .st-key-ca-execute-clone-actions .stButton button:not(:disabled) {{
-      background: rgba(232, 117, 17, 0.12) !important;
-      color: {BRAND_ORANGE} !important;
-      cursor: pointer !important;
-      opacity: 1 !important;
-  }}
-
-  .st-key-ca-execute-clone-actions .stButton button:not(:disabled) p,
-  .st-key-ca-execute-clone-actions .stButton button:not(:disabled) svg,
-  .st-key-ca-execute-clone-actions .stButton button:not(:disabled) [data-testid="stIconMaterial"] {{
-      color: {BRAND_ORANGE} !important;
-      fill: {BRAND_ORANGE} !important;
-  }}
+  {_nav_action_button_css(
+      ".st-key-ca-execute-clone-actions",
+      accent=BRAND_ORANGE,
+      accent_bg="rgba(232, 117, 17, 0.12)",
+  )}
 
   .ca-exec-ready {{
       margin: 0.35rem 0 0.15rem 0;
@@ -899,33 +924,31 @@ _GLOBAL_CSS = f"""
   .ca-detail-title-parts .arrow {{
       color: {BRAND_ORANGE};
   }}
-  /* Dot between Abort and Skip — same style as the title separators. */
-  .ca-action-sep {{
-      display: inline-flex;
-      align-items: center;
-      font-size: 0.95rem;
-      font-weight: 400;
-      color: #c2c7cc;
-      line-height: 1;
-  }}
-  /* Title row: heading then Abort · Skip with identical gap. */
+  /* Title row: back arrow · heading · Abort — aligned with other page titles. */
   .st-key-ca-detail-title-row,
-  .st-key-ca-detail-title-row [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-title-row [data-testid="stVerticalBlockBorderWrapper"] {{
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] {{
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: var(--ca-detail-inline-gap) !important;
-      width: fit-content !important;
+      gap: 0.45rem !important;
+      width: 100% !important;
       max-width: 100% !important;
+      min-height: var(--ca-header-row-height) !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
-  .st-key-ca-detail-title-row [data-testid="stElementContainer"] {{
+  .st-key-ca-detail-title-row > [data-testid="stElementContainer"] {{
       width: auto !important;
       flex: 0 0 auto !important;
       margin: 0 !important;
       padding: 0 !important;
       max-width: none !important;
+  }}
+  .st-key-ca-detail-title-row > [data-testid="stElementContainer"]:nth-child(2) {{
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
   }}
   .st-key-detail-actions,
   .st-key-detail-actions [data-testid="stVerticalBlock"],
@@ -936,6 +959,7 @@ _GLOBAL_CSS = f"""
       flex-wrap: nowrap !important;
       gap: var(--ca-detail-inline-gap) !important;
       width: auto !important;
+      margin-left: auto !important;
   }}
   .st-key-detail-actions [data-testid="stElementContainer"] {{
       width: auto !important;
@@ -945,66 +969,14 @@ _GLOBAL_CSS = f"""
   }}
   .ca-detail-title {{
       margin: 0;
+      min-height: var(--ca-header-row-height);
   }}
-  /* Abort / Skip — icon + label, tight beside the heading. */
-  .st-key-detail_abort .stButton,
-  .st-key-detail_skip .stButton {{
-      width: auto !important;
-      margin: 0 !important;
-  }}
-  .st-key-detail_abort .stButton button,
-  .st-key-detail_skip .stButton button {{
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      gap: 0.55rem !important;
-      width: auto !important;
-      font-size: 0.95rem !important;
-      font-weight: 700 !important;
-      padding: 0.35rem 0.9rem !important;
-      min-height: 0 !important;
-      border-radius: 8px !important;
-      white-space: nowrap !important;
-  }}
-  .st-key-detail_abort .stButton button p,
-  .st-key-detail_skip .stButton button p {{
-      margin: 0 !important;
-      padding: 0 !important;
-      line-height: 1 !important;
-  }}
-  .st-key-detail_abort .stButton button::before,
-  .st-key-detail_skip .stButton button::before {{
-      content: "";
-      display: inline-block;
-      width: {ACTION_ICON_REM};
-      height: {ACTION_ICON_REM};
-      flex: 0 0 auto;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: contain;
-  }}
-  .st-key-detail_abort .stButton button::before {{
-      background-image: url({_ABORT_BTN_ICON});
-  }}
-  .st-key-detail_skip .stButton button::before {{
-      background-image: url({_SKIP_BTN_ICON});
-  }}
-  .st-key-detail_abort .stButton button {{
-      background: #ffebe9 !important;
-      color: #cf222e !important;
-      border: 1px solid #ff8182 !important;
-  }}
-  .st-key-detail_skip .stButton button {{
-      background: #fff1e5 !important;
-      color: #bc4c00 !important;
-      border: 1px solid #fd8c73 !important;
-  }}
-  .st-key-detail_abort .stButton button:disabled,
-  .st-key-detail_skip .stButton button:disabled {{
-      opacity: 0.45 !important;
-      cursor: not-allowed !important;
-  }}
-  /* Meta row: full-width facts + Download Log; Auto refresh pinned far right. */
+  {_nav_action_button_css(
+      ".st-key-detail_abort",
+      accent=BRAND_RED,
+      accent_bg=BRAND_RED_BG,
+  )}
+  /* Meta row: compact facts + Auto refresh pinned far right. */
   .st-key-ca-detail-meta-row {{
       position: relative;
       width: 100%;
@@ -1034,7 +1006,7 @@ _GLOBAL_CSS = f"""
   .ca-detail-meta-bar {{
       width: 100%;
       box-sizing: border-box;
-      padding-right: 10rem;
+      padding-right: 8.5rem;
   }}
   .st-key-ca-detail-meta-row .st-key-detail-refresh {{
       position: absolute !important;
@@ -1053,45 +1025,7 @@ _GLOBAL_CSS = f"""
       visibility: visible !important;
       flex: 0 0 auto !important;
   }}
-  .st-key-ca-detail-meta-row .st-key-detail-download-log {{
-      position: absolute !important;
-      right: 9.5rem !important;
-      top: 50% !important;
-      transform: translateY(-50%) !important;
-      width: auto !important;
-      margin: 0 !important;
-      z-index: 2;
-      display: flex !important;
-      align-items: center;
-      justify-content: flex-end;
-      background: #ffffff !important;
-      padding-left: 0.75rem !important;
-      flex: 0 0 auto !important;
-  }}
-  .st-key-detail-download-log [data-testid="stElementContainer"],
-  .st-key-detail-download-log [data-testid="stVerticalBlock"] {{
-      width: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-detail-download-log .stDownloadButton,
-  .st-key-detail-download-log .stDownloadButton button {{
-      width: auto !important;
-      min-height: 0 !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      color: {BRAND_ORANGE} !important;
-      font-size: 0.86rem !important;
-      font-weight: 600 !important;
-  }}
-  .st-key-detail-download-log .stDownloadButton button:hover {{
-      text-decoration: underline;
-      color: {BRAND_ORANGE} !important;
-  }}
-  .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stVerticalBlock"],
+  .ca-detail-head {{
   .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stElementContainer"] {{
       display: flex !important;
       align-items: center;
@@ -1142,18 +1076,19 @@ _GLOBAL_CSS = f"""
       margin: 0;
       max-width: 100%;
   }}
-  /* Meta line: Triggered by · Started · Updated · Duration · status · Download Log */
+  /* Meta line — single compact row like Run History cards. */
   .ca-detail-meta {{
       display: flex;
       flex-direction: row;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       align-items: center;
-      gap: var(--ca-detail-inline-gap);
-      row-gap: 0.2rem;
-      font-size: var(--ca-caption-size);
-      color: #6b7177;
+      gap: 0.38rem;
+      font-size: var(--ca-run-meta-size);
+      color: #7a8086;
       font-style: italic;
       width: 100%;
+      line-height: 1.35;
+      min-width: 0;
   }}
   .ca-detail-meta .ca-run-metaline,
   .ca-detail-meta .ca-badge,
@@ -1163,10 +1098,18 @@ _GLOBAL_CSS = f"""
       flex: 0 0 auto;
       white-space: nowrap;
   }}
+  .ca-detail-meta .ca-badge {{
+      font-style: normal;
+  }}
   .ca-detail-meta .ca-run-metaline {{
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.2rem;
+      white-space: nowrap;
+  }}
+  .ca-detail-meta .ca-run-metaline .mi {{
+      font-style: normal;
+      font-size: 0.88em;
   }}
   .ca-detail-sep {{
       color: #c2c7cc;
@@ -1200,14 +1143,86 @@ _GLOBAL_CSS = f"""
       margin: 0.08rem 0 0.12rem 0;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] {{
-      gap: 0.08rem !important;
+      gap: 0.06rem !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="stElementContainer"] {{
       margin-bottom: 0 !important;
       padding-bottom: 0 !important;
   }}
 
-  /* Borderless "Back to Run History" link-style button. */
+  /* Icon-only back control beside the run title. */
+  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton {{
+      width: auto !important;
+      margin: 0 !important;
+  }}
+  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button {{
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: auto !important;
+      min-width: var(--ca-header-row-height) !important;
+      min-height: var(--ca-header-row-height) !important;
+      padding: 0 0.15rem !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: {BRAND_ORANGE} !important;
+      cursor: pointer !important;
+      opacity: 1 !important;
+      border-radius: 5px !important;
+  }}
+  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button svg,
+  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button [data-testid="stIconMaterial"] {{
+      width: 1.35rem !important;
+      height: 1.35rem !important;
+      font-size: 1.35rem !important;
+      color: {BRAND_ORANGE} !important;
+      fill: {BRAND_ORANGE} !important;
+  }}
+  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button:hover {{
+      background: rgba(232, 117, 17, 0.1) !important;
+  }}
+  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button p {{
+      display: none !important;
+  }}
+
+  /* Run log download — bottom-right, nav-style red. */
+  .st-key-ca-detail-footer {{
+      display: flex !important;
+      justify-content: flex-end !important;
+      align-items: center !important;
+      width: 100% !important;
+      margin: 0.35rem 0 0.15rem 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca-detail-footer > [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-footer > [data-testid="stVerticalBlockBorderWrapper"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      justify-content: flex-end !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca-detail-footer > [data-testid="stElementContainer"] {{
+      width: auto !important;
+      flex: 0 0 auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  {_nav_action_button_css(
+      ".st-key-ca-detail-footer",
+      accent=BRAND_RED,
+      accent_bg=BRAND_RED_BG,
+  )}
+  .ca-detail-footer-disabled {{
+      color: #b0b5ba;
+      font-size: var(--ca-nav-font-size);
+      font-weight: 600;
+      cursor: not-allowed;
+  }}
+
+  /* Borderless "Back to Run History" link-style button (fallback pages). */
   .st-key-back_to_runs .stButton button {{
       background: transparent !important;
       border: none !important;
@@ -1245,7 +1260,7 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Step rows (run details) ---------- */
   .st-key-ca-steps > [data-testid="stVerticalBlock"] {{
-      gap: 0.4rem;
+      gap: 0.22rem;
   }}
 
   /* Stable shell while the steps fragment mounts or polls. */
@@ -1259,10 +1274,15 @@ _GLOBAL_CSS = f"""
   [class*="st-key-stepcard_"] {{
       position: relative;
       border: 1px solid #e3e6e8;
-      border-radius: 10px;
-      padding: 0.5rem 2.8rem 0.5rem 1.1rem;
+      border-radius: 8px;
+      padding: 0.38rem 2.2rem 0.38rem 0.75rem;
       background: #ffffff;
-      min-height: 2.9rem;
+      min-height: 0;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }}
+  [class*="st-key-stepcard_"]:hover {{
+      border-color: {BRAND_ORANGE};
+      box-shadow: 0 2px 12px rgba(19, 21, 22, 0.07);
   }}
 
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"],
@@ -1274,9 +1294,10 @@ _GLOBAL_CSS = f"""
   [class*="st-key-stepcard_"] > [data-testid="stElementContainer"]:has(.stButton) {{
       position: absolute !important;
       right: 0.5rem;
-      top: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
       width: auto !important;
-      height: 1.9rem;
+      height: auto !important;
       margin: 0 !important;
       padding: 0 !important;
       z-index: 3;
@@ -1289,8 +1310,8 @@ _GLOBAL_CSS = f"""
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.7rem;
-      min-height: 1.9rem;
+      gap: 0.5rem;
+      min-height: 1.55rem;
   }}
   /* Icon first, name right beside it — both aligned in vertical columns.
      Tight gap so the name sits close to its status icon. */
@@ -1368,8 +1389,8 @@ _GLOBAL_CSS = f"""
       flex-wrap: nowrap !important;
       gap: var(--ca-detail-inline-gap) !important;
       width: 100% !important;
-      margin: 0.5rem 0 0 0 !important;
-      padding: 0.5rem 0 0 0 !important;
+      margin: 0.35rem 0 0 0 !important;
+      padding: 0.35rem 0 0 0 !important;
       border-top: 1px solid #eef0f2;
   }}
   [class*="st-key-step_links_"] > [data-testid="stElementContainer"] {{
@@ -1407,6 +1428,14 @@ _GLOBAL_CSS = f"""
       text-decoration: underline;
       color: {BRAND_ORANGE} !important;
   }}
+  [class*="st-key-step_links_"] [class*="st-key-step_skip_"] {{
+      margin-left: var(--ca-detail-inline-gap) !important;
+  }}
+  {_nav_action_button_css(
+      '[class*="st-key-step_links_"] [class*="st-key-step_skip_"]',
+      accent=BRAND_RED,
+      accent_bg=BRAND_RED_BG,
+  )}
   [class*="st-key-step_links_"] .stDownloadButton,
   [class*="st-key-step_links_"] .stDownloadButton button {{
       width: auto !important;
@@ -1430,8 +1459,9 @@ _GLOBAL_CSS = f"""
   [class*="st-key-stepcard_"] [class*="st-key-more_"] > [data-testid="stElementContainer"] {{
       position: absolute !important;
       right: 0.5rem;
-      top: 0.5rem;
-      height: 1.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      height: auto;
       display: flex;
       align-items: center;
       width: auto !important;
