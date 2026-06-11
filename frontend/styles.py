@@ -2214,27 +2214,47 @@ _GLOBAL_CSS = f"""
   .st-key-ca-ai-chatbox {{
       margin-top: 0.35rem !important;
   }}
+  .st-key-ca-ai-chatbox > [data-testid="stVerticalBlock"],
   .st-key-ca-ai-chatbox [data-testid="stVerticalBlock"] {{
       gap: 0.65rem !important;
   }}
+
+  /* Message bubbles — force light palette (user + assistant). */
   .st-key-ca-ai-chatbox [data-testid="stChatMessage"] {{
-      background: transparent !important;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
+      background: #ffffff !important;
+      border: 1px solid #eef0f2 !important;
+      border-radius: 8px !important;
+      padding: 0.65rem 0.75rem !important;
+      color: {BRAND_INK} !important;
   }}
-  .st-key-ca-ai-chatbox [data-testid="stChatMessageContent"] {{
+  .st-key-ca-ai-chatbox [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {{
+      background: #f6f7f8 !important;
+      border-color: #e3e6e8 !important;
+  }}
+  .st-key-ca-ai-chatbox [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {{
+      background: #ffffff !important;
+      border-color: #eef0f2 !important;
+  }}
+  .st-key-ca-ai-chatbox [data-testid="stChatMessageContent"],
+  .st-key-ca-ai-chatbox [data-testid="stChatMessageContent"] p,
+  .st-key-ca-ai-chatbox [data-testid="stMarkdownContainer"],
+  .st-key-ca-ai-chatbox [data-testid="stMarkdownContainer"] p {{
       color: {BRAND_INK} !important;
       font-size: var(--ca-body-size) !important;
   }}
-
-  /* Bottom chat bar — light shell matching main content area. */
-  [data-testid="stBottom"]:has(.st-key-ca_ai_chat_input) {{
+  .st-key-ca-ai-chatbox [data-testid="stChatMessageAvatarUser"],
+  .st-key-ca-ai-chatbox [data-testid="stChatMessageAvatarAssistant"] {{
       background: #ffffff !important;
-      border-top: 1px solid #e3e6e8 !important;
-      box-shadow: 0 -1px 8px rgba(19, 21, 22, 0.04) !important;
+      border: 1px solid #e3e6e8 !important;
+      color: #6b7177 !important;
   }}
-  [data-testid="stBottom"]:has(.st-key-ca_ai_chat_input) > div {{
-      background: #ffffff !important;
+  .st-key-ca-ai-chatbox [data-testid="stChatMessageAvatarAssistant"] [data-testid="stIconMaterial"] {{
+      color: {BRAND_ORANGE} !important;
+  }}
+
+  /* Input sits inline below messages — no bottom bar divider. */
+  .st-key-ca-ai-chatbox .st-key-ca_ai_chat_input {{
+      margin-top: 0.15rem !important;
   }}
 
   .st-key-ca_ai_chat_input [data-testid="stChatInput"] {{

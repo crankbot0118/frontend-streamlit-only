@@ -17,15 +17,15 @@ with st.container(key="ca-ai-chatbox"):
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-if prompt := st.chat_input("Ask about clone automation…", key="ca_ai_chat_input"):
-    st.session_state.ai_chat_messages.append({"role": "user", "content": prompt})
-    st.session_state.ai_chat_messages.append(
-        {
-            "role": "assistant",
-            "content": (
-                "AI responses are not connected yet. "
-                "This page is ready for chat integration."
-            ),
-        }
-    )
-    st.rerun()
+    if prompt := st.chat_input("Ask about clone automation…", key="ca_ai_chat_input"):
+        st.session_state.ai_chat_messages.append({"role": "user", "content": prompt})
+        st.session_state.ai_chat_messages.append(
+            {
+                "role": "assistant",
+                "content": (
+                    "AI responses are not connected yet. "
+                    "This page is ready for chat integration."
+                ),
+            }
+        )
+        st.rerun()
