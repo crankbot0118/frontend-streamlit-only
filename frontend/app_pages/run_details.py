@@ -242,25 +242,36 @@ else:
             step_pk = step.get("clone_function_run_id")
             open_key = f"step_open_{run_id}_{i}"
             is_open = st.session_state.get(open_key, False)
-            head_class = "ca-step-head ca-step-head--open" if is_open else "ca-step-head"
+            head_class = "ca-step-head"
             with st.container(key=f"stepcard_{i}"):
-                st.html(
-                    f'<div class="{head_class}">'
-                    f'<div class="ca-step-left">'
-                    f'{status_image_html(step.get("status", ""))}'
-                    f'<span class="ca-step-name">{safe_name}</span>'
-                    f"</div>"
-                    f'<span class="ca-step-more">More actions</span>'
-                    f"</div>"
+                head_col, arrow_col = st.columns(
+                    [1, 0.06],
+                    gap="small",
+                    vertical_alignment="center",
                 )
-                st.button(
-                    "",
-                    key=f"more_{run_id}_{i}",
-                    icon=":material/arrow_right:",
-                    help="More actions",
-                    on_click=_toggle_step,
-                    args=(open_key,),
-                )
+                with head_col:
+                    st.html(
+                        f'<div class="{head_class}" '
+                        f'style="display:flex;align-items:center;min-height:1.65rem;line-height:1.25;">'
+                        f'<div class="ca-step-left">'
+                        f'{status_image_html(step.get("status", ""))}'
+                        f'<span class="ca-step-name">{safe_name}</span>'
+                        f"</div>"
+                        f"</div>"
+                    )
+                with arrow_col:
+                    st.button(
+                        "",
+                        key=f"more_{run_id}_{i}",
+                        icon=(
+                            ":material/expand_more:"
+                            if is_open
+                            else ":material/arrow_right:"
+                        ),
+                        help="More actions",
+                        on_click=_toggle_step,
+                        args=(open_key,),
+                    )
                 if is_open:
                     with st.container(key=f"step_links_{i}"):
                         if st.button("Details", key=f"step_details_{run_id}_{i}"):
