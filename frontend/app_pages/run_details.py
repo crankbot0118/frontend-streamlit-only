@@ -245,10 +245,12 @@ else:
             head_class = "ca-step-head ca-step-head--open" if is_open else "ca-step-head"
             with st.container(key=f"stepcard_{i}"):
                 st.html(
-                    f'<div class="{head_class}">'
-                    f'<div class="ca-step-left">'
-                    f'{status_image_html(step.get("status", ""))}'
-                    f'<span class="ca-step-name">{safe_name}</span>'
+                    f'<div class="{head_class}" '
+                    f'style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:18px;">'
+                    f'<div class="ca-step-left" style="display:flex;align-items:center;gap:8px;min-width:0;">'
+                    f'{status_image_html(step.get("status", ""), size=18)}'
+                    f'<span class="ca-step-name" style="font-size:14px;font-weight:600;line-height:1.25;">'
+                    f"{safe_name}</span>"
                     f"</div>"
                     f'<span class="ca-step-more">More actions</span>'
                     f"</div>"

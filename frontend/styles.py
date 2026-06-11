@@ -1592,9 +1592,15 @@ _GLOBAL_CSS = f"""
       padding-bottom: 0 !important;
   }}
 
-  /* Run details — orange divider under header block. */
-  .st-key-ca-steps > [data-testid="stVerticalBlock"] {{
-      gap: 0.4rem;
+  /* Run details — step list spacing. */
+  .st-key-ca-steps > [data-testid="stVerticalBlock"],
+  .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
+  .st-key-ca-steps [data-testid="stFragment"] > [data-testid="stVerticalBlock"],
+  .st-key-ca-steps [data-testid="stVerticalBlock"]:has(> [class*="st-key-stepcard_"]) {{
+      gap: 6px !important;
+      align-items: stretch !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
 
   /* Stable shell while the steps fragment mounts or polls. */
@@ -1609,9 +1615,9 @@ _GLOBAL_CSS = f"""
       position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
-      padding: 0.5rem 2.8rem 0.5rem 1.1rem;
+      padding: 8px 16px;
       background: #ffffff;
-      min-height: 2.9rem;
+      min-height: 0;
   }}
 
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"],
@@ -1622,10 +1628,10 @@ _GLOBAL_CSS = f"""
   /* Pin the expand control immediately (avoids one-frame stack before key CSS). */
   [class*="st-key-stepcard_"] > [data-testid="stElementContainer"]:has(.stButton) {{
       position: absolute !important;
-      right: 0.5rem;
-      top: 0.5rem;
+      right: 8px;
+      top: 8px;
       width: auto !important;
-      height: 1.9rem;
+      height: 18px;
       margin: 0 !important;
       padding: 0 !important;
       z-index: 3;
@@ -1638,22 +1644,25 @@ _GLOBAL_CSS = f"""
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.7rem;
-      min-height: 1.9rem;
+      gap: 8px;
+      min-height: 18px;
   }}
-  /* Icon first, name right beside it — both aligned in vertical columns.
-     Tight gap so the name sits close to its status icon. */
   .ca-step-left {{
       display: flex;
       align-items: center;
-      gap: 0.45rem;
+      gap: 8px;
+      min-width: 0;
   }}
   .ca-step-name {{
+      font-size: 14px;
       font-weight: 600;
       color: {BRAND_INK};
+      line-height: 1.25;
   }}
   .ca-step-status-img {{
       flex: 0 0 auto;
+      width: 18px;
+      height: 18px;
       object-fit: contain;
       display: block;
   }}
@@ -1778,9 +1787,9 @@ _GLOBAL_CSS = f"""
   [class*="st-key-stepcard_"] [class*="st-key-more_"],
   [class*="st-key-stepcard_"] [class*="st-key-more_"] > [data-testid="stElementContainer"] {{
       position: absolute !important;
-      right: 0.5rem;
-      top: 0.5rem;
-      height: 1.9rem;
+      right: 8px;
+      top: 8px;
+      height: 18px;
       display: flex;
       align-items: center;
       width: auto !important;
