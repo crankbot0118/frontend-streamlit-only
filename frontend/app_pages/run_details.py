@@ -150,6 +150,8 @@ if run:
                 if st.button(
                     "Abort",
                     key="detail_abort",
+                    type="secondary",
+                    icon=":material/stop:",
                     disabled=not can_abort_skip,
                     help=_abort_skip_help,
                 ):

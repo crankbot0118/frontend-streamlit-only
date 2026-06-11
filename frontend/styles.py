@@ -26,6 +26,8 @@ from datetime_local import (
 
 BRAND_ORANGE = "#e87511"
 BRAND_INK = "#131516"
+BRAND_RED = "#cf222e"
+BRAND_RED_BG = "rgba(207, 34, 46, 0.12)"
 STATUS_ICON_PX = 18
 ACTION_ICON_REM = "1.1rem"
 SIDEBAR_WIDTH_PX = 200
@@ -50,8 +52,83 @@ def _asset_data_uri(filename: str) -> str:
     return f"data:{mime};base64,{b64}"
 
 
-_ABORT_BTN_ICON = _asset_data_uri("aborted.png")
 _SKIP_BTN_ICON = _asset_data_uri("skipped.png")
+
+
+def _nav_action_button_css(
+    container_selector: str,
+    *,
+    accent: str,
+    accent_bg: str,
+    disabled_opacity: str = "0.55",
+) -> str:
+    """Compact nav-style Streamlit button (Trigger job, Abort, etc.)."""
+    return f"""
+  {container_selector} .stButton,
+  {container_selector} .stDownloadButton {{
+      width: auto !important;
+      margin: 0 !important;
+  }}
+
+  {container_selector} .stButton button,
+  {container_selector} .stDownloadButton button {{
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      width: auto !important;
+      min-height: 1.7rem !important;
+      padding: 0.2rem 0.65rem !important;
+      gap: 0.45rem !important;
+      font-size: var(--ca-nav-font-size) !important;
+      font-weight: 600 !important;
+      line-height: 1.25 !important;
+      border-radius: 5px !important;
+      border: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
+      color: #9aa0a6 !important;
+      cursor: not-allowed !important;
+      opacity: {disabled_opacity} !important;
+      white-space: nowrap !important;
+  }}
+
+  {container_selector} .stButton button p,
+  {container_selector} .stDownloadButton button p {{
+      margin: 0 !important;
+      font-size: var(--ca-nav-font-size) !important;
+      font-weight: 600 !important;
+  }}
+
+  {container_selector} .stButton button svg,
+  {container_selector} .stButton button [data-testid="stIconMaterial"],
+  {container_selector} .stDownloadButton button svg,
+  {container_selector} .stDownloadButton button [data-testid="stIconMaterial"] {{
+      width: 1rem !important;
+      height: 1rem !important;
+      font-size: 1rem !important;
+      color: inherit !important;
+      fill: currentColor !important;
+  }}
+
+  {container_selector} .stButton button:not(:disabled),
+  {container_selector} .stDownloadButton button:not(:disabled) {{
+      background: {accent_bg} !important;
+      color: {accent} !important;
+      cursor: pointer !important;
+      opacity: 1 !important;
+  }}
+
+  {container_selector} .stButton button:not(:disabled) p,
+  {container_selector} .stButton button:not(:disabled) svg,
+  {container_selector} .stButton button:not(:disabled) [data-testid="stIconMaterial"],
+  {container_selector} .stDownloadButton button:not(:disabled) p,
+  {container_selector} .stDownloadButton button:not(:disabled) svg,
+  {container_selector} .stDownloadButton button:not(:disabled) [data-testid="stIconMaterial"] {{
+      color: {accent} !important;
+      fill: {accent} !important;
+  }}
+"""
+
 
 _GLOBAL_CSS = f"""
 <style>
@@ -564,62 +641,33 @@ _GLOBAL_CSS = f"""
       fill: #6b7177 !important;
   }}
   .st-key-ca-execute-clone-actions {{
-      margin-top: 0.25rem;
-  }}
-
-  .st-key-ca-execute-clone-actions .stButton {{
-      width: auto !important;
-  }}
-
-  /* Nav-style trigger control — compact, not default Streamlit primary pink. */
-  .st-key-ca-execute-clone-actions .stButton button {{
-      display: inline-flex !important;
+      display: flex !important;
+      justify-content: flex-end !important;
       align-items: center !important;
-      justify-content: flex-start !important;
-      width: auto !important;
-      min-height: 1.7rem !important;
-      padding: 0.2rem 0.65rem !important;
-      gap: 0.45rem !important;
-      font-size: var(--ca-nav-font-size) !important;
-      font-weight: 600 !important;
-      line-height: 1.25 !important;
-      border-radius: 5px !important;
-      border: none !important;
-      box-shadow: none !important;
-      background: transparent !important;
-      color: #9aa0a6 !important;
-      cursor: not-allowed !important;
-      opacity: 0.55 !important;
+      width: 100% !important;
+      margin: 0.35rem 0 0.15rem 0 !important;
+      padding: 0 !important;
   }}
-
-  .st-key-ca-execute-clone-actions .stButton button p {{
+  .st-key-ca-execute-clone-actions > [data-testid="stVerticalBlock"],
+  .st-key-ca-execute-clone-actions > [data-testid="stVerticalBlockBorderWrapper"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      justify-content: flex-end !important;
+      width: 100% !important;
       margin: 0 !important;
-      font-size: var(--ca-nav-font-size) !important;
-      font-weight: 600 !important;
+      padding: 0 !important;
   }}
-
-  .st-key-ca-execute-clone-actions .stButton button svg,
-  .st-key-ca-execute-clone-actions .stButton button [data-testid="stIconMaterial"] {{
-      width: 1rem !important;
-      height: 1rem !important;
-      font-size: 1rem !important;
-      color: inherit !important;
-      fill: currentColor !important;
+  .st-key-ca-execute-clone-actions > [data-testid="stElementContainer"] {{
+      width: auto !important;
+      flex: 0 0 auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
-
-  .st-key-ca-execute-clone-actions .stButton button:not(:disabled) {{
-      background: rgba(232, 117, 17, 0.12) !important;
-      color: {BRAND_ORANGE} !important;
-      cursor: pointer !important;
-      opacity: 1 !important;
-  }}
-
-  .st-key-ca-execute-clone-actions .stButton button:not(:disabled) p,
-  .st-key-ca-execute-clone-actions .stButton button:not(:disabled) svg,
-  .st-key-ca-execute-clone-actions .stButton button:not(:disabled) [data-testid="stIconMaterial"] {{
-      color: {BRAND_ORANGE} !important;
-      fill: {BRAND_ORANGE} !important;
-  }}
+  {_nav_action_button_css(
+      ".st-key-ca-execute-clone-actions",
+      accent=BRAND_RED,
+      accent_bg=BRAND_RED_BG,
+  )}
 
   .ca-exec-ready {{
       margin: 0.35rem 0 0.15rem 0;
@@ -946,13 +994,16 @@ _GLOBAL_CSS = f"""
   .ca-detail-title {{
       margin: 0;
   }}
-  /* Abort / Skip — icon + label, tight beside the heading. */
-  .st-key-detail_abort .stButton,
+  {_nav_action_button_css(
+      ".st-key-detail_abort",
+      accent=BRAND_RED,
+      accent_bg=BRAND_RED_BG,
+  )}
+  /* Skip — icon + label, tight beside the heading. */
   .st-key-detail_skip .stButton {{
       width: auto !important;
       margin: 0 !important;
   }}
-  .st-key-detail_abort .stButton button,
   .st-key-detail_skip .stButton button {{
       display: inline-flex !important;
       align-items: center !important;
@@ -966,13 +1017,11 @@ _GLOBAL_CSS = f"""
       border-radius: 8px !important;
       white-space: nowrap !important;
   }}
-  .st-key-detail_abort .stButton button p,
   .st-key-detail_skip .stButton button p {{
       margin: 0 !important;
       padding: 0 !important;
       line-height: 1 !important;
   }}
-  .st-key-detail_abort .stButton button::before,
   .st-key-detail_skip .stButton button::before {{
       content: "";
       display: inline-block;
@@ -982,24 +1031,13 @@ _GLOBAL_CSS = f"""
       background-position: center;
       background-repeat: no-repeat;
       background-size: contain;
-  }}
-  .st-key-detail_abort .stButton button::before {{
-      background-image: url({_ABORT_BTN_ICON});
-  }}
-  .st-key-detail_skip .stButton button::before {{
       background-image: url({_SKIP_BTN_ICON});
-  }}
-  .st-key-detail_abort .stButton button {{
-      background: #ffebe9 !important;
-      color: #cf222e !important;
-      border: 1px solid #ff8182 !important;
   }}
   .st-key-detail_skip .stButton button {{
       background: #fff1e5 !important;
       color: #bc4c00 !important;
       border: 1px solid #fd8c73 !important;
   }}
-  .st-key-detail_abort .stButton button:disabled,
   .st-key-detail_skip .stButton button:disabled {{
       opacity: 0.45 !important;
       cursor: not-allowed !important;
