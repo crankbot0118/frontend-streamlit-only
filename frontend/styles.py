@@ -65,6 +65,12 @@ _GLOBAL_CSS = f"""
       --secondary-background-color: #f6f7f8;
       --text-color: {BRAND_INK};
       --ca-detail-inline-gap: 0.45rem;
+      --ca-page-inset-top: 0.75rem;
+      --ca-sidebar-inset-x: 0.45rem;
+      --ca-title-size: 1.75rem;
+      --ca-subtitle-size: 0.82rem;
+      --ca-nav-font-size: 0.82rem;
+      --ca-nav-group-size: 0.82rem;
   }}
   [data-testid="stAppViewContainer"],
   .stApp,
@@ -91,7 +97,8 @@ _GLOBAL_CSS = f"""
   [data-testid="stSidebarContent"] {{
       height: 100% !important;
       max-height: 100vh !important;
-      overflow: hidden !important;
+      overflow-x: visible !important;
+      overflow-y: hidden !important;
       -ms-overflow-style: none;
       scrollbar-width: none;
   }}
@@ -114,9 +121,9 @@ _GLOBAL_CSS = f"""
   /* Pull the page content to the very top, no wasted space, and trim the
      wide left/right gutters so content sits closer to the sidebar. */
   [data-testid="stMainBlockContainer"] {{
-      padding-top: 1.2rem;
+      padding-top: var(--ca-page-inset-top);
       padding-bottom: 2rem;
-      padding-left: 1.5rem;
+      padding-left: 1.25rem;
       padding-right: 1.5rem;
   }}
 
@@ -150,8 +157,10 @@ _GLOBAL_CSS = f"""
       height: 100%;
       max-height: 100vh;
       min-height: 0;
-      padding-top: 0.75rem;
-      padding-bottom: 1.6rem;
+      padding-top: var(--ca-page-inset-top);
+      padding-left: var(--ca-sidebar-inset-x);
+      padding-right: var(--ca-sidebar-inset-x);
+      padding-bottom: 1.75rem;
       box-sizing: border-box;
       overflow: hidden;
   }}
@@ -171,7 +180,7 @@ _GLOBAL_CSS = f"""
 
   /* Logo block, left-aligned — width stays fixed while sidebar narrows. */
   .ca-logo {{
-      margin: 0 0 0.3rem 0;
+      margin: 0 0 0.45rem 0;
       padding: 0;
       flex: 0 0 auto;
   }}
@@ -197,7 +206,7 @@ _GLOBAL_CSS = f"""
   .ca-title h1 {{
       margin: 0;
       padding: 0;
-      font-size: 2.6rem;
+      font-size: var(--ca-title-size);
       font-weight: 700;
       letter-spacing: -0.02em;
       color: {BRAND_INK};
@@ -205,26 +214,27 @@ _GLOBAL_CSS = f"""
 
   /* Accent bar under the title. */
   .ca-title-rule {{
-      height: 3px;
+      height: 2px;
       width: 100%;
       border: none;
-      margin: 0.4rem 0 0.55rem 0;
+      margin: 0.3rem 0 0.45rem 0;
       border-radius: 999px;
       background: linear-gradient(90deg, {BRAND_ORANGE} 0%, rgba(232,117,17,0.15) 100%);
   }}
 
   .ca-subtitle {{
-      margin: 0;
+      margin: 0 0 0.1rem 0;
       color: #5b6166;
-      font-size: 0.95rem;
+      font-size: var(--ca-subtitle-size);
+      line-height: 1.35;
   }}
 
   /* ---------- Sidebar navigation ---------- */
 
   .st-key-ca-nav {{
-      --ca-nav-x: 0.3rem;
+      --ca-nav-x: 0.35rem;
       --ca-nav-icon: 1rem;
-      --ca-nav-gap: 0.35rem;
+      --ca-nav-gap: 0.45rem;
       --ca-nav-text: calc(var(--ca-nav-x) + var(--ca-nav-icon) + var(--ca-nav-gap));
       flex: 1 1 auto;
       min-height: 0;
@@ -233,7 +243,7 @@ _GLOBAL_CSS = f"""
 
   /* Tighten vertical spacing and keep every block left-aligned. */
   .st-key-ca-nav > [data-testid="stVerticalBlock"] {{
-      gap: 0 !important;
+      gap: 0.12rem !important;
       align-items: stretch;
   }}
 
@@ -260,13 +270,13 @@ _GLOBAL_CSS = f"""
       justify-content: flex-start !important;
       text-align: left !important;
       width: 100% !important;
-      min-height: 1.5rem !important;
+      min-height: 1.7rem !important;
       background: transparent !important;
       border: none !important;
       box-shadow: inset 3px 0 0 transparent !important;
       outline: none !important;
       gap: var(--ca-nav-gap) !important;
-      padding: 0.1rem var(--ca-nav-x) 0.1rem var(--ca-nav-x) !important;
+      padding: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x) !important;
       border-radius: 5px;
       color: {BRAND_INK};
   }}
@@ -291,9 +301,9 @@ _GLOBAL_CSS = f"""
   .st-key-ca-nav .stButton button p {{
       margin: 0;
       font-weight: 600;
-      font-size: 0.8rem;
+      font-size: var(--ca-nav-font-size);
       text-align: left !important;
-      line-height: 1.15;
+      line-height: 1.25;
   }}
 
   .st-key-ca-nav .stButton button:hover {{
@@ -341,12 +351,12 @@ _GLOBAL_CSS = f"""
   /* Small yellow "Coming soon!" highlight — aligned with nav labels. */
   .ca-soon {{
       display: inline-block;
-      margin: 0 0 0.12rem var(--ca-nav-text);
-      padding: 0.03rem 0.3rem;
+      margin: 0 0 0.18rem var(--ca-nav-text);
+      padding: 0.04rem 0.32rem;
       border-radius: 4px;
       background: #fff3cd;
       color: #8a6500;
-      font-size: 0.58rem;
+      font-size: 0.62rem;
       font-weight: 700;
       letter-spacing: 0.02em;
   }}
@@ -365,12 +375,12 @@ _GLOBAL_CSS = f"""
       align-items: center !important;
       justify-content: flex-start !important;
       gap: var(--ca-nav-gap) !important;
-      min-height: 1.5rem !important;
-      padding: 0.1rem var(--ca-nav-x) 0.1rem var(--ca-nav-x) !important;
+      min-height: 1.7rem !important;
+      padding: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x) !important;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.025em;
-      font-size: 0.66rem;
+      font-size: var(--ca-nav-group-size);
       color: #6b7177;
       background: transparent !important;
       border: none !important;
@@ -426,7 +436,7 @@ _GLOBAL_CSS = f"""
       display: block;
       height: 1px;
       border: none;
-      margin: 0.12rem var(--ca-nav-x) 0.12rem var(--ca-nav-x);
+      margin: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x);
       background: {BRAND_INK};
   }}
 
@@ -487,11 +497,14 @@ _GLOBAL_CSS = f"""
       width: {SIDEBAR_WIDTH_PX}px !important;
       z-index: 1000;
       margin: 0 !important;
-      padding: 0 var(--ca-nav-x, 0.3rem) !important;
+      padding: 0.35rem 0.75rem 0.45rem 0.75rem !important;
       box-sizing: border-box;
       height: auto !important;
       flex: 0 0 auto !important;
       overflow: visible !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
       background: linear-gradient(
           180deg,
           rgba(246, 247, 248, 0) 0%,
@@ -511,12 +524,24 @@ _GLOBAL_CSS = f"""
   .ca-status {{
       display: flex;
       align-items: center;
-      gap: 0.3rem;
+      justify-content: center;
+      gap: 0.35rem;
       width: 100%;
       max-width: 100%;
       white-space: nowrap;
       line-height: 1;
-      padding: 0.15rem 0 0;
+      padding: 0;
+      overflow: visible;
+  }}
+
+  .ca-status .ca-dot-wrap {{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 14px;
+      height: 14px;
+      overflow: visible;
   }}
 
   .ca-status .ca-dot {{
@@ -533,7 +558,7 @@ _GLOBAL_CSS = f"""
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      flex: 1 1 auto;
+      flex: 0 1 auto;
       min-width: 0;
   }}
 
@@ -692,7 +717,7 @@ _GLOBAL_CSS = f"""
       gap: var(--ca-detail-inline-gap);
       margin: 0;
       padding: 0;
-      font-size: 2.6rem;
+      font-size: var(--ca-title-size);
       font-weight: 700;
       letter-spacing: -0.02em;
       color: {BRAND_INK};
@@ -709,7 +734,7 @@ _GLOBAL_CSS = f"""
   .ca-action-sep {{
       display: inline-flex;
       align-items: center;
-      font-size: 1.35rem;
+      font-size: 0.95rem;
       font-weight: 400;
       color: #c2c7cc;
       line-height: 1;
@@ -765,7 +790,7 @@ _GLOBAL_CSS = f"""
       justify-content: center !important;
       gap: 0.55rem !important;
       width: auto !important;
-      font-size: 1.35rem !important;
+      font-size: 0.95rem !important;
       font-weight: 700 !important;
       padding: 0.35rem 0.9rem !important;
       min-height: 0 !important;
@@ -1726,7 +1751,7 @@ def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
         emit_html(
             f"""
             <div class="ca-status {state}">
-              <span class="ca-dot"></span>
+              <span class="ca-dot-wrap"><span class="ca-dot"></span></span>
               {refresh_html(last_refresh)}
             </div>
             """
