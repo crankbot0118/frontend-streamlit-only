@@ -71,6 +71,7 @@ _GLOBAL_CSS = f"""
       --ca-subtitle-size: 0.82rem;
       --ca-nav-font-size: 0.82rem;
       --ca-nav-group-size: 0.82rem;
+      --ca-nav-item-gap: 0.18rem;
   }}
   [data-testid="stAppViewContainer"],
   .stApp,
@@ -241,9 +242,9 @@ _GLOBAL_CSS = f"""
       overflow: hidden;
   }}
 
-  /* Tighten vertical spacing and keep every block left-aligned. */
+  /* Consistent vertical gap between every nav row (Home, groups, Execute Clone, etc.). */
   .st-key-ca-nav > [data-testid="stVerticalBlock"] {{
-      gap: 0.12rem !important;
+      gap: var(--ca-nav-item-gap) !important;
       align-items: stretch;
   }}
 
@@ -259,7 +260,7 @@ _GLOBAL_CSS = f"""
   }}
 
   .st-key-ca-nav [data-testid="stExpanderDetails"] [data-testid="stVerticalBlock"] {{
-      gap: 0 !important;
+      gap: var(--ca-nav-item-gap) !important;
   }}
 
   /* Borderless, left-aligned link-style nav buttons (descendant selectors so
@@ -273,7 +274,7 @@ _GLOBAL_CSS = f"""
       min-height: 1.7rem !important;
       background: transparent !important;
       border: none !important;
-      box-shadow: inset 3px 0 0 transparent !important;
+      box-shadow: none !important;
       outline: none !important;
       gap: var(--ca-nav-gap) !important;
       padding: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x) !important;
@@ -316,16 +317,16 @@ _GLOBAL_CSS = f"""
       color: {BRAND_ORANGE};
   }}
 
-  /* Active item (rendered as a primary button) — brand highlight. */
+  /* Active item — same look as hover (no left accent bar). */
   .st-key-ca-nav .stButton button[kind="primary"] {{
-      background: rgba(232, 117, 17, 0.14) !important;
-      box-shadow: inset 3px 0 0 {BRAND_ORANGE} !important;
+      background: rgba(232, 117, 17, 0.12) !important;
+      box-shadow: none !important;
       color: {BRAND_ORANGE} !important;
   }}
 
   .st-key-ca-nav .stButton button[kind="primary"] p {{
       color: {BRAND_ORANGE} !important;
-      font-weight: 700;
+      font-weight: 600;
   }}
 
   .st-key-ca-nav .stButton button[kind="primary"] svg {{
@@ -377,11 +378,11 @@ _GLOBAL_CSS = f"""
       gap: var(--ca-nav-gap) !important;
       min-height: 1.7rem !important;
       padding: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x) !important;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.025em;
-      font-size: var(--ca-nav-group-size);
-      color: #6b7177;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: normal;
+      font-size: var(--ca-nav-font-size);
+      color: #5b6166;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
@@ -414,7 +415,9 @@ _GLOBAL_CSS = f"""
   .st-key-ca-nav [data-testid="stExpander"] summary span {{
       flex: 1 1 auto;
       text-align: left !important;
-      line-height: 1.15;
+      line-height: 1.25;
+      font-size: var(--ca-nav-font-size);
+      font-weight: 600;
   }}
 
   /* Group items use the same left edge as top-level nav rows. */
@@ -436,7 +439,7 @@ _GLOBAL_CSS = f"""
       display: block;
       height: 1px;
       border: none;
-      margin: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x);
+      margin: var(--ca-nav-item-gap) var(--ca-nav-x) var(--ca-nav-item-gap) var(--ca-nav-x);
       background: {BRAND_INK};
   }}
 
