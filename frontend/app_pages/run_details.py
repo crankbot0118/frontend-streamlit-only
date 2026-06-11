@@ -247,7 +247,7 @@ else:
             )
             with st.container(key=f"stepcard_{i}"):
                 left_col, actions_col = st.columns(
-                    [1, 0.22],
+                    [1, 0.001],
                     gap="small",
                     vertical_alignment="center",
                 )
@@ -263,7 +263,7 @@ else:
                     )
                 with actions_col:
                     more_col, arrow_col = st.columns(
-                        [1, 0.42],
+                        [0.001, 0.001],
                         gap="small",
                         vertical_alignment="center",
                     )
