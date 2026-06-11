@@ -150,8 +150,8 @@ _GLOBAL_CSS = f"""
       height: 100%;
       max-height: 100vh;
       min-height: 0;
-      padding-top: 0.85rem;
-      padding-bottom: 0.35rem;
+      padding-top: 0.75rem;
+      padding-bottom: 1.6rem;
       box-sizing: border-box;
       overflow: hidden;
   }}
@@ -171,7 +171,7 @@ _GLOBAL_CSS = f"""
 
   /* Logo block, left-aligned — width stays fixed while sidebar narrows. */
   .ca-logo {{
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 0.3rem 0;
       padding: 0;
       flex: 0 0 auto;
   }}
@@ -222,9 +222,9 @@ _GLOBAL_CSS = f"""
   /* ---------- Sidebar navigation ---------- */
 
   .st-key-ca-nav {{
-      --ca-nav-x: 0.35rem;
-      --ca-nav-icon: 1.1rem;
-      --ca-nav-gap: 0.5rem;
+      --ca-nav-x: 0.3rem;
+      --ca-nav-icon: 1rem;
+      --ca-nav-gap: 0.35rem;
       --ca-nav-text: calc(var(--ca-nav-x) + var(--ca-nav-icon) + var(--ca-nav-gap));
       flex: 1 1 auto;
       min-height: 0;
@@ -244,6 +244,14 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
 
+  .st-key-ca-nav .stButton {{
+      margin: 0 !important;
+  }}
+
+  .st-key-ca-nav [data-testid="stExpanderDetails"] [data-testid="stVerticalBlock"] {{
+      gap: 0 !important;
+  }}
+
   /* Borderless, left-aligned link-style nav buttons (descendant selectors so
      we catch the button regardless of intermediate wrappers). */
   .st-key-ca-nav .stButton button {{
@@ -252,14 +260,14 @@ _GLOBAL_CSS = f"""
       justify-content: flex-start !important;
       text-align: left !important;
       width: 100% !important;
-      min-height: 1.75rem !important;
+      min-height: 1.5rem !important;
       background: transparent !important;
       border: none !important;
       box-shadow: inset 3px 0 0 transparent !important;
       outline: none !important;
       gap: var(--ca-nav-gap) !important;
-      padding: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x) !important;
-      border-radius: 6px;
+      padding: 0.1rem var(--ca-nav-x) 0.1rem var(--ca-nav-x) !important;
+      border-radius: 5px;
       color: {BRAND_INK};
   }}
 
@@ -283,9 +291,9 @@ _GLOBAL_CSS = f"""
   .st-key-ca-nav .stButton button p {{
       margin: 0;
       font-weight: 600;
-      font-size: 0.88rem;
+      font-size: 0.8rem;
       text-align: left !important;
-      line-height: 1.2;
+      line-height: 1.15;
   }}
 
   .st-key-ca-nav .stButton button:hover {{
@@ -333,12 +341,12 @@ _GLOBAL_CSS = f"""
   /* Small yellow "Coming soon!" highlight — aligned with nav labels. */
   .ca-soon {{
       display: inline-block;
-      margin: 0 0 0.25rem var(--ca-nav-text);
-      padding: 0.04rem 0.35rem;
-      border-radius: 5px;
+      margin: 0 0 0.12rem var(--ca-nav-text);
+      padding: 0.03rem 0.3rem;
+      border-radius: 4px;
       background: #fff3cd;
       color: #8a6500;
-      font-size: 0.62rem;
+      font-size: 0.58rem;
       font-weight: 700;
       letter-spacing: 0.02em;
   }}
@@ -357,12 +365,12 @@ _GLOBAL_CSS = f"""
       align-items: center !important;
       justify-content: flex-start !important;
       gap: var(--ca-nav-gap) !important;
-      min-height: 1.75rem !important;
-      padding: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x) !important;
+      min-height: 1.5rem !important;
+      padding: 0.1rem var(--ca-nav-x) 0.1rem var(--ca-nav-x) !important;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.03em;
-      font-size: 0.72rem;
+      letter-spacing: 0.025em;
+      font-size: 0.66rem;
       color: #6b7177;
       background: transparent !important;
       border: none !important;
@@ -396,7 +404,7 @@ _GLOBAL_CSS = f"""
   .st-key-ca-nav [data-testid="stExpander"] summary span {{
       flex: 1 1 auto;
       text-align: left !important;
-      line-height: 1.25;
+      line-height: 1.15;
   }}
 
   /* Group items use the same left edge as top-level nav rows. */
@@ -418,7 +426,7 @@ _GLOBAL_CSS = f"""
       display: block;
       height: 1px;
       border: none;
-      margin: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x);
+      margin: 0.12rem var(--ca-nav-x) 0.12rem var(--ca-nav-x);
       background: {BRAND_INK};
   }}
 
@@ -468,37 +476,65 @@ _GLOBAL_CSS = f"""
       font-weight: 700 !important;
   }}
 
-  /* ---------- Sidebar bottom status ---------- */
+  /* ---------- Sidebar bottom status (fixed to viewport) ---------- */
 
-  /* Pin status to the bottom without forcing extra viewport height. */
-  [data-testid="stSidebarUserContent"] > [data-testid="stVerticalBlock"] > .st-key-ca-status {{
-      margin-top: auto;
-      flex: 0 0 auto;
-  }}
-
+  /* Anchor to the bottom of the screen, not the nav stack. */
+  [data-testid="stSidebarUserContent"] > [data-testid="stVerticalBlock"] > .st-key-ca-status,
   .st-key-ca-status {{
-      flex: 0 0 auto;
+      position: fixed !important;
+      left: 0 !important;
+      bottom: 0.45rem !important;
+      width: {SIDEBAR_WIDTH_PX}px !important;
+      z-index: 1000;
+      margin: 0 !important;
+      padding: 0 var(--ca-nav-x, 0.3rem) !important;
+      box-sizing: border-box;
+      height: auto !important;
+      flex: 0 0 auto !important;
+      overflow: visible !important;
+      background: linear-gradient(
+          180deg,
+          rgba(246, 247, 248, 0) 0%,
+          rgba(246, 247, 248, 0.92) 35%,
+          #f6f7f8 100%
+      );
   }}
 
-  /* Single inline row: glowing dot + last-refresh text. No card. */
+  .st-key-ca-status [data-testid="stElementContainer"],
+  .st-key-ca-status [data-testid="stVerticalBlock"] {{
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+  }}
+
+  /* Single inline row: dot + compact last-refresh text. */
   .ca-status {{
       display: flex;
       align-items: center;
-      gap: 0.45rem;
-      padding: 0.1rem 0.1rem 0;
+      gap: 0.3rem;
+      width: 100%;
+      max-width: 100%;
+      white-space: nowrap;
+      line-height: 1;
+      padding: 0.15rem 0 0;
   }}
 
   .ca-status .ca-dot {{
-      width: 10px;
-      height: 10px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       flex: 0 0 auto;
   }}
 
   .ca-status .ca-refresh-text {{
-      font-size: 0.68rem;
+      font-size: 0.56rem;
       color: #6b7177;
-      line-height: 1.2;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1 1 auto;
+      min-width: 0;
   }}
 
   /* Live: glowing green with a pulse. */
@@ -515,7 +551,7 @@ _GLOBAL_CSS = f"""
 
   @keyframes ca-pulse {{
       0%   {{ box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }}
-      70%  {{ box-shadow: 0 0 0 9px rgba(34, 197, 94, 0); }}
+      70%  {{ box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }}
       100% {{ box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }}
   }}
 

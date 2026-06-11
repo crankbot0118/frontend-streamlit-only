@@ -58,13 +58,11 @@ _LOCAL_DT_JS = """
     if (Number.isNaN(dt.getTime())) return null;
     var month = dt.toLocaleString(undefined, { month: "short" });
     return (
-      "Last refresh on " +
+      "Last refresh " +
       month +
       " " +
       dt.getDate() +
       ", " +
-      dt.getFullYear() +
-      " at " +
       formatTime(dt)
     );
   }
@@ -166,7 +164,8 @@ def fmt_relative_update_fallback(value) -> str:
 def fmt_refresh_fallback(value: datetime) -> str:
     dt = parse_client_datetime(value) or datetime.now(timezone.utc)
     local = dt.astimezone()
-    return f"Last refresh on {local.strftime('%b %d, %Y at %I:%M %p')}"
+    time_str = local.strftime("%I:%M %p").lstrip("0")
+    return f"Last refresh {local.strftime('%b %d')}, {time_str}"
 
 
 def local_dt_span(
@@ -211,7 +210,7 @@ def refresh_html(value: datetime) -> str:
     return local_dt_span(
         value,
         "refresh",
-        empty="Last refresh on —",
+        empty="Last refresh —",
         css_class="ca-refresh-text",
     )
 
