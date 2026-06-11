@@ -991,8 +991,8 @@ _GLOBAL_CSS = f"""
   /* ---------- Run details header ---------- */
   .st-key-ca-detail-header {{
       --ca-detail-inline-gap: 0.28rem;
-      --ca-detail-title-height: 1.55rem;
-      --ca-detail-meta-height: 1.22rem;
+      --ca-detail-title-height: 1.38rem;
+      --ca-detail-meta-height: 1.05rem;
   }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
   /* Title parts use the same gap as the middot-separated heading text. */
@@ -1022,7 +1022,7 @@ _GLOBAL_CSS = f"""
   .ca-detail-page-header .ca-title {{
       display: inline-flex;
       align-items: center;
-      min-height: var(--ca-detail-title-height);
+      min-height: 0;
       margin: 0;
       padding: 0;
   }}
@@ -1044,7 +1044,8 @@ _GLOBAL_CSS = f"""
       gap: var(--ca-detail-inline-gap) !important;
       width: fit-content !important;
       max-width: 100% !important;
-      min-height: var(--ca-detail-title-height) !important;
+      min-height: 0 !important;
+      height: auto !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
@@ -1112,9 +1113,9 @@ _GLOBAL_CSS = f"""
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
-      margin: -0.32rem 0 -0.14rem 0 !important;
+      margin: -0.42rem 0 -0.22rem 0 !important;
       padding: 0 !important;
-      min-height: var(--ca-detail-meta-height);
+      min-height: 0 !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="stHorizontalBlock"] {{
       display: flex !important;
@@ -1256,7 +1257,7 @@ _GLOBAL_CSS = f"""
       padding: 0;
       display: flex;
       align-items: center;
-      min-height: var(--ca-detail-meta-height);
+      min-height: 0;
   }}
   /* Meta line — single compact row, vertically centered. */
   .ca-detail-meta {{
@@ -1270,7 +1271,7 @@ _GLOBAL_CSS = f"""
       font-style: italic;
       width: 100%;
       line-height: 1;
-      height: var(--ca-detail-meta-height);
+      height: auto;
       min-height: var(--ca-detail-meta-height);
       min-width: 0;
   }}
@@ -1367,16 +1368,32 @@ _GLOBAL_CSS = f"""
   .ca-loglink:hover {{
       text-decoration: underline;
   }}
-  /* Tighter gap between title, meta row, and orange accent bar on run details. */
+  /* Tighter vertical stack: title → meta → orange divider. */
   .st-key-ca-detail-header .ca-title-rule {{
       margin: 0 !important;
+      display: block;
   }}
-  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] {{
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-header > [data-testid="stVerticalBlockBorderWrapper"] {{
       gap: 0 !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
       margin: 0 !important;
       padding: 0 !important;
+  }}
+  .st-key-ca-detail-header .st-key-ca-detail-title-row {{
+      margin-bottom: -0.1rem !important;
+  }}
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child {{
+      margin-top: -0.2rem !important;
+      line-height: 0 !important;
+  }}
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child [data-testid="stHtml"],
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child iframe {{
+      margin: 0 !important;
+      padding: 0 !important;
+      display: block !important;
+      line-height: 0 !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="stElementContainer"] {{
       margin-bottom: 0 !important;
