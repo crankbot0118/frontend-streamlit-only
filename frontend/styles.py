@@ -1917,6 +1917,21 @@ _GLOBAL_CSS = f"""
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button p {{
       display: none !important;
   }}
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button [data-testid="stIconMaterial"],
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button svg {{
+      transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s ease, fill 0.15s ease;
+      transform-origin: center center;
+  }}
+  [class*="st-key-stepcard_"]:has([class*="st-key-step_links_"]) [class*="st-key-more_"] .stButton button [data-testid="stIconMaterial"],
+  [class*="st-key-stepcard_"]:has([class*="st-key-step_links_"]) [class*="st-key-more_"] .stButton button svg {{
+      transform: rotate(90deg);
+  }}
+  @media (prefers-reduced-motion: reduce) {{
+      [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button [data-testid="stIconMaterial"],
+      [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button svg {{
+          transition: none !important;
+      }}
+  }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button [data-testid="stIconMaterial"] {{
       font-size: 16px !important;
       width: 16px !important;

@@ -242,9 +242,6 @@ else:
             step_pk = step.get("clone_function_run_id")
             open_key = f"step_open_{run_id}_{i}"
             is_open = st.session_state.get(open_key, False)
-            toggle_icon = (
-                ":material/expand_more:" if is_open else ":material/arrow_right:"
-            )
             with st.container(key=f"stepcard_{i}"):
                 left_col, more_col, arrow_col = st.columns(
                     [1, 0.11, 0.04],
@@ -267,7 +264,7 @@ else:
                     st.button(
                         "",
                         key=f"more_{run_id}_{i}",
-                        icon=toggle_icon,
+                        icon=":material/arrow_right:",
                         help="More actions",
                         type="tertiary",
                         on_click=_toggle_step,
