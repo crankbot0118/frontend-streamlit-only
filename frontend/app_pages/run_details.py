@@ -246,8 +246,8 @@ else:
                 ":material/expand_more:" if is_open else ":material/arrow_right:"
             )
             with st.container(key=f"stepcard_{i}"):
-                left_col, actions_col = st.columns(
-                    [1, 0.001],
+                left_col, more_col, arrow_col = st.columns(
+                    [1, 0.11, 0.04],
                     gap="small",
                     vertical_alignment="center",
                 )
@@ -261,9 +261,11 @@ else:
                         f"{safe_name}</span>"
                         f"</div>"
                     )
-                with actions_col:
+                with more_col:
+                    st.html('<span class="ca-step-more">More actions</span>')
+                with arrow_col:
                     st.button(
-                        "More actions",
+                        "",
                         key=f"more_{run_id}_{i}",
                         icon=toggle_icon,
                         help="More actions",

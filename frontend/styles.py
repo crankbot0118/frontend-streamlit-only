@@ -1664,20 +1664,31 @@ _GLOBAL_CSS = f"""
       min-width: 0 !important;
       width: auto !important;
   }}
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child,
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child {{
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2),
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) {{
       flex: 0 0 auto !important;
       width: auto !important;
-      min-width: 0 !important;
+      min-width: max-content !important;
       max-width: none !important;
       justify-content: flex-end !important;
       margin-left: auto !important;
   }}
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child,
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child {{
+      flex: 0 0 auto !important;
+      width: auto !important;
+      min-width: 1.25rem !important;
+      max-width: none !important;
+      justify-content: flex-end !important;
+      margin-left: 0 !important;
+  }}
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stVerticalBlock"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stVerticalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] {{
       width: auto !important;
       align-items: flex-end !important;
-      margin-left: auto !important;
+      margin-left: 0 !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stVerticalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stElementContainer"],
@@ -1690,31 +1701,26 @@ _GLOBAL_CSS = f"""
       max-width: 100% !important;
       overflow: hidden !important;
   }}
-  /* Right-side actions group: "More actions" + arrow with 8px gap. */
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] {{
-      display: flex !important;
-      flex-direction: row !important;
-      flex-wrap: nowrap !important;
-      gap: 8px !important;
-      align-items: center !important;
-      justify-content: flex-end !important;
-      width: auto !important;
-      margin-left: auto !important;
-  }}
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"] {{
-      flex: 0 0 auto !important;
-      width: auto !important;
-      min-width: 0 !important;
-      max-width: none !important;
-  }}
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stElementContainer"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stElementContainer"] {{
+  /* Right-side actions group: "More actions" label + arrow with 8px gap. */
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stElementContainer"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stElementContainer"] {{
       width: auto !important;
       flex: 0 0 auto !important;
       margin: 0 !important;
       padding: 0 !important;
+  }}
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"] iframe,
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"] iframe {{
+      display: block !important;
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      background: transparent !important;
+      min-height: 0 !important;
+      max-height: 24px !important;
+      height: auto !important;
+      overflow: visible !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe {{
@@ -1888,34 +1894,28 @@ _GLOBAL_CSS = f"""
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button {{
       width: auto !important;
-      min-width: 0 !important;
-      min-height: 24px !important;
-      height: auto !important;
+      min-width: 16px !important;
+      min-height: 16px !important;
+      height: 16px !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
-      color: #6b7177 !important;
+      color: #8a9097 !important;
       padding: 0 !important;
-      gap: 8px !important;
       display: inline-flex !important;
-      flex-direction: row-reverse !important;
       align-items: center !important;
-      justify-content: flex-end !important;
-      white-space: nowrap !important;
+      justify-content: center !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button [data-testid="stMarkdownContainer"] {{
-      display: flex !important;
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
       margin: 0 !important;
       padding: 0 !important;
-      width: auto !important;
-      flex: 0 0 auto !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button p {{
-      margin: 0 !important;
-      font-size: 13px !important;
-      font-weight: 600 !important;
-      color: #6b7177 !important;
-      line-height: 1.25 !important;
+      display: none !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button [data-testid="stIconMaterial"] {{
       font-size: 16px !important;
@@ -1930,7 +1930,6 @@ _GLOBAL_CSS = f"""
       height: 16px !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover,
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover p,
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover [data-testid="stIconMaterial"],
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover svg {{
       color: {BRAND_ORANGE} !important;
