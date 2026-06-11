@@ -68,4 +68,3 @@ with st.sidebar:
 
 consume_pending_navigation()
 pg.run()
-consume_pending_navigation()

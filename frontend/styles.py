@@ -1304,46 +1304,6 @@ _GLOBAL_CSS = f"""
       accent=BRAND_RED,
       accent_bg=BRAND_RED_BG,
   )}
-  .st-key-ca-detail-title-row .st-key-detail_close .stButton button {{
-      min-height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
-      height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
-      min-width: calc(var(--ca-detail-title-height) - 0.2rem) !important;
-      width: calc(var(--ca-detail-title-height) - 0.2rem) !important;
-      padding: 0 !important;
-      gap: 0 !important;
-      justify-content: center !important;
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      color: #8a9097 !important;
-      cursor: pointer !important;
-      opacity: 1 !important;
-  }}
-  .st-key-detail_close .stButton button [data-testid="stMarkdownContainer"],
-  .st-key-detail_close .stButton button p {{
-      display: none !important;
-      width: 0 !important;
-      height: 0 !important;
-      overflow: hidden !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-detail_close .stButton button [data-testid="stIconMaterial"],
-  .st-key-detail_close .stButton button svg {{
-      width: 1rem !important;
-      height: 1rem !important;
-      font-size: 1rem !important;
-      color: #8a9097 !important;
-      fill: currentColor !important;
-      transition: color 0.15s ease, fill 0.15s ease;
-  }}
-  .st-key-detail_close .stButton button:hover,
-  .st-key-detail_close .stButton button:hover [data-testid="stIconMaterial"],
-  .st-key-detail_close .stButton button:hover svg {{
-      background: transparent !important;
-      color: {BRAND_ORANGE} !important;
-      fill: {BRAND_ORANGE} !important;
-  }}
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
