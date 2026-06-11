@@ -29,7 +29,6 @@ BRAND_INK = "#131516"
 BRAND_RED = "#cf222e"
 BRAND_RED_BG = "rgba(207, 34, 46, 0.12)"
 STATUS_ICON_PX = 18
-ACTION_ICON_REM = "1.1rem"
 SIDEBAR_WIDTH_PX = 200
 
 # Repo root is the parent of the ``frontend/`` package that holds this file.
@@ -49,9 +48,6 @@ def _asset_data_uri(filename: str) -> str:
     suffix = Path(filename).suffix.lower()
     mime = "image/svg+xml" if suffix == ".svg" else "image/png"
     return f"data:{mime};base64,{b64}"
-
-
-_SKIP_BTN_ICON = _asset_data_uri("skipped.png")
 
 
 def _nav_action_button_css(
@@ -998,42 +994,84 @@ _GLOBAL_CSS = f"""
       font-weight: 700;
       letter-spacing: -0.02em;
       color: {BRAND_INK};
-      line-height: 1.1;
+      line-height: 1;
       white-space: nowrap;
+  }}
+  .ca-detail-page-header {{
+      margin: 0;
+      padding: 0;
+      flex: 1 1 auto;
+      min-width: 0;
+  }}
+  .ca-detail-page-header .ca-title {{
+      min-height: var(--ca-header-row-height);
   }}
   .ca-detail-title-parts .ca-run-sep {{
       flex: 0 0 auto;
+      font-weight: 400;
   }}
   .ca-detail-title-parts .arrow {{
       color: {BRAND_ORANGE};
   }}
-  /* Dot between Abort and Skip — same style as the title separators. */
-  .ca-action-sep {{
-      display: inline-flex;
-      align-items: center;
-      font-size: 0.95rem;
-      font-weight: 400;
-      color: #c2c7cc;
-      line-height: 1;
-  }}
-  /* Title row: heading then Abort · Skip with identical gap. */
+  /* Title row: back arrow · page-style heading · Abort. */
   .st-key-ca-detail-title-row,
-  .st-key-ca-detail-title-row [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-title-row [data-testid="stVerticalBlockBorderWrapper"] {{
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] {{
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: var(--ca-detail-inline-gap) !important;
-      width: fit-content !important;
+      gap: 0.45rem !important;
+      width: 100% !important;
       max-width: 100% !important;
+      min-height: var(--ca-header-row-height) !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
-  .st-key-ca-detail-title-row [data-testid="stElementContainer"] {{
+  .st-key-ca-detail-title-row > [data-testid="stElementContainer"] {{
       width: auto !important;
       flex: 0 0 auto !important;
       margin: 0 !important;
       padding: 0 !important;
       max-width: none !important;
+  }}
+  .st-key-ca-detail-title-row > [data-testid="stElementContainer"]:nth-child(2) {{
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+  }}
+  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton {{
+      width: auto !important;
+      margin: 0 !important;
+  }}
+  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button {{
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: auto !important;
+      min-width: var(--ca-header-row-height) !important;
+      min-height: var(--ca-header-row-height) !important;
+      padding: 0 0.15rem !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: {BRAND_ORANGE} !important;
+      cursor: pointer !important;
+      opacity: 1 !important;
+      border-radius: 5px !important;
+  }}
+  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button svg,
+  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button [data-testid="stIconMaterial"] {{
+      width: 1.35rem !important;
+      height: 1.35rem !important;
+      font-size: 1.35rem !important;
+      color: {BRAND_ORANGE} !important;
+      fill: {BRAND_ORANGE} !important;
+  }}
+  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button:hover {{
+      background: var(--ca-nav-highlight-bg) !important;
+  }}
+  .st-key-ca-detail-title-row .st-key-back_to_runs .stButton button p {{
+      display: none !important;
   }}
   .st-key-detail-actions,
   .st-key-detail-actions [data-testid="stVerticalBlock"],
@@ -1044,6 +1082,7 @@ _GLOBAL_CSS = f"""
       flex-wrap: nowrap !important;
       gap: var(--ca-detail-inline-gap) !important;
       width: auto !important;
+      margin-left: auto !important;
   }}
   .st-key-detail-actions [data-testid="stElementContainer"] {{
       width: auto !important;
@@ -1051,57 +1090,11 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
   }}
-  .ca-detail-title {{
-      margin: 0;
-  }}
   {_nav_action_button_css(
       ".st-key-detail_abort",
       accent=BRAND_RED,
       accent_bg=BRAND_RED_BG,
   )}
-  /* Skip — icon + label, tight beside the heading. */
-  .st-key-detail_skip .stButton {{
-      width: auto !important;
-      margin: 0 !important;
-  }}
-  .st-key-detail_skip .stButton button {{
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      gap: 0.55rem !important;
-      width: auto !important;
-      font-size: 0.95rem !important;
-      font-weight: 700 !important;
-      padding: 0.35rem 0.9rem !important;
-      min-height: 0 !important;
-      border-radius: 8px !important;
-      white-space: nowrap !important;
-  }}
-  .st-key-detail_skip .stButton button p {{
-      margin: 0 !important;
-      padding: 0 !important;
-      line-height: 1 !important;
-  }}
-  .st-key-detail_skip .stButton button::before {{
-      content: "";
-      display: inline-block;
-      width: {ACTION_ICON_REM};
-      height: {ACTION_ICON_REM};
-      flex: 0 0 auto;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: contain;
-      background-image: url({_SKIP_BTN_ICON});
-  }}
-  .st-key-detail_skip .stButton button {{
-      background: #fff1e5 !important;
-      color: #bc4c00 !important;
-      border: 1px solid #fd8c73 !important;
-  }}
-  .st-key-detail_skip .stButton button:disabled {{
-      opacity: 0.45 !important;
-      cursor: not-allowed !important;
-  }}
   /* Meta row: full-width facts + Download Log; Auto refresh pinned far right. */
   .st-key-ca-detail-meta-row {{
       position: relative;
@@ -1305,43 +1298,7 @@ _GLOBAL_CSS = f"""
       padding-bottom: 0 !important;
   }}
 
-  /* Borderless "Back to Run History" link-style button. */
-  .st-key-back_to_runs .stButton button {{
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      outline: none !important;
-      padding: 0.3rem 0.2rem !important;
-      color: {BRAND_ORANGE} !important;
-      font-weight: 600;
-      cursor: pointer !important;
-      opacity: 1 !important;
-  }}
-  .st-key-back_to_runs .stButton button p,
-  .st-key-back_to_runs .stButton button svg,
-  .st-key-back_to_runs .stButton button [data-testid="stIconMaterial"] {{
-      color: {BRAND_ORANGE} !important;
-      fill: {BRAND_ORANGE} !important;
-  }}
-  .st-key-back_to_runs .stButton button:hover,
-  .st-key-back_to_runs .stButton button:focus,
-  .st-key-back_to_runs .stButton button:active {{
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      outline: none !important;
-      color: {BRAND_ORANGE} !important;
-  }}
-  .st-key-back_to_runs .stButton button:hover p {{
-      text-decoration: underline;
-  }}
-  .st-key-back_to_runs .stButton button:hover svg,
-  .st-key-back_to_runs .stButton button:hover p,
-  .st-key-back_to_runs .stButton button:hover [data-testid="stIconMaterial"] {{
-      color: {BRAND_ORANGE} !important;
-  }}
-
-  /* ---------- Step rows (run details) ---------- */
+  /* Run details — orange divider under header block. */
   .st-key-ca-steps > [data-testid="stVerticalBlock"] {{
       gap: 0.4rem;
   }}

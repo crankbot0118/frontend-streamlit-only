@@ -14,7 +14,6 @@ from api import (
     get_run,
     get_run_steps,
     get_step_detail,
-    skip_run,
 )
 from config.settings import frontend
 from log_download import cached_run_log, cached_step_log
@@ -73,14 +72,6 @@ if run_id:
 
 refresh_key = f"auto_refresh_{run_id}"
 
-if st.button(
-    "Back to Run History",
-    icon=":material/arrow_back:",
-    key="back_to_runs",
-):
-    st.query_params.clear()
-    goto_page("Run History")
-
 if not run_id:
     render_title("Run details")
     st.warning("No run selected. Go back to Run History and pick a run.")
@@ -115,14 +106,11 @@ run_status = (latest_run.get("status") or "").upper() if latest_run else ""
 can_abort_skip = run_status == "FAILED" and failed_step_id is not None
 
 if can_abort_skip:
-    _abort_skip_help = "Mark this failed run as ABORTED"
-    _skip_help = "Mark this failed run as SKIPPED"
+    _abort_help = "Mark this failed run as ABORTED"
 elif run_status != "FAILED":
-    _abort_skip_help = "Only available when clone run status is FAILED"
-    _skip_help = _abort_skip_help
+    _abort_help = "Only available when clone run status is FAILED"
 else:
-    _abort_skip_help = "No failed function step found for this run"
-    _skip_help = _abort_skip_help
+    _abort_help = "No failed function step found for this run"
 
 if run:
     src = _esc(run.get("source_name", "—"))
@@ -133,16 +121,26 @@ if run:
 
     with st.container(key="ca-detail-header"):
         with st.container(key="ca-detail-title-row"):
+            if st.button(
+                "",
+                icon=":material/arrow_back:",
+                key="back_to_runs",
+                help="Back to Run History",
+            ):
+                st.query_params.clear()
+                goto_page("Run History")
             st.html(
                 f"""
-                <div class="ca-title ca-detail-title">
-                  <h1 class="ca-detail-title-parts">
-                    <span>Run #{safe_run_id}</span>
-                    <span class="ca-run-sep">&middot;</span>
-                    <span>{src}</span>
-                    <span class="arrow">&#8594;</span>
-                    <span>{tgt}</span>
-                  </h1>
+                <div class="ca-page-header ca-detail-page-header">
+                  <div class="ca-title">
+                    <h1 class="ca-detail-title-parts">
+                      <span>Run #{safe_run_id}</span>
+                      <span class="ca-run-sep">&middot;</span>
+                      <span>{src}</span>
+                      <span class="arrow">&#8594;</span>
+                      <span>{tgt}</span>
+                    </h1>
+                  </div>
                 </div>
                 """
             )
@@ -153,7 +151,7 @@ if run:
                     type="secondary",
                     icon=":material/stop:",
                     disabled=not can_abort_skip,
-                    help=_abort_skip_help,
+                    help=_abort_help,
                 ):
                     if not can_abort_skip:
                         show_error(
@@ -167,24 +165,6 @@ if run:
                             st.rerun()
                         except Exception as exc:
                             show_error(exc, context="Could not abort run")
-                if st.button(
-                    "Skip",
-                    key="detail_skip",
-                    disabled=not can_abort_skip,
-                    help=_skip_help,
-                ):
-                    if not can_abort_skip:
-                        show_error(
-                            "Skip is only allowed when clone run status is FAILED.",
-                            context="Cannot skip run",
-                        )
-                    else:
-                        try:
-                            skip_run(run_id, failed_step_id)
-                            st.session_state.pop("selected_run", None)
-                            st.rerun()
-                        except Exception as exc:
-                            show_error(exc, context="Could not skip run")
 
         with st.container(key="ca-detail-meta-row"):
             emit_html(
