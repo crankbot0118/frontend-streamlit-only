@@ -989,6 +989,11 @@ _GLOBAL_CSS = f"""
   .ca-run-metaline .mi-dur   {{ color: #8a9097; }}
 
   /* ---------- Run details header ---------- */
+  .st-key-ca-detail-header {{
+      --ca-detail-inline-gap: 0.28rem;
+      --ca-detail-title-height: 1.55rem;
+      --ca-detail-meta-height: 1.22rem;
+  }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
   /* Title parts use the same gap as the middot-separated heading text. */
   .ca-detail-title-parts {{
@@ -1003,16 +1008,23 @@ _GLOBAL_CSS = f"""
       color: {BRAND_INK};
       line-height: 1;
       white-space: nowrap;
+      width: fit-content;
+      max-width: none;
   }}
   .ca-detail-page-header {{
       margin: 0;
       padding: 0;
-      flex: 0 1 auto;
-      min-width: 0;
-      width: auto;
+      display: inline-block;
+      width: fit-content;
+      max-width: none;
+      vertical-align: middle;
   }}
   .ca-detail-page-header .ca-title {{
-      min-height: var(--ca-header-row-height);
+      display: inline-flex;
+      align-items: center;
+      min-height: var(--ca-detail-title-height);
+      margin: 0;
+      padding: 0;
   }}
   .ca-detail-title-parts .ca-run-sep {{
       flex: 0 0 auto;
@@ -1021,31 +1033,45 @@ _GLOBAL_CSS = f"""
   .ca-detail-title-parts .arrow {{
       color: {BRAND_ORANGE};
   }}
-  /* Title row: page-style Run # heading · Abort inline after target. */
+  /* Title row: Run # heading then Abort — single inline flex row, no overlap. */
   .st-key-ca-detail-title-row,
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] {{
+  .st-key-ca-detail-title-row [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-title-row [data-testid="stVerticalBlockBorderWrapper"] {{
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: 0 !important;
-      width: 100% !important;
+      gap: var(--ca-detail-inline-gap) !important;
+      width: fit-content !important;
       max-width: 100% !important;
-      min-height: var(--ca-header-row-height) !important;
+      min-height: var(--ca-detail-title-height) !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
-  .st-key-ca-detail-title-row > [data-testid="stElementContainer"] {{
-      width: auto !important;
+  .st-key-ca-detail-title-row [data-testid="stElementContainer"] {{
       flex: 0 0 auto !important;
+      width: auto !important;
+      min-width: 0 !important;
+      max-width: none !important;
       margin: 0 !important;
       padding: 0 !important;
-      max-width: none !important;
+      position: relative !important;
   }}
-  .st-key-ca-detail-title-row > [data-testid="stElementContainer"]:first-child {{
-      flex: 0 1 auto !important;
+  .st-key-ca-detail-title-row [data-testid="stHtml"],
+  .st-key-ca-detail-title-row [data-testid="stHtml"] iframe,
+  .st-key-ca-detail-title-row .stHtml {{
+      width: auto !important;
+      max-width: none !important;
       min-width: 0 !important;
+      height: auto !important;
+      display: block !important;
+      overflow: visible !important;
+  }}
+  .st-key-ca-detail-title-row [data-testid="stElementContainer"]:has([data-testid="stHtml"]) {{
+      flex: 0 0 auto !important;
+      width: fit-content !important;
+      max-width: none !important;
+      overflow: visible !important;
   }}
   .st-key-detail-actions,
   .st-key-detail-actions [data-testid="stVerticalBlock"],
@@ -1058,15 +1084,7 @@ _GLOBAL_CSS = f"""
       width: auto !important;
       margin: 0 !important;
       flex: 0 0 auto !important;
-  }}
-  .st-key-detail-actions [data-testid="stElementContainer"]::before {{
-      content: "\\00b7";
-      color: #c2c7cc;
-      font-weight: 400;
-      font-size: var(--ca-title-size);
-      line-height: 1;
-      margin: 0 var(--ca-detail-inline-gap);
-      align-self: center;
+      flex-shrink: 0 !important;
   }}
   .st-key-detail-actions [data-testid="stElementContainer"] {{
       display: inline-flex !important;
@@ -1079,9 +1097,12 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca-detail-title-row .st-key-detail_abort .stButton button,
   .st-key-ca-detail-title-row .st-key-detail_abort .stDownloadButton button {{
-      min-height: calc(var(--ca-header-row-height) - 0.15rem) !important;
-      padding: 0.1rem 0.55rem !important;
+      min-height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
+      height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
+      padding: 0 0.42rem !important;
+      gap: 0.28rem !important;
       line-height: 1 !important;
+      font-size: calc(var(--ca-nav-font-size) * 0.92) !important;
   }}
   {_nav_action_button_css(
       ".st-key-detail_abort",
@@ -1091,7 +1112,7 @@ _GLOBAL_CSS = f"""
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
-      margin: -0.22rem 0 -0.1rem 0 !important;
+      margin: -0.32rem 0 -0.14rem 0 !important;
       padding: 0 !important;
       min-height: var(--ca-detail-meta-height);
   }}
@@ -1103,7 +1124,7 @@ _GLOBAL_CSS = f"""
       width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      gap: 0.45rem !important;
+      gap: 0.28rem !important;
       min-height: var(--ca-detail-meta-height) !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"] {{
@@ -1176,7 +1197,7 @@ _GLOBAL_CSS = f"""
       justify-content: flex-end !important;
       width: auto !important;
       margin: 0 !important;
-      gap: 0.35rem !important;
+      gap: 0.22rem !important;
       min-height: var(--ca-detail-meta-height) !important;
   }}
   .st-key-detail-refresh [data-testid="stWidgetLabel"],
@@ -1212,9 +1233,9 @@ _GLOBAL_CSS = f"""
   .st-key-detail-refresh [data-baseweb="switch"] {{
       background-color: #c4c9ce !important;
       border: 1px solid #aeb4ba !important;
-      min-width: 2.25rem !important;
-      min-height: 1.2rem !important;
-      padding: 0.2rem !important;
+      min-width: 2rem !important;
+      min-height: 1rem !important;
+      padding: 0.12rem !important;
       box-sizing: border-box !important;
   }}
   .st-key-detail-refresh [data-baseweb="switch"][aria-checked="true"] {{
@@ -1243,7 +1264,7 @@ _GLOBAL_CSS = f"""
       flex-direction: row;
       flex-wrap: nowrap;
       align-items: center;
-      gap: 0.38rem;
+      gap: 0.22rem;
       font-size: var(--ca-run-meta-size);
       color: #7a8086;
       font-style: italic;
@@ -1267,8 +1288,8 @@ _GLOBAL_CSS = f"""
       align-items: center;
       justify-content: center;
       align-self: center;
-      height: 1.15rem;
-      padding: 0 0.42rem;
+      height: 1rem;
+      padding: 0 0.32rem;
       line-height: 1;
       margin: 0;
       vertical-align: middle;
@@ -1277,7 +1298,7 @@ _GLOBAL_CSS = f"""
       display: inline-flex;
       align-items: center;
       align-self: center;
-      gap: 0.2rem;
+      gap: 0.12rem;
       white-space: nowrap;
       line-height: 1;
   }}
@@ -1348,10 +1369,14 @@ _GLOBAL_CSS = f"""
   }}
   /* Tighter gap between title, meta row, and orange accent bar on run details. */
   .st-key-ca-detail-header .ca-title-rule {{
-      margin: 0 0 0.08rem 0;
+      margin: 0 !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] {{
       gap: 0 !important;
+  }}
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
+      margin: 0 !important;
+      padding: 0 !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="stElementContainer"] {{
       margin-bottom: 0 !important;

@@ -130,6 +130,7 @@ if run:
                       <span>{src}</span>
                       <span class="arrow">&#8594;</span>
                       <span>{tgt}</span>
+                      <span class="ca-run-sep">&middot;</span>
                     </h1>
                   </div>
                 </div>
