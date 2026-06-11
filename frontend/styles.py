@@ -402,7 +402,7 @@ _GLOBAL_CSS = f"""
   /* Group items use the same left edge as top-level nav rows. */
   .st-key-ca-nav [data-testid="stExpanderDetails"] {{
       padding-left: 0 !important;
-      padding-top: 0.1rem;
+      padding-top: 0;
       padding-bottom: 0;
       border: none !important;
       box-shadow: none !important;
@@ -418,7 +418,7 @@ _GLOBAL_CSS = f"""
       display: block;
       height: 1px;
       border: none;
-      margin: 0.35rem var(--ca-nav-x) 0.35rem var(--ca-nav-x);
+      margin: 0.2rem var(--ca-nav-x) 0.2rem var(--ca-nav-x);
       background: {BRAND_INK};
   }}
 
@@ -468,30 +468,24 @@ _GLOBAL_CSS = f"""
       font-weight: 700 !important;
   }}
 
-  /* ---------- Sidebar bottom status card ---------- */
+  /* ---------- Sidebar bottom status ---------- */
 
-  /* Make the sidebar a full-height column so the status can sit at the bottom. */
-  [data-testid="stSidebarUserContent"] {{
-      display: flex;
-      flex-direction: column;
-      min-height: calc(100vh - 5.5rem);
-  }}
-
-  [data-testid="stSidebarUserContent"] > [data-testid="stVerticalBlock"] {{
-      flex: 1 1 auto;
-  }}
-
-  /* Push the status block to the very bottom. */
-  [data-testid="stSidebarUserContent"] :has(> .st-key-ca-status) {{
+  /* Pin status to the bottom without forcing extra viewport height. */
+  [data-testid="stSidebarUserContent"] > [data-testid="stVerticalBlock"] > .st-key-ca-status {{
       margin-top: auto;
+      flex: 0 0 auto;
+  }}
+
+  .st-key-ca-status {{
+      flex: 0 0 auto;
   }}
 
   /* Single inline row: glowing dot + last-refresh text. No card. */
   .ca-status {{
       display: flex;
       align-items: center;
-      gap: 0.55rem;
-      padding: 0.2rem 0.15rem;
+      gap: 0.45rem;
+      padding: 0.1rem 0.1rem 0;
   }}
 
   .ca-status .ca-dot {{
@@ -502,8 +496,9 @@ _GLOBAL_CSS = f"""
   }}
 
   .ca-status .ca-refresh-text {{
-      font-size: 0.75rem;
+      font-size: 0.68rem;
       color: #6b7177;
+      line-height: 1.2;
   }}
 
   /* Live: glowing green with a pulse. */
@@ -1380,7 +1375,7 @@ def apply_global_styles() -> None:
     inject_local_datetime_js()
 
 
-def render_logo(path: str | Path | None = None, width: int = 170) -> None:
+def render_logo(path: str | Path | None = None, width: int | None = None) -> None:
     """Render the SVG logo, top-flush and left-aligned like ``render_title``.
 
     Reads the SVG from the repo-root ``assets/`` folder (resolved absolutely so
@@ -1388,6 +1383,7 @@ def render_logo(path: str | Path | None = None, width: int = 170) -> None:
     data URI so it renders inline (typically inside the sidebar).
     """
     logo_path = Path(path or DEFAULT_LOGO_PATH)
+    logo_width = LOGO_WIDTH_PX if width is None else width
     try:
         svg = logo_path.read_text(encoding="utf-8")
     except OSError:
@@ -1398,7 +1394,7 @@ def render_logo(path: str | Path | None = None, width: int = 170) -> None:
         f"""
         <div class="ca-logo">
           <img src="data:image/svg+xml;base64,{b64}" alt="Clone automation logo"
-               style="width:{width}px;" />
+               style="width:{logo_width}px;min-width:{logo_width}px;" />
         </div>
         """
     )
