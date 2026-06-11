@@ -2627,6 +2627,8 @@ NAV: list[dict] = [
      "key": "nav_execute", "module": "app_pages/execute_clone.py"},
     {"kind": "item", "title": "Run History", "icon": "history",
      "key": "nav_history", "module": "app_pages/run_history.py"},
+    {"kind": "item", "title": "AI Chatbox", "icon": "smart_toy",
+     "key": "nav_chat", "module": "app_pages/ai_chatbox.py"},
 ]
 
 
