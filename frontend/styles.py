@@ -1674,7 +1674,7 @@ _GLOBAL_CSS = f"""
   .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
   .st-key-ca-steps [data-testid="stFragment"] > [data-testid="stVerticalBlock"],
   .st-key-ca-steps [data-testid="stVerticalBlock"]:has(> [class*="st-key-stepcard_"]) {{
-      gap: 0.5px !important;
+      gap: 0.2px !important;
       align-items: stretch !important;
       margin: 0 !important;
       padding: 0 !important;
