@@ -43,6 +43,7 @@ from styles import (
     render_logo,
     render_sidebar_nav,
     render_status,
+    render_user_greeting,
 )
 
 st.set_page_config(
@@ -67,4 +68,5 @@ with st.sidebar:
     render_status(is_live, datetime.now(timezone.utc))
 
 consume_pending_navigation()
+render_user_greeting()
 pg.run()

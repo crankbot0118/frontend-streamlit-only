@@ -2324,6 +2324,76 @@ _GLOBAL_CSS = f"""
       color: #c4c8cc !important;
       opacity: 1 !important;
   }}
+
+  /* ---------- Global user greeting placeholder (top-right, all pages) ---------- */
+  .st-key-ca-user-greeting {{
+      position: fixed !important;
+      top: var(--ca-page-inset-top) !important;
+      right: var(--ca-main-inset-right) !important;
+      left: auto !important;
+      width: auto !important;
+      max-width: 16rem !important;
+      z-index: 130 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      pointer-events: none !important;
+  }}
+  .st-key-ca-user-greeting > [data-testid="stVerticalBlock"],
+  .st-key-ca-user-greeting > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca-user-greeting [data-testid="stHorizontalBlock"] {{
+      align-items: center !important;
+      justify-content: flex-end !important;
+      gap: 0.45rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: var(--ca-header-row-height) !important;
+  }}
+  .st-key-ca-user-greeting [data-testid="column"] {{
+      width: auto !important;
+      flex: 0 0 auto !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca-user-greeting [data-testid="stHtml"] iframe {{
+      height: var(--ca-header-row-height) !important;
+      min-height: var(--ca-header-row-height) !important;
+      max-height: var(--ca-header-row-height) !important;
+  }}
+  .ca-user-greeting-text {{
+      display: inline-flex;
+      align-items: center;
+      min-height: var(--ca-header-row-height);
+      margin: 0;
+      padding: 0;
+      color: #6b7177;
+      font-size: var(--ca-body-size);
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+  }}
+  .st-key-ca-user-greeting [data-testid="stSelectbox"] {{
+      width: 6.5rem !important;
+      min-width: 6.5rem !important;
+      max-width: 6.5rem !important;
+      margin: 0 !important;
+  }}
+  .st-key-ca-user-greeting [data-testid="stSelectbox"] > div,
+  .st-key-ca-user-greeting [data-testid="stSelectbox"] [data-baseweb="select"] > div {{
+      min-height: 1.55rem !important;
+      background-color: #f6f7f8 !important;
+      color: #9aa0a6 !important;
+      border-color: #e3e6e8 !important;
+      cursor: not-allowed !important;
+      opacity: 1 !important;
+  }}
+  .st-key-ca-user-greeting [data-testid="stSelectbox"] svg {{
+      color: #9aa0a6 !important;
+      fill: #9aa0a6 !important;
+  }}
 </style>
 """
 
@@ -2872,6 +2942,32 @@ def render_sidebar_nav(pages: dict, current_title: str) -> None:
                         _nav_link(pages, item, current_title)
             elif entry["kind"] == "divider":
                 st.html('<hr class="ca-nav-divider-line" />')
+
+
+GREETING_USER_NAME = "User"
+
+
+def render_user_greeting() -> None:
+    """Static top-right placeholder on every page (no behavior yet)."""
+    with st.container(key="ca-user-greeting"):
+        text_col, menu_col = st.columns(
+            [1.05, 0.95],
+            gap="small",
+            vertical_alignment="center",
+        )
+        with text_col:
+            st.html(
+                f'<span class="ca-user-greeting-text">Hello {html.escape(GREETING_USER_NAME)}!</span>'
+            )
+        with menu_col:
+            st.selectbox(
+                "User menu",
+                options=["Menu"],
+                index=0,
+                disabled=True,
+                label_visibility="collapsed",
+                key="ca_user_menu_placeholder",
+            )
 
 
 def render_title(title: str, subtitle: str | None = None) -> None:
