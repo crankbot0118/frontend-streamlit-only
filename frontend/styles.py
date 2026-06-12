@@ -1666,7 +1666,7 @@ _GLOBAL_CSS = f"""
 
   /* Step list — breathing room below the orange divider. */
   .st-key-ca-steps {{
-      --ca-step-card-gap: 0.5px;
+      --ca-step-card-gap: 0.2px;
       margin-top: 0.32rem !important;
   }}
 
