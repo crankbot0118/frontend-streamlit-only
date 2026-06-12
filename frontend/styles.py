@@ -2467,13 +2467,10 @@ STATUS_ASSETS = {
     "ABORTED": "status-aborted.svg",
 }
 
-# Glow pulse RGB — matched to each status SVG fill color.
+# Glow pulse RGB — matched to each status SVG fill color (active statuses only).
 STATUS_GLOW_RGB = {
-    "COMPLETED": (30, 122, 70),   # #1e7a46
     "RUNNING": (26, 111, 219),    # #1a6fdb
-    "PENDING": (217, 127, 0),     # #d97f00
     "FAILED": (192, 57, 43),      # #c0392b
-    "SKIPPED": (46, 125, 50),     # #2e7d32
     "ABORTED": (192, 57, 43),     # #c0392b
 }
 
@@ -2508,9 +2505,11 @@ def _status_glow_html(key: str, size: int) -> tuple[str, str]:
 
 
 def status_image_html(status: str, size: int = STATUS_ICON_PX) -> str:
-    """Return a square status icon with a colored glow ring (falls back to text badge).
+    """Return a square status icon (falls back to text badge).
 
-    Glow styles are inlined because step rows render inside ``st.html`` iframes.
+    RUNNING, FAILED, and ABORTED include a pulsing glow ring; other statuses
+    render static icons. Glow styles are inlined because step rows render
+    inside ``st.html`` iframes.
     """
     key = (status or "").upper()
     filename = STATUS_ASSETS.get(key)
