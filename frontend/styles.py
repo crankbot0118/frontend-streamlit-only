@@ -1702,6 +1702,7 @@ _GLOBAL_CSS = f"""
 
   /* Each step is a bordered card — flex row: left (icon+name) | right (actions+arrow). */
   [class*="st-key-stepcard_"] {{
+      --ca-step-arrow-size: 1.25rem;
       position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
@@ -1763,7 +1764,7 @@ _GLOBAL_CSS = f"""
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child {{
       flex: 0 0 auto !important;
       width: auto !important;
-      min-width: 1.25rem !important;
+      min-width: calc(var(--ca-step-arrow-size) + 0.15rem) !important;
       max-width: none !important;
       justify-content: flex-end !important;
       margin-left: 0 !important;
@@ -2017,9 +2018,9 @@ _GLOBAL_CSS = f"""
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button {{
       width: auto !important;
-      min-width: 16px !important;
-      min-height: 16px !important;
-      height: 16px !important;
+      min-width: var(--ca-step-arrow-size) !important;
+      min-height: var(--ca-step-arrow-size) !important;
+      height: var(--ca-step-arrow-size) !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
@@ -2056,16 +2057,16 @@ _GLOBAL_CSS = f"""
       }}
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button [data-testid="stIconMaterial"] {{
-      font-size: 16px !important;
-      width: 16px !important;
-      height: 16px !important;
+      font-size: var(--ca-step-arrow-size) !important;
+      width: var(--ca-step-arrow-size) !important;
+      height: var(--ca-step-arrow-size) !important;
       line-height: 1 !important;
       flex: 0 0 auto !important;
       color: #8a9097 !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button svg {{
-      width: 16px !important;
-      height: 16px !important;
+      width: var(--ca-step-arrow-size) !important;
+      height: var(--ca-step-arrow-size) !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover,
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover [data-testid="stIconMaterial"],
