@@ -28,7 +28,7 @@ BRAND_ORANGE = "#e87511"
 BRAND_INK = "#131516"
 BRAND_RED = "#cf222e"
 BRAND_RED_BG = "rgba(207, 34, 46, 0.12)"
-STATUS_ICON_PX = 15
+STATUS_ICON_PX = 18
 SIDEBAR_WIDTH_PX = 200
 
 # Repo root is the parent of the ``frontend/`` package that holds this file.
@@ -137,13 +137,13 @@ _GLOBAL_CSS = f"""
       --secondary-background-color: #f6f7f8;
       --text-color: {BRAND_INK};
       --ca-detail-inline-gap: 0.45rem;
-      --ca-page-inset-top: 0.25rem;
+      --ca-page-inset-top: 0.5rem;
       --ca-sidebar-inset-x: 0.5rem;
       --ca-main-inset-x: 1rem;
       --ca-main-inset-right: 1.25rem;
       --ca-header-row-height: 2rem;
       /* Type scale — all page text derives from the heading size. */
-      --ca-title-size: 1.5rem;
+      --ca-title-size: 1.75rem;
       --ca-subtitle-size: calc(var(--ca-title-size) * 0.43);   /* ~0.75rem subtitle */
       --ca-body-size: calc(var(--ca-title-size) * 0.5);         /* ~0.875rem body */
       --ca-label-size: calc(var(--ca-title-size) * 0.486);        /* ~0.85rem labels */
@@ -216,7 +216,7 @@ _GLOBAL_CSS = f"""
   }}
 
   [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] {{
-      gap: 0.2rem !important;
+      gap: 0.35rem !important;
   }}
 
   [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {{
@@ -858,13 +858,13 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run cards (Run History) ---------- */
   .st-key-ca-runs {{
-      --ca-run-card-gap: 0.05rem;
-      --ca-run-card-pad-y: 0.18rem;
-      --ca-run-card-pad-x: 0.55rem;
-      --ca-run-card-pad-right: 0.35rem;
-      --ca-run-card-line: 1.4rem;
-      --ca-run-inline-gap: 0.22rem;
-      margin-top: 0.1rem !important;
+      --ca-run-card-gap: 0.08rem;
+      --ca-run-card-pad-y: 0.28rem;
+      --ca-run-card-pad-x: 0.65rem;
+      --ca-run-card-pad-right: 0.45rem;
+      --ca-run-card-line: 1.65rem;
+      --ca-run-inline-gap: 0.28rem;
+      margin-top: 0.18rem !important;
   }}
   .st-key-ca-runs > [data-testid="stVerticalBlock"],
   .st-key-ca-runs > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
@@ -1182,9 +1182,9 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run details header ---------- */
   .st-key-ca-detail-header {{
-      --ca-detail-inline-gap: 0.22rem;
-      --ca-detail-title-height: 1.15rem;
-      --ca-detail-meta-height: 0.9rem;
+      --ca-detail-inline-gap: 0.28rem;
+      --ca-detail-title-height: 1.38rem;
+      --ca-detail-meta-height: 1.05rem;
   }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
   /* Title parts use the same gap as the middot-separated heading text. */
@@ -1667,7 +1667,7 @@ _GLOBAL_CSS = f"""
   /* Step list — breathing room below the orange divider. */
   .st-key-ca-steps {{
       --ca-step-card-gap: 0.1px;
-      margin-top: 0.15rem !important;
+      margin-top: 0.32rem !important;
   }}
 
   /* Inter-card spacing — cards sit in stElementContainer wrappers, not direct
@@ -1702,13 +1702,13 @@ _GLOBAL_CSS = f"""
 
   /* Each step is a bordered card — flex row: left (icon+name) | right (actions+arrow). */
   [class*="st-key-stepcard_"] {{
-      --ca-step-arrow-size: 1.05rem;
+      --ca-step-arrow-size: 1.25rem;
       position: relative;
       border: 1px solid #e3e6e8;
-      border-radius: 6px;
-      padding: 2px 10px;
+      border-radius: 10px;
+      padding: 4px 12px;
       background: #ffffff;
-      min-height: 24px;
+      min-height: 32px;
       box-sizing: border-box;
   }}
 
@@ -1729,12 +1729,12 @@ _GLOBAL_CSS = f"""
       width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      gap: 6px !important;
+      gap: 8px !important;
       min-height: 0 !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] {{
-      min-height: 18px !important;
+      min-height: 24px !important;
   }}
   [class*="st-key-stepcard_"] [data-testid="column"] {{
       display: flex !important;
@@ -1832,15 +1832,15 @@ _GLOBAL_CSS = f"""
       width: 100%;
   }}
   .ca-step-name {{
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       color: {BRAND_INK};
       line-height: 1.25;
   }}
   .ca-step-status-img {{
       flex: 0 0 auto;
-      width: 15px;
-      height: 15px;
+      width: 18px;
+      height: 18px;
       object-fit: contain;
       display: block;
   }}
@@ -1850,7 +1850,7 @@ _GLOBAL_CSS = f"""
   }}
   .ca-step-more {{
       flex: 0 0 auto;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
       color: #6b7177;
       white-space: nowrap;
