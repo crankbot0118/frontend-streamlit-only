@@ -1688,10 +1688,10 @@ _GLOBAL_CSS = f"""
   .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"])
       + [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
       /* Pull cards together so shared borders collapse; gap controls visible separation. */
-      margin-top: calc(var(--ca-step-card-gap) - 1px) !important;
+      margin-top: calc(var(--ca-step-card-gap) - .5px) !important;
   }}
   .st-key-ca-steps [class*="st-key-stepcard_"] + [class*="st-key-stepcard_"] {{
-      margin-top: calc(var(--ca-step-card-gap) - 1px) !important;
+      margin-top: calc(var(--ca-step-card-gap) - .5px) !important;
   }}
 
   /* Stable shell while the steps fragment mounts or polls. */
