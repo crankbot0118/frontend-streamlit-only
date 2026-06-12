@@ -1666,15 +1666,17 @@ _GLOBAL_CSS = f"""
 
   /* Step list — breathing room below the orange divider. */
   .st-key-ca-steps {{
+      --ca-step-card-gap: 0.5px;
       margin-top: 0.32rem !important;
   }}
 
-  /* Run details — step list spacing (inter-card gap only; divider gap is margin-top above). */
+  /* Inter-card spacing — cards sit in stElementContainer wrappers, not direct
+     flex children, so flex gap alone does not apply. Use adjacent margins. */
   .st-key-ca-steps > [data-testid="stVerticalBlock"],
   .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
   .st-key-ca-steps [data-testid="stFragment"] > [data-testid="stVerticalBlock"],
-  .st-key-ca-steps [data-testid="stVerticalBlock"]:has(> [class*="st-key-stepcard_"]) {{
-      gap: 0.2px !important;
+  .st-key-ca-steps [data-testid="stVerticalBlock"]:has([class*="st-key-stepcard_"]) {{
+      gap: 0 !important;
       align-items: stretch !important;
       margin: 0 !important;
       padding: 0 !important;
@@ -1682,6 +1684,14 @@ _GLOBAL_CSS = f"""
   .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
       margin: 0 !important;
       padding: 0 !important;
+  }}
+  .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"])
+      + [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
+      /* Pull cards together so shared borders collapse; gap controls visible separation. */
+      margin-top: calc(var(--ca-step-card-gap) - 1px) !important;
+  }}
+  .st-key-ca-steps [class*="st-key-stepcard_"] + [class*="st-key-stepcard_"] {{
+      margin-top: calc(var(--ca-step-card-gap) - 1px) !important;
   }}
 
   /* Stable shell while the steps fragment mounts or polls. */
