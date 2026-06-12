@@ -1669,13 +1669,17 @@ _GLOBAL_CSS = f"""
       margin-top: 0.32rem !important;
   }}
 
-  /* Run details — step list spacing. */
+  /* Run details — step list spacing (inter-card gap only; divider gap is margin-top above). */
   .st-key-ca-steps > [data-testid="stVerticalBlock"],
   .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
   .st-key-ca-steps [data-testid="stFragment"] > [data-testid="stVerticalBlock"],
   .st-key-ca-steps [data-testid="stVerticalBlock"]:has(> [class*="st-key-stepcard_"]) {{
-      gap: 4px !important;
+      gap: 1px !important;
       align-items: stretch !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
       margin: 0 !important;
       padding: 0 !important;
   }}
@@ -1691,9 +1695,9 @@ _GLOBAL_CSS = f"""
       position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
-      padding: 6px 12px;
+      padding: 4px 12px;
       background: #ffffff;
-      min-height: 36px;
+      min-height: 32px;
       box-sizing: border-box;
   }}
 
