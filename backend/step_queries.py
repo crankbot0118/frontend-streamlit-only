@@ -168,17 +168,6 @@ GET_FUNCTION_FAILURE_HISTORY = text(
     """
 )
 
-# idx_cfrs_status — runs that currently have at least one FAILED step row.
-GET_RUN_IDS_WITH_FAILED_STEPS = text(
-    """
-    SELECT DISTINCT clone_run_id
-    FROM clone_function_run_status
-    WHERE status = 'FAILED'
-    ORDER BY clone_run_id DESC
-    LIMIT :limit
-    """
-)
-
 
 def fetch_run_steps(db: Session, clone_run_id: int) -> list[dict]:
     results = db.execute(GET_RUN_STEPS, {"clone_run_id": clone_run_id})

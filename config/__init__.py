@@ -9,8 +9,6 @@ from config.settings import (
     database,
     api_security,
     frontend,
-    agent,
-    agent_subprocess_env,
     is_protected_target_env,
 )
 from config.errors import ConfigurationError, BackendError
@@ -25,8 +23,6 @@ __all__ = [
     "database",
     "api_security",
     "frontend",
-    "agent",
-    "agent_subprocess_env",
     "is_protected_target_env",
     "ConfigurationError",
     "BackendError",

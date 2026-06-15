@@ -15,9 +15,6 @@ import streamlit as st
 from datetime_local import (
     dt_html,
     emit_html,
-    fmt_dt_fallback,
-    fmt_relative_update_fallback,
-    fmt_started_fallback,
     inject_local_datetime_js,
     refresh_html,
     relative_update_html,
@@ -2558,77 +2555,6 @@ def status_image_html(status: str, size: int = STATUS_ICON_PX) -> str:
     )
 
 
-def step_detail_panel_html(
-    run_id: int,
-    index: int,
-    is_open: bool,
-    start_time,
-    end_time,
-) -> str:
-    """Collapsible step detail panel with smooth open/close animation."""
-    panel_class = "ca-step-detail-panel--open" if is_open else "ca-step-detail-panel--closed"
-    panel_id = f"step-panel-{run_id}-{index}"
-    store_key = f"ca-step-{run_id}-{index}"
-    start = dt_html(start_time)
-    end = dt_html(end_time)
-    return f"""
-<div id="{panel_id}" class="ca-step-detail-panel {panel_class}">
-  <div class="ca-step-detail">
-    <div class="ca-step-time">Start: {start}</div>
-    <div class="ca-step-time">End: {end}</div>
-  </div>
-</div>
-<script>
-(function () {{
-  var panel = document.getElementById("{panel_id}");
-  if (!panel) return;
-  var key = "{store_key}";
-  var wasOpen = sessionStorage.getItem(key) === "1";
-  var isOpen = panel.classList.contains("ca-step-detail-panel--open");
-  if (!wasOpen && isOpen) {{
-    panel.classList.remove("ca-step-detail-panel--open");
-    void panel.offsetHeight;
-    panel.classList.add("ca-step-detail-panel--open");
-  }} else if (wasOpen && !isOpen) {{
-    panel.classList.add("ca-step-detail-panel--open");
-    void panel.offsetHeight;
-    panel.classList.remove("ca-step-detail-panel--open");
-  }}
-  sessionStorage.setItem(key, isOpen ? "1" : "0");
-  if (window.caFormatLocalDatetimes) window.caFormatLocalDatetimes(panel);
-}})();
-</script>
-"""
-
-
-def fmt_dt(value) -> str:
-    """Format an ISO datetime string (or None) for display."""
-    return fmt_dt_fallback(value)
-
-
-def fmt_dt_compact(value) -> str:
-    """Format an ISO datetime string (or None) as ``ddmmyy hhmmss``."""
-    if not value:
-        return "—"
-    try:
-        dt = datetime.fromisoformat(str(value))
-        if dt.tzinfo is not None:
-            dt = dt.astimezone()
-        return dt.strftime("%d%m%y %H%M%S")
-    except (ValueError, TypeError):
-        return str(value)
-
-
-def fmt_relative_update(value) -> str:
-    """Human-friendly update time (server-local fallback for plain text)."""
-    return fmt_relative_update_fallback(value)
-
-
-def fmt_started(value) -> str:
-    """Format a start timestamp (server-local fallback for plain text)."""
-    return fmt_started_fallback(value)
-
-
 def fmt_duration(start, end) -> str:
     """Elapsed time between two timestamps, e.g. "1h 9m" / "9m 30s" / "45s"."""
     if not start or not end:
@@ -2822,33 +2748,6 @@ def goto_page(title: str) -> None:
     """
     pages = st.session_state.get("_pages") or build_pages()
     st.switch_page(pages[title])
-
-
-def clear_run_details_state() -> None:
-    """Remove run-details keys from session state and URL query params."""
-    rid = st.session_state.get("selected_run_id")
-    if rid is not None:
-        st.session_state.pop(f"auto_refresh_{rid}", None)
-    st.session_state.pop("selected_run_id", None)
-    st.session_state.pop("selected_run", None)
-    st.session_state.pop("_auto_refresh_run", None)
-    if "run" in st.query_params:
-        del st.query_params["run"]
-
-
-def consume_pending_navigation() -> None:
-    """Honour a pending page switch requested by a widget on the prior rerun."""
-    target = st.session_state.pop("_ca_navigate", None)
-    if not target:
-        return
-    clear_run_details_state()
-    goto_page(target)
-
-
-def request_page(title: str) -> None:
-    """Queue navigation to ``title``; call ``consume_pending_navigation()`` early on rerun."""
-    st.session_state["_ca_navigate"] = title
-    st.rerun()
 
 
 def _nav_link(pages: dict, item: dict, current_title: str) -> None:

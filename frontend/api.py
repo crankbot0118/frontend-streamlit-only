@@ -234,14 +234,6 @@ def abort_run(clone_run_id: int, clone_function_run_id: int | None = None) -> di
     return _post_json(f"/api/v1/runs/{clone_run_id}/abort", body)
 
 
-def skip_run(clone_run_id: int, clone_function_run_id: int | None = None) -> dict:
-    """Insert SKIPPED status for the run and the failed function step."""
-    body = {}
-    if clone_function_run_id is not None:
-        body["clone_function_run_id"] = clone_function_run_id
-    return _post_json(f"/api/v1/runs/{clone_run_id}/skip", body)
-
-
 def get_execute_clone_options() -> dict:
     """Fetch users and environments for the Execute Clone form."""
     data = _get_json("/api/v1/execute-clone/options")

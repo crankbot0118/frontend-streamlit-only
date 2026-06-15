@@ -1,4 +1,4 @@
-"""Central configuration for frontend, backend, agent, and shell scripts.
+"""Central configuration for frontend and backend.
 
 All values are read from the repo-root ``.env`` file. Copy ``.env.example`` to
 ``.env`` and adjust for your environment. Defaults live in ``.env.example`` only
@@ -126,15 +126,6 @@ class DatabaseSettings:
             f"@{self.host}:{self.port}/{self.name}"
         )
 
-    def as_psycopg2_kwargs(self) -> dict:
-        return {
-            "host": self.host,
-            "port": self.port,
-            "dbname": self.name,
-            "user": self.user,
-            "password": self.password,
-        }
-
 
 @dataclass(frozen=True)
 class ApiSecuritySettings:
@@ -162,23 +153,6 @@ class FrontendSettings:
     max_run_limit: int
     run_details_refresh_sec: int
     protected_target_env_name: str
-
-
-@dataclass(frozen=True)
-class AgentSettings:
-    instance_env_id: int
-    instance_dbname: str | None
-    master_clone_sh: str
-    skip_function_sh: str
-    nullify_clone_sh: str
-    abort_clone_sh: str
-    poll_interval_sec: int
-    instance_clone_dir: str
-    clone_log_template: str | None
-    subprocess_timeout_sec: int | None
-    log_location_max_len: int
-    protected_target_env_name: str
-    database: DatabaseSettings
 
 
 @lru_cache(maxsize=1)
@@ -240,78 +214,3 @@ def frontend() -> FrontendSettings:
         run_details_refresh_sec=_int("RUN_DETAILS_REFRESH_SEC"),
         protected_target_env_name=sec.protected_target_env_name,
     )
-
-
-@lru_cache(maxsize=1)
-def agent() -> AgentSettings:
-    """Load agent-only settings. Call only from ``agent.py``."""
-    def _require_agent(name: str) -> str:
-        value = _optional(name)
-        if not value:
-            raise ConfigurationError(
-                f"Agent setting {name!r} is required to run agent.py. Set it in {ENV_FILE}."
-            )
-        return value
-
-    timeout_raw = _optional("SUBPROCESS_TIMEOUT_SEC")
-    subprocess_timeout = int(timeout_raw) if timeout_raw else None
-    if subprocess_timeout is not None and subprocess_timeout <= 0:
-        subprocess_timeout = None
-
-    script_paths = {
-        "MASTER_CLONE_SH": _require_agent("MASTER_CLONE_SH"),
-        "SKIP_FUNCTION_SH": _require_agent("SKIP_FUNCTION_SH"),
-        "NULLIFY_CLONE_SH": _require_agent("NULLIFY_CLONE_SH"),
-        "ABORT_CLONE_SH": _require_agent("ABORT_CLONE_SH"),
-    }
-    for path_name, path_value in script_paths.items():
-        if not Path(path_value).is_file():
-            logging.getLogger("vigt.config").warning(
-                "%s points to a missing file: %s", path_name, path_value
-            )
-
-    clone_dir = _require_agent("INSTANCE_CLONE_DIR")
-    if not Path(clone_dir).is_dir():
-        logging.getLogger("vigt.config").warning(
-            "INSTANCE_CLONE_DIR is not a directory: %s", clone_dir
-        )
-
-    return AgentSettings(
-        instance_env_id=_int("INSTANCE_ENV_ID"),
-        instance_dbname=_optional("INSTANCE_DBNAME"),
-        master_clone_sh=script_paths["MASTER_CLONE_SH"],
-        skip_function_sh=script_paths["SKIP_FUNCTION_SH"],
-        nullify_clone_sh=script_paths["NULLIFY_CLONE_SH"],
-        abort_clone_sh=script_paths["ABORT_CLONE_SH"],
-        poll_interval_sec=_int("POLL_INTERVAL_SEC"),
-        instance_clone_dir=clone_dir,
-        clone_log_template=_optional("CLONE_LOG") or _optional("CLONE_LOG_PATH"),
-        subprocess_timeout_sec=subprocess_timeout,
-        log_location_max_len=_int("LOG_LOCATION_MAX_LEN"),
-        protected_target_env_name=_require("PROTECTED_TARGET_ENV_NAME"),
-        database=database(),
-    )
-
-
-def agent_subprocess_env() -> dict[str, str]:
-    """Environment dict for shell scripts launched by the target agent."""
-    cfg = agent()
-    db = cfg.database
-    env = os.environ.copy()
-    env.update(
-        {
-            "PGHOST": db.host,
-            "PGPORT": str(db.port),
-            "PGDATABASE": db.name,
-            "PGUSER": db.user,
-            "PGPASSWORD": db.password,
-            "DB_HOST": db.host,
-            "DB_PORT": str(db.port),
-            "DB_NAME": db.name,
-            "DB_USER": db.user,
-            "DB_PASSWORD": db.password,
-            "INSTANCE_CLONE_DIR": cfg.instance_clone_dir,
-            "PROTECTED_TARGET_ENV_NAME": cfg.protected_target_env_name,
-        }
-    )
-    return env

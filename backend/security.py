@@ -30,7 +30,6 @@ RATE_LIMIT_REQUESTS = _sec.rate_limit_requests
 RATE_LIMIT_WINDOW_SEC = _sec.rate_limit_window_sec
 ENABLE_DOCS = _sec.enable_docs
 API_MAX_RUN_LIMIT = _sec.max_run_limit
-PROTECTED_TARGET_ENV_NAME = _sec.protected_target_env_name
 
 _PUBLIC_PATHS = {"/health"}
 
