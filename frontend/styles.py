@@ -1418,10 +1418,33 @@ _GLOBAL_CSS = f"""
       line-height: 1 !important;
       display: inline-flex !important;
       align-items: center !important;
+      text-decoration: none !important;
+  }}
+  .st-key-detail-download-log .stDownloadButton button [data-testid="stMarkdownContainer"],
+  .st-key-detail-download-log .stDownloadButton button p,
+  .st-key-detail-download-log .stButton button [data-testid="stMarkdownContainer"],
+  .st-key-detail-download-log .stButton button p {{
+      width: auto !important;
+      min-height: 0 !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: {BRAND_ORANGE} !important;
+      font-size: var(--ca-run-meta-size) !important;
+      font-weight: 600 !important;
+      line-height: 1 !important;
+      text-decoration: none !important;
   }}
   .st-key-detail-download-log .stDownloadButton button:hover,
-  .st-key-detail-download-log .stButton button:hover {{
-      text-decoration: underline;
+  .st-key-detail-download-log .stDownloadButton button:hover [data-testid="stMarkdownContainer"],
+  .st-key-detail-download-log .stDownloadButton button:hover p,
+  .st-key-detail-download-log .stButton button:hover,
+  .st-key-detail-download-log .stButton button:hover [data-testid="stMarkdownContainer"],
+  .st-key-detail-download-log .stButton button:hover p {{
+      text-decoration: underline !important;
       color: {BRAND_ORANGE} !important;
   }}
   .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stVerticalBlock"],
