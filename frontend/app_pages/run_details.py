@@ -16,7 +16,7 @@ from api import (
     get_step_detail,
 )
 from config.settings import frontend
-from log_download import cached_run_log, cached_step_log
+from log_download import cached_run_log_text, cached_step_log
 from styles import (
     emit_html,
     fmt_duration,
@@ -140,6 +140,18 @@ if run:
             return
 
         emit_html(step_detail_dialog_html(detail, function_name))
+
+    @st.dialog("Run log", width="large")
+    def _show_run_log_dialog(clone_run_id: int, log_location: str) -> None:
+        if log_location:
+            st.caption(log_location)
+        try:
+            log_text, log_name = cached_run_log_text(clone_run_id)
+        except Exception as exc:
+            show_error(exc, context="Could not load run log")
+            return
+        st.caption(log_name)
+        st.code(log_text, language="text")
 
     def _render_step_cards(step_rows: list[dict]) -> None:
         for i, step in enumerate(step_rows):
@@ -294,17 +306,15 @@ if run:
                         with col_dl:
                             with st.container(key="detail-download-log"):
                                 if has_run_log:
-                                    try:
-                                        log_bytes, log_name = cached_run_log(run_id)
-                                        st.download_button(
-                                            "View Log",
-                                            data=log_bytes,
-                                            file_name=log_name,
-                                            key=f"download_run_log_{run_id}",
-                                            type="secondary",
+                                    if st.button(
+                                        "View Log",
+                                        key=f"view_run_log_{run_id}",
+                                        type="secondary",
+                                    ):
+                                        _show_run_log_dialog(
+                                            run_id,
+                                            live_run.get("log_location") or "",
                                         )
-                                    except Exception as exc:
-                                        show_error(exc, context="Could not load run log")
                                 else:
                                     st.markdown(
                                         '<span class="ca-step-link-disabled">View Log</span>',

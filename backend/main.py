@@ -285,7 +285,7 @@ def download_run_log(clone_run_id: int, db: Session = Depends(get_db)):
     if run is None:
         raise HTTPException(status_code=404, detail="Run not found")
 
-    location = getattr(run, "log_location", None)
+    location = run.get("log_location")
     if not location:
         raise HTTPException(status_code=404, detail="No log available for this run")
 

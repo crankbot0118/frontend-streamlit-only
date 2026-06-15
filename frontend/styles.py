@@ -1401,7 +1401,9 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
   .st-key-detail-download-log .stDownloadButton,
-  .st-key-detail-download-log .stDownloadButton button {{
+  .st-key-detail-download-log .stDownloadButton button,
+  .st-key-detail-download-log .stButton,
+  .st-key-detail-download-log .stButton button {{
       width: auto !important;
       min-height: var(--ca-detail-meta-height) !important;
       height: var(--ca-detail-meta-height) !important;
@@ -1417,7 +1419,8 @@ _GLOBAL_CSS = f"""
       display: inline-flex !important;
       align-items: center !important;
   }}
-  .st-key-detail-download-log .stDownloadButton button:hover {{
+  .st-key-detail-download-log .stDownloadButton button:hover,
+  .st-key-detail-download-log .stButton button:hover {{
       text-decoration: underline;
       color: {BRAND_ORANGE} !important;
   }}
