@@ -171,14 +171,14 @@ if run:
                                 if st.button(
                                     "Details",
                                     key=f"step_details_{run_id}_{i}",
-                                    icon=":material/info_outline:",
+                                    icon=":material/info:",
                                     use_container_width=True,
                                 ):
                                     _show_step_detail_dialog(run_id, step_pk, name)
                                 if st.button(
                                     "View Step Log",
                                     key=f"view_step_log_{run_id}_{i}",
-                                    icon=":material/article:",
+                                    icon=":material/description:",
                                     use_container_width=True,
                                 ):
                                     open_step_log_dialog(
