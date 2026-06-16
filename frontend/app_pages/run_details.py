@@ -36,13 +36,8 @@ from ui_errors import show_error
 _RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
 
 
-def _toggle_step(run_id: int, open_key: str) -> None:
-    opening = not st.session_state.get(open_key, False)
-    prefix = f"step_open_{run_id}_"
-    for key in list(st.session_state.keys()):
-        if key.startswith(prefix):
-            st.session_state[key] = False
-    st.session_state[open_key] = opening
+def _toggle_step(open_key: str) -> None:
+    st.session_state[open_key] = not st.session_state.get(open_key, False)
 
 
 def _load_run(run_id: int, fallback: dict | None = None) -> dict | None:
@@ -78,7 +73,7 @@ def _abort_state(step_rows: list, live_run: dict | None) -> tuple[bool, int | No
     if can_abort:
         help_text = "Mark this failed run as ABORTED"
     elif run_status != "FAILED":
-        help_text = "Enabled only for FAILED status."
+        help_text = "Only available when clone run status is FAILED"
     else:
         help_text = "No failed function step found for this run"
     return can_abort, failed_step_id, help_text
@@ -91,7 +86,7 @@ def _step_action_state(step: dict, live_run: dict | None) -> tuple[bool, str]:
     if enabled:
         return True, "Act on this failed step"
     if run_status != "FAILED":
-        return False, "Enabled only for FAILED status."
+        return False, "Only available when clone run status is FAILED"
     if step_status != "FAILED":
         return False, "Only available when this step is FAILED"
     return False, ""
@@ -194,65 +189,54 @@ if run:
                         icon=":material/arrow_right:",
                         type="tertiary",
                         on_click=_toggle_step,
-                        args=(run_id, open_key),
+                        args=(open_key,),
                     )
                 if is_open:
                     with st.container(key=f"step_links_{i}"):
-                        (
-                            col_details,
-                            col_sep1,
-                            col_log,
-                            col_sep2,
-                            col_retry,
-                            col_sep3,
-                            col_skip,
-                        ) = st.columns(
-                            7 * ["content"],
-                            gap="none",
-                            vertical_alignment="center",
+                        if st.button("Details", key=f"step_details_{run_id}_{i}"):
+                            _show_step_detail_dialog(run_id, step_pk, name)
+                        st.markdown(
+                            '<span class="ca-step-link-sep">&middot;</span>',
+                            unsafe_allow_html=True,
                         )
-                        with col_details:
-                            if st.button("Details", key=f"step_details_{run_id}_{i}"):
-                                _show_step_detail_dialog(run_id, step_pk, name)
-                        with col_sep1:
-                            st.html('<span class="ca-step-link-sep">&middot;</span>')
-                        with col_log:
-                            if st.button("View Step Log", key=f"view_step_log_{run_id}_{i}"):
-                                open_step_log_dialog(
-                                    clone_run_id=run_id,
-                                    clone_function_run_id=step_pk,
-                                    title=f"Step log · {name}",
-                                )
-                        with col_sep2:
-                            st.html('<span class="ca-step-link-sep">&middot;</span>')
-                        with col_retry:
-                            if st.button(
-                                "Retry",
-                                key=f"step_retry_{run_id}_{i}",
-                                disabled=not can_act,
-                                help=act_help,
-                            ):
-                                try:
-                                    retry_run(run_id, step_pk)
-                                    st.session_state.pop("selected_run", None)
-                                    st.rerun()
-                                except Exception as exc:
-                                    show_error(exc, context="Could not retry step")
-                        with col_sep3:
-                            st.html('<span class="ca-step-link-sep">&middot;</span>')
-                        with col_skip:
-                            if st.button(
-                                "Skip",
-                                key=f"step_skip_{run_id}_{i}",
-                                disabled=not can_act,
-                                help=act_help,
-                            ):
-                                try:
-                                    skip_run(run_id, step_pk)
-                                    st.session_state.pop("selected_run", None)
-                                    st.rerun()
-                                except Exception as exc:
-                                    show_error(exc, context="Could not skip step")
+                        if st.button("View Step Log", key=f"view_step_log_{run_id}_{i}"):
+                            open_step_log_dialog(
+                                clone_run_id=run_id,
+                                clone_function_run_id=step_pk,
+                                title=f"Step log · {name}",
+                            )
+                        st.markdown(
+                            '<span class="ca-step-link-sep">&middot;</span>',
+                            unsafe_allow_html=True,
+                        )
+                        if st.button(
+                            "Retry",
+                            key=f"step_retry_{run_id}_{i}",
+                            disabled=not can_act,
+                            help=act_help,
+                        ):
+                            try:
+                                retry_run(run_id, step_pk)
+                                st.session_state.pop("selected_run", None)
+                                st.rerun()
+                            except Exception as exc:
+                                show_error(exc, context="Could not retry step")
+                        st.markdown(
+                            '<span class="ca-step-link-sep">&middot;</span>',
+                            unsafe_allow_html=True,
+                        )
+                        if st.button(
+                            "Skip",
+                            key=f"step_skip_{run_id}_{i}",
+                            disabled=not can_act,
+                            help=act_help,
+                        ):
+                            try:
+                                skip_run(run_id, step_pk)
+                                st.session_state.pop("selected_run", None)
+                                st.rerun()
+                            except Exception as exc:
+                                show_error(exc, context="Could not skip step")
 
     auto_on = bool(st.session_state.get(refresh_key))
     poll_every = _RUN_DETAILS_REFRESH_SEC if auto_on else None
