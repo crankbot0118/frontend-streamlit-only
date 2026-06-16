@@ -36,8 +36,13 @@ from ui_errors import show_error
 _RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
 
 
-def _toggle_step(open_key: str) -> None:
-    st.session_state[open_key] = not st.session_state.get(open_key, False)
+def _toggle_step(run_id: int, open_key: str) -> None:
+    opening = not st.session_state.get(open_key, False)
+    prefix = f"step_open_{run_id}_"
+    for key in list(st.session_state.keys()):
+        if key.startswith(prefix):
+            st.session_state[key] = False
+    st.session_state[open_key] = opening
 
 
 def _load_run(run_id: int, fallback: dict | None = None) -> dict | None:
@@ -181,7 +186,13 @@ if run:
                         f"</div>"
                     )
                 with more_col:
-                    st.html('<span class="ca-step-more">More actions</span>')
+                    st.button(
+                        "More actions",
+                        key=f"more_label_{run_id}_{i}",
+                        type="tertiary",
+                        on_click=_toggle_step,
+                        args=(run_id, open_key),
+                    )
                 with arrow_col:
                     st.button(
                         "",
@@ -189,26 +200,18 @@ if run:
                         icon=":material/arrow_right:",
                         type="tertiary",
                         on_click=_toggle_step,
-                        args=(open_key,),
+                        args=(run_id, open_key),
                     )
                 if is_open:
                     with st.container(key=f"step_links_{i}"):
                         if st.button("Details", key=f"step_details_{run_id}_{i}"):
                             _show_step_detail_dialog(run_id, step_pk, name)
-                        st.markdown(
-                            '<span class="ca-step-link-sep">&middot;</span>',
-                            unsafe_allow_html=True,
-                        )
                         if st.button("View Step Log", key=f"view_step_log_{run_id}_{i}"):
                             open_step_log_dialog(
                                 clone_run_id=run_id,
                                 clone_function_run_id=step_pk,
                                 title=f"Step log · {name}",
                             )
-                        st.markdown(
-                            '<span class="ca-step-link-sep">&middot;</span>',
-                            unsafe_allow_html=True,
-                        )
                         if st.button(
                             "Retry",
                             key=f"step_retry_{run_id}_{i}",
@@ -221,10 +224,6 @@ if run:
                                 st.rerun()
                             except Exception as exc:
                                 show_error(exc, context="Could not retry step")
-                        st.markdown(
-                            '<span class="ca-step-link-sep">&middot;</span>',
-                            unsafe_allow_html=True,
-                        )
                         if st.button(
                             "Skip",
                             key=f"step_skip_{run_id}_{i}",

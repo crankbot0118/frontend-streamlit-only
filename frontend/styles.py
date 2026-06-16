@@ -1733,6 +1733,7 @@ _GLOBAL_CSS = f"""
       background: #ffffff;
       min-height: 32px;
       box-sizing: border-box;
+      overflow: visible !important;
   }}
 
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"],
@@ -1743,6 +1744,15 @@ _GLOBAL_CSS = f"""
       position: relative !important;
       min-height: 0 !important;
       height: auto !important;
+      align-items: stretch !important;
+  }}
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([class*="st-key-step_links_"]),
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([class*="st-key-step_links_"]) {{
+      display: flex !important;
+      justify-content: flex-end !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
   [class*="st-key-stepcard_"] [data-testid="stHorizontalBlock"] {{
       display: flex !important;
@@ -1879,6 +1889,31 @@ _GLOBAL_CSS = f"""
       white-space: nowrap;
       line-height: 1.25;
   }}
+  [class*="st-key-more_label_"] .stButton,
+  [class*="st-key-more_label_"] .stButton > button {{
+      width: auto !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  [class*="st-key-more_label_"] .stButton > button {{
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: #6b7177 !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      line-height: 1.25 !important;
+      white-space: nowrap !important;
+  }}
+  [class*="st-key-more_label_"] .stButton > button:hover,
+  [class*="st-key-more_label_"] .stButton > button:focus-visible {{
+      color: {BRAND_ORANGE} !important;
+      background: transparent !important;
+  }}
+  [class*="st-key-stepcard_"]:has([class*="st-key-step_links_"]) [class*="st-key-more_label_"] .stButton > button {{
+      color: {BRAND_ORANGE} !important;
+  }}
   .ca-step-detail-panel {{
       display: grid;
       grid-template-rows: 0fr;
@@ -1923,34 +1958,32 @@ _GLOBAL_CSS = f"""
       color: #6b7177;
       white-space: nowrap;
   }}
-  /* Step dropdown action links: Details · View Step Log */
+  /* Step dropdown: vertical menu panel inside expanded card. */
   [class*="st-key-step_links_"],
   [class*="st-key-step_links_"] > [data-testid="stVerticalBlock"],
   [class*="st-key-step_links_"] > [data-testid="stVerticalBlockBorderWrapper"] {{
       display: flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
       flex-wrap: nowrap !important;
-      gap: 0.22rem !important;
-      width: 100% !important;
-      margin: 0.18rem 0 0 0 !important;
-      padding: 0.22rem 0 0 0 !important;
-      border-top: 1px solid #eef0f2;
+      gap: 0 !important;
+      width: auto !important;
+      min-width: 9.25rem !important;
+      max-width: max-content !important;
+      margin: 0.35rem 0 0 auto !important;
+      padding: 0 !important;
+      border: 1px solid #dfe3e6 !important;
+      border-radius: 8px !important;
+      box-shadow: 0 6px 16px rgba(19, 21, 22, 0.08) !important;
+      background: #ffffff !important;
+      overflow: hidden !important;
   }}
   [class*="st-key-step_links_"] > [data-testid="stElementContainer"] {{
-      width: auto !important;
+      width: 100% !important;
       flex: 0 0 auto !important;
       margin: 0 !important;
       padding: 0 !important;
       position: static !important;
-  }}
-  [class*="st-key-step_links_"] [data-testid="stElementContainer"]:has(.ca-step-link-sep) {{
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      width: auto !important;
-      min-width: 0 !important;
-      padding: 0 0.06rem !important;
   }}
   .ca-step-link-sep {{
       color: #c2c7cc;
@@ -1988,18 +2021,25 @@ _GLOBAL_CSS = f"""
   [class*="st-key-step_skip_"] .stButton button,
   [class*="st-key-step_skip_"] .stButton button [data-testid="stMarkdownContainer"],
   [class*="st-key-step_skip_"] .stButton button p {{
-      width: auto !important;
-      min-height: 0 !important;
+      width: 100% !important;
+      min-height: 1.75rem !important;
+      height: 1.75rem !important;
       margin: 0 !important;
-      padding: 0 !important;
-      background: transparent !important;
+      padding: 0 0.65rem !important;
+      background: #ffffff !important;
       border: none !important;
+      border-radius: 0 !important;
+      border-bottom: 1px solid #eef0f2 !important;
       box-shadow: none !important;
-      color: {BRAND_ORANGE} !important;
-      font-size: var(--ca-run-meta-size) !important;
+      color: {BRAND_INK} !important;
+      font-size: 0.78rem !important;
       font-weight: 600 !important;
       line-height: 1 !important;
       text-decoration: none !important;
+      justify-content: flex-start !important;
+  }}
+  [class*="st-key-step_links_"] [data-testid="stElementContainer"]:last-child .stButton > button {{
+      border-bottom: none !important;
   }}
   [class*="st-key-step_details_"] .stButton button:hover,
   [class*="st-key-step_details_"] .stButton button:hover [data-testid="stMarkdownContainer"],
@@ -2013,8 +2053,9 @@ _GLOBAL_CSS = f"""
   [class*="st-key-step_skip_"] .stButton button:not(:disabled):hover,
   [class*="st-key-step_skip_"] .stButton button:not(:disabled):hover [data-testid="stMarkdownContainer"],
   [class*="st-key-step_skip_"] .stButton button:not(:disabled):hover p {{
-      text-decoration: none !important;
+      background: #f8f9fa !important;
       color: {BRAND_ORANGE} !important;
+      text-decoration: none !important;
   }}
   [class*="st-key-step_retry_"] .stButton button:disabled,
   [class*="st-key-step_retry_"] .stButton button:disabled [data-testid="stMarkdownContainer"],
