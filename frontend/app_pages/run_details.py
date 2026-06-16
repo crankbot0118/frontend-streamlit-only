@@ -34,6 +34,30 @@ from ui_errors import show_error
 _RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
 
 
+def _step_menu_key(run_id: int, index: int) -> str:
+    return f"step_menu_{run_id}_{index}"
+
+
+def _close_step_menus(run_id: int) -> None:
+    prefix = f"step_menu_{run_id}_"
+    for key in list(st.session_state.keys()):
+        if key.startswith(prefix) and key[len(prefix) :].isdigit():
+            st.session_state[key] = False
+
+
+def _toggle_step_menu(run_id: int, index: int) -> None:
+    menu_key = _step_menu_key(run_id, index)
+    if st.session_state.get(menu_key):
+        st.session_state[menu_key] = False
+        return
+    _close_step_menus(run_id)
+    st.session_state[menu_key] = True
+
+
+def _close_step_menu(menu_key: str) -> None:
+    st.session_state[menu_key] = False
+
+
 def _load_run(run_id: int, fallback: dict | None = None) -> dict | None:
     try:
         latest = get_run(run_id)
@@ -143,7 +167,7 @@ if run:
             step_pk = step.get("clone_function_run_id")
             with st.container(key=f"stepcard_{i}"):
                 left_col, actions_col = st.columns(
-                    [1, 0.19],
+                    [1, "content"],
                     gap="small",
                     vertical_alignment="center",
                 )
@@ -158,24 +182,44 @@ if run:
                         f"</div>"
                     )
                 with actions_col:
+                    menu_key = _step_menu_key(run_id, i)
                     with st.container(key=f"step_menu_{i}"):
-                        with st.popover("More actions"):
-                            if st.button(
-                                "Details",
-                                key=f"step_details_{run_id}_{i}",
-                                use_container_width=True,
-                            ):
-                                _show_step_detail_dialog(run_id, step_pk, name)
-                            if st.button(
-                                "View Step Log",
-                                key=f"view_step_log_{run_id}_{i}",
-                                use_container_width=True,
-                            ):
-                                open_step_log_dialog(
-                                    clone_run_id=run_id,
-                                    clone_function_run_id=step_pk,
-                                    title=f"Step log · {name}",
-                                )
+                        st.button(
+                            "More actions",
+                            key=f"step_menu_btn_{run_id}_{i}",
+                            type="tertiary",
+                            on_click=_toggle_step_menu,
+                            args=(run_id, i),
+                        )
+                        if st.session_state.get(menu_key):
+                            with st.container(key=f"step_menu_drop_{i}"):
+                                if st.button(
+                                    "Details",
+                                    key=f"step_details_{run_id}_{i}",
+                                    use_container_width=True,
+                                    on_click=_close_step_menu,
+                                    args=(menu_key,),
+                                ):
+                                    _show_step_detail_dialog(run_id, step_pk, name)
+                                if st.button(
+                                    "View Step Log",
+                                    key=f"view_step_log_{run_id}_{i}",
+                                    use_container_width=True,
+                                    on_click=_close_step_menu,
+                                    args=(menu_key,),
+                                ):
+                                    open_step_log_dialog(
+                                        clone_run_id=run_id,
+                                        clone_function_run_id=step_pk,
+                                        title=f"Step log · {name}",
+                                    )
+                            st.button(
+                                "Close menu",
+                                key=f"step_menu_close_{run_id}_{i}",
+                                on_click=_close_step_menu,
+                                args=(menu_key,),
+                                type="tertiary",
+                            )
 
     auto_on = bool(st.session_state.get(refresh_key))
     poll_every = _RUN_DETAILS_REFRESH_SEC if auto_on else None

@@ -16,6 +16,7 @@ from datetime_local import (
     dt_html,
     emit_html,
     inject_local_datetime_js,
+    inject_step_menu_js,
     refresh_html,
     relative_update_html,
     started_html,
@@ -1733,6 +1734,7 @@ _GLOBAL_CSS = f"""
       background: #ffffff;
       min-height: 32px;
       box-sizing: border-box;
+      overflow: visible !important;
   }}
 
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"],
@@ -1782,6 +1784,7 @@ _GLOBAL_CSS = f"""
       max-width: none !important;
       justify-content: flex-end !important;
       margin-left: auto !important;
+      overflow: visible !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child [data-testid="stVerticalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child [data-testid="stVerticalBlock"] {{
@@ -2502,6 +2505,7 @@ def apply_global_styles() -> None:
     """
     st.markdown(_GLOBAL_CSS, unsafe_allow_html=True)
     inject_local_datetime_js()
+    inject_step_menu_js()
 
 
 def render_logo(path: str | Path | None = None, width: int | None = None) -> None:
