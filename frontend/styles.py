@@ -1929,25 +1929,41 @@ _GLOBAL_CSS = f"""
   /* Step dropdown action links: Details · View Step Log · Retry · Skip */
   [class*="st-key-step_links_"] [data-testid="stVerticalBlock"],
   [class*="st-key-step_links_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      display: flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-      flex-wrap: wrap !important;
-      gap: 0.22rem !important;
       width: 100% !important;
       margin: 0.18rem 0 0 0 !important;
       padding: 0.22rem 0 0 0 !important;
       border-top: 1px solid #eef0f2 !important;
       background: transparent !important;
       box-shadow: none !important;
+      gap: 0 !important;
   }}
-  [class*="st-key-step_links_"] [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  [class*="st-key-step_links_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
-      width: auto !important;
-      flex: 0 0 auto !important;
+  [class*="st-key-step_links_"] [data-testid="stHorizontalBlock"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      align-items: center !important;
+      width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      position: static !important;
+      gap: 0.22rem !important;
+  }}
+  [class*="st-key-step_links_"] [data-testid="column"] {{
+      flex: 0 0 auto !important;
+      width: auto !important;
+      min-width: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+  }}
+  [class*="st-key-step_links_"] [data-testid="column"] [data-testid="stVerticalBlock"],
+  [class*="st-key-step_links_"] [data-testid="column"] [data-testid="stElementContainer"] {{
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  [class*="st-key-step_links_"] .stButton,
+  [class*="st-key-step_links_"] .stButton > button {{
+      width: auto !important;
+      justify-content: flex-start !important;
   }}
   [class*="st-key-step_links_"] [data-testid="stElementContainer"]:has(.ca-step-link-sep) {{
       display: flex !important;
@@ -1955,7 +1971,7 @@ _GLOBAL_CSS = f"""
       justify-content: center !important;
       width: auto !important;
       min-width: 0 !important;
-      padding: 0 0.06rem !important;
+      padding: 0 !important;
   }}
   .ca-step-link-sep {{
       color: #c2c7cc;
