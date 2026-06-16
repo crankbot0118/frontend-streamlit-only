@@ -67,6 +67,16 @@ def _download_file(path: str, default_filename: str, timeout: float | None = Non
         raise _backend_error(path, exc) from exc
 
 
+def fetch_log_file(location: str) -> tuple[bytes, str]:
+    """Download a log file from the instance path stored in the database."""
+    query = urllib.parse.urlencode({"location": location})
+    default_name = Path(location.rstrip("/")).name or "log.txt"
+    return _download_file(
+        f"/api/v1/logs/file?{query}",
+        default_filename=default_name,
+    )
+
+
 def fetch_run_log(clone_run_id: int) -> tuple[bytes, str]:
     """Download a clone run log via authenticated backend request."""
     return _download_file(

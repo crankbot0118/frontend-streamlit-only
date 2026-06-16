@@ -159,6 +159,27 @@ def health() -> dict:
 
 
 @app.get(
+    "/api/v1/logs/file",
+    summary="Download a log file by instance path",
+    description="Serves the file at ``location`` when it exists on the API host and "
+    "falls under ``LOG_ALLOWED_ROOTS``. http(s) locations redirect when allowed.",
+)
+def download_log_file(location: str = Query(..., min_length=1)):
+    location = location.strip()
+    if not location:
+        raise HTTPException(status_code=404, detail="Log not found")
+
+    if location.startswith(("http://", "https://")):
+        if not is_allowed_log_url(location):
+            raise HTTPException(status_code=404, detail="Log not available")
+        return RedirectResponse(location)
+
+    path = resolve_local_log_path(location)
+    filename = os.path.basename(str(path)) or "log.txt"
+    return _file_download_response(path, filename)
+
+
+@app.get(
     "/api/v1/runs/filters",
     response_model=RunFiltersOut,
     summary="Run History filter options",
