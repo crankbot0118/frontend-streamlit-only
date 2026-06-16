@@ -16,7 +16,7 @@ from api import (
     get_step_detail,
 )
 from config.settings import frontend
-from log_download import cached_run_log_text, cached_step_log
+from log_view import open_log_file_dialog
 from styles import (
     emit_html,
     fmt_duration,
@@ -141,18 +141,6 @@ if run:
 
         emit_html(step_detail_dialog_html(detail, function_name))
 
-    @st.dialog("Run log", width="large")
-    def _show_run_log_dialog(clone_run_id: int, log_location: str) -> None:
-        if log_location:
-            st.caption(log_location)
-        try:
-            log_text, log_name = cached_run_log_text(clone_run_id)
-        except Exception as exc:
-            show_error(exc, context="Could not load run log")
-            return
-        st.caption(log_name)
-        st.code(log_text, language="text")
-
     def _render_step_cards(step_rows: list[dict]) -> None:
         for i, step in enumerate(step_rows):
             name = step.get("function_name", "—")
@@ -195,28 +183,12 @@ if run:
                             '<span class="ca-step-link-sep">&middot;</span>',
                             unsafe_allow_html=True,
                         )
-                        if step.get("step_func_log_location"):
-                            try:
-                                step_bytes, step_name = cached_step_log(
-                                    run_id, step_pk
-                                )
-                                st.download_button(
-                                    "View Step Log",
-                                    data=step_bytes,
-                                    file_name=step_name,
-                                    key=f"download_step_log_{run_id}_{i}",
-                                    type="secondary",
-                                )
-                            except Exception as exc:
-                                show_error(
-                                    exc,
-                                    context=f"Could not load log for {name}",
-                                )
-                        else:
-                            st.markdown(
-                                '<span class="ca-step-link-disabled">'
-                                "View Step Log</span>",
-                                unsafe_allow_html=True,
+                        if st.button("View Step Log", key=f"view_step_log_{run_id}_{i}", type="secondary"):
+                            open_log_file_dialog(
+                                title=f"Step log · {name}",
+                                file_path=step.get("step_func_log_location"),
+                                clone_run_id=run_id,
+                                clone_function_run_id=step_pk,
                             )
 
     auto_on = bool(st.session_state.get(refresh_key))
@@ -231,7 +203,6 @@ if run:
                 live_run = run
             live_steps = _load_steps(run_id, steps) if polling else steps
             can_abort, failed_step_id, abort_help = _abort_state(live_steps, live_run)
-            has_run_log = bool(live_run.get("log_location"))
 
             with st.container(key="ca-detail-title-row"):
                 st.html(
@@ -305,20 +276,15 @@ if run:
                         )
                         with col_dl:
                             with st.container(key="detail-download-log"):
-                                if has_run_log:
-                                    if st.button(
-                                        "View Log",
-                                        key=f"view_run_log_{run_id}",
-                                        type="secondary",
-                                    ):
-                                        _show_run_log_dialog(
-                                            run_id,
-                                            live_run.get("log_location") or "",
-                                        )
-                                else:
-                                    st.markdown(
-                                        '<span class="ca-step-link-disabled">View Log</span>',
-                                        unsafe_allow_html=True,
+                                if st.button(
+                                    "View Log",
+                                    key=f"view_run_log_{run_id}",
+                                    type="secondary",
+                                ):
+                                    open_log_file_dialog(
+                                        title="Run log",
+                                        file_path=live_run.get("log_location"),
+                                        clone_run_id=run_id,
                                     )
                         with col_ref:
                             with st.container(key="detail-refresh"):

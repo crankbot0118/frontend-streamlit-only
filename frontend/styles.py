@@ -2247,6 +2247,21 @@ _GLOBAL_CSS = f"""
       padding: 0.4rem 0.55rem;
       font-size: 0.76rem;
   }}
+  .ca-log-dialog-pre {{
+      margin: 0;
+      padding: 0.55rem 0.65rem;
+      max-height: min(62vh, 28rem);
+      overflow: auto;
+      border: 1px solid #d8dde3;
+      border-radius: 6px;
+      background: #f8f9fa;
+      color: {BRAND_INK};
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.72rem;
+      line-height: 1.35;
+      white-space: pre-wrap;
+      word-break: break-word;
+  }}
 
   /* ---------- AI Chatbox ---------- */
   .st-key-ca-ai-chatbox {{
@@ -2477,6 +2492,41 @@ def step_detail_dialog_html(detail: dict, function_name: str) -> str:
 def step_detail_dialog_error_html(message: str) -> str:
     safe = html.escape(message)
     return f'<div class="ca-step-dialog-body"><p class="ca-step-dialog-error">{safe}</p></div>'
+
+
+def log_file_dialog_html(title: str, file_path: str, content: str, filename: str) -> str:
+    """Log viewer popup body when the instance file exists and was loaded."""
+    safe_title = html.escape(title)
+    safe_path = html.escape(file_path)
+    safe_name = html.escape(filename)
+    safe_content = html.escape(content)
+    return (
+        f'<div class="ca-step-dialog-body">'
+        f'<div class="ca-step-dialog-title">{safe_title}</div>'
+        f'<dl class="ca-step-dialog-fields">'
+        f"<dt>File</dt><dd>{safe_path}</dd>"
+        f"<dt>Name</dt><dd>{safe_name}</dd>"
+        f"</dl>"
+        f'<div class="ca-step-dialog-section">Output</div>'
+        f'<pre class="ca-log-dialog-pre">{safe_content}</pre>'
+        f"</div>"
+    )
+
+
+def log_file_missing_html(title: str, file_path: str | None, message: str) -> str:
+    """Log viewer popup body when the instance file is missing or unavailable."""
+    safe_title = html.escape(title)
+    safe_path = html.escape(file_path or "—")
+    safe_msg = html.escape(message)
+    return (
+        f'<div class="ca-step-dialog-body">'
+        f'<div class="ca-step-dialog-title">{safe_title}</div>'
+        f'<dl class="ca-step-dialog-fields">'
+        f"<dt>File</dt><dd>{safe_path}</dd>"
+        f"</dl>"
+        f'<p class="ca-step-dialog-error">{safe_msg}</p>'
+        f"</div>"
+    )
 
 
 # Status -> PNG asset in the repo-root ``assets/`` folder. Used on the run
