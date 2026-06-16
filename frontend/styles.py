@@ -1923,7 +1923,7 @@ _GLOBAL_CSS = f"""
       color: #6b7177;
       white-space: nowrap;
   }}
-  /* Step dropdown action links: Details · Download Step Log */
+  /* Step dropdown action links: Details · View Step Log */
   [class*="st-key-step_links_"],
   [class*="st-key-step_links_"] > [data-testid="stVerticalBlock"],
   [class*="st-key-step_links_"] > [data-testid="stVerticalBlockBorderWrapper"] {{
@@ -1975,7 +1975,11 @@ _GLOBAL_CSS = f"""
   [class*="st-key-step_details_"] .stButton,
   [class*="st-key-step_details_"] .stButton button,
   [class*="st-key-step_details_"] .stButton button [data-testid="stMarkdownContainer"],
-  [class*="st-key-step_details_"] .stButton button p {{
+  [class*="st-key-step_details_"] .stButton button p,
+  [class*="st-key-view_step_log_"] .stButton,
+  [class*="st-key-view_step_log_"] .stButton button,
+  [class*="st-key-view_step_log_"] .stButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-view_step_log_"] .stButton button p {{
       width: auto !important;
       min-height: 0 !important;
       margin: 0 !important;
@@ -1991,7 +1995,10 @@ _GLOBAL_CSS = f"""
   }}
   [class*="st-key-step_details_"] .stButton button:hover,
   [class*="st-key-step_details_"] .stButton button:hover [data-testid="stMarkdownContainer"],
-  [class*="st-key-step_details_"] .stButton button:hover p {{
+  [class*="st-key-step_details_"] .stButton button:hover p,
+  [class*="st-key-view_step_log_"] .stButton button:hover,
+  [class*="st-key-view_step_log_"] .stButton button:hover [data-testid="stMarkdownContainer"],
+  [class*="st-key-view_step_log_"] .stButton button:hover p {{
       text-decoration: none !important;
       color: {BRAND_ORANGE} !important;
   }}

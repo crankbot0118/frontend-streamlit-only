@@ -183,7 +183,7 @@ if run:
                             '<span class="ca-step-link-sep">&middot;</span>',
                             unsafe_allow_html=True,
                         )
-                        if st.button("View Step Log", key=f"view_step_log_{run_id}_{i}", type="secondary"):
+                        if st.button("View Step Log", key=f"view_step_log_{run_id}_{i}"):
                             open_log_file_dialog(
                                 title=f"Step log · {name}",
                                 file_path=step.get("step_func_log_location"),
