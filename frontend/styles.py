@@ -1774,8 +1774,8 @@ _GLOBAL_CSS = f"""
       min-width: 0 !important;
       width: auto !important;
   }}
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2),
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) {{
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child,
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child {{
       flex: 0 0 auto !important;
       width: auto !important;
       min-width: max-content !important;
@@ -1783,19 +1783,8 @@ _GLOBAL_CSS = f"""
       justify-content: flex-end !important;
       margin-left: auto !important;
   }}
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child,
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child {{
-      flex: 0 0 auto !important;
-      width: auto !important;
-      min-width: calc(var(--ca-step-arrow-size) + 0.15rem) !important;
-      max-width: none !important;
-      justify-content: flex-end !important;
-      margin-left: 0 !important;
-  }}
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stVerticalBlock"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stVerticalBlock"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] {{
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child [data-testid="stVerticalBlock"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child [data-testid="stVerticalBlock"] {{
       width: auto !important;
       align-items: flex-end !important;
       margin-left: 0 !important;
@@ -1811,26 +1800,74 @@ _GLOBAL_CSS = f"""
       max-width: 100% !important;
       overflow: hidden !important;
   }}
-  /* Right-side actions group: "More actions" label + arrow with 8px gap. */
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stElementContainer"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stElementContainer"] {{
+  /* Step card actions: popover trigger ("More actions" + chevron). */
+  [class*="st-key-step_menu_"] [data-testid="stPopover"],
+  [class*="st-key-step_menu_"] [data-testid="stPopover"] > div {{
       width: auto !important;
-      flex: 0 0 auto !important;
       margin: 0 !important;
-      padding: 0 !important;
   }}
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"] iframe,
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"] iframe {{
-      display: block !important;
+  [class*="st-key-step_menu_"] [data-testid="stPopover"] button {{
       width: auto !important;
+      min-height: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
-      border: none !important;
       background: transparent !important;
-      min-height: 0 !important;
-      max-height: 24px !important;
-      height: auto !important;
-      overflow: visible !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: #6b7177 !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      line-height: 1.25 !important;
+      gap: 0.15rem !important;
+  }}
+  [class*="st-key-step_menu_"] [data-testid="stPopover"] button:hover,
+  [class*="st-key-step_menu_"] [data-testid="stPopover"] button:focus-visible {{
+      color: {BRAND_ORANGE} !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+  }}
+  [class*="st-key-step_menu_"] [data-testid="stPopover"] button [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_menu_"] [data-testid="stPopover"] button p {{
+      color: inherit !important;
+      font-size: inherit !important;
+      font-weight: inherit !important;
+  }}
+  /* Popover dropdown panel for step actions. */
+  div[data-baseweb="popover"] [data-testid="stPopoverBody"] {{
+      min-width: 9.5rem !important;
+      padding: 0.35rem !important;
+      border: 1px solid #e3e6e8 !important;
+      border-radius: 8px !important;
+      box-shadow: 0 6px 18px rgba(19, 21, 22, 0.12) !important;
+      background: #ffffff !important;
+  }}
+  div[data-baseweb="popover"] [data-testid="stPopoverBody"] [data-testid="stVerticalBlock"] {{
+      gap: 0.2rem !important;
+  }}
+  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton button {{
+      justify-content: flex-start !important;
+      min-height: 1.85rem !important;
+      padding: 0.28rem 0.55rem !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: {BRAND_INK} !important;
+      font-size: 0.82rem !important;
+      font-weight: 600 !important;
+  }}
+  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton button:hover {{
+      background: #f6f7f8 !important;
+      color: {BRAND_ORANGE} !important;
+  }}
+
+  .ca-step-left {{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+      width: 100%;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe {{
@@ -1844,15 +1881,6 @@ _GLOBAL_CSS = f"""
       max-height: 24px !important;
       height: auto !important;
       overflow: hidden !important;
-  }}
-
-  .ca-step-left {{
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex: 1;
-      min-width: 0;
-      width: 100%;
   }}
   .ca-step-name {{
       font-size: 14px;

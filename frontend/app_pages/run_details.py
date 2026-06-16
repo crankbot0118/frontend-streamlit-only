@@ -34,10 +34,6 @@ from ui_errors import show_error
 _RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
 
 
-def _toggle_step(open_key: str) -> None:
-    st.session_state[open_key] = not st.session_state.get(open_key, False)
-
-
 def _load_run(run_id: int, fallback: dict | None = None) -> dict | None:
     try:
         latest = get_run(run_id)
@@ -144,13 +140,10 @@ if run:
     def _render_step_cards(step_rows: list[dict]) -> None:
         for i, step in enumerate(step_rows):
             name = step.get("function_name", "—")
-            safe_name = _esc(name)
             step_pk = step.get("clone_function_run_id")
-            open_key = f"step_open_{run_id}_{i}"
-            is_open = st.session_state.get(open_key, False)
             with st.container(key=f"stepcard_{i}"):
-                left_col, more_col, arrow_col = st.columns(
-                    [1, 0.11, 0.04],
+                left_col, actions_col = st.columns(
+                    [1, 0.16],
                     gap="small",
                     vertical_alignment="center",
                 )
@@ -161,34 +154,31 @@ if run:
                         f'{status_image_html(step.get("status", ""), size=18)}'
                         f'<span class="ca-step-name" '
                         f'style="font-size:14px;font-weight:600;line-height:1.25;">'
-                        f"{safe_name}</span>"
+                        f"{_esc(name)}</span>"
                         f"</div>"
                     )
-                with more_col:
-                    st.html('<span class="ca-step-more">More actions</span>')
-                with arrow_col:
-                    st.button(
-                        "",
-                        key=f"more_{run_id}_{i}",
-                        icon=":material/arrow_right:",
-                        type="tertiary",
-                        on_click=_toggle_step,
-                        args=(open_key,),
-                    )
-                if is_open:
-                    with st.container(key=f"step_links_{i}"):
-                        if st.button("Details", key=f"step_details_{run_id}_{i}"):
-                            _show_step_detail_dialog(run_id, step_pk, name)
-                        st.markdown(
-                            '<span class="ca-step-link-sep">&middot;</span>',
-                            unsafe_allow_html=True,
-                        )
-                        if st.button("View Step Log", key=f"view_step_log_{run_id}_{i}"):
-                            open_step_log_dialog(
-                                clone_run_id=run_id,
-                                clone_function_run_id=step_pk,
-                                title=f"Step log · {name}",
-                            )
+                with actions_col:
+                    with st.container(key=f"step_menu_{i}"):
+                        with st.popover(
+                            "More actions",
+                            icon=":material/keyboard_arrow_down:",
+                        ):
+                            if st.button(
+                                "Details",
+                                key=f"step_details_{run_id}_{i}",
+                                use_container_width=True,
+                            ):
+                                _show_step_detail_dialog(run_id, step_pk, name)
+                            if st.button(
+                                "View Step Log",
+                                key=f"view_step_log_{run_id}_{i}",
+                                use_container_width=True,
+                            ):
+                                open_step_log_dialog(
+                                    clone_run_id=run_id,
+                                    clone_function_run_id=step_pk,
+                                    title=f"Step log · {name}",
+                                )
 
     auto_on = bool(st.session_state.get(refresh_key))
     poll_every = _RUN_DETAILS_REFRESH_SEC if auto_on else None
