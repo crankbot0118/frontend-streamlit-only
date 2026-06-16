@@ -523,3 +523,89 @@ def mark_run_action(
         return None
     latest["acted_clone_function_run_id"] = failed_step["clone_function_run_id"]
     return latest
+
+
+def mark_run_retry(
+    db: Session,
+    clone_run_id: int,
+    clone_function_run_id: int | None = None,
+) -> dict | None:
+    """Append PENDING status rows to retry the failed function step and resume the run."""
+    run = get_clone_run(db, clone_run_id)
+    if run is None:
+        return None
+    if (run.get("status") or "").upper() != "FAILED":
+        raise ValueError("Run is not in FAILED state")
+
+    failed_step = _get_failed_function_step(db, clone_run_id, clone_function_run_id)
+    if failed_step is None:
+        raise ValueError("No failed function step found for this run")
+
+    db.execute(
+        text(
+            """
+            INSERT INTO clone_function_run_status (
+                clone_run_id,
+                function_id,
+                status,
+                start_time,
+                end_time,
+                step_func_log_location
+            ) VALUES (
+                :clone_run_id,
+                :function_id,
+                'PENDING',
+                NOW(),
+                NULL,
+                :step_func_log_location
+            )
+            """
+        ),
+        {
+            "clone_run_id": failed_step["clone_run_id"],
+            "function_id": failed_step["function_id"],
+            "step_func_log_location": failed_step.get("step_func_log_location"),
+        },
+    )
+    db.execute(
+        text(
+            f"""
+            INSERT INTO clone_run_status (
+                clone_run_id,
+                client_id,
+                user_id,
+                user_name,
+                source_env_id,
+                target_env_id,
+                source_name,
+                target_name,
+                status,
+                start_date,
+                last_update,
+                log_location
+            )
+            SELECT
+                clone_run_id,
+                client_id,
+                user_id,
+                user_name,
+                source_env_id,
+                target_env_id,
+                source_name,
+                target_name,
+                'PENDING',
+                start_date,
+                NOW(),
+                log_location
+            FROM ({_LATEST_RUNS_CTE}) latest_runs
+            WHERE clone_run_id = :clone_run_id
+            """
+        ),
+        {"clone_run_id": clone_run_id},
+    )
+    db.commit()
+    latest = get_clone_run(db, clone_run_id)
+    if latest is None:
+        return None
+    latest["acted_clone_function_run_id"] = failed_step["clone_function_run_id"]
+    return latest

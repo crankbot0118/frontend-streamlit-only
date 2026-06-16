@@ -45,6 +45,7 @@ from crud import (
     get_run_steps,
     get_step_failure_summary,
     mark_run_action,
+    mark_run_retry,
     trigger_clone_run,
 )
 from database import get_db
@@ -374,6 +375,36 @@ def skip_clone_run(
     db: Session = Depends(get_db),
 ) -> RunActionOut:
     return _run_action(clone_run_id, "SKIPPED", "SKIPPED", db, body)
+
+
+@app.post(
+    "/api/v1/runs/{clone_run_id}/retry",
+    response_model=RunActionOut,
+    summary="Retry a failed clone run step",
+    description="Inserts PENDING status rows for the run and the single failed "
+    "function step. Only allowed when the latest run status is FAILED.",
+)
+def retry_clone_run(
+    clone_run_id: int,
+    body: RunActionIn | None = None,
+    db: Session = Depends(get_db),
+) -> RunActionOut:
+    step_id = body.clone_function_run_id if body else None
+    try:
+        updated = mark_run_retry(db, clone_run_id, step_id)
+    except ValueError as exc:
+        log.warning("Run retry rejected for run %s: %s", clone_run_id, exc)
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Run not found")
+    acted_step = updated.get("acted_clone_function_run_id") or step_id
+    log.info("Run #%s retried (step=%s)", clone_run_id, acted_step)
+    return RunActionOut(
+        clone_run_id=clone_run_id,
+        status=updated["status"] if updated else "PENDING",
+        message="Run marked for retry.",
+        clone_function_run_id=acted_step,
+    )
 
 
 @app.get(

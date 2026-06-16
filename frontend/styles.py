@@ -1979,7 +1979,15 @@ _GLOBAL_CSS = f"""
   [class*="st-key-view_step_log_"] .stButton,
   [class*="st-key-view_step_log_"] .stButton button,
   [class*="st-key-view_step_log_"] .stButton button [data-testid="stMarkdownContainer"],
-  [class*="st-key-view_step_log_"] .stButton button p {{
+  [class*="st-key-view_step_log_"] .stButton button p,
+  [class*="st-key-step_retry_"] .stButton,
+  [class*="st-key-step_retry_"] .stButton button,
+  [class*="st-key-step_retry_"] .stButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_retry_"] .stButton button p,
+  [class*="st-key-step_skip_"] .stButton,
+  [class*="st-key-step_skip_"] .stButton button,
+  [class*="st-key-step_skip_"] .stButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_skip_"] .stButton button p {{
       width: auto !important;
       min-height: 0 !important;
       margin: 0 !important;
@@ -1998,9 +2006,25 @@ _GLOBAL_CSS = f"""
   [class*="st-key-step_details_"] .stButton button:hover p,
   [class*="st-key-view_step_log_"] .stButton button:hover,
   [class*="st-key-view_step_log_"] .stButton button:hover [data-testid="stMarkdownContainer"],
-  [class*="st-key-view_step_log_"] .stButton button:hover p {{
+  [class*="st-key-view_step_log_"] .stButton button:hover p,
+  [class*="st-key-step_retry_"] .stButton button:not(:disabled):hover,
+  [class*="st-key-step_retry_"] .stButton button:not(:disabled):hover [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_retry_"] .stButton button:not(:disabled):hover p,
+  [class*="st-key-step_skip_"] .stButton button:not(:disabled):hover,
+  [class*="st-key-step_skip_"] .stButton button:not(:disabled):hover [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_skip_"] .stButton button:not(:disabled):hover p {{
       text-decoration: none !important;
       color: {BRAND_ORANGE} !important;
+  }}
+  [class*="st-key-step_retry_"] .stButton button:disabled,
+  [class*="st-key-step_retry_"] .stButton button:disabled [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_retry_"] .stButton button:disabled p,
+  [class*="st-key-step_skip_"] .stButton button:disabled,
+  [class*="st-key-step_skip_"] .stButton button:disabled [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_skip_"] .stButton button:disabled p {{
+      color: #b0b5ba !important;
+      cursor: not-allowed !important;
+      opacity: 1 !important;
   }}
   [class*="st-key-step_links_"] .stDownloadButton,
   [class*="st-key-step_links_"] .stDownloadButton button,

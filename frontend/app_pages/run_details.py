@@ -14,6 +14,8 @@ from api import (
     get_run,
     get_run_steps,
     get_step_detail,
+    retry_run,
+    skip_run,
 )
 from config.settings import frontend
 from log_view import open_run_log_dialog, open_step_log_dialog
@@ -75,6 +77,19 @@ def _abort_state(step_rows: list, live_run: dict | None) -> tuple[bool, int | No
     else:
         help_text = "No failed function step found for this run"
     return can_abort, failed_step_id, help_text
+
+
+def _step_action_state(step: dict, live_run: dict | None) -> tuple[bool, str]:
+    run_status = (live_run.get("status") or "").upper() if live_run else ""
+    step_status = (step.get("status") or "").upper()
+    enabled = run_status == "FAILED" and step_status == "FAILED"
+    if enabled:
+        return True, "Act on this failed step"
+    if run_status != "FAILED":
+        return False, "Only available when clone run status is FAILED"
+    if step_status != "FAILED":
+        return False, "Only available when this step is FAILED"
+    return False, ""
 
 run_id = st.session_state.get("selected_run_id")
 
@@ -141,13 +156,14 @@ if run:
 
         emit_html(step_detail_dialog_html(detail, function_name))
 
-    def _render_step_cards(step_rows: list[dict]) -> None:
+    def _render_step_cards(step_rows: list[dict], live_run: dict | None) -> None:
         for i, step in enumerate(step_rows):
             name = step.get("function_name", "—")
             safe_name = _esc(name)
             step_pk = step.get("clone_function_run_id")
             open_key = f"step_open_{run_id}_{i}"
             is_open = st.session_state.get(open_key, False)
+            can_act, act_help = _step_action_state(step, live_run)
             with st.container(key=f"stepcard_{i}"):
                 left_col, more_col, arrow_col = st.columns(
                     [1, 0.11, 0.04],
@@ -189,6 +205,38 @@ if run:
                                 clone_function_run_id=step_pk,
                                 title=f"Step log · {name}",
                             )
+                        st.markdown(
+                            '<span class="ca-step-link-sep">&middot;</span>',
+                            unsafe_allow_html=True,
+                        )
+                        if st.button(
+                            "Retry",
+                            key=f"step_retry_{run_id}_{i}",
+                            disabled=not can_act,
+                            help=act_help,
+                        ):
+                            try:
+                                retry_run(run_id, step_pk)
+                                st.session_state.pop("selected_run", None)
+                                st.rerun()
+                            except Exception as exc:
+                                show_error(exc, context="Could not retry step")
+                        st.markdown(
+                            '<span class="ca-step-link-sep">&middot;</span>',
+                            unsafe_allow_html=True,
+                        )
+                        if st.button(
+                            "Skip",
+                            key=f"step_skip_{run_id}_{i}",
+                            disabled=not can_act,
+                            help=act_help,
+                        ):
+                            try:
+                                skip_run(run_id, step_pk)
+                                st.session_state.pop("selected_run", None)
+                                st.rerun()
+                            except Exception as exc:
+                                show_error(exc, context="Could not skip step")
 
     auto_on = bool(st.session_state.get(refresh_key))
     poll_every = _RUN_DETAILS_REFRESH_SEC if auto_on else None
@@ -293,7 +341,7 @@ if run:
 
             if live_steps:
                 with st.container(key="ca-steps"):
-                    _render_step_cards(live_steps)
+                    _render_step_cards(live_steps, live_run)
             else:
                 st.caption("No steps found for this run.")
 
