@@ -217,34 +217,6 @@ def refresh_html(value: datetime) -> str:
     )
 
 
-_STEP_MENU_JS = """
-<script>
-(function () {
-  if (window.__caStepMenuInit) return;
-  window.__caStepMenuInit = true;
-
-  var doc = parent.document || document;
-
-  function bindStepMenuZones() {
-    doc.querySelectorAll('[class*="st-key-step_menu_"]').forEach(function (zone) {
-      if (zone.dataset.caMenuBound) return;
-      zone.dataset.caMenuBound = "1";
-      zone.addEventListener("mouseout", function (e) {
-        if (zone.contains(e.relatedTarget)) return;
-        var closeBtn = zone.querySelector('[class*="st-key-step_menu_close_"] button');
-        if (closeBtn) closeBtn.click();
-      });
-    });
-  }
-
-  bindStepMenuZones();
-  var obs = new MutationObserver(bindStepMenuZones);
-  obs.observe(doc.body, { childList: true, subtree: true });
-})();
-</script>
-"""
-
-
 def inject_local_datetime_js() -> None:
     """Install the shared formatter script once per Streamlit session."""
     if st.session_state.get("_ca_local_dt_js"):
@@ -254,17 +226,6 @@ def inject_local_datetime_js() -> None:
         st.html(_LOCAL_DT_JS, unsafe_allow_javascript=True)
     except TypeError:
         st.html(_LOCAL_DT_JS)
-
-
-def inject_step_menu_js() -> None:
-    """Close step action menus when the pointer leaves the menu zone."""
-    if st.session_state.get("_ca_step_menu_js"):
-        return
-    st.session_state["_ca_step_menu_js"] = True
-    try:
-        st.html(_STEP_MENU_JS, unsafe_allow_javascript=True)
-    except TypeError:
-        st.html(_STEP_MENU_JS)
 
 
 def emit_html(body: str) -> None:

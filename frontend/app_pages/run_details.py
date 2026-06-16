@@ -34,28 +34,8 @@ from ui_errors import show_error
 _RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
 
 
-def _step_menu_key(run_id: int, index: int) -> str:
-    return f"step_menu_{run_id}_{index}"
-
-
-def _close_step_menus(run_id: int) -> None:
-    prefix = f"step_menu_{run_id}_"
-    for key in list(st.session_state.keys()):
-        if key.startswith(prefix) and key[len(prefix) :].isdigit():
-            st.session_state[key] = False
-
-
-def _toggle_step_menu(run_id: int, index: int) -> None:
-    menu_key = _step_menu_key(run_id, index)
-    if st.session_state.get(menu_key):
-        st.session_state[menu_key] = False
-        return
-    _close_step_menus(run_id)
-    st.session_state[menu_key] = True
-
-
-def _close_step_menu(menu_key: str) -> None:
-    st.session_state[menu_key] = False
+def _toggle_step(open_key: str) -> None:
+    st.session_state[open_key] = not st.session_state.get(open_key, False)
 
 
 def _load_run(run_id: int, fallback: dict | None = None) -> dict | None:
@@ -164,10 +144,13 @@ if run:
     def _render_step_cards(step_rows: list[dict]) -> None:
         for i, step in enumerate(step_rows):
             name = step.get("function_name", "—")
+            safe_name = _esc(name)
             step_pk = step.get("clone_function_run_id")
+            open_key = f"step_open_{run_id}_{i}"
+            is_open = st.session_state.get(open_key, False)
             with st.container(key=f"stepcard_{i}"):
-                left_col, actions_col = st.columns(
-                    [1, "content"],
+                left_col, more_col, arrow_col = st.columns(
+                    [1, 0.11, 0.04],
                     gap="small",
                     vertical_alignment="center",
                 )
@@ -178,47 +161,33 @@ if run:
                         f'{status_image_html(step.get("status", ""), size=18)}'
                         f'<span class="ca-step-name" '
                         f'style="font-size:14px;font-weight:600;line-height:1.25;">'
-                        f"{_esc(name)}</span>"
+                        f"{safe_name}</span>"
                         f"</div>"
                     )
-                with actions_col:
-                    menu_key = _step_menu_key(run_id, i)
-                    with st.container(key=f"step_menu_{i}"):
-                        st.button(
-                            "More actions",
-                            key=f"step_menu_btn_{run_id}_{i}",
-                            type="tertiary",
-                            on_click=_toggle_step_menu,
-                            args=(run_id, i),
+                with more_col:
+                    st.html('<span class="ca-step-more">More actions</span>')
+                with arrow_col:
+                    st.button(
+                        "",
+                        key=f"more_{run_id}_{i}",
+                        icon=":material/arrow_right:",
+                        type="tertiary",
+                        on_click=_toggle_step,
+                        args=(open_key,),
+                    )
+                if is_open:
+                    with st.container(key=f"step_links_{i}"):
+                        if st.button("Details", key=f"step_details_{run_id}_{i}"):
+                            _show_step_detail_dialog(run_id, step_pk, name)
+                        st.markdown(
+                            '<span class="ca-step-link-sep">&middot;</span>',
+                            unsafe_allow_html=True,
                         )
-                        if st.session_state.get(menu_key):
-                            with st.container(key=f"step_menu_drop_{i}"):
-                                if st.button(
-                                    "Details",
-                                    key=f"step_details_{run_id}_{i}",
-                                    use_container_width=True,
-                                    on_click=_close_step_menu,
-                                    args=(menu_key,),
-                                ):
-                                    _show_step_detail_dialog(run_id, step_pk, name)
-                                if st.button(
-                                    "View Step Log",
-                                    key=f"view_step_log_{run_id}_{i}",
-                                    use_container_width=True,
-                                    on_click=_close_step_menu,
-                                    args=(menu_key,),
-                                ):
-                                    open_step_log_dialog(
-                                        clone_run_id=run_id,
-                                        clone_function_run_id=step_pk,
-                                        title=f"Step log · {name}",
-                                    )
-                            st.button(
-                                "Close menu",
-                                key=f"step_menu_close_{run_id}_{i}",
-                                on_click=_close_step_menu,
-                                args=(menu_key,),
-                                type="tertiary",
+                        if st.button("View Step Log", key=f"view_step_log_{run_id}_{i}"):
+                            open_step_log_dialog(
+                                clone_run_id=run_id,
+                                clone_function_run_id=step_pk,
+                                title=f"Step log · {name}",
                             )
 
     auto_on = bool(st.session_state.get(refresh_key))

@@ -16,7 +16,6 @@ from datetime_local import (
     dt_html,
     emit_html,
     inject_local_datetime_js,
-    inject_step_menu_js,
     refresh_html,
     relative_update_html,
     started_html,
@@ -1734,7 +1733,6 @@ _GLOBAL_CSS = f"""
       background: #ffffff;
       min-height: 32px;
       box-sizing: border-box;
-      overflow: visible !important;
   }}
 
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"],
@@ -1776,18 +1774,28 @@ _GLOBAL_CSS = f"""
       min-width: 0 !important;
       width: auto !important;
   }}
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child,
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child {{
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2),
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) {{
       flex: 0 0 auto !important;
       width: auto !important;
       min-width: max-content !important;
       max-width: none !important;
       justify-content: flex-end !important;
       margin-left: auto !important;
-      overflow: visible !important;
   }}
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child [data-testid="stVerticalBlock"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child [data-testid="stVerticalBlock"] {{
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child,
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child {{
+      flex: 0 0 auto !important;
+      width: auto !important;
+      min-width: calc(var(--ca-step-arrow-size) + 0.15rem) !important;
+      max-width: none !important;
+      justify-content: flex-end !important;
+      margin-left: 0 !important;
+  }}
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stVerticalBlock"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stVerticalBlock"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] {{
       width: auto !important;
       align-items: flex-end !important;
       margin-left: 0 !important;
@@ -1803,165 +1811,26 @@ _GLOBAL_CSS = f"""
       max-width: 100% !important;
       overflow: hidden !important;
   }}
-  /* Step card actions: single "More actions ›" popover trigger. */
-  [class*="st-key-step_menu_"] {{
-      display: flex !important;
-      justify-content: flex-end !important;
-      width: 100% !important;
+  /* Right-side actions group: "More actions" label + arrow with 8px gap. */
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stElementContainer"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stElementContainer"] {{
+      width: auto !important;
+      flex: 0 0 auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
-  [class*="st-key-step_menu_"] [data-testid="stPopover"],
-  [class*="st-key-step_menu_"] [data-testid="stPopover"] > div {{
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"] iframe,
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"] iframe {{
+      display: block !important;
       width: auto !important;
       margin: 0 !important;
-  }}
-  [class*="st-key-step_menu_"] [data-testid="stPopover"] button {{
-      display: inline-flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-      justify-content: center !important;
-      gap: 0.4rem !important;
-      width: auto !important;
-      min-width: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      background: transparent !important;
+      min-height: 0 !important;
+      max-height: 24px !important;
       height: auto !important;
-      min-height: 1.65rem !important;
-      margin: 0 !important;
-      padding: 0.2rem 0.55rem !important;
-      background: #ffffff !important;
-      border: 1px solid #dfe3e6 !important;
-      border-radius: 8px !important;
-      box-shadow: none !important;
-      color: #5f6368 !important;
-      font-size: 12px !important;
-      font-weight: 600 !important;
-      line-height: 1.2 !important;
-      white-space: nowrap !important;
-      transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
-  }}
-  [class*="st-key-step_menu_"] [data-testid="stPopover"] button[aria-expanded="true"] {{
-      color: {BRAND_ORANGE} !important;
-      border-color: rgba(232, 117, 17, 0.45) !important;
-      background: #ffffff !important;
-  }}
-  [class*="st-key-step_menu_"] [data-testid="stPopover"] button:hover,
-  [class*="st-key-step_menu_"] [data-testid="stPopover"] button:focus-visible {{
-      color: {BRAND_ORANGE} !important;
-      border-color: rgba(232, 117, 17, 0.35) !important;
-      background: #ffffff !important;
-  }}
-  /* Hide Streamlit default chevrons — use one custom arrow via ::after. */
-  [class*="st-key-step_menu_"] [data-testid="stPopover"] button [data-testid="stIconMaterial"],
-  [class*="st-key-step_menu_"] [data-testid="stPopover"] button svg {{
-      display: none !important;
-  }}
-  [class*="st-key-step_menu_"] [data-testid="stPopover"] button [data-testid="stMarkdownContainer"],
-  [class*="st-key-step_menu_"] [data-testid="stPopover"] button p {{
-      color: inherit !important;
-      font-size: inherit !important;
-      font-weight: inherit !important;
-      margin: 0 !important;
-  }}
-  [class*="st-key-step_menu_"] [data-testid="stPopover"] button::after {{
-      content: "";
-      display: inline-block;
-      width: 0.34rem;
-      height: 0.34rem;
-      margin-top: -0.05rem;
-      border-right: 1.5px solid currentColor;
-      border-bottom: 1.5px solid currentColor;
-      transform: rotate(-45deg);
-      transform-origin: center center;
-      transition: transform 0.2s ease;
-      flex: 0 0 auto;
-  }}
-  [class*="st-key-step_menu_"] [data-testid="stPopover"] button[aria-expanded="true"]::after {{
-      transform: rotate(45deg);
-      margin-top: 0.05rem;
-  }}
-  /* Step actions dropdown panel — compact, bordered list. */
-  div[data-baseweb="popover"] {{
-      background: transparent !important;
-      z-index: 1000 !important;
-  }}
-  div[data-baseweb="popover"] > div {{
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-  }}
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] {{
-      min-width: 9.25rem !important;
-      width: max-content !important;
-      padding: 0 !important;
-      margin-top: 0.2rem !important;
-      border: 1px solid #dfe3e6 !important;
-      border-radius: 8px !important;
-      box-shadow: 0 6px 16px rgba(19, 21, 22, 0.08) !important;
-      background: #ffffff !important;
-      color: {BRAND_INK} !important;
-      overflow: hidden !important;
-  }}
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] > div,
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] [data-testid="stVerticalBlock"],
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] [data-testid="stElementContainer"] {{
-      background: #ffffff !important;
-      color: {BRAND_INK} !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] [data-testid="stVerticalBlock"] {{
-      gap: 0 !important;
-  }}
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton,
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton > button {{
-      width: 100% !important;
-  }}
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton {{
-      margin: 0 !important;
-  }}
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton button {{
-      display: flex !important;
-      align-items: center !important;
-      justify-content: flex-start !important;
-      min-height: 1.75rem !important;
-      height: 1.75rem !important;
-      padding: 0 0.65rem !important;
-      background: #ffffff !important;
-      border: none !important;
-      border-radius: 0 !important;
-      border-bottom: 1px solid #eef0f2 !important;
-      box-shadow: none !important;
-      color: {BRAND_INK} !important;
-      font-size: 0.78rem !important;
-      font-weight: 600 !important;
-      line-height: 1 !important;
-      transition: background 0.12s ease, color 0.12s ease;
-  }}
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton:last-child button {{
-      border-bottom: none !important;
-  }}
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton button:hover,
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton button:focus-visible {{
-      background: #f8f9fa !important;
-      color: {BRAND_ORANGE} !important;
-  }}
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton button [data-testid="stIconMaterial"],
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton button svg {{
-      display: none !important;
-  }}
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton button [data-testid="stMarkdownContainer"],
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton button p {{
-      color: inherit !important;
-      font-size: inherit !important;
-      font-weight: inherit !important;
-      margin: 0 !important;
-  }}
-
-  .ca-step-left {{
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex: 1;
-      min-width: 0;
-      width: 100%;
+      overflow: visible !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe {{
@@ -1975,6 +1844,15 @@ _GLOBAL_CSS = f"""
       max-height: 24px !important;
       height: auto !important;
       overflow: hidden !important;
+  }}
+
+  .ca-step-left {{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+      width: 100%;
   }}
   .ca-step-name {{
       font-size: 14px;
@@ -2505,7 +2383,6 @@ def apply_global_styles() -> None:
     """
     st.markdown(_GLOBAL_CSS, unsafe_allow_html=True)
     inject_local_datetime_js()
-    inject_step_menu_js()
 
 
 def render_logo(path: str | Path | None = None, width: int | None = None) -> None:
