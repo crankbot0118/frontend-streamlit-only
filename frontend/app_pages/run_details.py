@@ -16,7 +16,7 @@ from api import (
     get_step_detail,
 )
 from config.settings import frontend
-from log_view import open_log_file_dialog
+from log_view import open_run_log_dialog, open_step_log_dialog
 from styles import (
     emit_html,
     fmt_duration,
@@ -184,11 +184,10 @@ if run:
                             unsafe_allow_html=True,
                         )
                         if st.button("View Step Log", key=f"view_step_log_{run_id}_{i}"):
-                            open_log_file_dialog(
-                                title=f"Step log · {name}",
-                                file_path=step.get("step_func_log_location"),
+                            open_step_log_dialog(
                                 clone_run_id=run_id,
                                 clone_function_run_id=step_pk,
+                                title=f"Step log · {name}",
                             )
 
     auto_on = bool(st.session_state.get(refresh_key))
@@ -281,11 +280,7 @@ if run:
                                     key=f"view_run_log_{run_id}",
                                     type="secondary",
                                 ):
-                                    open_log_file_dialog(
-                                        title="Run log",
-                                        file_path=live_run.get("log_location"),
-                                        clone_run_id=run_id,
-                                    )
+                                    open_run_log_dialog(clone_run_id=run_id)
                         with col_ref:
                             with st.container(key="detail-refresh"):
                                 st.toggle(
