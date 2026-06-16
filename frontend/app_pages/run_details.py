@@ -143,7 +143,7 @@ if run:
             step_pk = step.get("clone_function_run_id")
             with st.container(key=f"stepcard_{i}"):
                 left_col, actions_col = st.columns(
-                    [1, 0.22],
+                    [1, 0.19],
                     gap="small",
                     vertical_alignment="center",
                 )
@@ -158,34 +158,24 @@ if run:
                         f"</div>"
                     )
                 with actions_col:
-                    more_col, arrow_col = st.columns(
-                        [1, 0.32],
-                        gap="small",
-                        vertical_alignment="center",
-                    )
-                    with more_col:
-                        st.html('<span class="ca-step-more">More actions</span>')
-                    with arrow_col:
-                        with st.container(key=f"step_menu_{i}"):
-                            with st.popover("", icon=":material/keyboard_arrow_down:"):
-                                if st.button(
-                                    "Details",
-                                    key=f"step_details_{run_id}_{i}",
-                                    icon=":material/info:",
-                                    use_container_width=True,
-                                ):
-                                    _show_step_detail_dialog(run_id, step_pk, name)
-                                if st.button(
-                                    "View Step Log",
-                                    key=f"view_step_log_{run_id}_{i}",
-                                    icon=":material/description:",
-                                    use_container_width=True,
-                                ):
-                                    open_step_log_dialog(
-                                        clone_run_id=run_id,
-                                        clone_function_run_id=step_pk,
-                                        title=f"Step log · {name}",
-                                    )
+                    with st.container(key=f"step_menu_{i}"):
+                        with st.popover("More actions"):
+                            if st.button(
+                                "Details",
+                                key=f"step_details_{run_id}_{i}",
+                                use_container_width=True,
+                            ):
+                                _show_step_detail_dialog(run_id, step_pk, name)
+                            if st.button(
+                                "View Step Log",
+                                key=f"view_step_log_{run_id}_{i}",
+                                use_container_width=True,
+                            ):
+                                open_step_log_dialog(
+                                    clone_run_id=run_id,
+                                    clone_function_run_id=step_pk,
+                                    title=f"Step log · {name}",
+                                )
 
     auto_on = bool(st.session_state.get(refresh_key))
     poll_every = _RUN_DETAILS_REFRESH_SEC if auto_on else None
