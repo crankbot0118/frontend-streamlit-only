@@ -1800,7 +1800,7 @@ _GLOBAL_CSS = f"""
       max-width: 100% !important;
       overflow: hidden !important;
   }}
-  /* Step card actions: popover trigger ("More actions" + chevron). */
+  /* Step card actions: popover trigger ("More actions" text only). */
   [class*="st-key-step_menu_"] [data-testid="stPopover"],
   [class*="st-key-step_menu_"] [data-testid="stPopover"] > div {{
       width: auto !important;
@@ -1815,10 +1815,16 @@ _GLOBAL_CSS = f"""
       border: none !important;
       box-shadow: none !important;
       color: #6b7177 !important;
-      font-size: 13px !important;
+      font-size: 12px !important;
       font-weight: 600 !important;
-      line-height: 1.25 !important;
-      gap: 0.15rem !important;
+      line-height: 1.2 !important;
+      gap: 0 !important;
+  }}
+  [class*="st-key-step_menu_"] [data-testid="stPopover"] button[aria-expanded="true"] {{
+      color: {BRAND_ORANGE} !important;
+      background: #ffffff !important;
+      border: none !important;
+      box-shadow: none !important;
   }}
   [class*="st-key-step_menu_"] [data-testid="stPopover"] button:hover,
   [class*="st-key-step_menu_"] [data-testid="stPopover"] button:focus-visible {{
@@ -1827,38 +1833,72 @@ _GLOBAL_CSS = f"""
       border: none !important;
       box-shadow: none !important;
   }}
+  [class*="st-key-step_menu_"] [data-testid="stPopover"] button [data-testid="stIconMaterial"],
+  [class*="st-key-step_menu_"] [data-testid="stPopover"] button svg {{
+      display: none !important;
+  }}
   [class*="st-key-step_menu_"] [data-testid="stPopover"] button [data-testid="stMarkdownContainer"],
   [class*="st-key-step_menu_"] [data-testid="stPopover"] button p {{
       color: inherit !important;
       font-size: inherit !important;
       font-weight: inherit !important;
   }}
-  /* Popover dropdown panel for step actions. */
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] {{
-      min-width: 9.5rem !important;
-      padding: 0.35rem !important;
-      border: 1px solid #e3e6e8 !important;
-      border-radius: 8px !important;
-      box-shadow: 0 6px 18px rgba(19, 21, 22, 0.12) !important;
+  /* Step actions popover panel — compact light dropdown. */
+  div[data-baseweb="popover"] {{
+      background: transparent !important;
+  }}
+  div[data-baseweb="popover"] > div {{
       background: #ffffff !important;
+      border: none !important;
+      box-shadow: none !important;
+  }}
+  div[data-baseweb="popover"] [data-testid="stPopoverBody"] {{
+      min-width: 0 !important;
+      width: max-content !important;
+      max-width: 8.75rem !important;
+      padding: 0.18rem !important;
+      border: 1px solid #e3e6e8 !important;
+      border-radius: 6px !important;
+      box-shadow: 0 4px 12px rgba(19, 21, 22, 0.1) !important;
+      background: #ffffff !important;
+      color: {BRAND_INK} !important;
+  }}
+  div[data-baseweb="popover"] [data-testid="stPopoverBody"] > div,
+  div[data-baseweb="popover"] [data-testid="stPopoverBody"] [data-testid="stVerticalBlock"],
+  div[data-baseweb="popover"] [data-testid="stPopoverBody"] [data-testid="stElementContainer"] {{
+      background: #ffffff !important;
+      color: {BRAND_INK} !important;
   }}
   div[data-baseweb="popover"] [data-testid="stPopoverBody"] [data-testid="stVerticalBlock"] {{
-      gap: 0.2rem !important;
+      gap: 0.05rem !important;
+  }}
+  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton,
+  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton > button {{
+      width: 100% !important;
   }}
   div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton button {{
       justify-content: flex-start !important;
-      min-height: 1.85rem !important;
-      padding: 0.28rem 0.55rem !important;
-      background: transparent !important;
+      min-height: 1.45rem !important;
+      height: 1.45rem !important;
+      padding: 0.12rem 0.4rem !important;
+      background: #ffffff !important;
       border: none !important;
       box-shadow: none !important;
       color: {BRAND_INK} !important;
-      font-size: 0.82rem !important;
+      font-size: 0.74rem !important;
       font-weight: 600 !important;
+      line-height: 1.1 !important;
   }}
-  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton button:hover {{
+  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton button:hover,
+  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton button:focus-visible {{
       background: #f6f7f8 !important;
       color: {BRAND_ORANGE} !important;
+  }}
+  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton button [data-testid="stMarkdownContainer"],
+  div[data-baseweb="popover"] [data-testid="stPopoverBody"] .stButton button p {{
+      color: inherit !important;
+      font-size: inherit !important;
+      font-weight: inherit !important;
   }}
 
   .ca-step-left {{

@@ -159,10 +159,7 @@ if run:
                     )
                 with actions_col:
                     with st.container(key=f"step_menu_{i}"):
-                        with st.popover(
-                            "More actions",
-                            icon=":material/keyboard_arrow_down:",
-                        ):
+                        with st.popover("More actions"):
                             if st.button(
                                 "Details",
                                 key=f"step_details_{run_id}_{i}",
