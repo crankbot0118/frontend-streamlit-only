@@ -207,18 +207,15 @@ if run:
                             col_sep3,
                             col_skip,
                         ) = st.columns(
-                            [0.55, 0.08, 0.85, 0.08, 0.5, 0.08, 0.45],
-                            gap="small",
+                            7 * ["content"],
+                            gap="none",
                             vertical_alignment="center",
                         )
                         with col_details:
                             if st.button("Details", key=f"step_details_{run_id}_{i}"):
                                 _show_step_detail_dialog(run_id, step_pk, name)
                         with col_sep1:
-                            st.markdown(
-                                '<span class="ca-step-link-sep">&middot;</span>',
-                                unsafe_allow_html=True,
-                            )
+                            st.html('<span class="ca-step-link-sep">&middot;</span>')
                         with col_log:
                             if st.button("View Step Log", key=f"view_step_log_{run_id}_{i}"):
                                 open_step_log_dialog(
@@ -227,10 +224,7 @@ if run:
                                     title=f"Step log · {name}",
                                 )
                         with col_sep2:
-                            st.markdown(
-                                '<span class="ca-step-link-sep">&middot;</span>',
-                                unsafe_allow_html=True,
-                            )
+                            st.html('<span class="ca-step-link-sep">&middot;</span>')
                         with col_retry:
                             if st.button(
                                 "Retry",
@@ -245,10 +239,7 @@ if run:
                                 except Exception as exc:
                                     show_error(exc, context="Could not retry step")
                         with col_sep3:
-                            st.markdown(
-                                '<span class="ca-step-link-sep">&middot;</span>',
-                                unsafe_allow_html=True,
-                            )
+                            st.html('<span class="ca-step-link-sep">&middot;</span>')
                         with col_skip:
                             if st.button(
                                 "Skip",

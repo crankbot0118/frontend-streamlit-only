@@ -1942,10 +1942,12 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       flex-wrap: nowrap !important;
       align-items: center !important;
-      width: 100% !important;
+      width: auto !important;
+      max-width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      gap: 0.22rem !important;
+      gap: 0 !important;
+      justify-content: flex-start !important;
   }}
   [class*="st-key-step_links_"] [data-testid="column"] {{
       flex: 0 0 auto !important;
@@ -1953,6 +1955,32 @@ _GLOBAL_CSS = f"""
       min-width: 0 !important;
       padding: 0 !important;
       margin: 0 !important;
+  }}
+  [class*="st-key-step_links_"] [data-testid="column"]:has(.ca-step-link-sep),
+  [class*="st-key-step_links_"] [data-testid="column"]:has([data-testid="stHtml"]) {{
+      flex: 0 0 auto !important;
+      width: auto !important;
+      min-width: 0 !important;
+      max-width: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+  }}
+  [class*="st-key-step_links_"] [data-testid="column"]:has(.ca-step-link-sep) [data-testid="stHtml"],
+  [class*="st-key-step_links_"] [data-testid="column"]:has(.ca-step-link-sep) [data-testid="stElementContainer"] {{
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+  }}
+  [class*="st-key-step_links_"] [data-testid="column"]:has(.ca-step-link-sep) [data-testid="stHtml"] iframe {{
+      display: block !important;
+      width: auto !important;
+      min-height: 0 !important;
+      max-height: 1rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      overflow: visible !important;
   }}
   [class*="st-key-step_links_"] [data-testid="column"] [data-testid="stVerticalBlock"],
   [class*="st-key-step_links_"] [data-testid="column"] [data-testid="stElementContainer"] {{
@@ -1980,6 +2008,10 @@ _GLOBAL_CSS = f"""
       line-height: 1;
       display: inline-flex;
       align-items: center;
+      padding: 0 0.14rem;
+  }}
+  [class*="st-key-step_links_"] .ca-step-link-sep {{
+      padding: 0 0.1rem;
   }}
   .ca-step-links-inline {{
       display: inline-flex;
