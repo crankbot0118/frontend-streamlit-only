@@ -2441,16 +2441,16 @@ _GLOBAL_CSS = f"""
       line-height: 1;
   }}
   .ca-home-kpi-val {{
-      flex: 0.5 0.5 auto;
+      flex: 1 1 auto;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       font-weight: 800;
       font-size: 28px;
       letter-spacing: -0.8px;
       line-height: 1;
       color: {BRAND_INK};
       margin: 0;
-      padding: 0;
+      padding: 8px 0;
       min-height: 0;
   }}
   .ca-home-kpi-val small {{
