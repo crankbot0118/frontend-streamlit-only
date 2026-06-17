@@ -2410,36 +2410,30 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"],
   .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      gap: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: var(--ca-home-card-gap, 12px) !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-home-kpis),
+  .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-home-kpis),
+  .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"],
+  .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"],
+  .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stHorizontalBlock"]),
+  .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stHorizontalBlock"]) {{
+      flex: 0 0 auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca_home_dashboard [data-testid="stMarkdownContainer"]:has(.ca-home-kpis),
+  .st-key-ca_home_dashboard [data-testid="stMarkdownContainer"]:has(.ca-home-kpis) p {{
       margin: 0 !important;
       padding: 0 !important;
   }}
   .st-key-ca_home_dashboard [data-testid="stElementContainer"] {{
       margin: 0 !important;
       padding: 0 !important;
-  }}
-  .ca-home-row-spacer {{
-      display: block;
-      width: 100%;
-      height: var(--ca-home-card-gap, 12px);
-      margin: 0;
-      padding: 0;
-      line-height: 0;
-      font-size: 0;
-      overflow: hidden;
-  }}
-  .st-key-ca_home_dashboard [data-testid="stElementContainer"]:has(.ca-home-row-spacer) {{
-      height: var(--ca-home-card-gap, 12px) !important;
-      min-height: var(--ca-home-card-gap, 12px) !important;
-      max-height: var(--ca-home-card-gap, 12px) !important;
-      overflow: hidden !important;
-      flex: 0 0 var(--ca-home-card-gap, 12px) !important;
-  }}
-  .st-key-ca_home_dashboard [data-testid="stMarkdownContainer"]:has(.ca-home-row-spacer),
-  .st-key-ca_home_dashboard [data-testid="stMarkdownContainer"]:has(.ca-home-row-spacer) p {{
-      margin: 0 !important;
-      padding: 0 !important;
-      line-height: 0 !important;
   }}
 
   /* Home — weekly KPI cards spanning full content width */
