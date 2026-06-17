@@ -2397,30 +2397,35 @@ _GLOBAL_CSS = f"""
       opacity: 1 !important;
   }}
 
-  /* Home — weekly KPI cards in an evenly spaced row */
+  /* Home — weekly KPI cards spanning full content width */
   .ca-home-kpis {{
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, max-content));
-      gap: 16px;
+      grid-template-columns: repeat(var(--ca-home-kpi-count, 4), minmax(0, 1fr));
+      gap: 12px;
       margin: 0.5rem 0 1rem 0;
-      width: fit-content;
+      width: 100%;
       max-width: 100%;
       align-items: stretch;
+      box-sizing: border-box;
   }}
-  @media (max-width: 720px) {{
+  @media (max-width: 1100px) {{
+      .ca-home-kpis {{
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+      }}
+  }}
+  @media (max-width: 640px) {{
       .ca-home-kpis {{
           grid-template-columns: 1fr;
-          width: 100%;
       }}
   }}
   .ca-home-kpi {{
-      display: inline-flex;
+      display: flex;
       flex-direction: column;
       justify-content: flex-start;
       align-items: flex-start;
-      width: fit-content;
-      max-width: 100%;
-      height: auto;
+      width: 100%;
+      min-width: 0;
+      height: 100%;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
       background: #ffffff;
@@ -2499,6 +2504,8 @@ _GLOBAL_CSS = f"""
       align-items: center;
       flex-wrap: nowrap;
       gap: 7px;
+      min-width: 0;
+      max-width: 100%;
   }}
   .ca-home-kpi-pill {{
       display: inline-flex;
@@ -2529,6 +2536,9 @@ _GLOBAL_CSS = f"""
       font-size: 12px;
       line-height: 1.2;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
   }}
 </style>
 """
@@ -2914,29 +2924,51 @@ def _home_kpi_card_html(
     )
 
 
-def home_kpis_html(success_kpi, count_kpi) -> str:
-    """Weekly KPI cards for the Home page."""
-    rate_text = f"{success_kpi.rate:.1f}" if success_kpi.rate is not None else "—"
-    rate_unit = "%" if success_kpi.rate is not None else ""
-    success_card = _home_kpi_card_html(
-        title="Clone success rate",
-        value=rate_text,
-        unit=rate_unit,
-        delta=success_kpi.delta,
-        delta_tone=success_kpi.delta_tone,
-        note=f"{success_kpi.completed} of {success_kpi.total} jobs",
-        icon="check",
+def success_kpi_card_dict(title: str, kpi, *, icon: str = "check") -> dict:
+    rate_text = f"{kpi.rate:.1f}" if kpi.rate is not None else "—"
+    return {
+        "title": title,
+        "value": rate_text,
+        "unit": "%" if kpi.rate is not None else "",
+        "delta": kpi.delta,
+        "delta_tone": kpi.delta_tone,
+        "note": f"{kpi.completed} of {kpi.total} jobs",
+        "icon": icon,
+    }
+
+
+def count_kpi_card_dict(title: str, kpi, *, icon: str = "layers") -> dict:
+    return {
+        "title": title,
+        "value": str(kpi.count),
+        "unit": "",
+        "delta": kpi.delta,
+        "delta_tone": kpi.delta_tone,
+        "note": f"{kpi.completed} of {kpi.count} jobs",
+        "icon": icon,
+    }
+
+
+def placeholder_kpi_card_dict(title: str, *, icon: str = "check") -> dict:
+    return {
+        "title": title,
+        "value": "—",
+        "unit": "",
+        "delta": "0%",
+        "delta_tone": "neutral",
+        "note": "0 of 0 jobs",
+        "icon": icon,
+    }
+
+
+def home_kpis_html(cards: list[dict]) -> str:
+    """Weekly KPI cards for the Home page, evenly spaced across full width."""
+    count = max(len(cards), 1)
+    rendered = "".join(_home_kpi_card_html(**card) for card in cards)
+    return (
+        f'<div class="ca-home-kpis" style="--ca-home-kpi-count: {count}">'
+        f"{rendered}</div>"
     )
-    count_card = _home_kpi_card_html(
-        title="Clones this week",
-        value=str(count_kpi.count),
-        unit="",
-        delta=count_kpi.delta,
-        delta_tone=count_kpi.delta_tone,
-        note=f"{count_kpi.completed} of {count_kpi.count} jobs",
-        icon="layers",
-    )
-    return f'<div class="ca-home-kpis">{success_card}{count_card}</div>'
 
 
 DEFAULT_PAGE = "Home"
