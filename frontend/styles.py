@@ -2397,12 +2397,21 @@ _GLOBAL_CSS = f"""
       opacity: 1 !important;
   }}
 
-  /* Home — weekly KPI card (content-sized, not square) */
-  .ca-home-kpi-wrap {{
+  /* Home — weekly KPI cards in an evenly spaced row */
+  .ca-home-kpis {{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, max-content));
+      gap: 16px;
       margin: 0.5rem 0 1rem 0;
-      display: inline-block;
       width: fit-content;
       max-width: 100%;
+      align-items: stretch;
+  }}
+  @media (max-width: 720px) {{
+      .ca-home-kpis {{
+          grid-template-columns: 1fr;
+          width: 100%;
+      }}
   }}
   .ca-home-kpi {{
       display: inline-flex;
@@ -2438,13 +2447,21 @@ _GLOBAL_CSS = f"""
       flex: 0 0 30px;
       line-height: 0;
   }}
-  .ca-home-kpi-ic::after {{
+  .ca-home-kpi-ic--check::after {{
       content: "";
       width: 16px;
       height: 16px;
       display: block;
       background: center / contain no-repeat
           url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e87511' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+  }}
+  .ca-home-kpi-ic--layers::after {{
+      content: "";
+      width: 16px;
+      height: 16px;
+      display: block;
+      background: center / contain no-repeat
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e87511' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2 2 7l10 5 10-5-10-5Z'/%3E%3Cpath d='m2 17 10 5 10-5'/%3E%3Cpath d='m2 12 10 5 10-5'/%3E%3C/svg%3E");
   }}
   .ca-home-kpi-val {{
       display: flex;
@@ -2869,27 +2886,57 @@ def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
         )
 
 
-def home_success_kpi_html(kpi) -> str:
-    """Weekly clone success rate card for the Home page."""
-    rate_text = f"{kpi.rate:.1f}" if kpi.rate is not None else "—"
-    unit = "%" if kpi.rate is not None else ""
-    tone = kpi.delta_tone if kpi.delta_tone in {"up", "down", "neutral"} else "neutral"
+def _home_kpi_card_html(
+    *,
+    title: str,
+    value: str,
+    unit: str,
+    delta: str,
+    delta_tone: str,
+    note: str,
+    icon: str,
+) -> str:
+    tone = delta_tone if delta_tone in {"up", "down", "neutral"} else "neutral"
+    unit_html = f"<small>{html.escape(unit)}</small>" if unit else ""
     return (
-        f'<div class="ca-home-kpi-wrap">'
         f'<div class="ca-home-kpi">'
         f'<div class="ca-home-kpi-top">'
-        f'<span class="ca-home-kpi-ic" aria-hidden="true"></span>'
-        f"Clone success rate</div>"
-        f'<div class="ca-home-kpi-val">{html.escape(rate_text)}'
-        f'<small>{html.escape(unit)}</small></div>'
+        f'<span class="ca-home-kpi-ic ca-home-kpi-ic--{html.escape(icon)}" '
+        f'aria-hidden="true"></span>'
+        f"{html.escape(title)}</div>"
+        f'<div class="ca-home-kpi-val">{html.escape(value)}{unit_html}</div>'
         f'<div class="ca-home-kpi-foot">'
         f'<div class="ca-home-kpi-meta">'
-        f'<span class="ca-home-kpi-pill {tone}">{html.escape(kpi.delta)}</span>'
-        f'<span class="ca-home-kpi-note">'
-        f"{kpi.completed} of {kpi.total} jobs</span>"
+        f'<span class="ca-home-kpi-pill {tone}">{html.escape(delta)}</span>'
+        f'<span class="ca-home-kpi-note">{html.escape(note)}</span>'
         f"</div>"
-        f"</div></div></div>"
+        f"</div></div>"
     )
+
+
+def home_kpis_html(success_kpi, count_kpi) -> str:
+    """Weekly KPI cards for the Home page."""
+    rate_text = f"{success_kpi.rate:.1f}" if success_kpi.rate is not None else "—"
+    rate_unit = "%" if success_kpi.rate is not None else ""
+    success_card = _home_kpi_card_html(
+        title="Clone success rate",
+        value=rate_text,
+        unit=rate_unit,
+        delta=success_kpi.delta,
+        delta_tone=success_kpi.delta_tone,
+        note=f"{success_kpi.completed} of {success_kpi.total} jobs",
+        icon="check",
+    )
+    count_card = _home_kpi_card_html(
+        title="Clones this week",
+        value=str(count_kpi.count),
+        unit="",
+        delta=count_kpi.delta,
+        delta_tone=count_kpi.delta_tone,
+        note=f"{count_kpi.completed} of {count_kpi.count} jobs",
+        icon="layers",
+    )
+    return f'<div class="ca-home-kpis">{success_card}{count_card}</div>'
 
 
 DEFAULT_PAGE = "Home"

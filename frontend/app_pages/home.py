@@ -6,8 +6,8 @@ import streamlit as st
 
 from api import get_runs
 from config.settings import frontend
-from kpi_helpers import week_bounds, weekly_success_kpi
-from styles import home_success_kpi_html, render_title
+from kpi_helpers import week_bounds, weekly_clone_count_kpi, weekly_success_kpi
+from styles import home_kpis_html, render_title
 from ui_errors import show_error
 
 render_title(
@@ -28,5 +28,6 @@ except Exception as exc:
     show_error(exc, context="Could not load weekly KPI data")
     runs = []
 
-kpi = weekly_success_kpi(runs)
-st.markdown(home_success_kpi_html(kpi), unsafe_allow_html=True)
+success_kpi = weekly_success_kpi(runs)
+count_kpi = weekly_clone_count_kpi(runs)
+st.markdown(home_kpis_html(success_kpi, count_kpi), unsafe_allow_html=True)

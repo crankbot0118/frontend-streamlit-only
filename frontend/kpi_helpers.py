@@ -70,6 +70,20 @@ def format_rate_delta(current: float | None, previous: float | None) -> tuple[st
     return f"{arrow} {abs(diff):g} pts", tone
 
 
+def format_count_delta(current: int, previous: int) -> tuple[str, str]:
+    """Return (percent delta label, tone) where tone is up|down|neutral."""
+    if previous == 0:
+        if current == 0:
+            return "0%", "neutral"
+        return "—", "neutral"
+    diff_pct = round(100.0 * (current - previous) / previous, 1)
+    if diff_pct == 0:
+        return "0%", "neutral"
+    tone = "up" if diff_pct > 0 else "down"
+    arrow = "▲" if diff_pct > 0 else "▼"
+    return f"{arrow} {abs(diff_pct):g}%", tone
+
+
 @dataclass(frozen=True)
 class WeeklySuccessKpi:
     week_start: date
@@ -95,6 +109,39 @@ def weekly_success_kpi(runs: list[dict], ref: date | None = None) -> WeeklySucce
         rate=rate,
         completed=completed,
         total=total,
+        delta=delta,
+        delta_tone=tone,
+    )
+
+
+@dataclass(frozen=True)
+class WeeklyCloneCountKpi:
+    week_start: date
+    week_end: date
+    count: int
+    completed: int
+    prev_count: int
+    delta: str
+    delta_tone: str
+
+
+def weekly_clone_count_kpi(runs: list[dict], ref: date | None = None) -> WeeklyCloneCountKpi:
+    week_start, week_end = week_bounds(ref)
+    prev_start, prev_end = previous_week_bounds(ref)
+    week_runs = [r for r in runs if run_in_week(r, week_start, week_end)]
+    prev_runs = [r for r in runs if run_in_week(r, prev_start, prev_end)]
+    count = len(week_runs)
+    prev_count = len(prev_runs)
+    completed = sum(
+        1 for r in week_runs if (r.get("status") or "").upper() == "COMPLETED"
+    )
+    delta, tone = format_count_delta(count, prev_count)
+    return WeeklyCloneCountKpi(
+        week_start=week_start,
+        week_end=week_end,
+        count=count,
+        completed=completed,
+        prev_count=prev_count,
         delta=delta,
         delta_tone=tone,
     )
