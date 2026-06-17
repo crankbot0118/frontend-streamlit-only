@@ -2630,32 +2630,15 @@ _GLOBAL_CSS = f"""
       min-height: 0 !important;
   }}
   .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlock"] > .st-key-ca_clone_activity,
-  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_clone_activity {{
+  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlock"] > .st-key-ca_outcome_breakdown,
+  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_clone_activity,
+  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_outcome_breakdown {{
       flex: 1 1 auto !important;
       min-height: 100% !important;
       align-self: stretch !important;
   }}
-  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlock"] > .st-key-ca_outcome_breakdown,
-  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_outcome_breakdown {{
-      flex: 0 0 auto !important;
-      align-self: stretch !important;
-      height: 100% !important;
-      max-height: 100% !important;
-  }}
+  .st-key-ca_clone_activity,
   .st-key-ca_outcome_breakdown {{
-      display: flex !important;
-      flex-direction: column !important;
-      flex: 0 0 auto !important;
-      width: 100% !important;
-      border: 1px solid var(--ca-home-card-border, #e6e9eb) !important;
-      border-radius: var(--ca-home-card-radius, 12px) !important;
-      background: #ffffff !important;
-      padding: 12px 14px 10px 14px !important;
-      margin: 0 !important;
-      box-sizing: border-box !important;
-      box-shadow: var(--ca-home-card-shadow) !important;
-  }}
-  .st-key-ca_clone_activity {{
       display: flex !important;
       flex-direction: column !important;
       flex: 1 1 auto !important;
@@ -2672,12 +2655,11 @@ _GLOBAL_CSS = f"""
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       display: flex !important;
       flex-direction: column !important;
-      flex: 0 1 auto !important;
-      gap: 0 !important;
+      flex: 1 1 auto !important;
+      gap: 0.1rem !important;
       margin: 0 !important;
       padding: 0 !important;
-      min-height: 0 !important;
-      justify-content: flex-start !important;
+      min-height: 100% !important;
   }}
   /* Clone activity — stretch chart area so card height matches outcome breakdown */
   .st-key-ca_clone_activity > [data-testid="stVerticalBlock"],
@@ -2711,18 +2693,15 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]),
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]) {{
-      flex: 0 0 auto !important;
+      flex: 1 1 auto !important;
       display: flex !important;
       flex-direction: column !important;
-      justify-content: center !important;
-      align-items: center !important;
       min-height: 0 !important;
-      margin: 2px 0 0 0 !important;
   }}
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-outcome-legend),
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-outcome-legend) {{
       flex: 0 0 auto !important;
-      margin-top: 0 !important;
+      margin-top: auto !important;
   }}
   .st-key-ca_clone_activity [data-testid="stMarkdownContainer"],
   .st-key-ca_outcome_breakdown [data-testid="stMarkdownContainer"],
@@ -2738,23 +2717,15 @@ _GLOBAL_CSS = f"""
   .st-key-ca_outcome_breakdown [data-testid="stPlotlyChart"] {{
       margin: 0 !important;
       padding: 0 !important;
-      flex: 0 0 auto !important;
-      width: 100% !important;
-      max-width: 100% !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
   }}
   .st-key-ca_clone_activity [data-testid="stPlotlyChart"] > div,
-  .st-key-ca_clone_activity .js-plotly-plot {{
+  .st-key-ca_outcome_breakdown [data-testid="stPlotlyChart"] > div,
+  .st-key-ca_clone_activity .js-plotly-plot,
+  .st-key-ca_outcome_breakdown .js-plotly-plot {{
       margin: 0 !important;
       max-height: 178px !important;
-  }}
-  .st-key-ca_outcome_breakdown [data-testid="stPlotlyChart"] > div,
-  .st-key-ca_outcome_breakdown .js-plotly-plot {{
-      margin: 0 auto !important;
-      max-height: 112px !important;
-      max-width: 100% !important;
-  }}
-  .st-key-ca_outcome_breakdown .ca-home-chart-head {{
-      margin: 0 0 4px 0;
   }}
   .ca-home-chart-head {{
       margin: 0 0 6px 0;
@@ -2832,7 +2803,7 @@ _GLOBAL_CSS = f"""
       flex-direction: column;
       gap: 0;
       margin: 0;
-      padding-top: 8px;
+      padding-top: 10px;
       border-top: 1px solid #f0f1f3;
       flex: 0 0 auto;
   }}
@@ -2840,11 +2811,11 @@ _GLOBAL_CSS = f"""
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto auto;
       align-items: center;
-      column-gap: 10px;
+      column-gap: 12px;
       row-gap: 0;
-      font-size: 11.5px;
-      line-height: 1.2;
-      padding: 5px 2px;
+      font-size: 12.5px;
+      line-height: 1.25;
+      padding: 7px 2px;
       border-radius: 6px;
   }}
   .ca-outcome-row + .ca-outcome-row {{

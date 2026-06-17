@@ -123,38 +123,36 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
         values = [1]
         colors = ["#eef0f2"]
 
-    pull_vals = [0.03, 0.03, 0.03] if total else [0]
     fig = go.Figure(
         go.Pie(
             values=values,
             labels=[slice_.label for slice_ in breakdown.slices],
-            hole=0.84,
-            marker=dict(colors=colors, line=dict(color="#ffffff", width=7)),
+            hole=0.78,
+            marker=dict(colors=colors, line=dict(color="#ffffff", width=4)),
             sort=False,
             direction="clockwise",
             rotation=210,
             textinfo="none",
             hovertemplate="%{label}: %{value}<extra></extra>",
-            pull=pull_vals,
+            pull=[0, 0.04, 0] if total else [0],
         )
     )
     fig.update_layout(
         **_base_layout(
             height=OUTCOME_CHART_HEIGHT,
-            margin=dict(l=0, r=0, t=0, b=0),
+            margin=dict(l=0, r=0, t=4, b=4),
         )
     )
-    fig.update_traces(domain=dict(x=[0.08, 0.92], y=[0.02, 0.98]))
     fig.add_annotation(
         text=center,
         x=0.5,
-        y=0.54,
+        y=0.56,
         showarrow=False,
         align="center",
         xref="paper",
         yref="paper",
         font=dict(
-            size=20,
+            size=26,
             color=BRAND_INK,
             family="system-ui, -apple-system, Segoe UI, sans-serif",
         ),
@@ -162,12 +160,12 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
     fig.add_annotation(
         text="success rate",
         x=0.5,
-        y=0.40,
+        y=0.41,
         showarrow=False,
         align="center",
         xref="paper",
         yref="paper",
-        font=dict(size=10, color=CHART_MUTED, family="system-ui, sans-serif"),
+        font=dict(size=11, color=CHART_MUTED, family="system-ui, sans-serif"),
     )
     return fig
 
