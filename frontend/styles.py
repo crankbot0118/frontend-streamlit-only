@@ -2400,6 +2400,11 @@ _GLOBAL_CSS = f"""
   /* Home — dashboard shell */
   .st-key-ca_home_dashboard {{
       --ca-home-card-gap: 12px;
+      --ca-home-card-radius: 12px;
+      --ca-home-card-border: #e6e9eb;
+      --ca-home-card-shadow: 0 1px 2px rgba(19, 21, 22, 0.04), 0 4px 14px rgba(19, 21, 22, 0.06);
+      --ca-home-muted: #6b7177;
+      --ca-home-soft: #f6f7f8;
       margin: 0.5rem 0 1rem 0 !important;
       width: 100% !important;
   }}
@@ -2469,30 +2474,33 @@ _GLOBAL_CSS = f"""
       width: 100%;
       min-width: 0;
       height: 100%;
-      border: 1px solid #e3e6e8;
-      border-radius: 10px;
+      border: 1px solid var(--ca-home-card-border, #e6e9eb);
+      border-radius: var(--ca-home-card-radius, 12px);
       background: #ffffff;
-      padding: 14px 16px;
+      padding: 16px 18px 15px 18px;
       box-sizing: border-box;
+      box-shadow: var(--ca-home-card-shadow);
   }}
   .ca-home-kpi-top {{
       display: flex;
       align-items: center;
-      gap: 9px;
-      color: #6b7177;
+      gap: 10px;
+      color: var(--ca-home-muted, #6b7177);
       font-weight: 600;
       font-size: 12.5px;
-      line-height: 1.25;
+      line-height: 1.3;
       flex: 0 0 auto;
+      letter-spacing: -0.01em;
   }}
   .ca-home-kpi-ic {{
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
       display: grid;
       place-items: center;
-      background: rgba(232, 117, 17, 0.12);
-      flex: 0 0 30px;
+      background: linear-gradient(145deg, rgba(232, 117, 17, 0.16) 0%, rgba(232, 117, 17, 0.08) 100%);
+      border: 1px solid rgba(232, 117, 17, 0.14);
+      flex: 0 0 32px;
       line-height: 0;
   }}
   .ca-home-kpi-ic--check::after {{
@@ -2516,28 +2524,29 @@ _GLOBAL_CSS = f"""
       align-items: baseline;
       gap: 0;
       font-weight: 800;
-      font-size: 31px;
-      letter-spacing: -1px;
+      font-size: 32px;
+      letter-spacing: -1.2px;
       line-height: 1;
       color: {BRAND_INK};
-      margin: 13px 0 0 0;
+      margin: 14px 0 0 0;
       padding: 0;
       flex: 0 0 auto;
   }}
   .ca-home-kpi-val small {{
-      font-size: 17px;
-      color: #6b7177;
+      font-size: 18px;
+      color: var(--ca-home-muted, #6b7177);
       font-weight: 700;
-      letter-spacing: 0;
-      margin-left: 1px;
+      letter-spacing: -0.2px;
+      margin-left: 2px;
   }}
   .ca-home-kpi-foot {{
       display: flex;
       flex-direction: column;
       align-items: stretch;
       gap: 0;
-      margin: 11px 0 0 0;
-      flex: 0 0 auto;
+      margin: 12px 0 0 0;
+      flex: 1 1 auto;
+      justify-content: flex-end;
       width: 100%;
       font-size: 12px;
       font-weight: 600;
@@ -2556,31 +2565,35 @@ _GLOBAL_CSS = f"""
       display: inline-flex;
       align-items: center;
       gap: 3px;
-      padding: 2px 7px;
-      border-radius: 20px;
+      padding: 3px 8px;
+      border-radius: 999px;
       font-weight: 700;
-      font-size: 11.5px;
+      font-size: 11px;
       line-height: 1.2;
       white-space: nowrap;
       flex: 0 0 auto;
+      border: 1px solid transparent;
   }}
   .ca-home-kpi-pill.up {{
-      background: rgba(26, 127, 55, 0.12);
+      background: rgba(26, 127, 55, 0.1);
       color: #1a7f37;
+      border-color: rgba(26, 127, 55, 0.14);
   }}
   .ca-home-kpi-pill.down {{
-      background: rgba(207, 34, 46, 0.12);
+      background: rgba(207, 34, 46, 0.1);
       color: {BRAND_RED};
+      border-color: rgba(207, 34, 46, 0.14);
   }}
   .ca-home-kpi-pill.neutral {{
-      background: #f0f1f2;
-      color: #6b7177;
+      background: var(--ca-home-soft, #f6f7f8);
+      color: var(--ca-home-muted, #6b7177);
+      border-color: #eceef0;
   }}
   .ca-home-kpi-note {{
-      color: #6b7177;
+      color: var(--ca-home-muted, #6b7177);
       font-weight: 500;
-      font-size: 12px;
-      line-height: 1.2;
+      font-size: 11.5px;
+      line-height: 1.25;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -2630,12 +2643,13 @@ _GLOBAL_CSS = f"""
       flex-direction: column !important;
       flex: 1 1 auto !important;
       width: 100% !important;
-      border: 1px solid #e3e6e8 !important;
-      border-radius: 10px !important;
+      border: 1px solid var(--ca-home-card-border, #e6e9eb) !important;
+      border-radius: var(--ca-home-card-radius, 12px) !important;
       background: #ffffff !important;
-      padding: 12px 14px 10px 14px !important;
+      padding: 14px 16px 12px 16px !important;
       margin: 0 !important;
       box-sizing: border-box !important;
+      box-shadow: var(--ca-home-card-shadow) !important;
   }}
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlock"],
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
@@ -2714,7 +2728,7 @@ _GLOBAL_CSS = f"""
       max-height: 178px !important;
   }}
   .ca-home-chart-head {{
-      margin: 0 0 8px 0;
+      margin: 0 0 6px 0;
       flex: 0 0 auto;
   }}
   .ca-clone-activity-top {{
@@ -2722,52 +2736,62 @@ _GLOBAL_CSS = f"""
       flex-direction: column;
       flex: 0 0 auto;
       width: 100%;
+      gap: 0;
   }}
   .ca-home-chart-title {{
-      font-size: 15px;
+      font-size: 15.5px;
       font-weight: 800;
       color: {BRAND_INK};
       line-height: 1.25;
       margin: 0;
-      letter-spacing: -0.2px;
+      letter-spacing: -0.3px;
       white-space: nowrap;
   }}
   .ca-home-chart-sub {{
-      margin: 4px 0 0 0;
-      font-size: 12.5px;
+      margin: 3px 0 0 0;
+      font-size: 12px;
       font-weight: 500;
-      color: #6b7177;
+      color: var(--ca-home-muted, #6b7177);
       line-height: 1.35;
   }}
   .ca-home-chart-sub em {{
       font-style: italic;
       font-weight: 500;
+      color: #8b9197;
   }}
   .ca-home-chart-metrics {{
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin: 10px 0 0 0;
-      padding-bottom: 0;
+      gap: 0;
+      margin: 12px 0 0 0;
+      padding: 11px 0 0 0;
+      border-top: 1px solid #f0f1f3;
       flex: 0 0 auto;
   }}
   .ca-home-chart-metric {{
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
       min-width: 0;
+      padding: 0 12px;
+  }}
+  .ca-home-chart-metric:first-child {{
+      padding-left: 0;
+  }}
+  .ca-home-chart-metric:not(:last-child) {{
+      border-right: 1px solid #eef0f2;
   }}
   .ca-home-chart-metric strong {{
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 800;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.6px;
       color: {BRAND_INK};
       line-height: 1.05;
   }}
   .ca-home-chart-metric span {{
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 500;
-      color: #6b7177;
+      color: var(--ca-home-muted, #6b7177);
       line-height: 1.25;
   }}
   .ca-home-chart-plot {{
@@ -2777,25 +2801,30 @@ _GLOBAL_CSS = f"""
   .ca-outcome-legend {{
       display: flex;
       flex-direction: column;
-      gap: 7px;
-      margin: 2px 0 0 0;
-      padding-top: 8px;
-      border-top: 1px solid #f0f1f2;
+      gap: 0;
+      margin: 0;
+      padding-top: 10px;
+      border-top: 1px solid #f0f1f3;
       flex: 0 0 auto;
   }}
   .ca-outcome-row {{
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto auto;
       align-items: center;
-      column-gap: 10px;
+      column-gap: 12px;
       row-gap: 0;
-      font-size: 12px;
+      font-size: 12.5px;
       line-height: 1.25;
+      padding: 7px 2px;
+      border-radius: 6px;
+  }}
+  .ca-outcome-row + .ca-outcome-row {{
+      border-top: 1px solid #f6f7f8;
   }}
   .ca-outcome-label {{
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      gap: 8px;
       color: {BRAND_INK};
       font-weight: 600;
       min-width: 0;
@@ -2804,10 +2833,11 @@ _GLOBAL_CSS = f"""
       text-overflow: ellipsis;
   }}
   .ca-outcome-swatch {{
-      width: 11px;
-      height: 11px;
-      border-radius: 2px;
-      flex: 0 0 11px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex: 0 0 10px;
+      box-shadow: inset 0 0 0 1px rgba(19, 21, 22, 0.06);
   }}
   .ca-outcome-swatch.ok {{
       background: {BRAND_ORANGE};
@@ -2822,13 +2852,18 @@ _GLOBAL_CSS = f"""
       color: {BRAND_INK};
       font-weight: 700;
       text-align: right;
-      min-width: 2rem;
+      min-width: 2.25rem;
+      font-variant-numeric: tabular-nums;
   }}
   .ca-outcome-pct {{
       color: {BRAND_INK};
       font-weight: 800;
       text-align: right;
-      min-width: 3rem;
+      min-width: 3.25rem;
+      font-variant-numeric: tabular-nums;
+  }}
+  .ca-outcome-pct strong {{
+      font-weight: 800;
   }}
   @media (max-width: 640px) {{
       .st-key-ca_home_dashboard [data-testid="stHorizontalBlock"] {{

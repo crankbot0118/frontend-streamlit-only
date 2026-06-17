@@ -58,13 +58,15 @@ success_kpi = weekly_success_kpi(runs)
 count_kpi = weekly_clone_count_kpi(runs)
 
 cards = [
-    success_kpi_card_dict("KPI1", success_kpi, icon=HOME_KPI_ICONS[0]),
-    count_kpi_card_dict("KPI2", count_kpi, icon=HOME_KPI_ICONS[1]),
+    success_kpi_card_dict("Weekly success rate", success_kpi, icon=HOME_KPI_ICONS[0]),
+    count_kpi_card_dict("Clones this week", count_kpi, icon=HOME_KPI_ICONS[1]),
 ]
 for index in range(3, HOME_KPI_COUNT + 1):
+    placeholder_titles = ("Engineer hours saved", "SLA compliance")
+    title = placeholder_titles[index - 3] if index - 3 < len(placeholder_titles) else f"KPI{index}"
     cards.append(
         placeholder_kpi_card_dict(
-            f"KPI{index}",
+            title,
             icon=HOME_KPI_ICONS[(index - 1) % len(HOME_KPI_ICONS)],
         )
     )

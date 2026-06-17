@@ -14,6 +14,7 @@ CHART_FAILED = BRAND_RED
 CHART_CANCELLED = "#9aa0a6"
 CHART_GRID = "#eef0f2"
 CHART_MUTED = "#6b7177"
+CHART_AXIS = "#9aa0a6"
 
 _PLOTLY_CONFIG = {"displayModeBar": False, "responsive": True}
 ACTIVITY_CHART_HEIGHT = 178
@@ -52,7 +53,7 @@ def clone_activity_figure(stats: CloneActivityStats) -> go.Figure:
             name="Successful",
             x=labels,
             y=success,
-            marker=dict(color=CHART_SUCCESS, line=dict(width=0)),
+            marker=dict(color=CHART_SUCCESS, line=dict(width=0), cornerradius=4),
             hovertemplate="%{x}<br>Successful: %{y}<extra></extra>",
         )
     )
@@ -61,7 +62,7 @@ def clone_activity_figure(stats: CloneActivityStats) -> go.Figure:
             name="Failed",
             x=labels,
             y=failed,
-            marker=dict(color=CHART_FAILED, line=dict(width=0), cornerradius=5),
+            marker=dict(color=CHART_FAILED, line=dict(width=0), cornerradius=4),
             hovertemplate="%{x}<br>Failed: %{y}<extra></extra>",
         )
     )
@@ -69,27 +70,27 @@ def clone_activity_figure(stats: CloneActivityStats) -> go.Figure:
         **_base_layout(
             barmode="stack",
             height=ACTIVITY_CHART_HEIGHT,
-            bargap=0.36,
+            bargap=0.38,
             legend=dict(
                 orientation="h",
                 yanchor="top",
-                y=-0.22,
+                y=-0.18,
                 xanchor="left",
                 x=0,
                 font=dict(size=11, color=CHART_MUTED),
                 traceorder="normal",
                 itemsizing="constant",
                 itemwidth=30,
-                entrywidth=88,
+                entrywidth=90,
                 bgcolor="rgba(0,0,0,0)",
             ),
             showlegend=True,
-            margin=dict(l=0, r=0, t=2, b=42),
+            margin=dict(l=0, r=0, t=2, b=38),
             xaxis=dict(
                 showgrid=False,
                 showline=False,
                 zeroline=False,
-                tickfont=dict(size=12, color=CHART_MUTED),
+                tickfont=dict(size=11, color=CHART_AXIS),
                 tickmode="linear",
             ),
             yaxis=dict(
@@ -98,7 +99,7 @@ def clone_activity_figure(stats: CloneActivityStats) -> go.Figure:
                 gridwidth=1,
                 zeroline=False,
                 showline=False,
-                tickfont=dict(size=11, color=CHART_MUTED),
+                tickfont=dict(size=10, color=CHART_AXIS),
                 ticks="outside",
                 ticklen=0,
                 tickcolor="rgba(0,0,0,0)",
@@ -126,32 +127,32 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
         go.Pie(
             values=values,
             labels=[slice_.label for slice_ in breakdown.slices],
-            hole=0.76,
-            marker=dict(colors=colors, line=dict(color="#ffffff", width=3)),
+            hole=0.78,
+            marker=dict(colors=colors, line=dict(color="#ffffff", width=4)),
             sort=False,
             direction="clockwise",
             rotation=210,
             textinfo="none",
             hovertemplate="%{label}: %{value}<extra></extra>",
-            pull=[0, 0.03, 0] if total else [0],
+            pull=[0, 0.04, 0] if total else [0],
         )
     )
     fig.update_layout(
         **_base_layout(
             height=OUTCOME_CHART_HEIGHT,
-            margin=dict(l=0, r=0, t=0, b=0),
+            margin=dict(l=0, r=0, t=4, b=4),
         )
     )
     fig.add_annotation(
         text=center,
         x=0.5,
-        y=0.55,
+        y=0.56,
         showarrow=False,
         align="center",
         xref="paper",
         yref="paper",
         font=dict(
-            size=24,
+            size=26,
             color=BRAND_INK,
             family="system-ui, -apple-system, Segoe UI, sans-serif",
         ),
@@ -159,7 +160,7 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
     fig.add_annotation(
         text="success rate",
         x=0.5,
-        y=0.42,
+        y=0.41,
         showarrow=False,
         align="center",
         xref="paper",
