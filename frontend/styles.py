@@ -2409,14 +2409,32 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
   }}
-  /* Rows sit in stElementContainer wrappers — flex gap does not apply; use margins. */
   .st-key-ca_home_dashboard [data-testid="stElementContainer"] {{
       margin: 0 !important;
       padding: 0 !important;
   }}
-  .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:not(:first-child),
-  .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:not(:first-child) {{
-      margin-top: var(--ca-home-card-gap) !important;
+  .ca-home-row-spacer {{
+      display: block;
+      width: 100%;
+      height: var(--ca-home-card-gap, 12px);
+      margin: 0;
+      padding: 0;
+      line-height: 0;
+      font-size: 0;
+      overflow: hidden;
+  }}
+  .st-key-ca_home_dashboard [data-testid="stElementContainer"]:has(.ca-home-row-spacer) {{
+      height: var(--ca-home-card-gap, 12px) !important;
+      min-height: var(--ca-home-card-gap, 12px) !important;
+      max-height: var(--ca-home-card-gap, 12px) !important;
+      overflow: hidden !important;
+      flex: 0 0 var(--ca-home-card-gap, 12px) !important;
+  }}
+  .st-key-ca_home_dashboard [data-testid="stMarkdownContainer"]:has(.ca-home-row-spacer),
+  .st-key-ca_home_dashboard [data-testid="stMarkdownContainer"]:has(.ca-home-row-spacer) p {{
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 0 !important;
   }}
 
   /* Home — weekly KPI cards spanning full content width */
@@ -2572,11 +2590,10 @@ _GLOBAL_CSS = f"""
       text-align: right;
   }}
 
-  /* Home — chart cards row (2:1 columns, equal height) */
+  /* Home — chart cards row (2:1 grid, equal height) */
   .st-key-ca_home_dashboard [data-testid="stHorizontalBlock"] {{
-      display: flex !important;
-      flex-direction: row !important;
-      flex-wrap: nowrap !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) !important;
       align-items: stretch !important;
       gap: var(--ca-home-card-gap, 12px) !important;
       width: 100% !important;
@@ -2587,9 +2604,9 @@ _GLOBAL_CSS = f"""
       display: flex !important;
       flex-direction: column !important;
       align-self: stretch !important;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
       min-width: 0 !important;
+      min-height: 100% !important;
+      padding: 0 !important;
       margin: 0 !important;
   }}
   .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlock"],
@@ -2597,18 +2614,26 @@ _GLOBAL_CSS = f"""
       display: flex !important;
       flex-direction: column !important;
       flex: 1 1 auto !important;
+      height: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
+  }}
+  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"].st-key-ca_clone_activity,
+  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"].st-key-ca_outcome_breakdown,
+  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"].st-key-ca_clone_activity,
+  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"].st-key-ca_outcome_breakdown {{
+      flex: 1 1 auto !important;
+      height: 100% !important;
+      align-self: stretch !important;
   }}
   .st-key-ca_clone_activity,
   .st-key-ca_outcome_breakdown {{
       display: flex !important;
       flex-direction: column !important;
       flex: 1 1 auto !important;
-      align-self: stretch !important;
+      height: 100% !important;
       width: 100% !important;
-      min-height: 100% !important;
       border: 1px solid #e3e6e8 !important;
       border-radius: 10px !important;
       background: #ffffff !important;
@@ -2782,7 +2807,7 @@ _GLOBAL_CSS = f"""
   }}
   @media (max-width: 640px) {{
       .st-key-ca_home_dashboard [data-testid="stHorizontalBlock"] {{
-          flex-direction: column !important;
+          grid-template-columns: minmax(0, 1fr) !important;
           gap: var(--ca-home-card-gap, 12px) !important;
       }}
   }}
