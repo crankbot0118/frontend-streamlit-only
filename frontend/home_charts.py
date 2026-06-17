@@ -18,7 +18,7 @@ CHART_AXIS = "#9aa0a6"
 
 _PLOTLY_CONFIG = {"displayModeBar": False, "responsive": True}
 ACTIVITY_CHART_HEIGHT = 178
-OUTCOME_CHART_HEIGHT = 112
+OUTCOME_CHART_HEIGHT = 178
 
 
 def _base_layout(**overrides) -> dict:
