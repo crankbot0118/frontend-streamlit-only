@@ -75,7 +75,7 @@ activity = clone_activity_stats(runs)
 outcome = outcome_breakdown(runs)
 
 with st.container(key="ca_home_charts"):
-    activity_col, outcome_col = st.columns([2.05, 1], gap="small")
+    activity_col, outcome_col = st.columns([2, 1], gap="small")
     with activity_col:
         with st.container(key="ca_clone_activity"):
             st.markdown(clone_activity_header_html(activity), unsafe_allow_html=True)

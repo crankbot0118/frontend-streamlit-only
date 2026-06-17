@@ -2408,6 +2408,9 @@ _GLOBAL_CSS = f"""
       align-items: stretch;
       box-sizing: border-box;
   }}
+  .ca-home-kpis .ca-home-kpi {{
+      width: 100%;
+  }}
   @media (max-width: 1100px) {{
       .ca-home-kpis {{
           grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2564,6 +2567,18 @@ _GLOBAL_CSS = f"""
   .st-key-ca_home_charts [data-testid="stHorizontalBlock"] {{
       align-items: stretch !important;
       gap: 12px !important;
+      width: 100% !important;
+  }}
+  .st-key-ca_home_charts [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child {{
+      flex: 2 1 0% !important;
+  }}
+  .st-key-ca_home_charts [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child {{
+      flex: 1 1 0% !important;
+  }}
+  .st-key-ca_home_charts [data-testid="stHorizontalBlock"] > [data-testid="column"] {{
+      width: 0 !important;
+      min-width: 0 !important;
+      max-width: none !important;
   }}
   .st-key-ca_home_charts [data-testid="column"] {{
       padding: 0 !important;
