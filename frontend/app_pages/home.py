@@ -7,7 +7,7 @@ import streamlit as st
 from api import get_runs
 from config.settings import frontend
 from kpi_helpers import week_bounds, weekly_success_kpi
-from styles import emit_html, home_success_kpi_html, render_title
+from styles import home_success_kpi_html, render_title
 from ui_errors import show_error
 
 render_title(
@@ -29,4 +29,4 @@ except Exception as exc:
     runs = []
 
 kpi = weekly_success_kpi(runs)
-emit_html(home_success_kpi_html(kpi))
+st.markdown(home_success_kpi_html(kpi), unsafe_allow_html=True)

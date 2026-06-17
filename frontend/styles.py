@@ -2395,27 +2395,26 @@ _GLOBAL_CSS = f"""
       opacity: 1 !important;
   }}
 
-  /* Home — square weekly KPI card (matches reference dashboard) */
+  /* Home — weekly KPI card (content-sized, not square) */
   .ca-home-kpi-wrap {{
       margin: 0.5rem 0 1rem 0;
+      display: inline-block;
       width: fit-content;
+      max-width: 100%;
   }}
   .ca-home-kpi {{
-      display: flex;
+      display: inline-flex;
       flex-direction: column;
       justify-content: flex-start;
-      min-width: 180px;
-      max-width: 180px;
+      align-items: flex-start;
       width: fit-content;
+      max-width: 100%;
       height: auto;
-      min-height: 120px;
-      aspect-ratio: 1 / 1;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
       background: #ffffff;
-      padding: 18px 19px;
+      padding: 14px 16px;
       box-sizing: border-box;
-      overflow: hidden;
   }}
   .ca-home-kpi-top {{
       display: flex;
@@ -2434,14 +2433,16 @@ _GLOBAL_CSS = f"""
       display: grid;
       place-items: center;
       background: rgba(232, 117, 17, 0.12);
-      color: {BRAND_ORANGE};
       flex: 0 0 30px;
       line-height: 0;
   }}
-  .ca-home-kpi-ic svg {{
+  .ca-home-kpi-ic::after {{
+      content: "";
       width: 16px;
       height: 16px;
       display: block;
+      background: center / contain no-repeat
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e87511' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
   }}
   .ca-home-kpi-val {{
       display: flex;
@@ -2867,19 +2868,15 @@ def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
 
 
 def home_success_kpi_html(kpi) -> str:
-    """Square weekly clone success rate card for the Home page."""
+    """Weekly clone success rate card for the Home page."""
     rate_text = f"{kpi.rate:.1f}" if kpi.rate is not None else "—"
     unit = "%" if kpi.rate is not None else ""
     tone = kpi.delta_tone if kpi.delta_tone in {"up", "down", "neutral"} else "neutral"
-    check_svg = (
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">'
-        '<path d="M20 6L9 17l-5-5"></path></svg>'
-    )
     return (
         f'<div class="ca-home-kpi-wrap">'
         f'<div class="ca-home-kpi">'
         f'<div class="ca-home-kpi-top">'
-        f'<span class="ca-home-kpi-ic">{check_svg}</span>'
+        f'<span class="ca-home-kpi-ic" aria-hidden="true"></span>'
         f"Clone success rate</div>"
         f'<div class="ca-home-kpi-val">{html.escape(rate_text)}'
         f'<small>{html.escape(unit)}</small></div>'
