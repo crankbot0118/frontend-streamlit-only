@@ -2408,7 +2408,7 @@ _GLOBAL_CSS = f"""
       max-width: 320px;
       width: fit-content;
       height: auto;
-      min-height: 120px;
+      min-height: 100px;
       aspect-ratio: 1 / 1;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
