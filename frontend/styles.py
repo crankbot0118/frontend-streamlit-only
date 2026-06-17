@@ -2404,11 +2404,11 @@ _GLOBAL_CSS = f"""
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      width: 220px;
-      height: 220px;
-      max-width: 220px;
-      min-width: 220px;
-      min-height: 220px;
+      min-width: 180px;
+      max-width: 320px;
+      width: fit-content;
+      height: auto;
+      min-height: 120px;
       aspect-ratio: 1 / 1;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
