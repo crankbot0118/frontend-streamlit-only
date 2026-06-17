@@ -2865,6 +2865,32 @@ _GLOBAL_CSS = f"""
   .ca-outcome-pct strong {{
       font-weight: 800;
   }}
+
+  /* Home — recent runs (Run History cards, max 5) */
+  .st-key-ca_home_recent_runs {{
+      border: 1px solid var(--ca-home-card-border, #e6e9eb) !important;
+      border-radius: var(--ca-home-card-radius, 12px) !important;
+      background: #ffffff !important;
+      padding: 14px 16px 12px 16px !important;
+      margin: 0 !important;
+      box-sizing: border-box !important;
+      box-shadow: var(--ca-home-card-shadow) !important;
+      width: 100% !important;
+  }}
+  .st-key-ca_home_recent_runs > [data-testid="stVerticalBlock"],
+  .st-key-ca_home_recent_runs > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      gap: 0.35rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca_home_recent_runs .st-key-ca-runs {{
+      margin-top: 0.15rem !important;
+  }}
+  .st-key-ca_home_recent_runs .st-key-ca-runs > [data-testid="stVerticalBlock"],
+  .st-key-ca_home_recent_runs .st-key-ca-runs > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      gap: var(--ca-home-card-gap, 12px) !important;
+  }}
+
   @media (max-width: 640px) {{
       .st-key-ca_home_dashboard [data-testid="stHorizontalBlock"] {{
           flex-direction: column !important;
@@ -3134,7 +3160,7 @@ def fmt_duration(start, end) -> str:
     return f"{sec}s"
 
 
-def render_run_card(run: dict) -> bool:
+def render_run_card(run: dict, *, key_prefix: str = "") -> bool:
     """Render a run card as one line plus a redirect button on the right.
 
     client · Run # · source→target · user · status · started · updated · duration.
@@ -3142,6 +3168,8 @@ def render_run_card(run: dict) -> bool:
     button is clicked.
     """
     rid = run.get("clone_run_id")
+    card_key = f"runcard_{key_prefix}{rid}"
+    button_key = f"open_run_{key_prefix}{rid}"
     client = (
         run.get("client_name")
         or run.get("clientName")
@@ -3188,7 +3216,7 @@ def render_run_card(run: dict) -> bool:
         f'{failed_step_html}'
         f'</div></div></div>'
     )
-    with st.container(key=f"runcard_{rid}"):
+    with st.container(key=card_key):
         detail_col, arrow_col = st.columns(
             [1, 0.06],
             gap="small",
@@ -3199,7 +3227,7 @@ def render_run_card(run: dict) -> bool:
         with arrow_col:
             clicked = st.button(
                 "",
-                key=f"open_run_{rid}",
+                key=button_key,
                 icon=":material/arrow_right:",
                 help="View run details",
                 type="tertiary",

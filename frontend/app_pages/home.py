@@ -24,8 +24,10 @@ from kpi_helpers import (
 )
 from styles import (
     count_kpi_card_dict,
+    goto_page,
     home_kpis_html,
     placeholder_kpi_card_dict,
+    render_run_card,
     render_title,
     success_kpi_card_dict,
 )
@@ -33,6 +35,7 @@ from ui_errors import show_error
 
 HOME_KPI_COUNT = 4
 HOME_KPI_ICONS = ("check", "layers", "check", "layers")
+HOME_RECENT_RUNS_LIMIT = 5
 
 render_title(
     "VClone",
@@ -53,6 +56,12 @@ try:
 except Exception as exc:
     show_error(exc, context="Could not load weekly KPI data")
     runs = []
+
+try:
+    recent_runs = get_runs(limit=HOME_RECENT_RUNS_LIMIT)
+except Exception as exc:
+    show_error(exc, context="Could not load recent runs")
+    recent_runs = []
 
 success_kpi = weekly_success_kpi(runs)
 count_kpi = weekly_clone_count_kpi(runs)
@@ -86,6 +95,26 @@ with st.container(key="ca_home_dashboard"):
                 use_container_width=True,
                 config=plotly_config(),
             )
+        st.markdown('<div class="ca-home-row-spacer"></div>', unsafe_allow_html=True)
+        with st.container(key="ca_home_recent_runs"):
+            st.markdown(
+                '<div class="ca-home-chart-head">'
+                '<div class="ca-home-chart-title">Recent runs</div>'
+                "</div>",
+                unsafe_allow_html=True,
+            )
+            if not recent_runs:
+                st.caption("No runs to show yet.")
+            else:
+                with st.container(key="ca-runs"):
+                    for run in recent_runs:
+                        if render_run_card(run, key_prefix="home_"):
+                            st.session_state["selected_run_id"] = run["clone_run_id"]
+                            st.session_state["selected_run"] = run
+                            st.session_state[f"auto_refresh_{run['clone_run_id']}"] = True
+                            st.session_state["_auto_refresh_run"] = run["clone_run_id"]
+                            st.query_params["run"] = str(run["clone_run_id"])
+                            goto_page("Run details")
     with outcome_col:
         with st.container(key="ca_outcome_breakdown"):
             st.markdown(outcome_header_html(outcome), unsafe_allow_html=True)
