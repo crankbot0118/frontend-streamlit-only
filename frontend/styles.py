@@ -2395,7 +2395,7 @@ _GLOBAL_CSS = f"""
       opacity: 1 !important;
   }}
 
-  /* Home — square weekly KPI card */
+  /* Home — square weekly KPI card (matches reference dashboard) */
   .ca-home-kpi-wrap {{
       margin: 0.5rem 0 1rem 0;
       width: fit-content;
@@ -2404,86 +2404,92 @@ _GLOBAL_CSS = f"""
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      gap: 5px;
-      width: 168px;
-      height: 168px;
-      max-width: 168px;
-      min-width: 168px;
-      min-height: 168px;
+      width: 220px;
+      height: 220px;
+      max-width: 220px;
+      min-width: 220px;
+      min-height: 220px;
       aspect-ratio: 1 / 1;
       border: 1px solid #e3e6e8;
-      border-radius: 8px;
+      border-radius: 10px;
       background: #ffffff;
-      padding: 14px;
+      padding: 18px 19px;
       box-sizing: border-box;
       overflow: hidden;
   }}
   .ca-home-kpi-top {{
       display: flex;
       align-items: center;
-      gap: 7px;
+      gap: 9px;
       color: #6b7177;
       font-weight: 600;
-      font-size: 11px;
-      line-height: 1.2;
+      font-size: 12.5px;
+      line-height: 1.25;
       flex: 0 0 auto;
   }}
   .ca-home-kpi-ic {{
-      width: 24px;
-      height: 24px;
-      border-radius: 6px;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
       display: grid;
       place-items: center;
       background: rgba(232, 117, 17, 0.12);
       color: {BRAND_ORANGE};
-      flex: 0 0 24px;
-      font-size: 12px;
-      line-height: 1;
+      flex: 0 0 30px;
+      line-height: 0;
+  }}
+  .ca-home-kpi-ic svg {{
+      width: 16px;
+      height: 16px;
+      display: block;
   }}
   .ca-home-kpi-val {{
-      flex: 1 1 auto;
       display: flex;
-      align-items: center;
+      align-items: baseline;
+      gap: 0;
       font-weight: 800;
-      font-size: 28px;
-      letter-spacing: -0.8px;
+      font-size: 31px;
+      letter-spacing: -1px;
       line-height: 1;
       color: {BRAND_INK};
-      margin: 0;
-      padding: 8px 0;
-      min-height: 0;
+      margin: 13px 0 0 0;
+      padding: 0;
+      flex: 0 0 auto;
   }}
   .ca-home-kpi-val small {{
-      font-size: 14px;
+      font-size: 17px;
       color: #6b7177;
       font-weight: 700;
+      letter-spacing: 0;
+      margin-left: 1px;
   }}
   .ca-home-kpi-foot {{
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      justify-content: flex-end;
       gap: 0;
-      margin: 0;
+      margin: 11px 0 0 0;
       flex: 0 0 auto;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
   }}
   .ca-home-kpi-meta {{
       display: flex;
       flex-direction: row;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 5px;
+      flex-wrap: nowrap;
+      gap: 7px;
   }}
   .ca-home-kpi-pill {{
       display: inline-flex;
       align-items: center;
-      padding: 1px 6px;
+      gap: 3px;
+      padding: 2px 7px;
       border-radius: 20px;
       font-weight: 700;
-      font-size: 10px;
+      font-size: 11.5px;
       line-height: 1.2;
+      white-space: nowrap;
   }}
   .ca-home-kpi-pill.up {{
       background: rgba(26, 127, 55, 0.12);
@@ -2500,8 +2506,9 @@ _GLOBAL_CSS = f"""
   .ca-home-kpi-note {{
       color: #6b7177;
       font-weight: 500;
-      font-size: 9px;
+      font-size: 12px;
       line-height: 1.2;
+      white-space: nowrap;
   }}
 </style>
 """
@@ -2864,11 +2871,15 @@ def home_success_kpi_html(kpi) -> str:
     rate_text = f"{kpi.rate:.1f}" if kpi.rate is not None else "—"
     unit = "%" if kpi.rate is not None else ""
     tone = kpi.delta_tone if kpi.delta_tone in {"up", "down", "neutral"} else "neutral"
+    check_svg = (
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">'
+        '<path d="M20 6L9 17l-5-5"></path></svg>'
+    )
     return (
         f'<div class="ca-home-kpi-wrap">'
         f'<div class="ca-home-kpi">'
         f'<div class="ca-home-kpi-top">'
-        f'<span class="ca-home-kpi-ic">✓</span>'
+        f'<span class="ca-home-kpi-ic">{check_svg}</span>'
         f"Clone success rate</div>"
         f'<div class="ca-home-kpi-val">{html.escape(rate_text)}'
         f'<small>{html.escape(unit)}</small></div>'
