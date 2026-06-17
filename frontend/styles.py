@@ -2450,9 +2450,16 @@ _GLOBAL_CSS = f"""
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 6px;
+      gap: 5px;
       font-size: 12px;
       font-weight: 600;
+  }}
+  .ca-home-kpi-meta {{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 7px;
   }}
   .ca-home-kpi-pill {{
       display: inline-flex;
@@ -2478,8 +2485,8 @@ _GLOBAL_CSS = f"""
   .ca-home-kpi-note {{
       color: #6b7177;
       font-weight: 500;
-      font-size: 12px;
-      line-height: 1.3;
+      font-size: 10.5px;
+      line-height: 1.2;
   }}
   .ca-home-kpi-week {{
       color: #8a9097;
@@ -2860,9 +2867,11 @@ def home_success_kpi_html(kpi) -> str:
         f'<div class="ca-home-kpi-val">{html.escape(rate_text)}'
         f'<small>{html.escape(unit)}</small></div>'
         f'<div class="ca-home-kpi-foot">'
+        f'<div class="ca-home-kpi-meta">'
         f'<span class="ca-home-kpi-pill {tone}">{html.escape(kpi.delta)}</span>'
         f'<span class="ca-home-kpi-note">'
         f"{kpi.completed} of {kpi.total} jobs</span>"
+        f"</div>"
         f'<span class="ca-home-kpi-week">{html.escape(week_label)}</span>'
         f"</div></div></div>"
     )
