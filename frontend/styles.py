@@ -2394,6 +2394,99 @@ _GLOBAL_CSS = f"""
       color: #c4c8cc !important;
       opacity: 1 !important;
   }}
+
+  /* Home — square weekly KPI card */
+  .ca-home-kpi-wrap {{
+      margin: 0.5rem 0 1.25rem 0;
+  }}
+  .ca-home-kpi {{
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 220px;
+      aspect-ratio: 1 / 1;
+      border: 1px solid #e3e6e8;
+      border-radius: 10px;
+      background: #ffffff;
+      padding: 18px;
+      box-sizing: border-box;
+  }}
+  .ca-home-kpi-top {{
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: #6b7177;
+      font-weight: 600;
+      font-size: 12.5px;
+      line-height: 1.25;
+  }}
+  .ca-home-kpi-ic {{
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: rgba(232, 117, 17, 0.12);
+      color: {BRAND_ORANGE};
+      flex: 0 0 30px;
+      font-size: 14px;
+      line-height: 1;
+  }}
+  .ca-home-kpi-val {{
+      font-weight: 800;
+      font-size: 36px;
+      letter-spacing: -1px;
+      line-height: 1;
+      color: {BRAND_INK};
+      margin: 0;
+  }}
+  .ca-home-kpi-val small {{
+      font-size: 18px;
+      color: #6b7177;
+      font-weight: 700;
+  }}
+  .ca-home-kpi-foot {{
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+  }}
+  .ca-home-kpi-pill {{
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 11.5px;
+      line-height: 1.2;
+  }}
+  .ca-home-kpi-pill.up {{
+      background: rgba(26, 127, 55, 0.12);
+      color: #1a7f37;
+  }}
+  .ca-home-kpi-pill.down {{
+      background: rgba(207, 34, 46, 0.12);
+      color: {BRAND_RED};
+  }}
+  .ca-home-kpi-pill.neutral {{
+      background: #f0f1f2;
+      color: #6b7177;
+  }}
+  .ca-home-kpi-note {{
+      color: #6b7177;
+      font-weight: 500;
+      font-size: 12px;
+      line-height: 1.3;
+  }}
+  .ca-home-kpi-week {{
+      color: #8a9097;
+      font-weight: 500;
+      font-size: 11px;
+      margin-top: 2px;
+  }}
 </style>
 """
 
@@ -2748,6 +2841,31 @@ def render_status(is_live: bool, last_refresh: datetime | None = None) -> None:
             </div>
             """
         )
+
+
+def home_success_kpi_html(kpi) -> str:
+    """Square weekly clone success rate card for the Home page."""
+    rate_text = f"{kpi.rate:.1f}" if kpi.rate is not None else "—"
+    unit = "%" if kpi.rate is not None else ""
+    week_label = (
+        f"{kpi.week_start.strftime('%d %b')} – {kpi.week_end.strftime('%d %b %Y')}"
+    )
+    tone = kpi.delta_tone if kpi.delta_tone in {"up", "down", "neutral"} else "neutral"
+    return (
+        f'<div class="ca-home-kpi-wrap">'
+        f'<div class="ca-home-kpi">'
+        f'<div class="ca-home-kpi-top">'
+        f'<span class="ca-home-kpi-ic">✓</span>'
+        f"Clone success rate</div>"
+        f'<div class="ca-home-kpi-val">{html.escape(rate_text)}'
+        f'<small>{html.escape(unit)}</small></div>'
+        f'<div class="ca-home-kpi-foot">'
+        f'<span class="ca-home-kpi-pill {tone}">{html.escape(kpi.delta)}</span>'
+        f'<span class="ca-home-kpi-note">'
+        f"{kpi.completed} of {kpi.total} jobs</span>"
+        f'<span class="ca-home-kpi-week">{html.escape(week_label)}</span>'
+        f"</div></div></div>"
+    )
 
 
 DEFAULT_PAGE = "Home"
