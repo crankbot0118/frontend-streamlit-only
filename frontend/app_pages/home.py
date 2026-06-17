@@ -95,7 +95,6 @@ with st.container(key="ca_home_dashboard"):
                 use_container_width=True,
                 config=plotly_config(),
             )
-        st.markdown('<div class="ca-home-row-spacer"></div>', unsafe_allow_html=True)
         with st.container(key="ca_home_recent_runs"):
             st.markdown(
                 '<div class="ca-home-chart-head">'

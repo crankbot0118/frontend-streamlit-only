@@ -2628,20 +2628,34 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
+      gap: 0 !important;
   }}
-  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlock"] > .st-key-ca_clone_activity,
+  .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlock"],
+  .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      gap: var(--ca-home-card-gap, 12px) !important;
+  }}
+  .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlock"] > .st-key-ca_clone_activity,
+  .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_clone_activity {{
+      flex: 0 0 auto !important;
+      min-height: 0 !important;
+      height: auto !important;
+      align-self: stretch !important;
+  }}
   .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlock"] > .st-key-ca_outcome_breakdown,
-  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_clone_activity,
   .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_outcome_breakdown {{
       flex: 1 1 auto !important;
       min-height: 100% !important;
       align-self: stretch !important;
   }}
+  .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlock"] > .st-key-ca_home_recent_runs,
+  .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_home_recent_runs {{
+      flex: 0 0 auto !important;
+      margin: 0 !important;
+  }}
   .st-key-ca_clone_activity,
   .st-key-ca_outcome_breakdown {{
       display: flex !important;
       flex-direction: column !important;
-      flex: 1 1 auto !important;
       width: 100% !important;
       border: 1px solid var(--ca-home-card-border, #e6e9eb) !important;
       border-radius: var(--ca-home-card-radius, 12px) !important;
@@ -2661,16 +2675,16 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       min-height: 100% !important;
   }}
-  /* Clone activity — stretch chart area so card height matches outcome breakdown */
+  /* Clone activity — content height (recent runs sits below in same column) */
   .st-key-ca_clone_activity > [data-testid="stVerticalBlock"],
   .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       display: flex !important;
       flex-direction: column !important;
-      flex: 1 1 auto !important;
+      flex: 0 0 auto !important;
       gap: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
-      min-height: 100% !important;
+      min-height: 0 !important;
   }}
   .st-key-ca_clone_activity > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child,
   .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {{
@@ -2678,10 +2692,8 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca_clone_activity > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]),
   .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]) {{
-      flex: 1 1 auto !important;
-      display: flex !important;
-      flex-direction: column !important;
-      justify-content: flex-end !important;
+      flex: 0 0 auto !important;
+      display: block !important;
       min-height: 0 !important;
   }}
   .st-key-ca_clone_activity > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
@@ -2884,7 +2896,7 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
   .st-key-ca_home_recent_runs .st-key-ca-runs {{
-      margin-top: 0.15rem !important;
+      margin-top: 0 !important;
   }}
   .st-key-ca_home_recent_runs .st-key-ca-runs > [data-testid="stVerticalBlock"],
   .st-key-ca_home_recent_runs .st-key-ca-runs > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
