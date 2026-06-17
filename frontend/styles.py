@@ -2590,10 +2590,8 @@ _GLOBAL_CSS = f"""
       text-align: right;
   }}
 
-  /* Home — chart cards row (2:1 grid, equal height) */
+  /* Home — chart cards row (2:1 via Streamlit columns; do NOT use CSS grid here) */
   .st-key-ca_home_dashboard [data-testid="stHorizontalBlock"] {{
-      display: grid !important;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) !important;
       align-items: stretch !important;
       gap: var(--ca-home-card-gap, 12px) !important;
       width: 100% !important;
@@ -2603,36 +2601,26 @@ _GLOBAL_CSS = f"""
   .st-key-ca_home_dashboard [data-testid="column"] {{
       display: flex !important;
       flex-direction: column !important;
-      align-self: stretch !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
       min-width: 0 !important;
-      min-height: 100% !important;
-      padding: 0 !important;
       margin: 0 !important;
+      align-self: stretch !important;
   }}
   .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlock"],
   .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       display: flex !important;
       flex-direction: column !important;
       flex: 1 1 auto !important;
-      height: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
-  }}
-  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"].st-key-ca_clone_activity,
-  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"].st-key-ca_outcome_breakdown,
-  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"].st-key-ca_clone_activity,
-  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"].st-key-ca_outcome_breakdown {{
-      flex: 1 1 auto !important;
-      height: 100% !important;
-      align-self: stretch !important;
   }}
   .st-key-ca_clone_activity,
   .st-key-ca_outcome_breakdown {{
       display: flex !important;
       flex-direction: column !important;
       flex: 1 1 auto !important;
-      height: 100% !important;
       width: 100% !important;
       border: 1px solid #e3e6e8 !important;
       border-radius: 10px !important;
@@ -2807,7 +2795,7 @@ _GLOBAL_CSS = f"""
   }}
   @media (max-width: 640px) {{
       .st-key-ca_home_dashboard [data-testid="stHorizontalBlock"] {{
-          grid-template-columns: minmax(0, 1fr) !important;
+          flex-direction: column !important;
           gap: var(--ca-home-card-gap, 12px) !important;
       }}
   }}
