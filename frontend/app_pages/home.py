@@ -69,27 +69,27 @@ for index in range(3, HOME_KPI_COUNT + 1):
         )
     )
 
-st.markdown(home_kpis_html(cards), unsafe_allow_html=True)
-
 activity = clone_activity_stats(runs)
 outcome = outcome_breakdown(runs)
 
-with st.container(key="ca_home_charts"):
-    activity_col, outcome_col = st.columns([2, 1], gap="small")
-    with activity_col:
-        with st.container(key="ca_clone_activity"):
-            st.markdown(clone_activity_header_html(activity), unsafe_allow_html=True)
-            st.plotly_chart(
-                clone_activity_figure(activity),
-                use_container_width=True,
-                config=plotly_config(),
-            )
-    with outcome_col:
-        with st.container(key="ca_outcome_breakdown"):
-            st.markdown(outcome_header_html(outcome), unsafe_allow_html=True)
-            st.plotly_chart(
-                outcome_donut_figure(outcome),
-                use_container_width=True,
-                config=plotly_config(),
-            )
-            st.markdown(outcome_legend_html(outcome), unsafe_allow_html=True)
+with st.container(key="ca_home_dashboard"):
+    st.markdown(home_kpis_html(cards), unsafe_allow_html=True)
+    with st.container(key="ca_home_charts"):
+        activity_col, outcome_col = st.columns([2, 1], gap="small")
+        with activity_col:
+            with st.container(key="ca_clone_activity"):
+                st.markdown(clone_activity_header_html(activity), unsafe_allow_html=True)
+                st.plotly_chart(
+                    clone_activity_figure(activity),
+                    use_container_width=True,
+                    config=plotly_config(),
+                )
+        with outcome_col:
+            with st.container(key="ca_outcome_breakdown"):
+                st.markdown(outcome_header_html(outcome), unsafe_allow_html=True)
+                st.plotly_chart(
+                    outcome_donut_figure(outcome),
+                    use_container_width=True,
+                    config=plotly_config(),
+                )
+                st.markdown(outcome_legend_html(outcome), unsafe_allow_html=True)

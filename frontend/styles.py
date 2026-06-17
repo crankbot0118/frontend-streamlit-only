@@ -2397,12 +2397,30 @@ _GLOBAL_CSS = f"""
       opacity: 1 !important;
   }}
 
+  /* Home — dashboard grid spacing (12px between all card rows) */
+  .st-key-ca_home_dashboard {{
+      margin: 0.5rem 0 1rem 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+  }}
+  .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"],
+  .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      gap: 12px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+
   /* Home — weekly KPI cards spanning full content width */
   .ca-home-kpis {{
       display: grid;
       grid-template-columns: repeat(var(--ca-home-kpi-count, 4), minmax(0, 1fr));
       gap: 12px;
-      margin: 0.5rem 0 12px 0;
+      margin: 0;
       width: 100%;
       max-width: 100%;
       align-items: stretch;
@@ -2552,7 +2570,7 @@ _GLOBAL_CSS = f"""
 
   /* Home — chart cards row (matches KPI card shell + 12px gaps) */
   .st-key-ca_home_charts {{
-      margin: 0 0 1rem 0 !important;
+      margin: 0 !important;
       width: 100% !important;
       max-width: 100% !important;
   }}
