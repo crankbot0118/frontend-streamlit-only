@@ -2441,7 +2441,7 @@ _GLOBAL_CSS = f"""
       line-height: 1;
   }}
   .ca-home-kpi-val {{
-      flex: 0 0 auto;
+      flex: 0.5 0.5 auto;
       display: flex;
       align-items: flex-start;
       font-weight: 800;
