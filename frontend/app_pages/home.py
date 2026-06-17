@@ -108,7 +108,7 @@ with st.container(key="ca_home_dashboard"):
             else:
                 with st.container(key="ca-runs"):
                     for run in recent_runs:
-                        if render_run_card(run, key_prefix="home_"):
+                        if render_run_card(run, key_prefix="home_", compact=True):
                             st.session_state["selected_run_id"] = run["clone_run_id"]
                             st.session_state["selected_run"] = run
                             st.session_state[f"auto_refresh_{run['clone_run_id']}"] = True

@@ -2890,6 +2890,11 @@ _GLOBAL_CSS = f"""
   .st-key-ca_home_recent_runs .st-key-ca-runs > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       gap: var(--ca-home-card-gap, 12px) !important;
   }}
+  .st-key-ca_home_recent_runs .ca-run-oneline--compact .ca-run-meta-part--compact {{
+      min-width: 0 !important;
+      flex: 0 0 auto !important;
+      white-space: nowrap !important;
+  }}
 
   @media (max-width: 640px) {{
       .st-key-ca_home_dashboard [data-testid="stHorizontalBlock"] {{
@@ -3160,12 +3165,12 @@ def fmt_duration(start, end) -> str:
     return f"{sec}s"
 
 
-def render_run_card(run: dict, *, key_prefix: str = "") -> bool:
+def render_run_card(run: dict, *, key_prefix: str = "", compact: bool = False) -> bool:
     """Render a run card as one line plus a redirect button on the right.
 
-    client · Run # · source→target · user · status · started · updated · duration.
-    Meta segment (times) is smaller and italic. Returns ``True`` when the redirect
-    button is clicked.
+    Full (Run History): client · Run # · route · user · status · started · updated · duration.
+    Compact (Home recent runs): client · Run # · route · user · status · updated only.
+    Returns ``True`` when the redirect button is clicked.
     """
     rid = run.get("clone_run_id")
     card_key = f"runcard_{key_prefix}{rid}"
@@ -3176,16 +3181,7 @@ def render_run_card(run: dict, *, key_prefix: str = "") -> bool:
         or run.get("client")
         or "—"
     )
-    failed_step = run.get("failed_function_name")
-    failed_step_html = ""
-    if failed_step:
-        failed_step_html = (
-            f'<span class="sep">&middot;</span>'
-            f'<span class="ca-run-metaline">Failed step: {_esc(failed_step)}</span>'
-        )
-    info_html = (
-        f'<div class="ca-run"><div class="ca-run-oneline" '
-        f'style="display:flex;align-items:center;width:100%;min-height:1.65rem;line-height:1.25;">'
+    primary_html = (
         f'<span class="ca-run-primary">'
         f'<span class="ca-run-client">{_esc(client)}</span>'
         f'<span class="sep">&middot;</span>'
@@ -3197,24 +3193,52 @@ def render_run_card(run: dict, *, key_prefix: str = "") -> bool:
         f'<span>{_esc(run.get("user_name", "—"))}</span>'
         f'<span class="sep">&middot;</span>'
         f'{status_badge_html(run.get("status", ""))}'
-        f'</span>'
-        f'<div class="ca-run-meta-part" '
-        f'style="margin-left:auto;display:flex;align-items:center;gap:12px;'
-        f'min-width:420px;justify-content:flex-end;box-sizing:border-box;">'
-        f'<span class="ca-run-metaline">'
-        f'<span class="mi mi-start">&#9654;</span> Started {started_html(run.get("start_date"))}'
-        f'</span>'
-        f'<span class="sep">&middot;</span>'
-        f'<span class="ca-run-metaline">'
-        f'<span class="mi mi-upd">&#8635;</span> {relative_update_html(run.get("last_update"))}'
-        f'</span>'
-        f'<span class="sep">&middot;</span>'
-        f'<span class="ca-run-metaline">'
-        f'<span class="mi mi-dur">&#9201;</span> '
-        f'{fmt_duration(run.get("start_date"), run.get("last_update"))}'
-        f'</span>'
-        f'{failed_step_html}'
-        f'</div></div></div>'
+        f"</span>"
+    )
+    if compact:
+        meta_html = (
+            f'<div class="ca-run-meta-part ca-run-meta-part--compact" '
+            f'style="margin-left:auto;display:flex;align-items:center;'
+            f'justify-content:flex-end;box-sizing:border-box;">'
+            f'<span class="ca-run-metaline">'
+            f'<span class="mi mi-upd">&#8635;</span> '
+            f"{relative_update_html(run.get('last_update'))}"
+            f"</span></div>"
+        )
+    else:
+        failed_step = run.get("failed_function_name")
+        failed_step_html = ""
+        if failed_step:
+            failed_step_html = (
+                f'<span class="sep">&middot;</span>'
+                f'<span class="ca-run-metaline">Failed step: {_esc(failed_step)}</span>'
+            )
+        meta_html = (
+            f'<div class="ca-run-meta-part" '
+            f'style="margin-left:auto;display:flex;align-items:center;gap:12px;'
+            f'min-width:420px;justify-content:flex-end;box-sizing:border-box;">'
+            f'<span class="ca-run-metaline">'
+            f'<span class="mi mi-start">&#9654;</span> Started {started_html(run.get("start_date"))}'
+            f"</span>"
+            f'<span class="sep">&middot;</span>'
+            f'<span class="ca-run-metaline">'
+            f'<span class="mi mi-upd">&#8635;</span> {relative_update_html(run.get("last_update"))}'
+            f"</span>"
+            f'<span class="sep">&middot;</span>'
+            f'<span class="ca-run-metaline">'
+            f'<span class="mi mi-dur">&#9201;</span> '
+            f'{fmt_duration(run.get("start_date"), run.get("last_update"))}'
+            f"</span>"
+            f"{failed_step_html}"
+            f"</div>"
+        )
+    oneline_class = "ca-run-oneline ca-run-oneline--compact" if compact else "ca-run-oneline"
+    info_html = (
+        f'<div class="ca-run"><div class="{oneline_class}" '
+        f'style="display:flex;align-items:center;width:100%;min-height:1.65rem;line-height:1.25;">'
+        f"{primary_html}"
+        f"{meta_html}"
+        f"</div></div>"
     )
     with st.container(key=card_key):
         detail_col, arrow_col = st.columns(
