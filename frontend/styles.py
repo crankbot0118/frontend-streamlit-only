@@ -2402,7 +2402,8 @@ _GLOBAL_CSS = f"""
   .ca-home-kpi {{
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: flex-start;
+      gap: 0;
       width: 100%;
       max-width: 168px;
       aspect-ratio: 1 / 1;
@@ -2439,7 +2440,7 @@ _GLOBAL_CSS = f"""
       letter-spacing: -0.8px;
       line-height: 1;
       color: {BRAND_INK};
-      margin: 0;
+      margin: 5px 0 0 0;
   }}
   .ca-home-kpi-val small {{
       font-size: 14px;
@@ -2450,7 +2451,8 @@ _GLOBAL_CSS = f"""
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 4px;
+      gap: 0;
+      margin-top: 5px;
       font-size: 11px;
       font-weight: 600;
   }}
@@ -2487,12 +2489,6 @@ _GLOBAL_CSS = f"""
       font-weight: 500;
       font-size: 9px;
       line-height: 1.2;
-  }}
-  .ca-home-kpi-week {{
-      color: #8a9097;
-      font-weight: 500;
-      font-size: 9.5px;
-      margin-top: 1px;
   }}
 </style>
 """
@@ -2854,9 +2850,6 @@ def home_success_kpi_html(kpi) -> str:
     """Square weekly clone success rate card for the Home page."""
     rate_text = f"{kpi.rate:.1f}" if kpi.rate is not None else "—"
     unit = "%" if kpi.rate is not None else ""
-    week_label = (
-        f"{kpi.week_start.strftime('%d %b')} – {kpi.week_end.strftime('%d %b %Y')}"
-    )
     tone = kpi.delta_tone if kpi.delta_tone in {"up", "down", "neutral"} else "neutral"
     return (
         f'<div class="ca-home-kpi-wrap">'
@@ -2872,7 +2865,6 @@ def home_success_kpi_html(kpi) -> str:
         f'<span class="ca-home-kpi-note">'
         f"{kpi.completed} of {kpi.total} jobs</span>"
         f"</div>"
-        f'<span class="ca-home-kpi-week">{html.escape(week_label)}</span>'
         f"</div></div></div>"
     )
 
