@@ -2616,6 +2616,14 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       min-height: 0 !important;
   }}
+  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlock"] > .st-key-ca_clone_activity,
+  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlock"] > .st-key-ca_outcome_breakdown,
+  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_clone_activity,
+  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_outcome_breakdown {{
+      flex: 1 1 auto !important;
+      min-height: 100% !important;
+      align-self: stretch !important;
+  }}
   .st-key-ca_clone_activity,
   .st-key-ca_outcome_breakdown {{
       display: flex !important;
@@ -2629,8 +2637,6 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       box-sizing: border-box !important;
   }}
-  .st-key-ca_clone_activity > [data-testid="stVerticalBlock"],
-  .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlock"],
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       display: flex !important;
@@ -2639,6 +2645,29 @@ _GLOBAL_CSS = f"""
       gap: 0.1rem !important;
       margin: 0 !important;
       padding: 0 !important;
+      min-height: 100% !important;
+  }}
+  /* Clone activity — stretch chart area so card height matches outcome breakdown */
+  .st-key-ca_clone_activity > [data-testid="stVerticalBlock"],
+  .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      display: flex !important;
+      flex-direction: column !important;
+      flex: 1 1 auto !important;
+      gap: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 100% !important;
+  }}
+  .st-key-ca_clone_activity > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child,
+  .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {{
+      flex: 0 0 auto !important;
+  }}
+  .st-key-ca_clone_activity > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]),
+  .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]) {{
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: flex-end !important;
       min-height: 0 !important;
   }}
   .st-key-ca_clone_activity > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
@@ -2648,8 +2677,6 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
   }}
-  .st-key-ca_clone_activity > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]),
-  .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]),
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]),
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]) {{
       flex: 1 1 auto !important;
@@ -2668,7 +2695,11 @@ _GLOBAL_CSS = f"""
   .st-key-ca_outcome_breakdown [data-testid="stMarkdownContainer"] p {{
       margin: 0 !important;
   }}
-  .st-key-ca_clone_activity [data-testid="stPlotlyChart"],
+  .st-key-ca_clone_activity [data-testid="stPlotlyChart"] {{
+      margin: 0 !important;
+      padding: 0 !important;
+      flex: 0 0 auto !important;
+  }}
   .st-key-ca_outcome_breakdown [data-testid="stPlotlyChart"] {{
       margin: 0 !important;
       padding: 0 !important;
@@ -2685,6 +2716,12 @@ _GLOBAL_CSS = f"""
   .ca-home-chart-head {{
       margin: 0 0 8px 0;
       flex: 0 0 auto;
+  }}
+  .ca-clone-activity-top {{
+      display: flex;
+      flex-direction: column;
+      flex: 0 0 auto;
+      width: 100%;
   }}
   .ca-home-chart-title {{
       font-size: 15px;
@@ -2710,7 +2747,7 @@ _GLOBAL_CSS = f"""
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
-      margin: 0 0 10px 0;
+      margin: 10px 0 0 0;
       padding-bottom: 0;
       flex: 0 0 auto;
   }}

@@ -173,6 +173,7 @@ def clone_activity_header_html(stats: CloneActivityStats) -> str:
     avg = format_duration(stats.avg_duration_seconds)
     throughput = f"{stats.throughput_per_day:g}/day"
     return (
+        '<div class="ca-clone-activity-top">'
         '<div class="ca-home-chart-head">'
         '<div class="ca-home-chart-title">Clone activity</div>'
         '<div class="ca-home-chart-sub">'
@@ -185,6 +186,7 @@ def clone_activity_header_html(stats: CloneActivityStats) -> str:
         f"<strong>{html.escape(avg)}</strong><span>Avg duration</span></div>"
         f'<div class="ca-home-chart-metric">'
         f"<strong>{html.escape(throughput)}</strong><span>Peak throughput</span></div>"
+        "</div>"
         "</div>"
     )
 
