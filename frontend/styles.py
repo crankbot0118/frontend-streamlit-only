@@ -2546,6 +2546,129 @@ _GLOBAL_CSS = f"""
       margin-left: auto;
       text-align: right;
   }}
+
+  /* Home — chart cards row (activity + outcome) */
+  .st-key-ca-home-charts {{
+      margin: 0 0 1rem 0 !important;
+  }}
+  .st-key-ca-home-charts [data-testid="stHorizontalBlock"] {{
+      align-items: stretch !important;
+      gap: 12px !important;
+  }}
+  .st-key-ca-clone-activity,
+  .st-key-ca-outcome-breakdown {{
+      border: 1px solid #e3e6e8;
+      border-radius: 10px;
+      background: #ffffff;
+      padding: 16px 18px 10px 18px;
+      box-sizing: border-box;
+      height: 100%;
+      min-height: 100%;
+  }}
+  .st-key-ca-clone-activity [data-testid="stVerticalBlock"],
+  .st-key-ca-outcome-breakdown [data-testid="stVerticalBlock"] {{
+      gap: 0.35rem !important;
+  }}
+  .st-key-ca-clone-activity [data-testid="stPlotlyChart"],
+  .st-key-ca-outcome-breakdown [data-testid="stPlotlyChart"] {{
+      margin: 0 !important;
+  }}
+  .st-key-ca-clone-activity [data-testid="stPlotlyChart"] > div,
+  .st-key-ca-outcome-breakdown [data-testid="stPlotlyChart"] > div {{
+      margin: 0 !important;
+  }}
+  .ca-home-chart-head {{
+      margin: 0 0 12px 0;
+  }}
+  .ca-home-chart-title {{
+      font-size: 15px;
+      font-weight: 700;
+      color: {BRAND_INK};
+      line-height: 1.25;
+      margin: 0;
+  }}
+  .ca-home-chart-sub {{
+      margin: 3px 0 0 0;
+      font-size: 12px;
+      font-weight: 500;
+      color: #6b7177;
+      line-height: 1.25;
+  }}
+  .ca-home-chart-metrics {{
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0 0 14px 0;
+  }}
+  .ca-home-chart-metric {{
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+  }}
+  .ca-home-chart-metric strong {{
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: {BRAND_INK};
+      line-height: 1.1;
+  }}
+  .ca-home-chart-metric span {{
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #6b7177;
+      line-height: 1.2;
+  }}
+  .ca-outcome-legend {{
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 6px 0 0 0;
+      padding-top: 2px;
+  }}
+  .ca-outcome-row {{
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      line-height: 1.2;
+  }}
+  .ca-outcome-label {{
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: {BRAND_INK};
+      font-weight: 600;
+      min-width: 0;
+  }}
+  .ca-outcome-swatch {{
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex: 0 0 10px;
+  }}
+  .ca-outcome-swatch.ok {{
+      background: {BRAND_ORANGE};
+  }}
+  .ca-outcome-swatch.bad {{
+      background: {BRAND_RED};
+  }}
+  .ca-outcome-swatch.muted {{
+      background: #9aa0a6;
+  }}
+  .ca-outcome-count {{
+      color: {BRAND_INK};
+      font-weight: 700;
+      text-align: right;
+      min-width: 2rem;
+  }}
+  .ca-outcome-pct {{
+      color: #6b7177;
+      font-weight: 600;
+      text-align: right;
+      min-width: 3rem;
+  }}
 </style>
 """
 

@@ -145,3 +145,171 @@ def weekly_clone_count_kpi(runs: list[dict], ref: date | None = None) -> WeeklyC
         delta=delta,
         delta_tone=tone,
     )
+
+
+ACTIVITY_WEEKS = 12
+OUTCOME_DAYS = 90
+OUTCOME_FAILED = frozenset({"FAILED"})
+OUTCOME_CANCELLED = frozenset({"ABORTED", "SKIPPED"})
+
+
+def recent_week_ranges(weeks: int, ref: date | None = None) -> list[tuple[date, date, str]]:
+    """Return ``weeks`` Mon–Sun ranges ending at the week containing ``ref``, oldest first."""
+    ref = ref or date.today()
+    current_start, _ = week_bounds(ref)
+    ranges: list[tuple[date, date, str]] = []
+    start = current_start
+    for _ in range(weeks):
+        ranges.append((start, start + timedelta(days=6), ""))
+        start = start - timedelta(days=7)
+    ranges.reverse()
+    return [(s, e, f"W{i + 1}") for i, (s, e, _) in enumerate(ranges)]
+
+
+def run_on_or_after(run: dict, cutoff: date) -> bool:
+    run_day = _as_date(run.get("start_date")) or _as_date(run.get("last_update"))
+    return run_day is not None and run_day >= cutoff
+
+
+def run_duration_seconds(run: dict) -> float | None:
+    start = _as_dt(run.get("start_date"))
+    end = _as_dt(run.get("last_update"))
+    if start is None or end is None or end <= start:
+        return None
+    return (end - start).total_seconds()
+
+
+def format_duration(seconds: float | None) -> str:
+    if seconds is None:
+        return "—"
+    total = int(seconds)
+    hours, rem = divmod(total, 3600)
+    minutes, _ = divmod(rem, 60)
+    if hours:
+        return f"{hours}h {minutes}m"
+    if minutes:
+        return f"{minutes}m"
+    return f"{total}s"
+
+
+@dataclass(frozen=True)
+class WeeklyActivityBucket:
+    label: str
+    week_start: date
+    week_end: date
+    successful: int
+    failed: int
+
+
+@dataclass(frozen=True)
+class CloneActivityStats:
+    weeks: tuple[WeeklyActivityBucket, ...]
+    total_runs: int
+    avg_duration_seconds: float | None
+    throughput_per_day: float
+
+
+def clone_activity_stats(
+    runs: list[dict],
+    *,
+    weeks: int = ACTIVITY_WEEKS,
+    ref: date | None = None,
+) -> CloneActivityStats:
+    ref = ref or date.today()
+    week_ranges = recent_week_ranges(weeks, ref)
+    window_start = week_ranges[0][0]
+    window_runs = [
+        r
+        for r in runs
+        if run_in_week(r, window_start, week_ranges[-1][1])
+    ]
+    buckets: list[WeeklyActivityBucket] = []
+    for week_start, week_end, label in week_ranges:
+        week_runs = [r for r in window_runs if run_in_week(r, week_start, week_end)]
+        successful = sum(
+            1 for r in week_runs if (r.get("status") or "").upper() == "COMPLETED"
+        )
+        failed = sum(
+            1 for r in week_runs if (r.get("status") or "").upper() in OUTCOME_FAILED
+        )
+        buckets.append(
+            WeeklyActivityBucket(
+                label=label,
+                week_start=week_start,
+                week_end=week_end,
+                successful=successful,
+                failed=failed,
+            )
+        )
+
+    durations = [
+        run_duration_seconds(r)
+        for r in window_runs
+        if (r.get("status") or "").upper() == "COMPLETED"
+    ]
+    durations = [d for d in durations if d is not None]
+    avg_duration = sum(durations) / len(durations) if durations else None
+
+    day_span = max((ref - window_start).days + 1, 1)
+    throughput = round(len(window_runs) / day_span, 1)
+
+    return CloneActivityStats(
+        weeks=tuple(buckets),
+        total_runs=len(window_runs),
+        avg_duration_seconds=avg_duration,
+        throughput_per_day=throughput,
+    )
+
+
+@dataclass(frozen=True)
+class OutcomeSlice:
+    label: str
+    count: int
+    pct: float
+    tone: str
+
+
+@dataclass(frozen=True)
+class OutcomeBreakdown:
+    days: int
+    success_rate: float | None
+    slices: tuple[OutcomeSlice, ...]
+
+
+def outcome_breakdown(
+    runs: list[dict],
+    *,
+    days: int = OUTCOME_DAYS,
+    ref: date | None = None,
+) -> OutcomeBreakdown:
+    ref = ref or date.today()
+    cutoff = ref - timedelta(days=days - 1)
+    scoped = [r for r in runs if run_on_or_after(r, cutoff)]
+    successful = sum(
+        1 for r in scoped if (r.get("status") or "").upper() == "COMPLETED"
+    )
+    failed = sum(
+        1 for r in scoped if (r.get("status") or "").upper() in OUTCOME_FAILED
+    )
+    cancelled = sum(
+        1 for r in scoped if (r.get("status") or "").upper() in OUTCOME_CANCELLED
+    )
+    total = successful + failed + cancelled
+    if total == 0:
+        empty = (
+            OutcomeSlice("Successful", 0, 0.0, "ok"),
+            OutcomeSlice("Failed", 0, 0.0, "bad"),
+            OutcomeSlice("Cancelled", 0, 0.0, "muted"),
+        )
+        return OutcomeBreakdown(days=days, success_rate=None, slices=empty)
+
+    def pct(count: int) -> float:
+        return round(100.0 * count / total, 1)
+
+    success_rate = pct(successful)
+    slices = (
+        OutcomeSlice("Successful", successful, success_rate, "ok"),
+        OutcomeSlice("Failed", failed, pct(failed), "bad"),
+        OutcomeSlice("Cancelled", cancelled, pct(cancelled), "muted"),
+    )
+    return OutcomeBreakdown(days=days, success_rate=success_rate, slices=slices)
