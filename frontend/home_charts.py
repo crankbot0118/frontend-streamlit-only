@@ -123,18 +123,19 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
         values = [1]
         colors = ["#eef0f2"]
 
+    pull_vals = [0.018, 0.022, 0.018] if total else [0]
     fig = go.Figure(
         go.Pie(
             values=values,
             labels=[slice_.label for slice_ in breakdown.slices],
             hole=0.78,
-            marker=dict(colors=colors, line=dict(color="#ffffff", width=4)),
+            marker=dict(colors=colors, line=dict(color="#ffffff", width=5)),
             sort=False,
             direction="clockwise",
             rotation=210,
             textinfo="none",
             hovertemplate="%{label}: %{value}<extra></extra>",
-            pull=[0, 0.04, 0] if total else [0],
+            pull=pull_vals,
         )
     )
     fig.update_layout(
@@ -144,7 +145,7 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
         )
     )
     fig.add_annotation(
-        text=center,
+        text=f"<b>{center}</b>",
         x=0.5,
         y=0.56,
         showarrow=False,
@@ -152,7 +153,7 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
         xref="paper",
         yref="paper",
         font=dict(
-            size=26,
+            size=27,
             color=BRAND_INK,
             family="system-ui, -apple-system, Segoe UI, sans-serif",
         ),
