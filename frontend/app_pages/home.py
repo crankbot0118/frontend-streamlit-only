@@ -78,10 +78,7 @@ with st.container(key="ca_home_charts"):
     activity_col, outcome_col = st.columns([2.05, 1], gap="small")
     with activity_col:
         with st.container(key="ca_clone_activity"):
-            st.markdown(
-                f'<div class="ca-home-chart-card">{clone_activity_header_html(activity)}</div>',
-                unsafe_allow_html=True,
-            )
+            st.markdown(clone_activity_header_html(activity), unsafe_allow_html=True)
             st.plotly_chart(
                 clone_activity_figure(activity),
                 use_container_width=True,
@@ -89,16 +86,10 @@ with st.container(key="ca_home_charts"):
             )
     with outcome_col:
         with st.container(key="ca_outcome_breakdown"):
-            st.markdown(
-                f'<div class="ca-home-chart-card">{outcome_header_html(outcome)}</div>',
-                unsafe_allow_html=True,
-            )
+            st.markdown(outcome_header_html(outcome), unsafe_allow_html=True)
             st.plotly_chart(
                 outcome_donut_figure(outcome),
                 use_container_width=True,
                 config=plotly_config(),
             )
-            st.markdown(
-                f'<div class="ca-home-chart-card">{outcome_legend_html(outcome)}</div>',
-                unsafe_allow_html=True,
-            )
+            st.markdown(outcome_legend_html(outcome), unsafe_allow_html=True)

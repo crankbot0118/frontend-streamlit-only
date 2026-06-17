@@ -2548,52 +2548,69 @@ _GLOBAL_CSS = f"""
   }}
 
   /* Home — chart cards row (matches KPI card shell) */
-  .st-key-ca-home-charts {{
-      margin: 0.5rem 0 1rem 0 !important;
+  .st-key-ca_home_charts {{
+      margin: 0 0 1rem 0 !important;
       width: 100% !important;
       max-width: 100% !important;
   }}
-  .st-key-ca-home-charts > [data-testid="stVerticalBlock"],
-  .st-key-ca-home-charts [data-testid="stVerticalBlock"] {{
+  .st-key-ca_home_charts > [data-testid="stVerticalBlock"],
+  .st-key-ca_home_charts > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
+  .st-key-ca_home_charts [data-testid="stVerticalBlock"]:has(> .st-key-ca_clone_activity),
+  .st-key-ca_home_charts [data-testid="stVerticalBlock"]:has(> .st-key-ca_outcome_breakdown) {{
       gap: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
-  .st-key-ca-home-charts [data-testid="stHorizontalBlock"] {{
+  .st-key-ca_home_charts [data-testid="stHorizontalBlock"] {{
       align-items: stretch !important;
       gap: 12px !important;
   }}
-  .st-key-ca-clone-activity,
-  .st-key-ca-outcome-breakdown {{
+  .st-key-ca_home_charts [data-testid="column"] {{
+      padding: 0 !important;
+  }}
+  .st-key-ca_clone_activity,
+  .st-key-ca_outcome_breakdown {{
       border: 1px solid #e3e6e8 !important;
       border-radius: 10px !important;
       background: #ffffff !important;
       padding: 14px 16px 12px 16px !important;
+      margin: 0 !important;
       box-sizing: border-box !important;
+      display: block !important;
       height: 100% !important;
       min-height: 100% !important;
       overflow: hidden !important;
   }}
-  .st-key-ca-clone-activity [data-testid="stElementContainer"],
-  .st-key-ca-outcome-breakdown [data-testid="stElementContainer"] {{
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-ca-clone-activity [data-testid="stVerticalBlock"],
-  .st-key-ca-outcome-breakdown [data-testid="stVerticalBlock"] {{
+  .st-key-ca_clone_activity > [data-testid="stVerticalBlock"],
+  .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
+  .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlock"],
+  .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       gap: 0.15rem !important;
-  }}
-  .st-key-ca-clone-activity [data-testid="stMarkdownContainer"],
-  .st-key-ca-outcome-breakdown [data-testid="stMarkdownContainer"] {{
-      margin: 0 !important;
-  }}
-  .st-key-ca-clone-activity [data-testid="stPlotlyChart"],
-  .st-key-ca-outcome-breakdown [data-testid="stPlotlyChart"] {{
       margin: 0 !important;
       padding: 0 !important;
   }}
-  .st-key-ca-clone-activity [data-testid="stPlotlyChart"] > div,
-  .st-key-ca-outcome-breakdown [data-testid="stPlotlyChart"] > div,
-  .st-key-ca-clone-activity .js-plotly-plot,
-  .st-key-ca-outcome-breakdown .js-plotly-plot {{
+  .st-key-ca_clone_activity > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca_clone_activity [data-testid="stMarkdownContainer"],
+  .st-key-ca_outcome_breakdown [data-testid="stMarkdownContainer"],
+  .st-key-ca_clone_activity [data-testid="stMarkdownContainer"] p,
+  .st-key-ca_outcome_breakdown [data-testid="stMarkdownContainer"] p {{
+      margin: 0 !important;
+  }}
+  .st-key-ca_clone_activity [data-testid="stPlotlyChart"],
+  .st-key-ca_outcome_breakdown [data-testid="stPlotlyChart"] {{
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca_clone_activity [data-testid="stPlotlyChart"] > div,
+  .st-key-ca_outcome_breakdown [data-testid="stPlotlyChart"] > div,
+  .st-key-ca_clone_activity .js-plotly-plot,
+  .st-key-ca_outcome_breakdown .js-plotly-plot {{
       margin: 0 !important;
   }}
   .ca-home-chart-head {{
