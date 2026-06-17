@@ -2547,9 +2547,15 @@ _GLOBAL_CSS = f"""
       text-align: right;
   }}
 
-  /* Home — chart cards row (activity + outcome) */
+  /* Home — chart cards row (matches KPI card shell) */
   .st-key-ca-home-charts {{
-      margin: 0 0 1rem 0 !important;
+      margin: 0.5rem 0 1rem 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+  }}
+  .st-key-ca-home-charts > [data-testid="stVerticalBlock"],
+  .st-key-ca-home-charts [data-testid="stVerticalBlock"] {{
+      gap: 0 !important;
   }}
   .st-key-ca-home-charts [data-testid="stHorizontalBlock"] {{
       align-items: stretch !important;
@@ -2557,96 +2563,120 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca-clone-activity,
   .st-key-ca-outcome-breakdown {{
-      border: 1px solid #e3e6e8;
-      border-radius: 10px;
-      background: #ffffff;
-      padding: 16px 18px 10px 18px;
-      box-sizing: border-box;
-      height: 100%;
-      min-height: 100%;
+      border: 1px solid #e3e6e8 !important;
+      border-radius: 10px !important;
+      background: #ffffff !important;
+      padding: 14px 16px 12px 16px !important;
+      box-sizing: border-box !important;
+      height: 100% !important;
+      min-height: 100% !important;
+      overflow: hidden !important;
+  }}
+  .st-key-ca-clone-activity [data-testid="stElementContainer"],
+  .st-key-ca-outcome-breakdown [data-testid="stElementContainer"] {{
+      margin: 0 !important;
+      padding: 0 !important;
   }}
   .st-key-ca-clone-activity [data-testid="stVerticalBlock"],
   .st-key-ca-outcome-breakdown [data-testid="stVerticalBlock"] {{
-      gap: 0.35rem !important;
+      gap: 0.15rem !important;
+  }}
+  .st-key-ca-clone-activity [data-testid="stMarkdownContainer"],
+  .st-key-ca-outcome-breakdown [data-testid="stMarkdownContainer"] {{
+      margin: 0 !important;
   }}
   .st-key-ca-clone-activity [data-testid="stPlotlyChart"],
   .st-key-ca-outcome-breakdown [data-testid="stPlotlyChart"] {{
       margin: 0 !important;
+      padding: 0 !important;
   }}
   .st-key-ca-clone-activity [data-testid="stPlotlyChart"] > div,
-  .st-key-ca-outcome-breakdown [data-testid="stPlotlyChart"] > div {{
+  .st-key-ca-outcome-breakdown [data-testid="stPlotlyChart"] > div,
+  .st-key-ca-clone-activity .js-plotly-plot,
+  .st-key-ca-outcome-breakdown .js-plotly-plot {{
       margin: 0 !important;
   }}
   .ca-home-chart-head {{
-      margin: 0 0 12px 0;
+      margin: 0 0 14px 0;
   }}
   .ca-home-chart-title {{
-      font-size: 15px;
-      font-weight: 700;
+      font-size: 17px;
+      font-weight: 800;
       color: {BRAND_INK};
       line-height: 1.25;
       margin: 0;
+      letter-spacing: -0.2px;
   }}
   .ca-home-chart-sub {{
-      margin: 3px 0 0 0;
+      margin: 4px 0 0 0;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #6b7177;
+      line-height: 1.35;
+  }}
+  .ca-home-chart-sub em {{
+      font-style: italic;
+      font-weight: 500;
+  }}
+  .ca-home-chart-metrics {{
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 0 0 16px 0;
+      padding-bottom: 2px;
+  }}
+  .ca-home-chart-metric {{
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+  }}
+  .ca-home-chart-metric strong {{
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      color: {BRAND_INK};
+      line-height: 1.05;
+  }}
+  .ca-home-chart-metric span {{
       font-size: 12px;
       font-weight: 500;
       color: #6b7177;
       line-height: 1.25;
   }}
-  .ca-home-chart-metrics {{
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin: 0 0 14px 0;
-  }}
-  .ca-home-chart-metric {{
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 0;
-  }}
-  .ca-home-chart-metric strong {{
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      color: {BRAND_INK};
-      line-height: 1.1;
-  }}
-  .ca-home-chart-metric span {{
-      font-size: 11.5px;
-      font-weight: 500;
-      color: #6b7177;
-      line-height: 1.2;
+  .ca-home-chart-plot {{
+      margin: 0;
+      padding: 0;
   }}
   .ca-outcome-legend {{
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin: 6px 0 0 0;
-      padding-top: 2px;
+      gap: 10px;
+      margin: 4px 0 0 0;
+      padding-top: 4px;
+      border-top: 1px solid #f0f1f2;
   }}
   .ca-outcome-row {{
       display: grid;
       grid-template-columns: 1fr auto auto;
       align-items: center;
-      gap: 10px;
-      font-size: 12px;
+      gap: 12px;
+      font-size: 12.5px;
       line-height: 1.2;
   }}
   .ca-outcome-label {{
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      gap: 8px;
       color: {BRAND_INK};
       font-weight: 600;
       min-width: 0;
   }}
   .ca-outcome-swatch {{
-      width: 10px;
-      height: 10px;
+      width: 11px;
+      height: 11px;
       border-radius: 2px;
-      flex: 0 0 10px;
+      flex: 0 0 11px;
   }}
   .ca-outcome-swatch.ok {{
       background: {BRAND_ORANGE};

@@ -22,9 +22,18 @@ def _base_layout(**overrides) -> dict:
     layout = dict(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="system-ui, -apple-system, Segoe UI, sans-serif", color=BRAND_INK),
-        margin=dict(l=4, r=4, t=8, b=4),
+        font=dict(
+            family="system-ui, -apple-system, Segoe UI, sans-serif",
+            color=BRAND_INK,
+            size=12,
+        ),
+        margin=dict(l=0, r=0, t=4, b=0),
         showlegend=False,
+        hoverlabel=dict(
+            bgcolor="#ffffff",
+            bordercolor="#e3e6e8",
+            font=dict(color=BRAND_INK, size=12),
+        ),
     )
     layout.update(overrides)
     return layout
@@ -50,30 +59,36 @@ def clone_activity_figure(stats: CloneActivityStats) -> go.Figure:
             name="Failed",
             x=labels,
             y=failed,
-            marker=dict(color=CHART_FAILED, line=dict(width=0)),
+            marker=dict(color=CHART_FAILED, line=dict(width=0), cornerradius=5),
             hovertemplate="%{x}<br>Failed: %{y}<extra></extra>",
         )
     )
     fig.update_layout(
         **_base_layout(
             barmode="stack",
-            height=240,
-            bargap=0.28,
+            height=270,
+            bargap=0.34,
             legend=dict(
                 orientation="h",
                 yanchor="top",
-                y=-0.08,
+                y=-0.18,
                 xanchor="left",
                 x=0,
-                font=dict(size=11, color=CHART_MUTED),
+                font=dict(size=12, color=CHART_MUTED),
                 traceorder="normal",
+                itemsizing="constant",
+                itemwidth=30,
+                entrywidth=95,
+                bgcolor="rgba(0,0,0,0)",
             ),
             showlegend=True,
+            margin=dict(l=0, r=0, t=4, b=48),
             xaxis=dict(
                 showgrid=False,
                 showline=False,
                 zeroline=False,
-                tickfont=dict(size=11, color=CHART_MUTED),
+                tickfont=dict(size=12, color=CHART_MUTED),
+                tickmode="linear",
             ),
             yaxis=dict(
                 showgrid=True,
@@ -82,6 +97,10 @@ def clone_activity_figure(stats: CloneActivityStats) -> go.Figure:
                 zeroline=False,
                 showline=False,
                 tickfont=dict(size=11, color=CHART_MUTED),
+                ticks="outside",
+                ticklen=0,
+                tickcolor="rgba(0,0,0,0)",
+                automargin=True,
             ),
         )
     )
@@ -96,44 +115,50 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
         if breakdown.success_rate is not None
         else "—"
     )
+    total = sum(values)
+    if total == 0:
+        values = [1]
+        colors = ["#eef0f2"]
 
     fig = go.Figure(
         go.Pie(
             values=values,
             labels=[slice_.label for slice_ in breakdown.slices],
-            hole=0.72,
-            marker=dict(colors=colors, line=dict(color="#ffffff", width=2)),
+            hole=0.76,
+            marker=dict(colors=colors, line=dict(color="#ffffff", width=3)),
             sort=False,
             direction="clockwise",
+            rotation=210,
             textinfo="none",
             hovertemplate="%{label}: %{value}<extra></extra>",
+            pull=[0, 0.03, 0] if total else [0],
         )
     )
     fig.update_layout(
         **_base_layout(
-            height=210,
+            height=230,
             margin=dict(l=0, r=0, t=0, b=0),
         )
     )
     fig.add_annotation(
         text=center,
         x=0.5,
-        y=0.56,
+        y=0.55,
         showarrow=False,
         align="center",
         xref="paper",
         yref="paper",
-        font=dict(size=26, color=BRAND_INK, family="system-ui, sans-serif"),
+        font=dict(size=30, color=BRAND_INK, family="system-ui, sans-serif"),
     )
     fig.add_annotation(
         text="success rate",
         x=0.5,
-        y=0.42,
+        y=0.41,
         showarrow=False,
         align="center",
         xref="paper",
         yref="paper",
-        font=dict(size=11, color=CHART_MUTED, family="system-ui, sans-serif"),
+        font=dict(size=12, color=CHART_MUTED, family="system-ui, sans-serif"),
     )
     return fig
 
@@ -144,7 +169,8 @@ def clone_activity_header_html(stats: CloneActivityStats) -> str:
     return (
         '<div class="ca-home-chart-head">'
         '<div class="ca-home-chart-title">Clone activity</div>'
-        '<div class="ca-home-chart-sub">Completed jobs per week · last 12 weeks</div>'
+        '<div class="ca-home-chart-sub">'
+        "<em>Completed jobs per week · last 12 weeks</em></div>"
         "</div>"
         '<div class="ca-home-chart-metrics">'
         f'<div class="ca-home-chart-metric">'
@@ -161,7 +187,7 @@ def outcome_header_html(breakdown: OutcomeBreakdown) -> str:
     return (
         '<div class="ca-home-chart-head">'
         '<div class="ca-home-chart-title">Outcome breakdown</div>'
-        f'<div class="ca-home-chart-sub">Last {breakdown.days} days</div>'
+        f'<div class="ca-home-chart-sub"><em>Last {breakdown.days} days</em></div>'
         "</div>"
     )
 

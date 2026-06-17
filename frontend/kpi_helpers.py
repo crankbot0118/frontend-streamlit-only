@@ -284,7 +284,12 @@ def outcome_breakdown(
 ) -> OutcomeBreakdown:
     ref = ref or date.today()
     cutoff = ref - timedelta(days=days - 1)
-    scoped = [r for r in runs if run_on_or_after(r, cutoff)]
+    scoped = [
+        r
+        for r in runs
+        if run_on_or_after(r, cutoff)
+        and (r.get("status") or "").upper() in TERMINAL_STATUSES
+    ]
     successful = sum(
         1 for r in scoped if (r.get("status") or "").upper() == "COMPLETED"
     )
