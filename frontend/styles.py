@@ -2397,59 +2397,29 @@ _GLOBAL_CSS = f"""
       opacity: 1 !important;
   }}
 
-  /* Home — dashboard grid spacing (strict 12px row gap) */
+  /* Home — dashboard (12px gap between KPI row and chart row) */
   .st-key-ca_home_dashboard {{
       --ca-home-card-gap: 12px;
       margin: 0.5rem 0 1rem 0 !important;
       width: 100% !important;
-      max-width: 100% !important;
   }}
   .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"],
-  .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
-  .st-key-ca_home_dashboard [data-testid="stVerticalBlock"]:has(.ca-home-kpis) {{
-      display: flex !important;
-      flex-direction: column !important;
-      gap: 0 !important;
-      row-gap: 0 !important;
+  .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      gap: var(--ca-home-card-gap) !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
-  .st-key-ca_home_dashboard [data-testid="stElementContainer"] {{
+  .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
       margin: 0 !important;
       padding: 0 !important;
-  }}
-  .st-key-ca_home_dashboard [data-testid="stMarkdownContainer"],
-  .st-key-ca_home_dashboard [data-testid="stMarkdownContainer"] p {{
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .ca-home-row-gap {{
-      display: block !important;
-      width: 100% !important;
-      height: var(--ca-home-card-gap) !important;
-      min-height: var(--ca-home-card-gap) !important;
-      max-height: var(--ca-home-card-gap) !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      line-height: 0 !important;
-      font-size: 0 !important;
-      overflow: hidden !important;
-      flex: 0 0 var(--ca-home-card-gap) !important;
-  }}
-  .st-key-ca_home_dashboard [data-testid="stElementContainer"]:has(.ca-home-row-gap) {{
-      height: var(--ca-home-card-gap) !important;
-      min-height: var(--ca-home-card-gap) !important;
-      max-height: var(--ca-home-card-gap) !important;
-      overflow: hidden !important;
-      flex: 0 0 var(--ca-home-card-gap) !important;
   }}
 
   /* Home — weekly KPI cards spanning full content width */
   .ca-home-kpis {{
       display: grid;
       grid-template-columns: repeat(var(--ca-home-kpi-count, 4), minmax(0, 1fr));
-      --ca-home-card-gap: 12px;
-      gap: var(--ca-home-card-gap);
+      gap: var(--ca-home-card-gap, 12px);
       margin: 0;
       width: 100%;
       max-width: 100%;
@@ -2598,50 +2568,30 @@ _GLOBAL_CSS = f"""
       text-align: right;
   }}
 
-  /* Home — chart cards row (matches KPI card shell + 12px gaps) */
+  /* Home — chart cards row (2:1 columns, equal height) */
   .st-key-ca_home_charts {{
-      --ca-home-card-gap: 12px;
       margin: 0 !important;
       width: 100% !important;
-      max-width: 100% !important;
   }}
   .st-key-ca_home_charts > [data-testid="stVerticalBlock"],
   .st-key-ca_home_charts > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      gap: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
-      height: 100% !important;
   }}
   .st-key-ca_home_charts [data-testid="stHorizontalBlock"] {{
-      display: grid !important;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) !important;
       align-items: stretch !important;
       gap: var(--ca-home-card-gap, 12px) !important;
       width: 100% !important;
-      margin: 0 !important;
-      padding: 0 !important;
   }}
   .st-key-ca_home_charts [data-testid="column"] {{
-      padding: 0 !important;
-      margin: 0 !important;
-      display: flex !important;
-      flex-direction: column !important;
-      align-self: stretch !important;
-      height: 100% !important;
-      min-height: 100% !important;
-      width: auto !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
       min-width: 0 !important;
+      align-self: stretch !important;
   }}
   .st-key-ca_home_charts [data-testid="column"] > [data-testid="stVerticalBlock"],
-  .st-key-ca_home_charts [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"],
   .st-key-ca_home_charts [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      flex: 1 1 auto !important;
       height: 100% !important;
-      min-height: 100% !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      display: flex !important;
-      flex-direction: column !important;
   }}
   .st-key-ca_clone_activity,
   .st-key-ca_outcome_breakdown {{
@@ -2651,12 +2601,7 @@ _GLOBAL_CSS = f"""
       padding: 12px 14px 10px 14px !important;
       margin: 0 !important;
       box-sizing: border-box !important;
-      display: flex !important;
-      flex-direction: column !important;
-      flex: 1 1 auto !important;
       height: 100% !important;
-      min-height: 100% !important;
-      overflow: hidden !important;
   }}
   .st-key-ca_clone_activity > [data-testid="stVerticalBlock"],
   .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
@@ -2665,10 +2610,6 @@ _GLOBAL_CSS = f"""
       gap: 0.1rem !important;
       margin: 0 !important;
       padding: 0 !important;
-      flex: 1 1 auto !important;
-      height: 100% !important;
-      display: flex !important;
-      flex-direction: column !important;
   }}
   .st-key-ca_clone_activity > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
   .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
@@ -2676,17 +2617,6 @@ _GLOBAL_CSS = f"""
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
       margin: 0 !important;
       padding: 0 !important;
-  }}
-  .st-key-ca_clone_activity > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]),
-  .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]),
-  .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]),
-  .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]) {{
-      flex: 1 1 auto !important;
-      min-height: 0 !important;
-  }}
-  .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child,
-  .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child {{
-      margin-top: auto !important;
   }}
   .st-key-ca_clone_activity [data-testid="stMarkdownContainer"],
   .st-key-ca_outcome_breakdown [data-testid="stMarkdownContainer"],
@@ -2698,8 +2628,6 @@ _GLOBAL_CSS = f"""
   .st-key-ca_outcome_breakdown [data-testid="stPlotlyChart"] {{
       margin: 0 !important;
       padding: 0 !important;
-      flex: 1 1 auto !important;
-      min-height: 0 !important;
   }}
   .st-key-ca_clone_activity [data-testid="stPlotlyChart"] > div,
   .st-key-ca_outcome_breakdown [data-testid="stPlotlyChart"] > div,
@@ -2766,7 +2694,7 @@ _GLOBAL_CSS = f"""
       display: flex;
       flex-direction: column;
       gap: 7px;
-      margin: auto 0 0 0;
+      margin: 2px 0 0 0;
       padding-top: 8px;
       border-top: 1px solid #f0f1f2;
       flex: 0 0 auto;

@@ -74,7 +74,6 @@ outcome = outcome_breakdown(runs)
 
 with st.container(key="ca_home_dashboard"):
     st.markdown(home_kpis_html(cards), unsafe_allow_html=True)
-    st.markdown('<div class="ca-home-row-gap" aria-hidden="true"></div>', unsafe_allow_html=True)
     with st.container(key="ca_home_charts"):
         activity_col, outcome_col = st.columns([2, 1], gap="small")
         with activity_col:
