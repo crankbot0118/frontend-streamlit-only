@@ -16,6 +16,8 @@ CHART_GRID = "#eef0f2"
 CHART_MUTED = "#6b7177"
 
 _PLOTLY_CONFIG = {"displayModeBar": False, "responsive": True}
+ACTIVITY_CHART_HEIGHT = 178
+OUTCOME_CHART_HEIGHT = 178
 
 
 def _base_layout(**overrides) -> dict:
@@ -66,23 +68,23 @@ def clone_activity_figure(stats: CloneActivityStats) -> go.Figure:
     fig.update_layout(
         **_base_layout(
             barmode="stack",
-            height=270,
-            bargap=0.34,
+            height=ACTIVITY_CHART_HEIGHT,
+            bargap=0.36,
             legend=dict(
                 orientation="h",
                 yanchor="top",
-                y=-0.18,
+                y=-0.22,
                 xanchor="left",
                 x=0,
-                font=dict(size=12, color=CHART_MUTED),
+                font=dict(size=11, color=CHART_MUTED),
                 traceorder="normal",
                 itemsizing="constant",
-                itemwidth=30,
-                entrywidth=95,
+                itemwidth=28,
+                entrywidth=88,
                 bgcolor="rgba(0,0,0,0)",
             ),
             showlegend=True,
-            margin=dict(l=0, r=0, t=4, b=48),
+            margin=dict(l=0, r=0, t=2, b=42),
             xaxis=dict(
                 showgrid=False,
                 showline=False,
@@ -136,7 +138,7 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
     )
     fig.update_layout(
         **_base_layout(
-            height=230,
+            height=OUTCOME_CHART_HEIGHT,
             margin=dict(l=0, r=0, t=0, b=0),
         )
     )
@@ -148,17 +150,21 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
         align="center",
         xref="paper",
         yref="paper",
-        font=dict(size=30, color=BRAND_INK, family="system-ui, sans-serif"),
+        font=dict(
+            size=24,
+            color=BRAND_INK,
+            family="system-ui, -apple-system, Segoe UI, sans-serif",
+        ),
     )
     fig.add_annotation(
         text="success rate",
         x=0.5,
-        y=0.41,
+        y=0.42,
         showarrow=False,
         align="center",
         xref="paper",
         yref="paper",
-        font=dict(size=12, color=CHART_MUTED, family="system-ui, sans-serif"),
+        font=dict(size=11, color=CHART_MUTED, family="system-ui, sans-serif"),
     )
     return fig
 
@@ -201,7 +207,7 @@ def outcome_legend_html(breakdown: OutcomeBreakdown) -> str:
             f'<span class="ca-outcome-swatch {slice_.tone}"></span>'
             f"{html.escape(slice_.label)}</span>"
             f'<span class="ca-outcome-count">{slice_.count}</span>'
-            f'<span class="ca-outcome-pct">{slice_.pct:.1f}%</span>'
+            f'<span class="ca-outcome-pct"><strong>{slice_.pct:.1f}%</strong></span>'
             "</div>"
         )
     return f'<div class="ca-outcome-legend">{"".join(rows)}</div>'

@@ -2402,7 +2402,7 @@ _GLOBAL_CSS = f"""
       display: grid;
       grid-template-columns: repeat(var(--ca-home-kpi-count, 4), minmax(0, 1fr));
       gap: 12px;
-      margin: 0.5rem 0 1rem 0;
+      margin: 0.5rem 0 12px 0;
       width: 100%;
       max-width: 100%;
       align-items: stretch;
@@ -2547,7 +2547,7 @@ _GLOBAL_CSS = f"""
       text-align: right;
   }}
 
-  /* Home — chart cards row (matches KPI card shell) */
+  /* Home — chart cards row (matches KPI card shell + 12px gaps) */
   .st-key-ca_home_charts {{
       margin: 0 0 1rem 0 !important;
       width: 100% !important;
@@ -2557,7 +2557,7 @@ _GLOBAL_CSS = f"""
   .st-key-ca_home_charts > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
   .st-key-ca_home_charts [data-testid="stVerticalBlock"]:has(> .st-key-ca_clone_activity),
   .st-key-ca_home_charts [data-testid="stVerticalBlock"]:has(> .st-key-ca_outcome_breakdown) {{
-      gap: 0 !important;
+      gap: 12px !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
@@ -2567,27 +2567,43 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca_home_charts [data-testid="column"] {{
       padding: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-self: stretch !important;
+  }}
+  .st-key-ca_home_charts [data-testid="column"] > [data-testid="stVerticalBlock"],
+  .st-key-ca_home_charts [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      flex: 1 1 auto !important;
+      height: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
   .st-key-ca_clone_activity,
   .st-key-ca_outcome_breakdown {{
       border: 1px solid #e3e6e8 !important;
       border-radius: 10px !important;
       background: #ffffff !important;
-      padding: 14px 16px 12px 16px !important;
+      padding: 12px 14px 10px 14px !important;
       margin: 0 !important;
       box-sizing: border-box !important;
-      display: block !important;
+      display: flex !important;
+      flex-direction: column !important;
+      flex: 1 1 auto !important;
       height: 100% !important;
-      min-height: 100% !important;
+      min-height: 0 !important;
       overflow: hidden !important;
   }}
   .st-key-ca_clone_activity > [data-testid="stVerticalBlock"],
   .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlock"],
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      gap: 0.15rem !important;
+      gap: 0.1rem !important;
       margin: 0 !important;
       padding: 0 !important;
+      flex: 1 1 auto !important;
+      height: 100% !important;
+      display: flex !important;
+      flex-direction: column !important;
   }}
   .st-key-ca_clone_activity > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
   .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
@@ -2606,18 +2622,22 @@ _GLOBAL_CSS = f"""
   .st-key-ca_outcome_breakdown [data-testid="stPlotlyChart"] {{
       margin: 0 !important;
       padding: 0 !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
   }}
   .st-key-ca_clone_activity [data-testid="stPlotlyChart"] > div,
   .st-key-ca_outcome_breakdown [data-testid="stPlotlyChart"] > div,
   .st-key-ca_clone_activity .js-plotly-plot,
   .st-key-ca_outcome_breakdown .js-plotly-plot {{
       margin: 0 !important;
+      max-height: 178px !important;
   }}
   .ca-home-chart-head {{
-      margin: 0 0 14px 0;
+      margin: 0 0 8px 0;
+      flex: 0 0 auto;
   }}
   .ca-home-chart-title {{
-      font-size: 17px;
+      font-size: 15px;
       font-weight: 800;
       color: {BRAND_INK};
       line-height: 1.25;
@@ -2638,20 +2658,21 @@ _GLOBAL_CSS = f"""
   .ca-home-chart-metrics {{
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin: 0 0 16px 0;
-      padding-bottom: 2px;
+      gap: 10px;
+      margin: 0 0 10px 0;
+      padding-bottom: 0;
+      flex: 0 0 auto;
   }}
   .ca-home-chart-metric {{
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
       min-width: 0;
   }}
   .ca-home-chart-metric strong {{
-      font-size: 26px;
+      font-size: 20px;
       font-weight: 800;
-      letter-spacing: -0.8px;
+      letter-spacing: -0.5px;
       color: {BRAND_INK};
       line-height: 1.05;
   }}
@@ -2668,10 +2689,11 @@ _GLOBAL_CSS = f"""
   .ca-outcome-legend {{
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin: 4px 0 0 0;
-      padding-top: 4px;
+      gap: 7px;
+      margin: 2px 0 0 0;
+      padding-top: 8px;
       border-top: 1px solid #f0f1f2;
+      flex: 0 0 auto;
   }}
   .ca-outcome-row {{
       display: grid;
@@ -2711,10 +2733,16 @@ _GLOBAL_CSS = f"""
       min-width: 2rem;
   }}
   .ca-outcome-pct {{
-      color: #6b7177;
-      font-weight: 600;
+      color: {BRAND_INK};
+      font-weight: 800;
       text-align: right;
       min-width: 3rem;
+  }}
+  @media (max-width: 640px) {{
+      .st-key-ca_home_charts [data-testid="stHorizontalBlock"] {{
+          flex-direction: column !important;
+          gap: 12px !important;
+      }}
   }}
 </style>
 """
