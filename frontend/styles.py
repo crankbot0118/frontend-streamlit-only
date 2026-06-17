@@ -25,6 +25,8 @@ BRAND_ORANGE = "#e87511"
 BRAND_INK = "#131516"
 BRAND_RED = "#cf222e"
 BRAND_RED_BG = "rgba(207, 34, 46, 0.12)"
+SHELL_MAIN_BG = "#faf7f2"
+SHELL_SIDEBAR_BG = "#ffffff"
 STATUS_ICON_PX = 18
 SIDEBAR_WIDTH_PX = 200
 
@@ -130,8 +132,8 @@ _GLOBAL_CSS = f"""
   .stApp {{
       color-scheme: light only;
       --primary-color: {BRAND_ORANGE};
-      --background-color: #ffffff;
-      --secondary-background-color: #f6f7f8;
+      --background-color: {SHELL_MAIN_BG};
+      --secondary-background-color: {SHELL_SIDEBAR_BG};
       --text-color: {BRAND_INK};
       --ca-detail-inline-gap: 0.45rem;
       --ca-page-inset-top: 0.5rem;
@@ -154,12 +156,12 @@ _GLOBAL_CSS = f"""
   [data-testid="stAppViewContainer"],
   .stApp,
   section.main {{
-      background-color: #ffffff !important;
+      background-color: {SHELL_MAIN_BG} !important;
       color: {BRAND_INK} !important;
   }}
   [data-testid="stSidebar"],
   [data-testid="stSidebar"] > div {{
-      background-color: #f6f7f8 !important;
+      background-color: {SHELL_SIDEBAR_BG} !important;
   }}
 
   /* Sidebar shell: fixed width, full viewport height, no scroll bar. */
@@ -763,9 +765,9 @@ _GLOBAL_CSS = f"""
       align-items: center !important;
       background: linear-gradient(
           180deg,
-          rgba(246, 247, 248, 0) 0%,
-          rgba(246, 247, 248, 0.92) 35%,
-          #f6f7f8 100%
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0.92) 35%,
+          {SHELL_SIDEBAR_BG} 100%
       );
   }}
 
