@@ -2491,10 +2491,11 @@ _GLOBAL_CSS = f"""
   .ca-home-kpi-foot {{
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
       gap: 0;
       margin: 11px 0 0 0;
       flex: 0 0 auto;
+      width: 100%;
       font-size: 12px;
       font-weight: 600;
   }}
@@ -2502,10 +2503,11 @@ _GLOBAL_CSS = f"""
       display: flex;
       flex-direction: row;
       align-items: center;
+      justify-content: space-between;
       flex-wrap: nowrap;
-      gap: 7px;
+      gap: 8px;
+      width: 100%;
       min-width: 0;
-      max-width: 100%;
   }}
   .ca-home-kpi-pill {{
       display: inline-flex;
@@ -2517,6 +2519,7 @@ _GLOBAL_CSS = f"""
       font-size: 11.5px;
       line-height: 1.2;
       white-space: nowrap;
+      flex: 0 0 auto;
   }}
   .ca-home-kpi-pill.up {{
       background: rgba(26, 127, 55, 0.12);
@@ -2539,6 +2542,9 @@ _GLOBAL_CSS = f"""
       overflow: hidden;
       text-overflow: ellipsis;
       min-width: 0;
+      flex: 0 1 auto;
+      margin-left: auto;
+      text-align: right;
   }}
 </style>
 """
