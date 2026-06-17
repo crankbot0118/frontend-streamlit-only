@@ -2403,9 +2403,16 @@ _GLOBAL_CSS = f"""
       width: 100% !important;
       max-width: 100% !important;
   }}
+  /* Apply the 12px gap whether the key class lands on the vertical block
+     itself or on a border wrapper around it. */
+  .st-key-ca_home_dashboard[data-testid="stVerticalBlock"],
   .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"],
   .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       gap: 12px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca_home_dashboard [data-testid="stElementContainer"]:has(> .stMarkdown > [data-testid="stMarkdownContainer"] > .ca-home-kpis) {{
       margin: 0 !important;
       padding: 0 !important;
   }}
