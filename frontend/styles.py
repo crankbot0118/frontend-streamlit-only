@@ -2397,52 +2397,52 @@ _GLOBAL_CSS = f"""
 
   /* Home — square weekly KPI card */
   .ca-home-kpi-wrap {{
-      margin: 0.5rem 0 1.25rem 0;
+      margin: 0.5rem 0 1rem 0;
   }}
   .ca-home-kpi {{
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       width: 100%;
-      max-width: 220px;
+      max-width: 168px;
       aspect-ratio: 1 / 1;
       border: 1px solid #e3e6e8;
-      border-radius: 10px;
+      border-radius: 8px;
       background: #ffffff;
-      padding: 18px;
+      padding: 13px 14px;
       box-sizing: border-box;
   }}
   .ca-home-kpi-top {{
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 7px;
       color: #6b7177;
       font-weight: 600;
-      font-size: 12.5px;
-      line-height: 1.25;
+      font-size: 11px;
+      line-height: 1.2;
   }}
   .ca-home-kpi-ic {{
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
       display: grid;
       place-items: center;
       background: rgba(232, 117, 17, 0.12);
       color: {BRAND_ORANGE};
-      flex: 0 0 30px;
-      font-size: 14px;
+      flex: 0 0 24px;
+      font-size: 12px;
       line-height: 1;
   }}
   .ca-home-kpi-val {{
       font-weight: 800;
-      font-size: 36px;
-      letter-spacing: -1px;
+      font-size: 28px;
+      letter-spacing: -0.8px;
       line-height: 1;
       color: {BRAND_INK};
       margin: 0;
   }}
   .ca-home-kpi-val small {{
-      font-size: 18px;
+      font-size: 14px;
       color: #6b7177;
       font-weight: 700;
   }}
@@ -2450,8 +2450,8 @@ _GLOBAL_CSS = f"""
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 5px;
-      font-size: 12px;
+      gap: 4px;
+      font-size: 11px;
       font-weight: 600;
   }}
   .ca-home-kpi-meta {{
@@ -2459,15 +2459,15 @@ _GLOBAL_CSS = f"""
       flex-direction: row;
       align-items: center;
       flex-wrap: wrap;
-      gap: 7px;
+      gap: 5px;
   }}
   .ca-home-kpi-pill {{
       display: inline-flex;
       align-items: center;
-      padding: 2px 7px;
+      padding: 1px 6px;
       border-radius: 20px;
       font-weight: 700;
-      font-size: 11.5px;
+      font-size: 10px;
       line-height: 1.2;
   }}
   .ca-home-kpi-pill.up {{
@@ -2485,14 +2485,14 @@ _GLOBAL_CSS = f"""
   .ca-home-kpi-note {{
       color: #6b7177;
       font-weight: 500;
-      font-size: 10.5px;
+      font-size: 9px;
       line-height: 1.2;
   }}
   .ca-home-kpi-week {{
       color: #8a9097;
       font-weight: 500;
-      font-size: 11px;
-      margin-top: 2px;
+      font-size: 9.5px;
+      margin-top: 1px;
   }}
 </style>
 """
