@@ -18,7 +18,7 @@ CHART_AXIS = "#9aa0a6"
 
 _PLOTLY_CONFIG = {"displayModeBar": False, "responsive": True}
 ACTIVITY_CHART_HEIGHT = 178
-OUTCOME_CHART_HEIGHT = 178
+OUTCOME_CHART_HEIGHT = 112
 
 
 def _base_layout(**overrides) -> dict:
@@ -123,36 +123,38 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
         values = [1]
         colors = ["#eef0f2"]
 
+    pull_vals = [0.03, 0.03, 0.03] if total else [0]
     fig = go.Figure(
         go.Pie(
             values=values,
             labels=[slice_.label for slice_ in breakdown.slices],
-            hole=0.78,
-            marker=dict(colors=colors, line=dict(color="#ffffff", width=4)),
+            hole=0.84,
+            marker=dict(colors=colors, line=dict(color="#ffffff", width=7)),
             sort=False,
             direction="clockwise",
             rotation=210,
             textinfo="none",
             hovertemplate="%{label}: %{value}<extra></extra>",
-            pull=[0, 0.04, 0] if total else [0],
+            pull=pull_vals,
         )
     )
     fig.update_layout(
         **_base_layout(
             height=OUTCOME_CHART_HEIGHT,
-            margin=dict(l=0, r=0, t=4, b=4),
+            margin=dict(l=0, r=0, t=0, b=0),
         )
     )
+    fig.update_traces(domain=dict(x=[0.08, 0.92], y=[0.02, 0.98]))
     fig.add_annotation(
         text=center,
         x=0.5,
-        y=0.56,
+        y=0.54,
         showarrow=False,
         align="center",
         xref="paper",
         yref="paper",
         font=dict(
-            size=26,
+            size=20,
             color=BRAND_INK,
             family="system-ui, -apple-system, Segoe UI, sans-serif",
         ),
@@ -160,12 +162,12 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
     fig.add_annotation(
         text="success rate",
         x=0.5,
-        y=0.41,
+        y=0.40,
         showarrow=False,
         align="center",
         xref="paper",
         yref="paper",
-        font=dict(size=11, color=CHART_MUTED, family="system-ui, sans-serif"),
+        font=dict(size=10, color=CHART_MUTED, family="system-ui, sans-serif"),
     )
     return fig
 
