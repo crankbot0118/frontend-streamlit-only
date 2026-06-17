@@ -2398,20 +2398,23 @@ _GLOBAL_CSS = f"""
   /* Home — square weekly KPI card */
   .ca-home-kpi-wrap {{
       margin: 0.5rem 0 1rem 0;
+      width: fit-content;
   }}
   .ca-home-kpi {{
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      gap: 0;
-      width: 100%;
+      width: 168px;
+      height: 168px;
       max-width: 168px;
+      min-width: 168px;
+      min-height: 168px;
       aspect-ratio: 1 / 1;
       border: 1px solid #e3e6e8;
       border-radius: 8px;
       background: #ffffff;
-      padding: 13px 14px;
+      padding: 14px;
       box-sizing: border-box;
+      overflow: hidden;
   }}
   .ca-home-kpi-top {{
       display: flex;
@@ -2421,6 +2424,7 @@ _GLOBAL_CSS = f"""
       font-weight: 600;
       font-size: 11px;
       line-height: 1.2;
+      flex: 0 0 auto;
   }}
   .ca-home-kpi-ic {{
       width: 24px;
@@ -2435,12 +2439,17 @@ _GLOBAL_CSS = f"""
       line-height: 1;
   }}
   .ca-home-kpi-val {{
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
       font-weight: 800;
       font-size: 28px;
       letter-spacing: -0.8px;
       line-height: 1;
       color: {BRAND_INK};
-      margin: 5px 0 0 0;
+      margin: 0;
+      padding: 8px 0;
+      min-height: 0;
   }}
   .ca-home-kpi-val small {{
       font-size: 14px;
@@ -2451,8 +2460,10 @@ _GLOBAL_CSS = f"""
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      justify-content: flex-end;
       gap: 0;
-      margin-top: 5px;
+      margin: 0;
+      flex: 0 0 auto;
       font-size: 11px;
       font-weight: 600;
   }}
