@@ -150,7 +150,14 @@ def weekly_clone_count_kpi(runs: list[dict], ref: date | None = None) -> WeeklyC
 ACTIVITY_WEEKS = 12
 OUTCOME_DAYS = 90
 OUTCOME_FAILED = frozenset({"FAILED"})
-OUTCOME_CANCELLED = frozenset({"ABORTED", "SKIPPED"})
+OUTCOME_ABORTED = frozenset({"ABORTED"})
+# Latest row per run from ``clone_run_status`` (see backend ``get_clone_runs``).
+OUTCOME_TERMINAL_STATUSES = frozenset({"COMPLETED", "FAILED", "ABORTED"})
+
+
+def clone_run_status(run: dict) -> str:
+    """Latest ``clone_run_status.status`` for a run (exposed as ``status`` by the API)."""
+    return (run.get("status") or "").upper()
 
 
 def recent_week_ranges(weeks: int, ref: date | None = None) -> list[tuple[date, date, str]]:
@@ -282,29 +289,24 @@ def outcome_breakdown(
     days: int = OUTCOME_DAYS,
     ref: date | None = None,
 ) -> OutcomeBreakdown:
+    """Outcome donut for the last ``days`` using latest ``clone_run_status`` per run."""
     ref = ref or date.today()
     cutoff = ref - timedelta(days=days - 1)
     scoped = [
         r
         for r in runs
         if run_on_or_after(r, cutoff)
-        and (r.get("status") or "").upper() in TERMINAL_STATUSES
+        and clone_run_status(r) in OUTCOME_TERMINAL_STATUSES
     ]
-    successful = sum(
-        1 for r in scoped if (r.get("status") or "").upper() == "COMPLETED"
-    )
-    failed = sum(
-        1 for r in scoped if (r.get("status") or "").upper() in OUTCOME_FAILED
-    )
-    cancelled = sum(
-        1 for r in scoped if (r.get("status") or "").upper() in OUTCOME_CANCELLED
-    )
-    total = successful + failed + cancelled
+    successful = sum(1 for r in scoped if clone_run_status(r) == "COMPLETED")
+    failed = sum(1 for r in scoped if clone_run_status(r) in OUTCOME_FAILED)
+    aborted = sum(1 for r in scoped if clone_run_status(r) in OUTCOME_ABORTED)
+    total = successful + failed + aborted
     if total == 0:
         empty = (
             OutcomeSlice("Successful", 0, 0.0, "ok"),
             OutcomeSlice("Failed", 0, 0.0, "bad"),
-            OutcomeSlice("Cancelled", 0, 0.0, "muted"),
+            OutcomeSlice("Aborted", 0, 0.0, "muted"),
         )
         return OutcomeBreakdown(days=days, success_rate=None, slices=empty)
 
@@ -315,6 +317,6 @@ def outcome_breakdown(
     slices = (
         OutcomeSlice("Successful", successful, success_rate, "ok"),
         OutcomeSlice("Failed", failed, pct(failed), "bad"),
-        OutcomeSlice("Cancelled", cancelled, pct(cancelled), "muted"),
+        OutcomeSlice("Aborted", aborted, pct(aborted), "muted"),
     )
     return OutcomeBreakdown(days=days, success_rate=success_rate, slices=slices)
