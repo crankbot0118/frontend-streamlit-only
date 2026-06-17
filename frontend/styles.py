@@ -2645,10 +2645,15 @@ _GLOBAL_CSS = f"""
       align-self: stretch !important;
   }}
   .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlock"] > .st-key-ca_home_recent_runs,
-  .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_home_recent_runs,
+  .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_home_recent_runs {{
+      flex: 0 0 auto !important;
+      margin: 0 !important;
+  }}
   .st-key-ca_home_dashboard [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] > .st-key-ca_home_upcoming_schedule,
   .st-key-ca_home_dashboard [data-testid="column"]:last-child > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_home_upcoming_schedule {{
-      flex: 0 0 auto !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      align-self: stretch !important;
       margin: 0 !important;
   }}
   .st-key-ca_clone_activity,
@@ -2909,6 +2914,10 @@ _GLOBAL_CSS = f"""
 
   /* Home — upcoming schedule placeholder */
   .st-key-ca_home_upcoming_schedule {{
+      display: flex !important;
+      flex-direction: column !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
       border: 1px solid var(--ca-home-card-border, #e6e9eb) !important;
       border-radius: var(--ca-home-card-radius, 12px) !important;
       background: #ffffff !important;
@@ -2920,6 +2929,10 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca_home_upcoming_schedule > [data-testid="stVerticalBlock"],
   .st-key-ca_home_upcoming_schedule > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      display: flex !important;
+      flex-direction: column !important;
+      flex: 1 1 auto !important;
+      min-height: 100% !important;
       gap: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
