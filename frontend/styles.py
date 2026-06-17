@@ -2403,6 +2403,8 @@ _GLOBAL_CSS = f"""
   .ca-home-kpi {{
       display: flex;
       flex-direction: column;
+      justify-content: flex-start;
+      gap: 5px;
       width: 168px;
       height: 168px;
       max-width: 168px;
@@ -2439,16 +2441,16 @@ _GLOBAL_CSS = f"""
       line-height: 1;
   }}
   .ca-home-kpi-val {{
-      flex: 1 1 auto;
+      flex: 0 0 auto;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       font-weight: 800;
       font-size: 28px;
       letter-spacing: -0.8px;
       line-height: 1;
       color: {BRAND_INK};
       margin: 0;
-      padding: 8px 0;
+      padding: 0;
       min-height: 0;
   }}
   .ca-home-kpi-val small {{
