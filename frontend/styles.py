@@ -2397,7 +2397,7 @@ _GLOBAL_CSS = f"""
       opacity: 1 !important;
   }}
 
-  /* Home — dashboard (12px gap between KPI row and chart row) */
+  /* Home — dashboard shell */
   .st-key-ca_home_dashboard {{
       --ca-home-card-gap: 12px;
       margin: 0.5rem 0 1rem 0 !important;
@@ -2405,14 +2405,18 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"],
   .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      gap: var(--ca-home-card-gap) !important;
+      gap: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
-  .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
+  /* Rows sit in stElementContainer wrappers — flex gap does not apply; use margins. */
+  .st-key-ca_home_dashboard [data-testid="stElementContainer"] {{
       margin: 0 !important;
       padding: 0 !important;
+  }}
+  .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:not(:first-child),
+  .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:not(:first-child) {{
+      margin-top: var(--ca-home-card-gap) !important;
   }}
 
   /* Home — weekly KPI cards spanning full content width */
@@ -2569,47 +2573,60 @@ _GLOBAL_CSS = f"""
   }}
 
   /* Home — chart cards row (2:1 columns, equal height) */
-  .st-key-ca_home_charts {{
-      margin: 0 !important;
-      width: 100% !important;
-  }}
-  .st-key-ca_home_charts > [data-testid="stVerticalBlock"],
-  .st-key-ca_home_charts > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-ca_home_charts [data-testid="stHorizontalBlock"] {{
+  .st-key-ca_home_dashboard [data-testid="stHorizontalBlock"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
       align-items: stretch !important;
       gap: var(--ca-home-card-gap, 12px) !important;
       width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
-  .st-key-ca_home_charts [data-testid="column"] {{
+  .st-key-ca_home_dashboard [data-testid="column"] {{
+      display: flex !important;
+      flex-direction: column !important;
+      align-self: stretch !important;
       padding-left: 0 !important;
       padding-right: 0 !important;
       min-width: 0 !important;
-      align-self: stretch !important;
+      margin: 0 !important;
   }}
-  .st-key-ca_home_charts [data-testid="column"] > [data-testid="stVerticalBlock"],
-  .st-key-ca_home_charts [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      height: 100% !important;
+  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlock"],
+  .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      display: flex !important;
+      flex-direction: column !important;
+      flex: 1 1 auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
   }}
   .st-key-ca_clone_activity,
   .st-key-ca_outcome_breakdown {{
+      display: flex !important;
+      flex-direction: column !important;
+      flex: 1 1 auto !important;
+      align-self: stretch !important;
+      width: 100% !important;
+      min-height: 100% !important;
       border: 1px solid #e3e6e8 !important;
       border-radius: 10px !important;
       background: #ffffff !important;
       padding: 12px 14px 10px 14px !important;
       margin: 0 !important;
       box-sizing: border-box !important;
-      height: 100% !important;
   }}
   .st-key-ca_clone_activity > [data-testid="stVerticalBlock"],
   .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlock"],
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      display: flex !important;
+      flex-direction: column !important;
+      flex: 1 1 auto !important;
       gap: 0.1rem !important;
       margin: 0 !important;
       padding: 0 !important;
+      min-height: 0 !important;
   }}
   .st-key-ca_clone_activity > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
   .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
@@ -2617,6 +2634,20 @@ _GLOBAL_CSS = f"""
   .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
       margin: 0 !important;
       padding: 0 !important;
+  }}
+  .st-key-ca_clone_activity > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]),
+  .st-key-ca_clone_activity > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]),
+  .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]),
+  .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]) {{
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      min-height: 0 !important;
+  }}
+  .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-outcome-legend),
+  .st-key-ca_outcome_breakdown > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-outcome-legend) {{
+      flex: 0 0 auto !important;
+      margin-top: auto !important;
   }}
   .st-key-ca_clone_activity [data-testid="stMarkdownContainer"],
   .st-key-ca_outcome_breakdown [data-testid="stMarkdownContainer"],
@@ -2628,6 +2659,8 @@ _GLOBAL_CSS = f"""
   .st-key-ca_outcome_breakdown [data-testid="stPlotlyChart"] {{
       margin: 0 !important;
       padding: 0 !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
   }}
   .st-key-ca_clone_activity [data-testid="stPlotlyChart"] > div,
   .st-key-ca_outcome_breakdown [data-testid="stPlotlyChart"] > div,
@@ -2647,6 +2680,7 @@ _GLOBAL_CSS = f"""
       line-height: 1.25;
       margin: 0;
       letter-spacing: -0.2px;
+      white-space: nowrap;
   }}
   .ca-home-chart-sub {{
       margin: 4px 0 0 0;
@@ -2701,19 +2735,23 @@ _GLOBAL_CSS = f"""
   }}
   .ca-outcome-row {{
       display: grid;
-      grid-template-columns: 1fr auto auto;
+      grid-template-columns: minmax(0, 1fr) auto auto;
       align-items: center;
-      gap: 12px;
-      font-size: 12.5px;
-      line-height: 1.2;
+      column-gap: 10px;
+      row-gap: 0;
+      font-size: 12px;
+      line-height: 1.25;
   }}
   .ca-outcome-label {{
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       color: {BRAND_INK};
       font-weight: 600;
       min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
   }}
   .ca-outcome-swatch {{
       width: 11px;
@@ -2743,9 +2781,9 @@ _GLOBAL_CSS = f"""
       min-width: 3rem;
   }}
   @media (max-width: 640px) {{
-      .st-key-ca_home_charts [data-testid="stHorizontalBlock"] {{
+      .st-key-ca_home_dashboard [data-testid="stHorizontalBlock"] {{
           flex-direction: column !important;
-          gap: 12px !important;
+          gap: var(--ca-home-card-gap, 12px) !important;
       }}
   }}
 </style>
