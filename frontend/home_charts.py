@@ -79,7 +79,7 @@ def clone_activity_figure(stats: CloneActivityStats) -> go.Figure:
                 font=dict(size=11, color=CHART_MUTED),
                 traceorder="normal",
                 itemsizing="constant",
-                itemwidth=28,
+                itemwidth=30,
                 entrywidth=88,
                 bgcolor="rgba(0,0,0,0)",
             ),
