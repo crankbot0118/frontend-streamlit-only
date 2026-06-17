@@ -2403,23 +2403,17 @@ _GLOBAL_CSS = f"""
       width: 100% !important;
       max-width: 100% !important;
   }}
-  /* Apply the 12px gap whether the key class lands on the vertical block
-     itself or on a border wrapper around it. */
-  .st-key-ca_home_dashboard[data-testid="stVerticalBlock"],
-  .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"],
-  .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+  /* Pin the gap on whichever vertical block actually holds the KPI row and
+     the charts row, regardless of how many wrappers Streamlit inserts. */
+  .st-key-ca_home_dashboard [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .ca-home-kpis) {{
       gap: 12px !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
-  .st-key-ca_home_dashboard [data-testid="stElementContainer"]:has(> .stMarkdown > [data-testid="stMarkdownContainer"] > .ca-home-kpis) {{
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
-      margin: 0 !important;
-      padding: 0 !important;
+  /* Kill any per-child vertical margins that would stack on top of the gap. */
+  .st-key-ca_home_dashboard [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .ca-home-kpis) > * {{
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
   }}
 
   /* Home — weekly KPI cards spanning full content width */
@@ -2590,6 +2584,8 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
   .st-key-ca_home_charts [data-testid="stHorizontalBlock"] {{
+      display: flex !important;
+      flex-direction: row !important;
       align-items: stretch !important;
       gap: 12px !important;
       width: 100% !important;
