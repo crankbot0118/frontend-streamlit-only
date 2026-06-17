@@ -122,3 +122,11 @@ with st.container(key="ca_home_dashboard"):
                 config=plotly_config(),
             )
             st.markdown(outcome_legend_html(outcome), unsafe_allow_html=True)
+        with st.container(key="ca_home_upcoming_schedule"):
+            st.markdown(
+                '<div class="ca-home-chart-head">'
+                '<div class="ca-home-chart-title">Upcoming schedule</div>'
+                "</div>"
+                '<span class="ca-soon ca-home-soon">Coming soon!</span>',
+                unsafe_allow_html=True,
+            )

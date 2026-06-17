@@ -2625,7 +2625,9 @@ _GLOBAL_CSS = f"""
       gap: 0 !important;
   }}
   .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlock"],
-  .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+  .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
+  .st-key-ca_home_dashboard [data-testid="column"]:last-child > [data-testid="stVerticalBlock"],
+  .st-key-ca_home_dashboard [data-testid="column"]:last-child > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       gap: var(--ca-home-card-gap, 12px) !important;
   }}
   .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlock"] > .st-key-ca_clone_activity,
@@ -2637,12 +2639,15 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlock"] > .st-key-ca_outcome_breakdown,
   .st-key-ca_home_dashboard [data-testid="column"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_outcome_breakdown {{
-      flex: 1 1 auto !important;
-      min-height: 100% !important;
+      flex: 0 0 auto !important;
+      min-height: 0 !important;
+      height: auto !important;
       align-self: stretch !important;
   }}
   .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlock"] > .st-key-ca_home_recent_runs,
-  .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_home_recent_runs {{
+  .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_home_recent_runs,
+  .st-key-ca_home_dashboard [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] > .st-key-ca_home_upcoming_schedule,
+  .st-key-ca_home_dashboard [data-testid="column"]:last-child > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_home_upcoming_schedule {{
       flex: 0 0 auto !important;
       margin: 0 !important;
   }}
@@ -2900,6 +2905,29 @@ _GLOBAL_CSS = f"""
       min-width: 0 !important;
       flex: 0 0 auto !important;
       white-space: nowrap !important;
+  }}
+
+  /* Home — upcoming schedule placeholder */
+  .st-key-ca_home_upcoming_schedule {{
+      border: 1px solid var(--ca-home-card-border, #e6e9eb) !important;
+      border-radius: var(--ca-home-card-radius, 12px) !important;
+      background: #ffffff !important;
+      padding: 14px 16px 16px 16px !important;
+      margin: 0 !important;
+      box-sizing: border-box !important;
+      box-shadow: var(--ca-home-card-shadow) !important;
+      width: 100% !important;
+  }}
+  .st-key-ca_home_upcoming_schedule > [data-testid="stVerticalBlock"],
+  .st-key-ca_home_upcoming_schedule > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      gap: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .ca-home-soon {{
+      display: inline-block;
+      margin: 10px 0 0 0 !important;
+      font-size: 0.72rem;
   }}
 
   @media (max-width: 640px) {{
