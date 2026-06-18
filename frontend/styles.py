@@ -1253,13 +1253,20 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca-detail-title-row [data-testid="stHtml"],
   .st-key-ca-detail-title-row [data-testid="stHtml"] iframe,
-  .st-key-ca-detail-title-row .stHtml {{
+  .st-key-ca-detail-title-row .stHtml,
+  .st-key-ca-detail-title-row .stHtml iframe {{
       width: auto !important;
-      max-width: none !important;
+      max-width: fit-content !important;
       min-width: 0 !important;
-      height: auto !important;
+      min-height: var(--ca-detail-title-height) !important;
+      max-height: var(--ca-detail-title-height) !important;
+      height: var(--ca-detail-title-height) !important;
       display: block !important;
-      overflow: visible !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      line-height: 0 !important;
   }}
   .st-key-ca-detail-title-row [data-testid="stElementContainer"]:has([data-testid="stHtml"]) {{
       flex: 0 0 auto !important;
@@ -3511,6 +3518,56 @@ def render_sidebar_nav(pages: dict, current_title: str) -> None:
                         _nav_link(pages, item, current_title)
             elif entry["kind"] == "divider":
                 st.html('<hr class="ca-nav-divider-line" />')
+
+
+def run_detail_title_html(*, run_id: str, src: str, tgt: str) -> str:
+    """Run details toolbar title (Run # · src → tgt).
+
+    ``st.html`` renders inside an iframe, so styles must be embedded here —
+    global CSS from ``apply_global_styles()`` does not apply inside the iframe.
+    """
+    title_size = "1.125rem"
+    return f"""
+    <style>
+      .ca-detail-page-header,
+      .ca-detail-page-header .ca-title {{
+        margin: 0;
+        padding: 0;
+      }}
+      .ca-detail-title-parts {{
+        display: inline-flex;
+        align-items: center;
+        gap: 0.28rem;
+        margin: 0;
+        padding: 0;
+        font-size: {title_size};
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: {BRAND_INK};
+        line-height: 1;
+        white-space: nowrap;
+      }}
+      .ca-detail-title-parts .ca-run-sep {{
+        color: #c2c7cc;
+        font-weight: 400;
+      }}
+      .ca-detail-title-parts .arrow {{
+        color: {BRAND_ORANGE};
+      }}
+    </style>
+    <div class="ca-page-header ca-detail-page-header">
+      <div class="ca-title">
+        <div class="ca-detail-title-parts">
+          <span>Run #{run_id}</span>
+          <span class="ca-run-sep">&middot;</span>
+          <span>{src}</span>
+          <span class="arrow">&#8594;</span>
+          <span>{tgt}</span>
+          <span class="ca-run-sep">&middot;</span>
+        </div>
+      </div>
+    </div>
+    """
 
 
 def render_title(title: str, subtitle: str | None = None) -> None:

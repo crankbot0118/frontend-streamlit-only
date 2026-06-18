@@ -23,6 +23,7 @@ from styles import (
     fmt_duration,
     relative_update_html,
     render_title,
+    run_detail_title_html,
     started_html,
     status_badge_html,
     status_image_html,
@@ -230,22 +231,7 @@ if run:
             live_steps = _load_steps(run_id, steps) if polling else steps
 
             with st.container(key="ca-detail-title-row"):
-                st.html(
-                    f"""
-                    <div class="ca-page-header ca-detail-page-header">
-                      <div class="ca-title">
-                        <h1 class="ca-detail-title-parts">
-                          <span>Run #{safe_run_id}</span>
-                          <span class="ca-run-sep">&middot;</span>
-                          <span>{src}</span>
-                          <span class="arrow">&#8594;</span>
-                          <span>{tgt}</span>
-                          <span class="ca-run-sep">&middot;</span>
-                        </h1>
-                      </div>
-                    </div>
-                    """
-                )
+                st.html(run_detail_title_html(run_id=safe_run_id, src=src, tgt=tgt))
 
             with st.container(key="ca-detail-meta-row"):
                 col_meta, col_actions = st.columns(
