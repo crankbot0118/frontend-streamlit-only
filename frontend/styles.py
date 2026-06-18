@@ -1182,6 +1182,7 @@ _GLOBAL_CSS = f"""
   /* ---------- Run details header ---------- */
   .st-key-ca-detail-header {{
       --ca-detail-inline-gap: 0.28rem;
+      --ca-detail-section-v-gap: 0.05rem;
       --ca-detail-title-height: 1.38rem;
       --ca-detail-meta-height: 1.05rem;
   }}
@@ -1268,7 +1269,7 @@ _GLOBAL_CSS = f"""
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
-      margin: -0.42rem 0 -0.22rem 0 !important;
+      margin: -0.56rem 0 -0.3rem 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
   }}
@@ -1619,42 +1620,60 @@ _GLOBAL_CSS = f"""
   .ca-loglink:hover {{
       text-decoration: underline;
   }}
-  /* Tighter vertical stack: title → meta → orange divider. */
+  /* Vertical stack only: title → meta → orange divider → steps. */
   .st-key-ca-detail-header .ca-title-rule {{
       margin: 0 !important;
       display: block;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-header > [data-testid="stVerticalBlockBorderWrapper"] {{
+  .st-key-ca-detail-header > [data-testid="stVerticalBlockBorderWrapper"],
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       gap: 0 !important;
   }}
-  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
-      margin: 0 !important;
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
+      margin-left: 0 !important;
+      margin-right: 0 !important;
       padding: 0 !important;
   }}
   .st-key-ca-detail-header .st-key-ca-detail-title-row {{
-      margin-bottom: -0.1rem !important;
+      margin-bottom: calc(var(--ca-detail-section-v-gap) * -3) !important;
   }}
-  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child {{
-      margin-top: -0.2rem !important;
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row),
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row) {{
+      margin-top: calc(var(--ca-detail-section-v-gap) * -2.5) !important;
+      margin-bottom: 0 !important;
+  }}
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule),
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) {{
+      margin-top: calc(var(--ca-detail-section-v-gap) * -2) !important;
+      margin-bottom: 0 !important;
       line-height: 0 !important;
   }}
-  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child [data-testid="stHtml"],
-  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child iframe {{
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) [data-testid="stHtml"],
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) iframe,
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) [data-testid="stHtml"],
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) iframe {{
       margin: 0 !important;
       padding: 0 !important;
       display: block !important;
       line-height: 0 !important;
+  }}
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-steps),
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-steps) {{
+      margin-top: var(--ca-detail-section-v-gap) !important;
+      margin-bottom: 0 !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="stElementContainer"] {{
       margin-bottom: 0 !important;
       padding-bottom: 0 !important;
   }}
 
-  /* Step list — breathing room below the orange divider. */
+  /* Step list — vertical space below the orange divider only. */
   .st-key-ca-steps {{
       --ca-step-card-gap: 0.1px;
-      margin-top: 0.32rem !important;
+      margin-top: 0 !important;
   }}
 
   /* Inter-card spacing — cards sit in stElementContainer wrappers, not direct
@@ -1897,8 +1916,8 @@ _GLOBAL_CSS = f"""
       flex-wrap: nowrap !important;
       gap: 0.22rem !important;
       width: 100% !important;
-      margin: 0.18rem 0 0 0 !important;
-      padding: 0.22rem 0 0 0 !important;
+      margin: 0.1rem 0 0 0 !important;
+      padding: 0.12rem 0 0 0 !important;
       border-top: 1px solid #eef0f2;
   }}
   [class*="st-key-step_links_"] > [data-testid="stElementContainer"] {{
