@@ -1229,7 +1229,7 @@ _GLOBAL_CSS = f"""
   .ca-detail-title-parts .arrow {{
       color: {BRAND_ORANGE};
   }}
-  /* Title row: Run # heading — single inline flex row. */
+  /* Title row: Run # heading + toolbar links + auto refresh. */
   .st-key-ca-detail-title-row,
   .st-key-ca-detail-title-row [data-testid="stVerticalBlock"],
   .st-key-ca-detail-title-row [data-testid="stVerticalBlockBorderWrapper"] {{
@@ -1237,13 +1237,56 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
+      justify-content: space-between !important;
       gap: var(--ca-detail-inline-gap) !important;
-      width: fit-content !important;
+      width: 100% !important;
       max-width: 100% !important;
       min-height: 0 !important;
       height: auto !important;
       margin: 0 !important;
       padding: 0 !important;
+  }}
+  .st-key-ca-detail-left,
+  .st-key-ca-detail-left [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-left [data-testid="stVerticalBlockBorderWrapper"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      flex-wrap: nowrap !important;
+      gap: var(--ca-detail-inline-gap) !important;
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+      width: auto !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-detail-toolbar-links,
+  .st-key-detail-toolbar-links [data-testid="stVerticalBlock"],
+  .st-key-detail-toolbar-links [data-testid="stVerticalBlockBorderWrapper"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      flex-wrap: nowrap !important;
+      gap: 0.22rem !important;
+      width: auto !important;
+      flex: 0 0 auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-detail-toolbar-links [data-testid="stElementContainer"] {{
+      width: auto !important;
+      flex: 0 0 auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-detail-toolbar-links [data-testid="stElementContainer"]:has(.ca-step-link-sep) {{
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: auto !important;
+      min-width: 0 !important;
+      padding: 0 0.06rem !important;
   }}
   .st-key-ca-detail-title-row [data-testid="stElementContainer"] {{
       flex: 0 0 auto !important;
@@ -1288,6 +1331,9 @@ _GLOBAL_CSS = f"""
   .st-key-detail-download-log,
   .st-key-detail-download-log .stButton,
   .st-key-detail-download-log .stButton button,
+  .st-key-detail-run-info,
+  .st-key-detail-run-info .stButton,
+  .st-key-detail-run-info .stButton button,
   .st-key-detail-refresh,
   .st-key-detail-refresh [data-testid="stToggle"],
   .st-key-detail-refresh [data-baseweb="switch"],
@@ -1393,21 +1439,21 @@ _GLOBAL_CSS = f"""
       justify-content: flex-end !important;
       align-items: center !important;
   }}
-  .st-key-detail-meta-actions [data-testid="column"]:first-child {{
-      margin-right: 0.15rem !important;
-  }}
-  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stElementContainer"],
-  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
+  .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
+  .st-key-detail-meta-actions [data-testid="stVerticalBlockBorderWrapper"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
       justify-content: flex-end !important;
-  }}
-  .st-key-ca-detail-meta-row .st-key-detail-refresh,
-  .st-key-ca-detail-meta-row .st-key-detail-download-log {{
       width: auto !important;
+      flex: 0 0 auto !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
   .st-key-detail-download-log [data-testid="stElementContainer"],
-  .st-key-detail-download-log [data-testid="stVerticalBlock"] {{
+  .st-key-detail-download-log [data-testid="stVerticalBlock"],
+  .st-key-detail-run-info [data-testid="stElementContainer"],
+  .st-key-detail-run-info [data-testid="stVerticalBlock"] {{
       width: auto !important;
       margin: 0 !important;
       padding: 0 !important;
@@ -1415,10 +1461,12 @@ _GLOBAL_CSS = f"""
   .st-key-detail-download-log .stDownloadButton,
   .st-key-detail-download-log .stDownloadButton button,
   .st-key-detail-download-log .stButton,
-  .st-key-detail-download-log .stButton button {{
+  .st-key-detail-download-log .stButton button,
+  .st-key-detail-run-info .stButton,
+  .st-key-detail-run-info .stButton button {{
       width: auto !important;
-      min-height: var(--ca-detail-meta-height) !important;
-      height: var(--ca-detail-meta-height) !important;
+      min-height: var(--ca-detail-title-height) !important;
+      height: var(--ca-detail-title-height) !important;
       margin: 0 !important;
       padding: 0 !important;
       background: transparent !important;
@@ -1435,7 +1483,9 @@ _GLOBAL_CSS = f"""
   .st-key-detail-download-log .stDownloadButton button [data-testid="stMarkdownContainer"],
   .st-key-detail-download-log .stDownloadButton button p,
   .st-key-detail-download-log .stButton button [data-testid="stMarkdownContainer"],
-  .st-key-detail-download-log .stButton button p {{
+  .st-key-detail-download-log .stButton button p,
+  .st-key-detail-run-info .stButton button [data-testid="stMarkdownContainer"],
+  .st-key-detail-run-info .stButton button p {{
       width: auto !important;
       min-height: 0 !important;
       height: auto !important;
@@ -1455,10 +1505,15 @@ _GLOBAL_CSS = f"""
   .st-key-detail-download-log .stDownloadButton button:hover p,
   .st-key-detail-download-log .stButton button:hover,
   .st-key-detail-download-log .stButton button:hover [data-testid="stMarkdownContainer"],
-  .st-key-detail-download-log .stButton button:hover p {{
+  .st-key-detail-download-log .stButton button:hover p,
+  .st-key-detail-run-info .stButton button:hover,
+  .st-key-detail-run-info .stButton button:hover [data-testid="stMarkdownContainer"],
+  .st-key-detail-run-info .stButton button:hover p {{
       text-decoration: underline !important;
       color: {BRAND_ORANGE} !important;
   }}
+  .st-key-ca-detail-title-row .st-key-detail-refresh [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-title-row .st-key-detail-refresh [data-testid="stElementContainer"],
   .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stVerticalBlock"],
   .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stElementContainer"] {{
       display: flex !important;
@@ -1636,6 +1691,19 @@ _GLOBAL_CSS = f"""
       flex: 0 0 auto;
       white-space: nowrap;
   }}
+  .ca-detail-meta-dialog {{
+      flex-wrap: wrap !important;
+      min-height: 0 !important;
+      height: auto !important;
+      font-size: var(--ca-run-meta-size);
+      line-height: 1.45;
+      gap: 0.35rem 0.45rem !important;
+      padding: 0.15rem 0 0.35rem 0 !important;
+  }}
+  .ca-detail-meta-dialog .ca-badge {{
+      min-height: 0 !important;
+      height: auto !important;
+  }}
   .st-key-detail-download-log .ca-step-link-disabled {{
       display: inline-flex !important;
       align-items: center !important;
@@ -1688,7 +1756,7 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
   .st-key-ca-detail-header .st-key-ca-detail-title-row {{
-      margin-bottom: calc(var(--ca-detail-section-v-gap) * -3) !important;
+      margin-bottom: calc(var(--ca-detail-section-v-gap) * -1) !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row),
   .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row) {{
@@ -3138,6 +3206,33 @@ def step_detail_dialog_html(detail: dict, function_name: str) -> str:
 def step_detail_dialog_error_html(message: str) -> str:
     safe = html.escape(message)
     return f'<div class="ca-step-dialog-body"><p class="ca-step-dialog-error">{safe}</p></div>'
+
+
+def run_detail_info_dialog_html(
+    *,
+    user: str,
+    start_date,
+    last_update,
+    status: str,
+) -> str:
+    """Run details popup — triggered by, timing, duration, and status."""
+    badge = status_badge_html(status)
+    return (
+        f'<div class="ca-step-dialog-body">'
+        f'<div class="ca-step-dialog-title">Run details</div>'
+        f'<div class="ca-detail-meta ca-detail-meta-dialog">'
+        f'<span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>'
+        f'<span class="ca-detail-sep">&middot;</span>'
+        f'<span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(start_date)}</span>'
+        f'<span class="ca-detail-sep">&middot;</span>'
+        f'<span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(last_update)}</span>'
+        f'<span class="ca-detail-sep">&middot;</span>'
+        f'<span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(start_date, last_update)}</span>'
+        f'<span class="ca-detail-sep">&middot;</span>'
+        f"{badge}"
+        f"</div>"
+        f"</div>"
+    )
 
 
 def log_file_dialog_html(title: str, file_path: str, content: str, filename: str) -> str:
