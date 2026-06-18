@@ -1350,8 +1350,9 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-log-row[data-testid="stVerticalBlockBorderWrapper"] {{
       width: 100% !important;
       max-width: 100% !important;
-      margin: 0 !important;
+      margin: -0.12rem 0 -0.1rem 0 !important;
       padding: 0 !important;
+      min-height: 0 !important;
       position: relative !important;
       z-index: 6 !important;
   }}
@@ -1366,34 +1367,50 @@ _GLOBAL_CSS = f"""
       max-width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      min-height: var(--ca-detail-meta-height) !important;
+      min-height: 0 !important;
+      height: auto !important;
       gap: 0 !important;
   }}
   .st-key-ca-detail-log-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
   .st-key-ca-detail-log-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
   .st-key-ca-detail-log-row[data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  .st-key-ca-detail-log-row .st-key-detail-download-log,
-  .st-key-ca-detail-log-row .st-key-detail-download-log [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-log-row .st-key-detail-download-log [data-testid="stVerticalBlockBorderWrapper"],
   .st-key-ca-detail-log-row [class*="st-key-view_run_log_"],
-  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] [data-testid="stElementContainer"] {{
+  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] [data-testid="stElementContainer"],
+  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] [data-testid="stVerticalBlockBorderWrapper"] {{
       width: auto !important;
       flex: 0 0 auto !important;
       margin: 0 !important;
       padding: 0 !important;
+      min-height: 0 !important;
+      height: auto !important;
       position: relative !important;
       z-index: 30 !important;
       pointer-events: auto !important;
   }}
-  .st-key-ca-detail-log-row .st-key-detail-download-log .stButton button,
-  .st-key-ca-detail-log-row .st-key-detail-download-log .stButton button [data-testid="stMarkdownContainer"],
-  .st-key-ca-detail-log-row .st-key-detail-download-log .stButton button p,
+  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton,
   .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button,
   .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button [data-testid="stMarkdownContainer"],
   .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button p {{
-      font-size: 0.86rem !important;
-      min-height: var(--ca-detail-meta-height) !important;
-      height: var(--ca-detail-meta-height) !important;
+      width: auto !important;
+      min-height: 0 !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: {BRAND_ORANGE} !important;
+      font-size: var(--ca-run-meta-size) !important;
+      font-weight: 600 !important;
+      line-height: 1 !important;
+      text-decoration: none !important;
+  }}
+  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button:hover,
+  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button:hover [data-testid="stMarkdownContainer"],
+  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button:hover p {{
+      text-decoration: none !important;
+      color: {BRAND_ORANGE} !important;
   }}
   .st-key-detail-meta-actions,
   .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
@@ -1908,6 +1925,7 @@ _GLOBAL_CSS = f"""
       --ca-run-details-v-gap: 0.08rem;
       --ca-step-list-gap: var(--ca-run-details-v-gap);
       --ca-step-card-gap: 0.08rem;
+      --ca-detail-header-stack-gap: 0.02rem;
       --ca-detail-inline-gap: 0.28rem;
       --ca-detail-title-height: 1.15rem;
       --ca-detail-meta-height: 1.05rem;
@@ -1915,20 +1933,41 @@ _GLOBAL_CSS = f"""
       margin-bottom: 0 !important;
   }}
 
-  /* List column — flex gap controls all vertical separation in the stack. */
+  /* Tight stack: title → View Log → orange divider. */
   [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"],
   [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
-  [class*="st-key-ca-steps"][data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
-  [class*="st-key-ca-steps"] [data-testid="stVerticalBlock"]:has(> [class*="st-key-stepcard_"]) {{
+  [class*="st-key-ca-steps"][data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       display: flex !important;
       flex-direction: column !important;
-      gap: var(--ca-step-list-gap) !important;
+      gap: var(--ca-detail-header-stack-gap) !important;
       align-items: stretch !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
   [class*="st-key-ca-steps"] [data-testid="stVerticalBlock"]:has(> [class*="st-key-stepcard_"]) {{
+      display: flex !important;
+      flex-direction: column !important;
       gap: var(--ca-step-card-gap) !important;
+      align-items: stretch !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule),
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule),
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-log-row),
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-log-row) {{
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+  }}
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule),
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) {{
+      margin-bottom: 0.06rem !important;
+  }}
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-title-row),
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-title-row) {{
+      margin-bottom: -0.06rem !important;
   }}
 
   /* Zero Streamlit widget margins on every row in the stack. */

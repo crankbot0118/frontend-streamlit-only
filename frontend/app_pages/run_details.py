@@ -252,10 +252,9 @@ if run:
                     )
                 )
             with st.container(key="ca-detail-log-row"):
-                with st.container(key="detail-download-log"):
-                    if st.button("View Log", key=f"view_run_log_{run_id}"):
-                        st.session_state[_OPEN_RUN_LOG_KEY] = True
-                        st.rerun()
+                if st.button("View Log", key=f"view_run_log_{run_id}"):
+                    st.session_state[_OPEN_RUN_LOG_KEY] = True
+                    st.rerun()
             st.html('<hr class="ca-title-rule" />')
             if live_steps:
                 _render_step_cards(live_steps, live_run)
