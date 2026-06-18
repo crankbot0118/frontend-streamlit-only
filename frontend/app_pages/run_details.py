@@ -245,11 +245,7 @@ if run:
         _live_header()
 
         with st.container(key="ca-detail-log-row"):
-            if st.button(
-                "View Log",
-                key=f"view_run_log_{run_id}",
-                type="tertiary",
-            ):
+            if st.button("View Log", key=f"view_run_log_{run_id}"):
                 open_log_dialog(
                     title=f"Run log · #{run_id}",
                     clone_run_id=run_id,

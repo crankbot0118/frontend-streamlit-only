@@ -1408,46 +1408,17 @@ _GLOBAL_CSS = f"""
       min-height: 0 !important;
       height: auto !important;
       position: relative !important;
-      z-index: 40 !important;
-      pointer-events: auto !important;
+      z-index: 1 !important;
   }}
-  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton,
-  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button,
-  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button [data-testid="stMarkdownContainer"],
-  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button p {{
+  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton {{
       width: auto !important;
-      min-width: 0 !important;
       min-height: 0 !important;
       height: auto !important;
       margin: 0 !important;
       padding: 0 !important;
-      background: transparent !important;
-      background-color: transparent !important;
-      border: none !important;
-      border-radius: 0 !important;
-      box-shadow: none !important;
-      color: {BRAND_ORANGE} !important;
-      font-size: var(--ca-run-meta-size) !important;
-      font-weight: 600 !important;
-      line-height: 1 !important;
-      text-decoration: none !important;
-      cursor: pointer !important;
       display: inline-flex !important;
-      pointer-events: auto !important;
-      appearance: none !important;
-      -webkit-appearance: none !important;
-  }}
-  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button:hover,
-  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button:focus,
-  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button:active,
-  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button:hover [data-testid="stMarkdownContainer"],
-  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button:hover p {{
-      background: transparent !important;
-      background-color: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      text-decoration: none !important;
-      color: {BRAND_ORANGE} !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
   }}
   .st-key-detail-meta-actions,
   .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
@@ -2322,15 +2293,29 @@ _GLOBAL_CSS = f"""
       width: auto !important;
       min-height: 0 !important;
       margin: 0 !important;
-      padding: 0 !important;
+      padding: 0.1rem 0.2rem !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
       color: {BRAND_ORANGE} !important;
       font-size: var(--ca-run-meta-size) !important;
       font-weight: 600 !important;
-      line-height: 1 !important;
+      line-height: 1.35 !important;
       text-decoration: none !important;
+      cursor: pointer !important;
+  }}
+  [class*="st-key-step_details_"] .stButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_details_"] .stButton button p,
+  [class*="st-key-view_step_log_"] .stButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-view_step_log_"] .stButton button p,
+  [class*="st-key-view_run_log_"] .stButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-view_run_log_"] .stButton button p,
+  [class*="st-key-step_retry_"] .stButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_retry_"] .stButton button p,
+  [class*="st-key-step_skip_"] .stButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_skip_"] .stButton button p {{
+      padding: 0 !important;
+      pointer-events: none !important;
   }}
   [class*="st-key-step_details_"] .stButton button:hover,
   [class*="st-key-step_details_"] .stButton button:hover [data-testid="stMarkdownContainer"],
