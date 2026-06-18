@@ -1633,6 +1633,8 @@ _GLOBAL_CSS = f"""
       margin-top: calc(var(--ca-detail-section-v-gap) * -2) !important;
       margin-bottom: 0 !important;
       line-height: 0 !important;
+      max-height: 2px !important;
+      overflow: hidden !important;
       pointer-events: none !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) [data-testid="stHtml"],
@@ -1653,6 +1655,9 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-steps) {{
       margin-top: var(--ca-detail-section-v-gap) !important;
       margin-bottom: 0 !important;
+      position: relative !important;
+      z-index: 2 !important;
+      pointer-events: auto !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="stElementContainer"] {{
       margin-bottom: 0 !important;
@@ -1745,6 +1750,9 @@ _GLOBAL_CSS = f"""
       flex: 1 1 auto !important;
       min-width: 0 !important;
       width: auto !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
+      z-index: 1 !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2),
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) {{
@@ -1754,6 +1762,9 @@ _GLOBAL_CSS = f"""
       max-width: none !important;
       justify-content: flex-end !important;
       margin-left: auto !important;
+      position: relative !important;
+      z-index: 12 !important;
+      pointer-events: auto !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child,
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child {{
@@ -1763,6 +1774,9 @@ _GLOBAL_CSS = f"""
       max-width: none !important;
       justify-content: flex-end !important;
       margin-left: 0 !important;
+      position: relative !important;
+      z-index: 12 !important;
+      pointer-events: auto !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stVerticalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stVerticalBlock"],
@@ -1803,6 +1817,16 @@ _GLOBAL_CSS = f"""
       max-height: 24px !important;
       height: auto !important;
       overflow: visible !important;
+  }}
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"] iframe,
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"] iframe {{
+      pointer-events: none !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe {{
@@ -1894,6 +1918,15 @@ _GLOBAL_CSS = f"""
       font-size: 0.78rem;
       color: #6b7177;
       white-space: nowrap;
+  }}
+  [class*="st-key-step_links_"],
+  [class*="st-key-step_links_"] > [data-testid="stVerticalBlock"],
+  [class*="st-key-step_links_"] > [data-testid="stVerticalBlockBorderWrapper"],
+  [class*="st-key-step_links_"] .stButton,
+  [class*="st-key-step_links_"] .stButton button {{
+      position: relative !important;
+      z-index: 12 !important;
+      pointer-events: auto !important;
   }}
   /* Step dropdown action links: Details · View Step Log */
   [class*="st-key-step_links_"],
@@ -2027,6 +2060,13 @@ _GLOBAL_CSS = f"""
   }}
 
   /* Expand/collapse arrow in the actions group (scoped by widget key). */
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] [data-testid="stElementContainer"],
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton,
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button {{
+      position: relative !important;
+      z-index: 12 !important;
+      pointer-events: auto !important;
+  }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] [data-testid="stElementContainer"] {{
       width: auto !important;
       margin: 0 !important;

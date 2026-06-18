@@ -181,7 +181,7 @@ if run:
             can_act, act_help = _step_action_state(step, live_run)
             with st.container(key=f"stepcard_{i}"):
                 left_col, more_col, arrow_col = st.columns(
-                    [1, 0.11, 0.04],
+                    [1, 0.12, 0.07],
                     gap="small",
                     vertical_alignment="center",
                 )
