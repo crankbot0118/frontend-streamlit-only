@@ -1186,9 +1186,6 @@ _GLOBAL_CSS = f"""
       --ca-detail-toolbar-title-size: 1.125rem;
       --ca-detail-title-height: 1.15rem;
       --ca-detail-meta-height: 1.05rem;
-      position: relative !important;
-      z-index: 5 !important;
-      isolation: isolate !important;
   }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
   /* Title parts use the same gap as the middot-separated heading text. */
@@ -1288,11 +1285,11 @@ _GLOBAL_CSS = f"""
   .st-key-detail-meta-actions [data-testid="stElementContainer"],
   .st-key-detail-meta-actions .stButton,
   .st-key-detail-meta-actions .stButton button,
-  [class*="st-key-run_actions_links_"],
-  [class*="st-key-run_actions_links_"] .stButton,
-  [class*="st-key-run_actions_links_"] .stButton button {{
+  .st-key-detail-meta-actions [data-testid="stToggle"],
+  .st-key-detail-meta-actions [data-baseweb="switch"],
+  .st-key-detail-meta-actions label {{
       position: relative !important;
-      z-index: 20 !important;
+      z-index: 12 !important;
       pointer-events: auto !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stHtml"],
@@ -1300,7 +1297,7 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-meta-row [data-testid="column"]:first-child iframe {{
       pointer-events: none !important;
   }}
-  /* Meta row: metadata on the left, run actions on the right. */
+  /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
       margin: -0.56rem 0 -0.3rem 0 !important;
@@ -1329,17 +1326,11 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-meta-row [data-testid="column"]:first-child {{
       flex: 1 1 auto !important;
       min-width: 0 !important;
-      pointer-events: none !important;
-      overflow: hidden !important;
-      z-index: 1 !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"]:last-child {{
       flex: 0 0 auto !important;
       margin-left: auto !important;
       justify-content: flex-end !important;
-      position: relative !important;
-      z-index: 20 !important;
-      pointer-events: auto !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"] [data-testid="stVerticalBlock"],
   .st-key-ca-detail-meta-row [data-testid="column"] [data-testid="stElementContainer"] {{
@@ -1351,19 +1342,13 @@ _GLOBAL_CSS = f"""
       min-height: 0 !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stElementContainer"],
-  .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stHtml"],
   .st-key-ca-detail-meta-row [data-testid="column"]:first-child iframe {{
       display: flex !important;
       align-items: center !important;
       width: 100% !important;
       min-height: var(--ca-detail-meta-height) !important;
-      max-height: var(--ca-detail-meta-height) !important;
-      height: var(--ca-detail-meta-height) !important;
       margin: 0 !important;
       padding: 0 !important;
-      overflow: hidden !important;
-      pointer-events: none !important;
-      line-height: 0 !important;
   }}
   .st-key-detail-meta-actions,
   .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
@@ -1389,8 +1374,15 @@ _GLOBAL_CSS = f"""
       justify-content: flex-end !important;
       align-items: center !important;
   }}
-  .st-key-ca-detail-meta-row .st-key-detail-download-log,
-  [class*="st-key-run_more_"] {{
+  .st-key-detail-meta-actions [data-testid="column"]:first-child {{
+      margin-right: 0.15rem !important;
+  }}
+  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stElementContainer"],
+  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
+      justify-content: flex-end !important;
+  }}
+  .st-key-ca-detail-meta-row .st-key-detail-refresh,
+  .st-key-ca-detail-meta-row .st-key-detail-download-log {{
       width: auto !important;
       margin: 0 !important;
       padding: 0 !important;
@@ -1404,12 +1396,10 @@ _GLOBAL_CSS = f"""
   .st-key-detail-download-log .stDownloadButton,
   .st-key-detail-download-log .stDownloadButton button,
   .st-key-detail-download-log .stButton,
-  .st-key-detail-download-log .stButton button,
-  [class*="st-key-run_actions_links_"] .stButton,
-  [class*="st-key-run_actions_links_"] .stButton button {{
+  .st-key-detail-download-log .stButton button {{
       width: auto !important;
-      min-height: var(--ca-detail-title-height) !important;
-      height: var(--ca-detail-title-height) !important;
+      min-height: var(--ca-detail-meta-height) !important;
+      height: var(--ca-detail-meta-height) !important;
       margin: 0 !important;
       padding: 0 !important;
       background: transparent !important;
@@ -1426,9 +1416,7 @@ _GLOBAL_CSS = f"""
   .st-key-detail-download-log .stDownloadButton button [data-testid="stMarkdownContainer"],
   .st-key-detail-download-log .stDownloadButton button p,
   .st-key-detail-download-log .stButton button [data-testid="stMarkdownContainer"],
-  .st-key-detail-download-log .stButton button p,
-  [class*="st-key-run_actions_links_"] .stButton button [data-testid="stMarkdownContainer"],
-  [class*="st-key-run_actions_links_"] .stButton button p {{
+  .st-key-detail-download-log .stButton button p {{
       width: auto !important;
       min-height: 0 !important;
       height: auto !important;
@@ -1448,39 +1436,99 @@ _GLOBAL_CSS = f"""
   .st-key-detail-download-log .stDownloadButton button:hover p,
   .st-key-detail-download-log .stButton button:hover,
   .st-key-detail-download-log .stButton button:hover [data-testid="stMarkdownContainer"],
-  .st-key-detail-download-log .stButton button:hover p,
-  [class*="st-key-run_actions_links_"] .stButton button:hover,
-  [class*="st-key-run_actions_links_"] .stButton button:hover [data-testid="stMarkdownContainer"],
-  [class*="st-key-run_actions_links_"] .stButton button:hover p {{
+  .st-key-detail-download-log .stButton button:hover p {{
       text-decoration: underline !important;
       color: {BRAND_ORANGE} !important;
   }}
-  [class*="st-key-run_actions_links_"],
-  [class*="st-key-run_actions_links_"] > [data-testid="stVerticalBlock"],
-  [class*="st-key-run_actions_links_"] > [data-testid="stVerticalBlockBorderWrapper"] {{
+  .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stElementContainer"] {{
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
-      flex-wrap: nowrap !important;
-      gap: 0.22rem !important;
-      width: auto !important;
-      margin: 0.1rem 0 0 0 !important;
-      padding: 0.12rem 0 0 0 !important;
       justify-content: flex-end !important;
-  }}
-  [class*="st-key-run_actions_links_"] > [data-testid="stElementContainer"] {{
       width: auto !important;
-      flex: 0 0 auto !important;
+      margin: 0 !important;
+      gap: 0.35rem !important;
+      min-height: var(--ca-detail-meta-height) !important;
+      height: var(--ca-detail-meta-height) !important;
+  }}
+  .st-key-detail-refresh [data-testid="stToggle"],
+  .st-key-detail-refresh [data-testid="stCheckbox"] {{
+      display: flex !important;
+      align-items: center !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: var(--ca-detail-meta-height) !important;
+      height: var(--ca-detail-meta-height) !important;
+  }}
+  .st-key-detail-refresh label,
+  .st-key-detail-refresh [data-testid="stWidgetLabel"] {{
+      display: inline-flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      align-self: center !important;
+      gap: 0.35rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 1 !important;
+  }}
+  .st-key-detail-refresh [data-testid="stWidgetLabel"],
+  .st-key-detail-refresh [data-testid="stWidgetLabel"] p,
+  .st-key-detail-refresh [data-testid="stWidgetLabel"] span,
+  .st-key-detail-refresh [data-testid="stMarkdownContainer"] p,
+  .st-key-detail-refresh label,
+  .st-key-detail-refresh label p,
+  .st-key-detail-refresh label span {{
+      color: #6b7177 !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+  }}
+  .st-key-detail-refresh [data-testid="stWidgetLabel"] p {{
+      font-size: var(--ca-run-meta-size) !important;
+      font-weight: 600 !important;
+      white-space: nowrap;
+      line-height: 1 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      align-self: center !important;
+  }}
+  .st-key-detail-refresh [data-testid="stToggle"] [data-testid="stMarkdownContainer"],
+  .st-key-detail-refresh [data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] {{
+      display: flex !important;
+      align-items: center !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
-  [class*="st-key-run_actions_links_"] [data-testid="stElementContainer"]:has(.ca-step-link-sep) {{
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      width: auto !important;
-      min-width: 0 !important;
-      padding: 0 0.06rem !important;
+  .st-key-detail-refresh [data-testid="stToggle"],
+  .st-key-detail-refresh [data-testid="stCheckbox"],
+  .st-key-detail-refresh [role="switch"],
+  .st-key-detail-refresh [data-baseweb="switch"] {{
+      opacity: 1 !important;
+      visibility: visible !important;
+      margin: 0 !important;
+      align-self: center !important;
+      flex: 0 0 auto !important;
+  }}
+  .st-key-detail-refresh [data-baseweb="switch"] {{
+      background-color: #c4c9ce !important;
+      border: 1px solid #aeb4ba !important;
+      min-width: 2rem !important;
+      min-height: 1rem !important;
+      padding: 0.12rem !important;
+      box-sizing: border-box !important;
+      align-self: center !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+  }}
+  .st-key-detail-refresh [data-baseweb="switch"][aria-checked="true"] {{
+      background-color: {BRAND_ORANGE} !important;
+      border-color: {BRAND_ORANGE} !important;
+  }}
+  .st-key-detail-refresh [data-baseweb="switch"] > div {{
+      background-color: #ffffff !important;
+      box-shadow: 0 1px 3px rgba(19, 21, 22, 0.18) !important;
   }}
   .ca-detail-head {{
       margin: 0;
@@ -1633,8 +1681,6 @@ _GLOBAL_CSS = f"""
       margin-top: calc(var(--ca-detail-section-v-gap) * -2) !important;
       margin-bottom: 0 !important;
       line-height: 0 !important;
-      max-height: 2px !important;
-      overflow: hidden !important;
       pointer-events: none !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) [data-testid="stHtml"],
@@ -1655,9 +1701,6 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-steps) {{
       margin-top: var(--ca-detail-section-v-gap) !important;
       margin-bottom: 0 !important;
-      position: relative !important;
-      z-index: 2 !important;
-      pointer-events: auto !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="stElementContainer"] {{
       margin-bottom: 0 !important;
@@ -1666,7 +1709,7 @@ _GLOBAL_CSS = f"""
 
   /* Step list — vertical space below the orange divider only. */
   .st-key-ca-steps {{
-      --ca-step-card-gap: 6px;
+      --ca-step-card-gap: 0.1px;
       margin-top: 0 !important;
   }}
 
@@ -1684,15 +1727,14 @@ _GLOBAL_CSS = f"""
   .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
       margin: 0 !important;
       padding: 0 !important;
-      position: relative !important;
-      z-index: 0 !important;
   }}
   .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"])
       + [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
-      margin-top: var(--ca-step-card-gap) !important;
+      /* Pull cards together so shared borders collapse; gap controls visible separation. */
+      margin-top: calc(var(--ca-step-card-gap) - .5px) !important;
   }}
   .st-key-ca-steps [class*="st-key-stepcard_"] + [class*="st-key-stepcard_"] {{
-      margin-top: var(--ca-step-card-gap) !important;
+      margin-top: calc(var(--ca-step-card-gap) - .5px) !important;
   }}
 
   /* Stable shell while the steps fragment mounts or polls. */
@@ -1704,18 +1746,13 @@ _GLOBAL_CSS = f"""
   /* Each step is a bordered card — flex row: left (icon+name) | right (actions+arrow). */
   [class*="st-key-stepcard_"] {{
       --ca-step-arrow-size: 1.25rem;
-      --ca-step-action-height: 2rem;
       position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
-      padding: 6px 12px;
+      padding: 4px 12px;
       background: #ffffff;
-      min-height: 40px;
+      min-height: 32px;
       box-sizing: border-box;
-      isolation: isolate;
-  }}
-  [class*="st-key-stepcard_"]:focus-within {{
-      z-index: 2 !important;
   }}
 
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"],
@@ -1756,21 +1793,24 @@ _GLOBAL_CSS = f"""
       flex: 1 1 auto !important;
       min-width: 0 !important;
       width: auto !important;
-      overflow: hidden !important;
-      pointer-events: none !important;
-      z-index: 1 !important;
+  }}
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2),
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) {{
+      flex: 0 0 auto !important;
+      width: auto !important;
+      min-width: max-content !important;
+      max-width: none !important;
+      justify-content: flex-end !important;
+      margin-left: auto !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child,
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child {{
       flex: 0 0 auto !important;
       width: auto !important;
-      min-width: 8.75rem !important;
+      min-width: calc(var(--ca-step-arrow-size) + 0.15rem) !important;
       max-width: none !important;
       justify-content: flex-end !important;
-      margin-left: auto !important;
-      position: relative !important;
-      z-index: 12 !important;
-      pointer-events: auto !important;
+      margin-left: 0 !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stVerticalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stVerticalBlock"],
@@ -1811,16 +1851,6 @@ _GLOBAL_CSS = f"""
       max-height: 24px !important;
       height: auto !important;
       overflow: visible !important;
-  }}
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"] iframe,
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"] iframe {{
-      pointer-events: none !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe {{
@@ -1912,15 +1942,6 @@ _GLOBAL_CSS = f"""
       font-size: 0.78rem;
       color: #6b7177;
       white-space: nowrap;
-  }}
-  [class*="st-key-step_links_"],
-  [class*="st-key-step_links_"] > [data-testid="stVerticalBlock"],
-  [class*="st-key-step_links_"] > [data-testid="stVerticalBlockBorderWrapper"],
-  [class*="st-key-step_links_"] .stButton,
-  [class*="st-key-step_links_"] .stButton button {{
-      position: relative !important;
-      z-index: 12 !important;
-      pointer-events: auto !important;
   }}
   /* Step dropdown action links: Details · View Step Log */
   [class*="st-key-step_links_"],
@@ -2054,13 +2075,6 @@ _GLOBAL_CSS = f"""
   }}
 
   /* Expand/collapse arrow in the actions group (scoped by widget key). */
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] [data-testid="stElementContainer"],
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton,
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button {{
-      position: relative !important;
-      z-index: 12 !important;
-      pointer-events: auto !important;
-  }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] [data-testid="stElementContainer"] {{
       width: auto !important;
       margin: 0 !important;
@@ -2070,49 +2084,36 @@ _GLOBAL_CSS = f"""
       justify-content: center !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton {{
-      width: 100% !important;
+      width: auto !important;
       margin: 0 !important;
       min-height: 0 !important;
       display: flex !important;
       align-items: center !important;
-      justify-content: flex-end !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button {{
-      width: 100% !important;
-      min-width: 8.75rem !important;
-      min-height: var(--ca-step-action-height) !important;
-      height: var(--ca-step-action-height) !important;
+      width: auto !important;
+      min-width: var(--ca-step-arrow-size) !important;
+      min-height: var(--ca-step-arrow-size) !important;
+      height: var(--ca-step-arrow-size) !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
-      color: #6b7177 !important;
-      padding: 0 0.4rem !important;
-      gap: 0.4rem !important;
+      color: #8a9097 !important;
+      padding: 0 !important;
       display: inline-flex !important;
       align-items: center !important;
-      justify-content: flex-end !important;
-      font-size: 13px !important;
-      font-weight: 600 !important;
-      white-space: nowrap !important;
+      justify-content: center !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button [data-testid="stMarkdownContainer"] {{
-      display: flex !important;
-      width: auto !important;
-      height: auto !important;
-      overflow: visible !important;
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
       margin: 0 !important;
       padding: 0 !important;
-      align-items: center !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button p {{
-      display: block !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      color: #6b7177 !important;
-      font-size: 13px !important;
-      font-weight: 600 !important;
-      line-height: 1.25 !important;
-      white-space: nowrap !important;
+      display: none !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button [data-testid="stIconMaterial"],
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button svg {{
@@ -2142,8 +2143,6 @@ _GLOBAL_CSS = f"""
       height: var(--ca-step-arrow-size) !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover,
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover [data-testid="stMarkdownContainer"],
-  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover p,
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover [data-testid="stIconMaterial"],
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover svg {{
       color: {BRAND_ORANGE} !important;

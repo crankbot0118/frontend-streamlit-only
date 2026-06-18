@@ -13,8 +13,11 @@ _RUN_HISTORY_LIMIT = min(frontend().max_run_limit, 25)
 
 if "run" in st.query_params:
     del st.query_params["run"]
-st.session_state.pop("selected_run_id", None)
+_rid = st.session_state.pop("selected_run_id", None)
+if _rid is not None:
+    st.session_state.pop(f"auto_refresh_{_rid}", None)
 st.session_state.pop("selected_run", None)
+st.session_state.pop("_auto_refresh_run", None)
 
 render_title(
     "Run History",
@@ -98,5 +101,7 @@ else:
             if render_run_card(run):
                 st.session_state["selected_run_id"] = run["clone_run_id"]
                 st.session_state["selected_run"] = run
+                st.session_state[f"auto_refresh_{run['clone_run_id']}"] = True
+                st.session_state["_auto_refresh_run"] = run["clone_run_id"]
                 st.query_params["run"] = str(run["clone_run_id"])
                 goto_page("Run details")
