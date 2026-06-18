@@ -1666,7 +1666,7 @@ _GLOBAL_CSS = f"""
 
   /* Step list — vertical space below the orange divider only. */
   .st-key-ca-steps {{
-      --ca-step-card-gap: 0.1px;
+      --ca-step-card-gap: 6px;
       margin-top: 0 !important;
   }}
 
@@ -1684,14 +1684,15 @@ _GLOBAL_CSS = f"""
   .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
       margin: 0 !important;
       padding: 0 !important;
+      position: relative !important;
+      z-index: 0 !important;
   }}
   .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"])
       + [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
-      /* Pull cards together so shared borders collapse; gap controls visible separation. */
-      margin-top: calc(var(--ca-step-card-gap) - .5px) !important;
+      margin-top: var(--ca-step-card-gap) !important;
   }}
   .st-key-ca-steps [class*="st-key-stepcard_"] + [class*="st-key-stepcard_"] {{
-      margin-top: calc(var(--ca-step-card-gap) - .5px) !important;
+      margin-top: var(--ca-step-card-gap) !important;
   }}
 
   /* Stable shell while the steps fragment mounts or polls. */
@@ -1703,13 +1704,18 @@ _GLOBAL_CSS = f"""
   /* Each step is a bordered card — flex row: left (icon+name) | right (actions+arrow). */
   [class*="st-key-stepcard_"] {{
       --ca-step-arrow-size: 1.25rem;
+      --ca-step-action-height: 2rem;
       position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
-      padding: 4px 12px;
+      padding: 6px 12px;
       background: #ffffff;
-      min-height: 32px;
+      min-height: 40px;
       box-sizing: border-box;
+      isolation: isolate;
+  }}
+  [class*="st-key-stepcard_"]:focus-within {{
+      z-index: 2 !important;
   }}
 
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"],
@@ -1754,26 +1760,14 @@ _GLOBAL_CSS = f"""
       pointer-events: none !important;
       z-index: 1 !important;
   }}
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2),
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) {{
-      flex: 0 0 auto !important;
-      width: auto !important;
-      min-width: max-content !important;
-      max-width: none !important;
-      justify-content: flex-end !important;
-      margin-left: auto !important;
-      position: relative !important;
-      z-index: 12 !important;
-      pointer-events: auto !important;
-  }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child,
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child {{
       flex: 0 0 auto !important;
       width: auto !important;
-      min-width: calc(var(--ca-step-arrow-size) + 0.15rem) !important;
+      min-width: 8.75rem !important;
       max-width: none !important;
       justify-content: flex-end !important;
-      margin-left: 0 !important;
+      margin-left: auto !important;
       position: relative !important;
       z-index: 12 !important;
       pointer-events: auto !important;
@@ -2076,36 +2070,49 @@ _GLOBAL_CSS = f"""
       justify-content: center !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton {{
-      width: auto !important;
+      width: 100% !important;
       margin: 0 !important;
       min-height: 0 !important;
       display: flex !important;
       align-items: center !important;
+      justify-content: flex-end !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button {{
-      width: auto !important;
-      min-width: var(--ca-step-arrow-size) !important;
-      min-height: var(--ca-step-arrow-size) !important;
-      height: var(--ca-step-arrow-size) !important;
+      width: 100% !important;
+      min-width: 8.75rem !important;
+      min-height: var(--ca-step-action-height) !important;
+      height: var(--ca-step-action-height) !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
-      color: #8a9097 !important;
-      padding: 0 !important;
+      color: #6b7177 !important;
+      padding: 0 0.4rem !important;
+      gap: 0.4rem !important;
       display: inline-flex !important;
       align-items: center !important;
-      justify-content: center !important;
+      justify-content: flex-end !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      white-space: nowrap !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button [data-testid="stMarkdownContainer"] {{
-      display: none !important;
-      width: 0 !important;
-      height: 0 !important;
-      overflow: hidden !important;
+      display: flex !important;
+      width: auto !important;
+      height: auto !important;
+      overflow: visible !important;
       margin: 0 !important;
       padding: 0 !important;
+      align-items: center !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button p {{
-      display: none !important;
+      display: block !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      color: #6b7177 !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      line-height: 1.25 !important;
+      white-space: nowrap !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button [data-testid="stIconMaterial"],
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button svg {{
@@ -2135,6 +2142,8 @@ _GLOBAL_CSS = f"""
       height: var(--ca-step-arrow-size) !important;
   }}
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover,
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover [data-testid="stMarkdownContainer"],
+  [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover p,
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover [data-testid="stIconMaterial"],
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover svg {{
       color: {BRAND_ORANGE} !important;

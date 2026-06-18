@@ -180,12 +180,12 @@ if run:
             is_open = st.session_state.get(open_key, False)
             can_act, act_help = _step_action_state(step, live_run)
             with st.container(key=f"stepcard_{i}"):
-                left_col, more_col, arrow_col = st.columns(
-                    [1, 0.12, 0.07],
+                name_col, actions_col = st.columns(
+                    [1, 0.34],
                     gap="small",
                     vertical_alignment="center",
                 )
-                with left_col:
+                with name_col:
                     st.html(
                         f'<div class="ca-step-left" '
                         f'style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;width:100%;">'
@@ -195,16 +195,15 @@ if run:
                         f"{safe_name}</span>"
                         f"</div>"
                     )
-                with more_col:
-                    st.html('<span class="ca-step-more">More actions</span>')
-                with arrow_col:
+                with actions_col:
                     st.button(
-                        "",
+                        "More actions",
                         key=f"more_{run_id}_{i}",
                         icon=":material/arrow_right:",
                         type="tertiary",
                         on_click=_toggle_step,
                         args=(open_key,),
+                        help="Show step actions",
                     )
                 if is_open:
                     with st.container(key=f"step_links_{i}"):
