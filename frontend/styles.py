@@ -1303,6 +1303,34 @@ _GLOBAL_CSS = f"""
       accent=BRAND_RED,
       accent_bg=BRAND_RED_BG,
   )}
+  .st-key-detail-actions [data-testid="stElementContainer"]:has(.ca-detail-action-sep) {{
+      flex: 0 0 auto !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .ca-detail-action-sep {{
+      color: #c2c7cc;
+      font-weight: 400;
+      line-height: 1;
+      user-select: none;
+  }}
+  .st-key-ca-detail-title-row .st-key-detail-info .stButton button,
+  .st-key-ca-detail-title-row .st-key-detail-info .stDownloadButton button {{
+      min-height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
+      height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
+      padding: 0 0.42rem !important;
+      gap: 0.28rem !important;
+      line-height: 1 !important;
+      font-size: calc(var(--ca-nav-font-size) * 0.92) !important;
+  }}
+  {_nav_action_button_css(
+      ".st-key-detail-info",
+      accent="#5b6166",
+      accent_bg="#f6f7f8",
+  )}
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
@@ -1356,6 +1384,20 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
   }}
+  .st-key-ca-detail-meta-row:has(.st-key-detail-meta-actions) {{
+      display: flex !important;
+      justify-content: flex-end !important;
+      width: 100% !important;
+  }}
+  .st-key-ca-detail-meta-row:has(.st-key-detail-meta-actions) > [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-meta-row:has(.st-key-detail-meta-actions) > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      justify-content: flex-end !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
   .st-key-detail-meta-actions,
   .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
   .st-key-detail-meta-actions [data-testid="stVerticalBlockBorderWrapper"] {{
@@ -1369,19 +1411,21 @@ _GLOBAL_CSS = f"""
       align-items: center !important;
       justify-content: flex-end !important;
       flex-wrap: nowrap !important;
-      width: auto !important;
+      width: max-content !important;
+      min-width: max-content !important;
+      max-width: 100% !important;
       margin-left: auto !important;
       gap: 0.75rem !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"] {{
       flex: 0 0 auto !important;
       width: auto !important;
-      min-width: 0 !important;
+      min-width: fit-content !important;
       justify-content: flex-end !important;
       align-items: center !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"]:first-child {{
-      margin-right: 0.15rem !important;
+      margin-right: 0 !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stElementContainer"],
   .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
@@ -2207,6 +2251,18 @@ _GLOBAL_CSS = f"""
   .ca-step-dialog-body .ca-badge {{
       font-size: calc(var(--ca-caption-size) * 0.82);
       padding: 0.03rem 0.32rem;
+  }}
+  .ca-detail-meta.ca-detail-meta--dialog {{
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.22rem;
+      margin: 0.15rem 0 0 0;
+      font-size: var(--ca-run-meta-size);
+      color: #7a8086;
+      font-style: italic;
+      line-height: 1.4;
   }}
   .ca-step-dialog-fields {{
       display: grid;
@@ -3048,6 +3104,32 @@ def step_attempts_table_html(attempts: list[dict]) -> str:
         "</tr></thead>"
         f"<tbody>{''.join(rows)}</tbody>"
         "</table></div>"
+    )
+
+
+def run_detail_info_dialog_html(
+    *,
+    user: str,
+    start_date,
+    last_update,
+    status: str,
+) -> str:
+    """Run info dialog body — same meta line as the former inline run header."""
+    return (
+        f'<div class="ca-step-dialog-body">'
+        f'<div class="ca-step-dialog-title">Run info</div>'
+        f'<div class="ca-detail-meta ca-detail-meta--dialog">'
+        f'<span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>'
+        f'<span class="ca-detail-sep">&middot;</span>'
+        f'<span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(start_date)}</span>'
+        f'<span class="ca-detail-sep">&middot;</span>'
+        f'<span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(last_update)}</span>'
+        f'<span class="ca-detail-sep">&middot;</span>'
+        f'<span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(start_date, last_update)}</span>'
+        f'<span class="ca-detail-sep">&middot;</span>'
+        f"{status_badge_html(status)}"
+        f"</div>"
+        f"</div>"
     )
 
 

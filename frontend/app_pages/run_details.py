@@ -21,11 +21,8 @@ from config.settings import frontend
 from log_view import open_run_log_dialog, open_step_log_dialog
 from styles import (
     emit_html,
-    fmt_duration,
-    relative_update_html,
     render_title,
-    started_html,
-    status_badge_html,
+    run_detail_info_dialog_html,
     status_image_html,
     step_detail_dialog_error_html,
     step_detail_dialog_html,
@@ -135,7 +132,6 @@ steps = _load_steps(run_id)
 if run:
     src = _esc(run.get("source_name", "—"))
     tgt = _esc(run.get("target_name", "—"))
-    user = _esc(run.get("user_name", "—"))
     safe_run_id = _esc(run_id)
 
     @st.dialog(" ", width="large")
@@ -155,6 +151,25 @@ if run:
             return
 
         emit_html(step_detail_dialog_html(detail, function_name))
+
+    @st.dialog(" ", width="large")
+    def _show_run_info_dialog(clone_run_id: int) -> None:
+        try:
+            live = get_run(clone_run_id)
+        except Exception as exc:
+            emit_html(step_detail_dialog_error_html(f"Could not load run info: {exc}"))
+            return
+        if not live:
+            emit_html(step_detail_dialog_error_html("Run not found."))
+            return
+        emit_html(
+            run_detail_info_dialog_html(
+                user=_esc(live.get("user_name", "—")),
+                start_date=live.get("start_date"),
+                last_update=live.get("last_update"),
+                status=live.get("status", ""),
+            )
+        )
 
     def _render_step_cards(step_rows: list[dict], live_run: dict | None) -> None:
         for i, step in enumerate(step_rows):
@@ -289,53 +304,42 @@ if run:
                                 st.rerun()
                             except Exception as exc:
                                 show_error(exc, context="Could not abort run")
+                    st.markdown(
+                        '<span class="ca-run-sep ca-detail-action-sep">&middot;</span>',
+                        unsafe_allow_html=True,
+                    )
+                    with st.container(key="detail-info"):
+                        if st.button(
+                            "Info",
+                            key="detail_info",
+                            type="secondary",
+                            icon=":material/info:",
+                            help="Run status and timing",
+                        ):
+                            _show_run_info_dialog(run_id)
 
             with st.container(key="ca-detail-meta-row"):
-                col_meta, col_actions = st.columns(
-                    [1, 0.32],
-                    gap="small",
-                    vertical_alignment="center",
-                )
-                with col_meta:
-                    emit_html(
-                        f"""
-                        <div class="ca-detail-meta-bar">
-                          <div class="ca-detail-meta">
-                            <span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(live_run.get('start_date'))}</span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(live_run.get('last_update'))}</span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(live_run.get('start_date'), live_run.get('last_update'))}</span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            {status_badge_html(live_run.get('status', ''))}
-                          </div>
-                        </div>
-                        """
+                with st.container(key="detail-meta-actions"):
+                    col_dl, col_ref = st.columns(
+                        [1, 1.15],
+                        gap="small",
+                        vertical_alignment="center",
                     )
-                with col_actions:
-                    with st.container(key="detail-meta-actions"):
-                        col_dl, col_ref = st.columns(
-                            [1, 1.15],
-                            gap="small",
-                            vertical_alignment="center",
-                        )
-                        with col_dl:
-                            with st.container(key="detail-download-log"):
-                                if st.button(
-                                    "View Log",
-                                    key=f"view_run_log_{run_id}",
-                                    type="secondary",
-                                ):
-                                    open_run_log_dialog(clone_run_id=run_id)
-                        with col_ref:
-                            with st.container(key="detail-refresh"):
-                                st.toggle(
-                                    "Auto refresh",
-                                    key=refresh_key,
-                                    label_visibility="visible",
-                                )
+                    with col_dl:
+                        with st.container(key="detail-download-log"):
+                            if st.button(
+                                "View Log",
+                                key=f"view_run_log_{run_id}",
+                                type="secondary",
+                            ):
+                                open_run_log_dialog(clone_run_id=run_id)
+                    with col_ref:
+                        with st.container(key="detail-refresh"):
+                            st.toggle(
+                                "Auto refresh",
+                                key=refresh_key,
+                                label_visibility="visible",
+                            )
 
             st.html('<hr class="ca-title-rule" />')
 
