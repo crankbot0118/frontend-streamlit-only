@@ -1186,6 +1186,9 @@ _GLOBAL_CSS = f"""
       --ca-detail-toolbar-title-size: 1.125rem;
       --ca-detail-title-height: 1.15rem;
       --ca-detail-meta-height: 1.05rem;
+      position: relative !important;
+      z-index: 5 !important;
+      isolation: isolate !important;
   }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
   /* Title parts use the same gap as the middot-separated heading text. */
@@ -1276,20 +1279,21 @@ _GLOBAL_CSS = f"""
       overflow: hidden !important;
       pointer-events: none !important;
   }}
-  .st-key-ca-detail-meta-row [data-testid="column"]:last-child,
   .st-key-detail-meta-actions,
   .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
   .st-key-detail-meta-actions [data-testid="stVerticalBlockBorderWrapper"],
   .st-key-detail-meta-actions [data-testid="stHorizontalBlock"],
   .st-key-detail-meta-actions [data-testid="column"],
   .st-key-detail-meta-actions [data-testid="stElementContainer"],
-  .st-key-detail-meta-actions .stButton,
-  .st-key-detail-meta-actions .stButton button,
-  .st-key-detail-meta-actions [data-testid="stToggle"],
-  .st-key-detail-meta-actions [data-baseweb="switch"],
-  .st-key-detail-meta-actions label {{
+  .st-key-detail-download-log,
+  .st-key-detail-download-log .stButton,
+  .st-key-detail-download-log .stButton button,
+  .st-key-detail-refresh,
+  .st-key-detail-refresh [data-testid="stToggle"],
+  .st-key-detail-refresh [data-baseweb="switch"],
+  .st-key-detail-refresh label {{
       position: relative !important;
-      z-index: 12 !important;
+      z-index: 25 !important;
       pointer-events: auto !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stHtml"],
@@ -1303,6 +1307,8 @@ _GLOBAL_CSS = f"""
       margin: -0.56rem 0 -0.3rem 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
+      position: relative !important;
+      z-index: 6 !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="stHorizontalBlock"] {{
       display: flex !important;
@@ -1326,11 +1332,17 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-meta-row [data-testid="column"]:first-child {{
       flex: 1 1 auto !important;
       min-width: 0 !important;
+      pointer-events: none !important;
+      overflow: hidden !important;
+      z-index: 1 !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"]:last-child {{
       flex: 0 0 auto !important;
       margin-left: auto !important;
       justify-content: flex-end !important;
+      position: relative !important;
+      z-index: 20 !important;
+      pointer-events: auto !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"] [data-testid="stVerticalBlock"],
   .st-key-ca-detail-meta-row [data-testid="column"] [data-testid="stElementContainer"] {{
@@ -1342,13 +1354,20 @@ _GLOBAL_CSS = f"""
       min-height: 0 !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stElementContainer"],
-  .st-key-ca-detail-meta-row [data-testid="column"]:first-child iframe {{
+  .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stHtml"],
+  .st-key-ca-detail-meta-row [data-testid="column"]:first-child iframe,
+  .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stFragment"] {{
       display: flex !important;
       align-items: center !important;
       width: 100% !important;
       min-height: var(--ca-detail-meta-height) !important;
+      max-height: var(--ca-detail-meta-height) !important;
+      height: var(--ca-detail-meta-height) !important;
       margin: 0 !important;
       padding: 0 !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
+      line-height: 0 !important;
   }}
   .st-key-detail-meta-actions,
   .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
@@ -1701,6 +1720,29 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-steps) {{
       margin-top: var(--ca-detail-section-v-gap) !important;
       margin-bottom: 0 !important;
+  }}
+  [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-steps),
+  [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stFragment"] .st-key-ca-steps) {{
+      position: relative !important;
+      z-index: 0 !important;
+  }}
+  [data-testid="stElementContainer"]:has(.ca-title-rule) {{
+      pointer-events: none !important;
+      line-height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  [data-testid="stElementContainer"]:has(.ca-title-rule) [data-testid="stHtml"],
+  [data-testid="stElementContainer"]:has(.ca-title-rule) iframe {{
+      pointer-events: none !important;
+      min-height: 2px !important;
+      max-height: 2px !important;
+      height: 2px !important;
+      overflow: hidden !important;
+      display: block !important;
+      line-height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="stElementContainer"] {{
       margin-bottom: 0 !important;

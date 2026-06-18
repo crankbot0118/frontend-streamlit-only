@@ -221,6 +221,9 @@ if run:
     auto_on = bool(st.session_state.get(refresh_key))
     poll_every = _RUN_DETAILS_REFRESH_SEC if auto_on else None
 
+    def _on_view_run_log() -> None:
+        st.session_state[f"_open_run_log_{run_id}"] = True
+
     with st.container(key="ca-detail-header"):
         with st.container(key="ca-detail-title-row"):
             st.html(run_detail_title_html(run_id=safe_run_id, src=src, tgt=tgt))
@@ -231,28 +234,6 @@ if run:
                 gap="small",
                 vertical_alignment="center",
             )
-            with col_actions:
-                with st.container(key="detail-meta-actions"):
-                    col_dl, col_ref = st.columns(
-                        [1, 1.15],
-                        gap="small",
-                        vertical_alignment="center",
-                    )
-                    with col_dl:
-                        with st.container(key="detail-download-log"):
-                            if st.button(
-                                "View Log",
-                                key=f"view_run_log_{run_id}",
-                                type="secondary",
-                            ):
-                                open_run_log_dialog(clone_run_id=run_id)
-                    with col_ref:
-                        with st.container(key="detail-refresh"):
-                            st.toggle(
-                                "Auto refresh",
-                                key=refresh_key,
-                                label_visibility="visible",
-                            )
             with col_meta:
 
                 @st.fragment(run_every=poll_every)
@@ -280,24 +261,49 @@ if run:
                     )
 
                 _live_meta_line()
+            with col_actions:
+                with st.container(key="detail-meta-actions"):
+                    col_dl, col_ref = st.columns(
+                        [1, 1.15],
+                        gap="small",
+                        vertical_alignment="center",
+                    )
+                    with col_dl:
+                        with st.container(key="detail-download-log"):
+                            st.button(
+                                "View Log",
+                                key=f"view_run_log_{run_id}",
+                                type="secondary",
+                                on_click=_on_view_run_log,
+                            )
+                    with col_ref:
+                        with st.container(key="detail-refresh"):
+                            st.toggle(
+                                "Auto refresh",
+                                key=refresh_key,
+                                label_visibility="visible",
+                            )
 
-        @st.fragment(run_every=poll_every)
-        def _live_steps_panel() -> None:
-            polling = bool(st.session_state.get(refresh_key))
-            live_run = _load_run(run_id, run) if polling else run
-            if not live_run:
-                live_run = run
-            live_steps = _load_steps(run_id, steps) if polling else steps
+    @st.fragment(run_every=poll_every)
+    def _live_steps_panel() -> None:
+        polling = bool(st.session_state.get(refresh_key))
+        live_run = _load_run(run_id, run) if polling else run
+        if not live_run:
+            live_run = run
+        live_steps = _load_steps(run_id, steps) if polling else steps
 
-            st.html('<hr class="ca-title-rule" />')
+        st.html('<hr class="ca-title-rule" />')
 
-            if live_steps:
-                with st.container(key="ca-steps"):
-                    _render_step_cards(live_steps, live_run)
-            else:
-                st.caption("No steps found for this run.")
+        if live_steps:
+            with st.container(key="ca-steps"):
+                _render_step_cards(live_steps, live_run)
+        else:
+            st.caption("No steps found for this run.")
 
-        _live_steps_panel()
+    _live_steps_panel()
+
+    if st.session_state.pop(f"_open_run_log_{run_id}", False):
+        open_run_log_dialog(clone_run_id=run_id)
 else:
     render_title(f"Run #{run_id}")
     if not steps:
