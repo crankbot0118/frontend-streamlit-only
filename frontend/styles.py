@@ -1183,7 +1183,8 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-header {{
       --ca-detail-inline-gap: 0.28rem;
       --ca-detail-section-v-gap: 0.05rem;
-      --ca-detail-title-height: 1.38rem;
+      --ca-detail-toolbar-title-size: 1.125rem;
+      --ca-detail-title-height: 1.15rem;
       --ca-detail-meta-height: 1.05rem;
   }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
@@ -1194,7 +1195,7 @@ _GLOBAL_CSS = f"""
       gap: var(--ca-detail-inline-gap);
       margin: 0;
       padding: 0;
-      font-size: var(--ca-title-size);
+      font-size: var(--ca-detail-toolbar-title-size, var(--ca-title-size));
       font-weight: 700;
       letter-spacing: -0.02em;
       color: {BRAND_INK};
@@ -1255,17 +1256,25 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-title-row .stHtml,
   .st-key-ca-detail-title-row .stHtml iframe {{
       width: auto !important;
-      max-width: none !important;
+      max-width: fit-content !important;
       min-width: 0 !important;
-      height: auto !important;
+      min-height: var(--ca-detail-title-height) !important;
+      max-height: var(--ca-detail-title-height) !important;
+      height: var(--ca-detail-title-height) !important;
       display: block !important;
-      overflow: visible !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      line-height: 0 !important;
+      pointer-events: none !important;
   }}
   .st-key-ca-detail-title-row [data-testid="stElementContainer"]:has([data-testid="stHtml"]) {{
       flex: 0 0 auto !important;
       width: fit-content !important;
-      max-width: none !important;
-      overflow: visible !important;
+      max-width: fit-content !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"]:last-child,
   .st-key-detail-meta-actions,
@@ -1701,7 +1710,6 @@ _GLOBAL_CSS = f"""
   /* Step list — vertical space below the orange divider only. */
   .st-key-ca-steps {{
       --ca-step-card-gap: 0.1px;
-      --ca-step-card-height: 2.5rem;
       margin-top: 0 !important;
   }}
 
@@ -1719,11 +1727,6 @@ _GLOBAL_CSS = f"""
   .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
       margin: 0 !important;
       padding: 0 !important;
-      height: var(--ca-step-card-height) !important;
-      min-height: var(--ca-step-card-height) !important;
-      max-height: var(--ca-step-card-height) !important;
-      display: flex !important;
-      align-items: center !important;
   }}
   .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"])
       + [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
@@ -1742,57 +1745,16 @@ _GLOBAL_CSS = f"""
 
   /* Each step is a bordered card — flex row: left (icon+name) | right (actions+arrow). */
   [class*="st-key-stepcard_"] {{
-      --ca-step-card-height: 2.5rem;
       --ca-step-arrow-size: 1.25rem;
-      --ca-step-row-height: 1.5rem;
       position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
-      padding: 0 12px;
+      padding: 4px 12px;
       background: #ffffff;
-      height: var(--ca-step-card-height) !important;
-      min-height: var(--ca-step-card-height) !important;
-      max-height: var(--ca-step-card-height) !important;
+      min-height: 32px;
       box-sizing: border-box;
-      overflow: visible;
-      display: flex !important;
-      align-items: center !important;
-      transition:
-          background 0.4s ease,
-          border-color 0.4s ease,
-          box-shadow 0.4s ease;
-  }}
-  [class*="st-key-stepcard_"]:has([data-ca-running-id]) {{
-      border-color: rgba(232, 117, 17, 0.55);
-      background: linear-gradient(90deg, rgba(232, 117, 17, 0.1) 0%, #ffffff 50%);
-      box-shadow: inset 0 0 0 1px rgba(232, 117, 17, 0.08);
-  }}
-  [class*="st-key-stepcard_"] [data-testid="stElementContainer"]:has(.ca-running-step-marker) {{
-      position: absolute !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 0 !important;
-      height: 0 !important;
-      min-height: 0 !important;
-      max-height: 0 !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      overflow: hidden !important;
-      line-height: 0 !important;
-      pointer-events: none !important;
-      z-index: 0 !important;
-  }}
-  .ca-running-step-marker {{
-      display: block;
-      width: 0;
-      height: 0;
-      overflow: hidden;
-      margin: 0;
-      padding: 0;
-      border: 0;
   }}
 
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       gap: 0 !important;
@@ -1800,24 +1762,7 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       position: relative !important;
       min-height: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      flex: 1 1 auto !important;
-      display: flex !important;
-      flex-direction: column !important;
-      justify-content: center !important;
-      align-items: stretch !important;
-  }}
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stHorizontalBlock"]),
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stHorizontalBlock"]) {{
-      display: flex !important;
-      align-items: center !important;
-      width: 100% !important;
-      height: 100% !important;
-      min-height: 0 !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      flex: 1 1 auto !important;
+      height: auto !important;
   }}
   [class*="st-key-stepcard_"] [data-testid="stHorizontalBlock"] {{
       display: flex !important;
@@ -1832,23 +1777,7 @@ _GLOBAL_CSS = f"""
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] {{
-      width: 100% !important;
-      height: var(--ca-step-row-height) !important;
-      min-height: var(--ca-step-row-height) !important;
-      max-height: var(--ca-step-row-height) !important;
-      align-items: center !important;
-      align-self: center !important;
-  }}
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"] [data-testid="stElementContainer"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"] [data-testid="stElementContainer"] {{
-      display: flex !important;
-      align-items: center !important;
-      align-self: center !important;
-      height: var(--ca-step-row-height) !important;
-      min-height: var(--ca-step-row-height) !important;
-      max-height: var(--ca-step-row-height) !important;
-      margin: 0 !important;
-      padding: 0 !important;
+      min-height: 24px !important;
   }}
   [class*="st-key-stepcard_"] [data-testid="column"] {{
       display: flex !important;
@@ -1888,8 +1817,7 @@ _GLOBAL_CSS = f"""
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] {{
       width: auto !important;
-      align-items: center !important;
-      justify-content: center !important;
+      align-items: flex-end !important;
       margin-left: 0 !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stVerticalBlock"],
@@ -1911,18 +1839,6 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
   }}
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"],
-  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] {{
-      display: flex !important;
-      align-items: center !important;
-      height: var(--ca-step-row-height) !important;
-      min-height: var(--ca-step-row-height) !important;
-      max-height: var(--ca-step-row-height) !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"] iframe,
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"] iframe {{
       display: block !important;
@@ -1931,9 +1847,9 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       border: none !important;
       background: transparent !important;
-      height: var(--ca-step-row-height) !important;
-      min-height: var(--ca-step-row-height) !important;
-      max-height: var(--ca-step-row-height) !important;
+      min-height: 0 !important;
+      max-height: 24px !important;
+      height: auto !important;
       overflow: visible !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
@@ -1944,10 +1860,10 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       border: none !important;
       background: transparent !important;
-      height: var(--ca-step-row-height) !important;
-      min-height: var(--ca-step-row-height) !important;
-      max-height: var(--ca-step-row-height) !important;
-      overflow: visible !important;
+      min-height: 18px !important;
+      max-height: 24px !important;
+      height: auto !important;
+      overflow: hidden !important;
   }}
 
   .ca-step-left {{
@@ -1957,8 +1873,6 @@ _GLOBAL_CSS = f"""
       flex: 1;
       min-width: 0;
       width: 100%;
-      height: 1.5rem;
-      line-height: 1;
   }}
   .ca-step-name {{
       font-size: 14px;
@@ -1976,8 +1890,6 @@ _GLOBAL_CSS = f"""
   .ca-step-status-wrap {{
       flex: 0 0 auto;
       line-height: 0;
-      overflow: visible;
-      transition: opacity 0.35s ease, transform 0.35s ease;
   }}
   .ca-step-more {{
       flex: 0 0 auto;
@@ -1985,10 +1897,7 @@ _GLOBAL_CSS = f"""
       font-weight: 600;
       color: #6b7177;
       white-space: nowrap;
-      line-height: 1.5rem;
-      height: 1.5rem;
-      display: inline-flex;
-      align-items: center;
+      line-height: 1.25;
   }}
   .ca-step-detail-panel {{
       display: grid;
@@ -2238,15 +2147,6 @@ _GLOBAL_CSS = f"""
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover svg {{
       color: {BRAND_ORANGE} !important;
       fill: {BRAND_ORANGE} !important;
-  }}
-  @media (prefers-reduced-motion: reduce) {{
-      [class*="st-key-stepcard_"] {{
-          transition: none !important;
-      }}
-      .ca-step-status-wrap {{
-          transition: none !important;
-          animation: none !important;
-      }}
   }}
 
   /* ---------- Step detail dialog — translucent overlay + strict light panel ---------- */
@@ -3070,129 +2970,6 @@ _GLOBAL_CSS = f"""
 </style>
 """
 
-_RUN_DETAILS_SCROLL_JS = """
-<script>
-(function () {
-  var root = window.parent || window;
-  if (root.__caRunDetailsScrollInit) return;
-  root.__caRunDetailsScrollInit = true;
-
-  var doc = root.document;
-  var lastRunningId = null;
-  var lastRunPage = null;
-  var scrollTimer = null;
-  var scrollAnim = null;
-
-  function pageRunId() {
-    try {
-      return new URL(root.location.href).searchParams.get("run");
-    } catch (e) {
-      return null;
-    }
-  }
-
-  function runningCard(marker) {
-    if (!marker) return null;
-    return marker.closest('[class*="st-key-stepcard_"]');
-  }
-
-  function easeInOutCubic(t) {
-    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-  }
-
-  function smoothScrollToY(targetY) {
-    var scroller = doc.scrollingElement || doc.documentElement;
-    var startY = root.scrollY || scroller.scrollTop || 0;
-    var delta = targetY - startY;
-    if (Math.abs(delta) < 6) return;
-
-    if (root.matchMedia && root.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      root.scrollTo(0, targetY);
-      return;
-    }
-
-    if (scrollAnim) root.cancelAnimationFrame(scrollAnim);
-
-    var duration = Math.min(780, Math.max(420, Math.abs(delta) * 0.55));
-    var started = null;
-
-    function frame(ts) {
-      if (started === null) started = ts;
-      var progress = Math.min(1, (ts - started) / duration);
-      var nextY = startY + delta * easeInOutCubic(progress);
-      root.scrollTo(0, nextY);
-      if (progress < 1) {
-        scrollAnim = root.requestAnimationFrame(frame);
-      } else {
-        scrollAnim = null;
-      }
-    }
-
-    scrollAnim = root.requestAnimationFrame(frame);
-  }
-
-  function scrollRunningToCenter() {
-    var currentRun = pageRunId();
-    if (currentRun !== lastRunPage) {
-      lastRunPage = currentRun;
-      lastRunningId = null;
-    }
-
-    var marker = doc.querySelector("[data-ca-running-id]");
-    if (!marker) {
-      lastRunningId = null;
-      return;
-    }
-
-    var runningId = marker.getAttribute("data-ca-running-id");
-    var card = runningCard(marker);
-    if (!card || !runningId) return;
-
-    if (runningId === lastRunningId) return;
-
-    var rect = card.getBoundingClientRect();
-    var vh = root.innerHeight || doc.documentElement.clientHeight || 0;
-    var targetY =
-      (root.scrollY || doc.documentElement.scrollTop || 0) +
-      rect.top -
-      (vh / 2) +
-      (rect.height / 2);
-
-    smoothScrollToY(Math.max(0, targetY));
-    lastRunningId = runningId;
-  }
-
-  function scheduleScroll() {
-    if (scrollTimer) root.clearTimeout(scrollTimer);
-    scrollTimer = root.setTimeout(function () {
-      scrollTimer = null;
-      root.requestAnimationFrame(scrollRunningToCenter);
-    }, 120);
-  }
-
-  if (doc.body) {
-    var observer = new MutationObserver(function () {
-      scheduleScroll();
-    });
-    observer.observe(doc.body, { childList: true, subtree: true });
-  }
-
-  scheduleScroll();
-})();
-</script>
-"""
-
-
-def inject_run_details_scroll_js() -> None:
-    """Install auto-scroll-to-running-step behavior once per session."""
-    if st.session_state.get("_ca_run_details_scroll_v2"):
-        return
-    st.session_state["_ca_run_details_scroll_v2"] = True
-    try:
-        st.html(_RUN_DETAILS_SCROLL_JS, unsafe_allow_javascript=True)
-    except TypeError:
-        st.html(_RUN_DETAILS_SCROLL_JS)
-
 
 def apply_global_styles() -> None:
     """Inject the shared CSS into the current page.
@@ -3203,7 +2980,6 @@ def apply_global_styles() -> None:
     """
     st.markdown(_GLOBAL_CSS, unsafe_allow_html=True)
     inject_local_datetime_js()
-    inject_run_details_scroll_js()
 
 
 def render_logo(path: str | Path | None = None, width: int | None = None) -> None:
@@ -3379,26 +3155,29 @@ STATUS_GLOW_RGB = {
 def _status_glow_html(key: str, size: int) -> tuple[str, str]:
     """Return optional ``<style>`` tag and inline wrapper styles for a status glow."""
     rgb = STATUS_GLOW_RGB.get(key)
-    base_style = (
-        f"display:inline-flex;align-items:center;justify-content:center;"
-        f"flex:0 0 auto;width:{size}px;height:{size}px;border-radius:50%;"
-        f"position:relative;overflow:visible;"
-    )
     if not rgb:
-        return "", base_style
+        return "", (
+            f"display:inline-flex;align-items:center;justify-content:center;"
+            f"flex:0 0 auto;width:{size}px;height:{size}px;"
+        )
 
     r, g, b = rgb
     anim = f"ca-status-pulse-{key.lower()}"
+    wrap_size = size + 8
     style_tag = (
         "<style>"
         f"@keyframes {anim}{{"
-        f"0%{{box-shadow:0 0 0 0 rgba({r},{g},{b},0.45);}}"
-        f"70%{{box-shadow:0 0 0 4px rgba({r},{g},{b},0);}}"
+        f"0%{{box-shadow:0 0 0 0 rgba({r},{g},{b},0.55);}}"
+        f"70%{{box-shadow:0 0 0 6px rgba({r},{g},{b},0);}}"
         f"100%{{box-shadow:0 0 0 0 rgba({r},{g},{b},0);}}"
         "}"
         "</style>"
     )
-    wrap_style = f"{base_style}animation:{anim} 1.6s ease-out infinite;"
+    wrap_style = (
+        f"display:inline-flex;align-items:center;justify-content:center;"
+        f"flex:0 0 auto;width:{wrap_size}px;height:{wrap_size}px;border-radius:50%;"
+        f"animation:{anim} 1.6s ease-out infinite;"
+    )
     return style_tag, wrap_style
 
 
@@ -3776,7 +3555,7 @@ def run_detail_title_html(*, run_id: str, src: str, tgt: str) -> str:
     ``st.html`` renders inside an iframe, so styles must be embedded here —
     global CSS from ``apply_global_styles()`` does not apply inside the iframe.
     """
-    title_size = "1.75rem"
+    title_size = "1.125rem"
     return f"""
     <style>
       .ca-detail-page-header,
