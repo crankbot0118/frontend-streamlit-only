@@ -29,7 +29,7 @@ SHELL_MAIN_BG = "#faf7f2"
 SHELL_SIDEBAR_BG = "#ffffff"
 STATUS_ICON_PX = 18
 SIDEBAR_WIDTH_PX = 200
-UI_SCALE = 0.8
+UI_SCALE = 1
 
 # Repo root is the parent of the ``frontend/`` package that holds this file.
 REPO_ROOT = Path(__file__).resolve().parent.parent
