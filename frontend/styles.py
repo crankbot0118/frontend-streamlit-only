@@ -1303,6 +1303,94 @@ _GLOBAL_CSS = f"""
       accent=BRAND_RED,
       accent_bg=BRAND_RED_BG,
   )}
+  .st-key-detail-actions [data-testid="stElementContainer"]:has(.ca-detail-meta-dropdown) {{
+      flex: 0 0 auto !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .ca-detail-inline-actions {{
+      display: inline-flex;
+      align-items: center;
+      gap: var(--ca-detail-inline-gap);
+      flex: 0 0 auto;
+      line-height: 1;
+  }}
+  .ca-detail-action-sep {{
+      flex: 0 0 auto;
+      font-weight: 400;
+      color: #c2c7cc;
+      line-height: 1;
+      user-select: none;
+  }}
+  .ca-detail-meta-dropdown {{
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+  }}
+  .ca-detail-meta-trigger {{
+      display: inline-flex;
+      align-items: center;
+      gap: 0.22rem;
+      min-height: calc(var(--ca-detail-title-height) - 0.2rem);
+      padding: 0 0.38rem;
+      border: 1px solid #e3e6e8;
+      border-radius: 6px;
+      background: #ffffff;
+      color: #5b6166;
+      font-size: calc(var(--ca-nav-font-size) * 0.92);
+      font-weight: 600;
+      line-height: 1;
+      cursor: default;
+      user-select: none;
+      white-space: nowrap;
+      box-sizing: border-box;
+  }}
+  .ca-detail-meta-trigger-ic {{
+      font-style: normal;
+      font-size: 0.95em;
+      line-height: 1;
+      color: #8a9097;
+  }}
+  .ca-detail-meta-trigger-chevron {{
+      font-size: 0.72em;
+      line-height: 1;
+      color: #9aa0a6;
+      margin-left: -0.06rem;
+  }}
+  .ca-detail-meta-dropdown:hover .ca-detail-meta-trigger,
+  .ca-detail-meta-dropdown:focus-within .ca-detail-meta-trigger {{
+      border-color: #d0d4d8;
+      background: #f6f7f8;
+      color: {BRAND_INK};
+  }}
+  .ca-detail-meta-popover {{
+      display: none;
+      position: absolute;
+      top: calc(100% + 0.35rem);
+      left: 0;
+      z-index: 50;
+      min-width: max-content;
+      max-width: min(96vw, 56rem);
+      padding: 0.42rem 0.55rem;
+      border: 1px solid #e3e6e8;
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 4px 18px rgba(19, 21, 22, 0.1);
+      box-sizing: border-box;
+  }}
+  .ca-detail-meta-dropdown:hover .ca-detail-meta-popover,
+  .ca-detail-meta-dropdown:focus-within .ca-detail-meta-popover {{
+      display: block;
+  }}
+  .ca-detail-meta.ca-detail-meta--popover {{
+      width: auto;
+      flex-wrap: wrap;
+      font-style: italic;
+  }}
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
@@ -1333,10 +1421,25 @@ _GLOBAL_CSS = f"""
       flex: 1 1 auto !important;
       min-width: 0 !important;
   }}
-  .st-key-ca-detail-meta-row [data-testid="column"]:last-child {{
+  .st-key-ca-detail-meta-row [data-testid="column"]:last-child,
+  .st-key-ca-detail-meta-row .st-key-detail-meta-actions {{
       flex: 0 0 auto !important;
       margin-left: auto !important;
       justify-content: flex-end !important;
+  }}
+  .st-key-ca-detail-meta-row:has(.st-key-detail-meta-actions) {{
+      display: flex !important;
+      justify-content: flex-end !important;
+      width: 100% !important;
+  }}
+  .st-key-ca-detail-meta-row:has(.st-key-detail-meta-actions) [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-meta-row:has(.st-key-detail-meta-actions) [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      justify-content: flex-end !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"] [data-testid="stVerticalBlock"],
   .st-key-ca-detail-meta-row [data-testid="column"] [data-testid="stElementContainer"] {{
@@ -3016,6 +3119,58 @@ def status_badge_html(status: str) -> str:
     """Return an HTML badge span for a status (colored)."""
     safe = _esc(status)
     return f'<span class="ca-badge {status_color(status)}">{safe}</span>'
+
+
+def run_detail_meta_inner_html(
+    *,
+    user: str,
+    start_date,
+    last_update,
+    status: str,
+) -> str:
+    """Run-details meta line: triggered by, started, updated, duration, status."""
+    return (
+        f'<span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>'
+        f'<span class="ca-detail-sep">&middot;</span>'
+        f'<span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(start_date)}</span>'
+        f'<span class="ca-detail-sep">&middot;</span>'
+        f'<span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(last_update)}</span>'
+        f'<span class="ca-detail-sep">&middot;</span>'
+        f'<span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(start_date, last_update)}</span>'
+        f'<span class="ca-detail-sep">&middot;</span>'
+        f"{status_badge_html(status)}"
+    )
+
+
+def run_detail_meta_dropdown_html(
+    *,
+    user: str,
+    start_date,
+    last_update,
+    status: str,
+) -> str:
+    """Middot + hover dropdown beside Abort showing the run meta line."""
+    inner = run_detail_meta_inner_html(
+        user=user,
+        start_date=start_date,
+        last_update=last_update,
+        status=status,
+    )
+    return (
+        '<span class="ca-detail-inline-actions">'
+        '<span class="ca-run-sep ca-detail-action-sep">&middot;</span>'
+        '<div class="ca-detail-meta-dropdown">'
+        '<span class="ca-detail-meta-trigger" tabindex="0" role="button" aria-label="Run info">'
+        '<span class="ca-detail-meta-trigger-ic" aria-hidden="true">&#8505;</span>'
+        '<span class="ca-detail-meta-trigger-label">Info</span>'
+        '<span class="ca-detail-meta-trigger-chevron" aria-hidden="true">&#9662;</span>'
+        "</span>"
+        '<div class="ca-detail-meta-popover" role="tooltip">'
+        f'<div class="ca-detail-meta ca-detail-meta--popover">{inner}</div>'
+        "</div>"
+        "</div>"
+        "</span>"
+    )
 
 
 def step_attempts_table_html(attempts: list[dict]) -> str:

@@ -21,11 +21,8 @@ from config.settings import frontend
 from log_view import open_run_log_dialog, open_step_log_dialog
 from styles import (
     emit_html,
-    fmt_duration,
-    relative_update_html,
     render_title,
-    started_html,
-    status_badge_html,
+    run_detail_meta_dropdown_html,
     status_image_html,
     step_detail_dialog_error_html,
     step_detail_dialog_html,
@@ -289,53 +286,37 @@ if run:
                                 st.rerun()
                             except Exception as exc:
                                 show_error(exc, context="Could not abort run")
+                    emit_html(
+                        run_detail_meta_dropdown_html(
+                            user=user,
+                            start_date=live_run.get("start_date"),
+                            last_update=live_run.get("last_update"),
+                            status=live_run.get("status", ""),
+                        )
+                    )
 
             with st.container(key="ca-detail-meta-row"):
-                col_meta, col_actions = st.columns(
-                    [1, 0.32],
-                    gap="small",
-                    vertical_alignment="center",
-                )
-                with col_meta:
-                    emit_html(
-                        f"""
-                        <div class="ca-detail-meta-bar">
-                          <div class="ca-detail-meta">
-                            <span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(live_run.get('start_date'))}</span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(live_run.get('last_update'))}</span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(live_run.get('start_date'), live_run.get('last_update'))}</span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            {status_badge_html(live_run.get('status', ''))}
-                          </div>
-                        </div>
-                        """
+                with st.container(key="detail-meta-actions"):
+                    col_dl, col_ref = st.columns(
+                        [1, 1.15],
+                        gap="small",
+                        vertical_alignment="center",
                     )
-                with col_actions:
-                    with st.container(key="detail-meta-actions"):
-                        col_dl, col_ref = st.columns(
-                            [1, 1.15],
-                            gap="small",
-                            vertical_alignment="center",
-                        )
-                        with col_dl:
-                            with st.container(key="detail-download-log"):
-                                if st.button(
-                                    "View Log",
-                                    key=f"view_run_log_{run_id}",
-                                    type="secondary",
-                                ):
-                                    open_run_log_dialog(clone_run_id=run_id)
-                        with col_ref:
-                            with st.container(key="detail-refresh"):
-                                st.toggle(
-                                    "Auto refresh",
-                                    key=refresh_key,
-                                    label_visibility="visible",
-                                )
+                    with col_dl:
+                        with st.container(key="detail-download-log"):
+                            if st.button(
+                                "View Log",
+                                key=f"view_run_log_{run_id}",
+                                type="secondary",
+                            ):
+                                open_run_log_dialog(clone_run_id=run_id)
+                    with col_ref:
+                        with st.container(key="detail-refresh"):
+                            st.toggle(
+                                "Auto refresh",
+                                key=refresh_key,
+                                label_visibility="visible",
+                            )
 
             st.html('<hr class="ca-title-rule" />')
 
