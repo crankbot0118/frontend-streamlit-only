@@ -1833,7 +1833,9 @@ _GLOBAL_CSS = f"""
   /* Step list — title, divider, and step cards share one vertical stack. */
   [class*="st-key-ca-steps"],
   [class*="st-key-ca-steps"][data-testid="stVerticalBlockBorderWrapper"] {{
-      --ca-step-list-gap: var(--ca-run-details-v-gap, 0.08rem);
+      --ca-run-details-v-gap: 0.08rem;
+      --ca-step-list-gap: var(--ca-run-details-v-gap);
+      --ca-step-card-gap: 0.08rem;
       margin-top: 0 !important;
       margin-bottom: 0 !important;
   }}
@@ -1841,7 +1843,8 @@ _GLOBAL_CSS = f"""
   /* List column — flex gap controls all vertical separation in the stack. */
   [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"],
   [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
-  [class*="st-key-ca-steps"][data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+  [class*="st-key-ca-steps"][data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
+  [class*="st-key-ca-steps"] [data-testid="stVerticalBlock"]:has(> [class*="st-key-stepcard_"]) {{
       display: flex !important;
       flex-direction: column !important;
       gap: var(--ca-step-list-gap) !important;
@@ -1849,11 +1852,22 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
   }}
+  [class*="st-key-ca-steps"] [data-testid="stVerticalBlock"]:has(> [class*="st-key-stepcard_"]) {{
+      gap: var(--ca-step-card-gap) !important;
+  }}
 
   /* Zero Streamlit widget margins on every row in the stack. */
   [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
   [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  [class*="st-key-ca-steps"][data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
+  [class*="st-key-ca-steps"][data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"] > [class*="st-key-stepcard_"],
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"][class*="st-key-stepcard_"],
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [class*="st-key-stepcard_"],
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"][class*="st-key-stepcard_"],
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]),
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]),
+  [class*="st-key-ca-steps"] [data-testid="stVerticalBlock"]:has(> [class*="st-key-stepcard_"]) > [class*="st-key-stepcard_"],
+  [class*="st-key-ca-steps"] [data-testid="stVerticalBlock"]:has(> [class*="st-key-stepcard_"]) > [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
       margin: 0 !important;
       padding: 0 !important;
   }}
@@ -1879,9 +1893,11 @@ _GLOBAL_CSS = f"""
       border: 1px solid #e3e6e8;
       border-radius: 10px;
       padding: 3px 12px;
+      margin: 0 !important;
       background: #ffffff;
       min-height: 30px;
       box-sizing: border-box;
+      display: block !important;
   }}
 
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"],
