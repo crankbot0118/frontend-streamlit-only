@@ -27,9 +27,18 @@ BRAND_RED = "#cf222e"
 BRAND_RED_BG = "rgba(207, 34, 46, 0.12)"
 SHELL_MAIN_BG = "#faf7f2"
 SHELL_SIDEBAR_BG = "#ffffff"
-UI_SCALE = 1
-STATUS_ICON_PX = 18
-SIDEBAR_WIDTH_PX = 200
+UI_SCALE = 0.8
+STATUS_ICON_PX = round(18 * UI_SCALE)
+SIDEBAR_WIDTH_PX = round(200 * UI_SCALE)
+
+
+def _px(n: float) -> str:
+    return f"{round(n * UI_SCALE)}px"
+
+
+def _rem(n: float) -> str:
+    return f"{round(n * UI_SCALE, 4)}rem"
+
 
 # Repo root is the parent of the ``frontend/`` package that holds this file.
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -71,13 +80,13 @@ def _nav_action_button_css(
       align-items: center !important;
       justify-content: flex-start !important;
       width: auto !important;
-      min-height: 1.7rem !important;
-      padding: 0.2rem 0.65rem !important;
-      gap: 0.45rem !important;
+      min-height: {_rem(1.7)} !important;
+      padding: {_rem(0.2)} {_rem(0.65)} !important;
+      gap: {_rem(0.45)} !important;
       font-size: var(--ca-nav-font-size) !important;
       font-weight: 600 !important;
       line-height: 1.25 !important;
-      border-radius: 5px !important;
+      border-radius: {_px(5)} !important;
       border: none !important;
       box-shadow: none !important;
       background: transparent !important;
@@ -98,9 +107,9 @@ def _nav_action_button_css(
   {container_selector} .stButton button [data-testid="stIconMaterial"],
   {container_selector} .stDownloadButton button svg,
   {container_selector} .stDownloadButton button [data-testid="stIconMaterial"] {{
-      width: 1rem !important;
-      height: 1rem !important;
-      font-size: 1rem !important;
+      width: {_rem(1)} !important;
+      height: {_rem(1)} !important;
+      font-size: {_rem(1)} !important;
       color: inherit !important;
       fill: currentColor !important;
   }}
@@ -136,33 +145,26 @@ _GLOBAL_CSS = f"""
       --background-color: {SHELL_MAIN_BG};
       --secondary-background-color: {SHELL_SIDEBAR_BG};
       --text-color: {BRAND_INK};
-      --ca-detail-inline-gap: 0.45rem;
-      --ca-page-inset-top: 0.5rem;
-      --ca-sidebar-inset-x: 0.5rem;
-      --ca-main-inset-x: 1rem;
-      --ca-main-inset-right: 1.25rem;
-      --ca-header-row-height: 2rem;
+      --ca-ui-scale: {UI_SCALE};
+      --ca-detail-inline-gap: calc(0.45rem * var(--ca-ui-scale));
+      --ca-page-inset-top: calc(0.5rem * var(--ca-ui-scale));
+      --ca-sidebar-inset-x: calc(0.5rem * var(--ca-ui-scale));
+      --ca-main-inset-x: calc(1rem * var(--ca-ui-scale));
+      --ca-main-inset-right: calc(1.25rem * var(--ca-ui-scale));
+      --ca-header-row-height: calc(2rem * var(--ca-ui-scale));
       /* Type scale — all page text derives from the heading size. */
-      --ca-title-size: 1.75rem;
+      --ca-title-size: calc(1.75rem * var(--ca-ui-scale));
       --ca-subtitle-size: calc(var(--ca-title-size) * 0.43);   /* ~0.75rem subtitle */
       --ca-body-size: calc(var(--ca-title-size) * 0.5);         /* ~0.875rem body */
       --ca-label-size: calc(var(--ca-title-size) * 0.486);        /* ~0.85rem labels */
       --ca-caption-size: calc(var(--ca-title-size) * 0.457);    /* ~0.8rem captions */
       --ca-run-meta-size: calc(var(--ca-title-size) * 0.4);     /* ~0.7rem card meta */
       --ca-nav-font-size: var(--ca-body-size);
-      --ca-nav-item-gap: 0.32rem;
+      --ca-nav-item-gap: calc(0.32rem * var(--ca-ui-scale));
       --ca-nav-highlight-bg: rgba(232, 117, 17, 0.12);
-      --ca-detail-meta-height: 1.6rem;
-      --ca-ui-scale: {UI_SCALE};
+      --ca-detail-meta-height: calc(1.6rem * var(--ca-ui-scale));
   }}
 
-  /* Scale the entire dashboard shell (sidebar + pages) to 80%. */
-  [data-testid="stAppViewContainer"] {{
-      zoom: var(--ca-ui-scale);
-  }}
-  .stApp {{
-      min-height: calc(100vh / var(--ca-ui-scale));
-  }}
   [data-testid="stAppViewContainer"],
   .stApp,
   section.main {{
@@ -214,7 +216,7 @@ _GLOBAL_CSS = f"""
   section.main > .block-container,
   [data-testid="stMainBlockContainer"] {{
       padding-top: var(--ca-page-inset-top) !important;
-      padding-bottom: 1.25rem !important;
+      padding-bottom: {_rem(1.25)} !important;
       padding-left: var(--ca-main-inset-x) !important;
       padding-right: var(--ca-main-inset-right) !important;
       max-width: none !important;
@@ -225,7 +227,7 @@ _GLOBAL_CSS = f"""
   }}
 
   [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] {{
-      gap: 0.35rem !important;
+      gap: {_rem(0.35)} !important;
   }}
 
   [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {{
@@ -266,7 +268,7 @@ _GLOBAL_CSS = f"""
       padding-top: var(--ca-page-inset-top);
       padding-left: var(--ca-sidebar-inset-x);
       padding-right: var(--ca-sidebar-inset-x);
-      padding-bottom: 1.75rem;
+      padding-bottom: {_rem(1.75)};
       box-sizing: border-box;
       overflow: hidden;
   }}
@@ -295,7 +297,7 @@ _GLOBAL_CSS = f"""
 
   /* Logo — scale to sidebar content width; never clip or overflow. */
   .ca-logo {{
-      margin: 0 0 0.35rem 0;
+      margin: 0 0 {_rem(0.35)} 0;
       padding: 0;
       flex: 0 0 auto;
       width: 100%;
@@ -310,7 +312,7 @@ _GLOBAL_CSS = f"""
       width: 100%;
       max-width: 100%;
       height: auto;
-      max-height: 2.35rem;
+      max-height: {_rem(2.35)};
       object-fit: contain;
       object-position: left center;
       display: block;
@@ -325,7 +327,7 @@ _GLOBAL_CSS = f"""
   .ca-title {{
       display: flex;
       align-items: center;
-      gap: 0.65rem;
+      gap: {_rem(0.65)};
       margin: 0;
       padding: 0;
       min-height: var(--ca-header-row-height);
@@ -344,11 +346,11 @@ _GLOBAL_CSS = f"""
 
   /* Accent bar under the title block. */
   .ca-title-rule {{
-      height: 2px;
+      height: {_px(2)};
       width: 100%;
       border: none;
-      margin: 0.04rem 0 0.06rem 0;
-      border-radius: 999px;
+      margin: {_rem(0.04)} 0 {_rem(0.06)} 0;
+      border-radius: {_px(999)};
       background: linear-gradient(90deg, {BRAND_ORANGE} 0%, rgba(232,117,17,0.15) 100%);
   }}
 
@@ -360,7 +362,7 @@ _GLOBAL_CSS = f"""
       font-weight: 400;
       font-style: italic;
       line-height: 1.25;
-      max-width: 52rem;
+      max-width: {_rem(52)};
   }}
 
   /* ---------- Main content typography (body, captions, alerts) ---------- */
@@ -404,9 +406,9 @@ _GLOBAL_CSS = f"""
   /* ---------- Sidebar navigation ---------- */
 
   .st-key-ca-nav {{
-      --ca-nav-x: 0.75rem;
-      --ca-nav-icon: 1rem;
-      --ca-nav-gap: 0.45rem;
+      --ca-nav-x: {_rem(0.75)};
+      --ca-nav-icon: {_rem(1)};
+      --ca-nav-gap: {_rem(0.45)};
       --ca-nav-text: calc(var(--ca-nav-icon) + var(--ca-nav-gap));
       flex: 1 1 auto;
       min-height: 0;
@@ -448,14 +450,14 @@ _GLOBAL_CSS = f"""
       justify-content: flex-start !important;
       text-align: left !important;
       width: 100% !important;
-      min-height: 1.7rem !important;
+      min-height: {_rem(1.7)} !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
       outline: none !important;
       gap: var(--ca-nav-gap) !important;
-      padding: 0.24rem var(--ca-nav-x) 0.24rem var(--ca-nav-x) !important;
-      border-radius: 5px;
+      padding: {_rem(0.24)} var(--ca-nav-x) {_rem(0.24)} var(--ca-nav-x) !important;
+      border-radius: {_px(5)};
       color: {BRAND_INK};
   }}
 
@@ -535,12 +537,12 @@ _GLOBAL_CSS = f"""
   /* Small yellow "Coming soon!" highlight — aligned with nav labels. */
   .ca-soon {{
       display: inline-block;
-      margin: 0 0 0.18rem var(--ca-nav-text);
-      padding: 0.04rem 0.32rem;
-      border-radius: 4px;
+      margin: 0 0 {_rem(0.18)} var(--ca-nav-text);
+      padding: {_rem(0.04)} {_rem(0.32)};
+      border-radius: {_px(4)};
       background: #fff3cd;
       color: #8a6500;
-      font-size: 0.62rem;
+      font-size: {_rem(0.62)};
       font-weight: 700;
       letter-spacing: 0.02em;
   }}
@@ -559,8 +561,8 @@ _GLOBAL_CSS = f"""
       align-items: center !important;
       justify-content: flex-start !important;
       gap: var(--ca-nav-gap) !important;
-      min-height: 1.7rem !important;
-      padding: 0.24rem var(--ca-nav-x) 0.24rem var(--ca-nav-x) !important;
+      min-height: {_rem(1.7)} !important;
+      padding: {_rem(0.24)} var(--ca-nav-x) {_rem(0.24)} var(--ca-nav-x) !important;
       font-weight: 600;
       text-transform: none;
       letter-spacing: normal;
@@ -620,7 +622,7 @@ _GLOBAL_CSS = f"""
   /* Thin black divider line before Execute Clone. */
   .ca-nav-divider-line {{
       display: block;
-      height: 1px;
+      height: {_px(1)};
       border: none;
       margin: var(--ca-nav-item-gap) var(--ca-nav-x) var(--ca-nav-item-gap) var(--ca-nav-x);
       background: {BRAND_INK};
@@ -629,17 +631,17 @@ _GLOBAL_CSS = f"""
   /* ---------- Run History filters + Execute Clone form ---------- */
   .st-key-ca-run-filters,
   .st-key-ca-execute-clone-form {{
-      margin-top: -0.08rem !important;
-      margin-bottom: 0.32rem !important;
+      margin-top: -{_rem(0.08)} !important;
+      margin-bottom: {_rem(0.32)} !important;
   }}
   .st-key-ca-run-filters [data-testid="stVerticalBlock"],
   .st-key-ca-execute-clone-form [data-testid="stVerticalBlock"] {{
-      gap: 0.12rem !important;
+      gap: {_rem(0.12)} !important;
   }}
   .st-key-ca-run-filters [data-testid="stHorizontalBlock"],
   .st-key-ca-execute-clone-form [data-testid="stHorizontalBlock"] {{
       align-items: flex-end;
-      gap: 0.65rem;
+      gap: {_rem(0.65)};
   }}
   .st-key-ca-run-filters [data-testid="stWidgetLabel"] p,
   .st-key-ca-execute-clone-form [data-testid="stWidgetLabel"] p {{
@@ -693,7 +695,7 @@ _GLOBAL_CSS = f"""
   }}
   div[data-baseweb="popover"] [role="listbox"] [role="option"] {{
       color: {BRAND_INK} !important;
-      border-radius: 5px !important;
+      border-radius: {_px(5)} !important;
   }}
 
   /* Execute Clone — reserve space; Trigger job fixed to viewport bottom-right. */
@@ -702,16 +704,16 @@ _GLOBAL_CSS = f"""
   .st-key-ca-execute-clone-page > [data-testid="stVerticalBlockBorderWrapper"] {{
       width: 100% !important;
       margin: 0 !important;
-      padding: 0 0 3.5rem 0 !important;
+      padding: 0 0 {_rem(3.5)} 0 !important;
   }}
   .st-key-ca-execute-clone-page > [data-testid="stVerticalBlock"] {{
-      gap: 0.25rem !important;
+      gap: {_rem(0.25)} !important;
   }}
   .st-key-ca-execute-clone-page > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-execute-clone-actions),
   .st-key-ca-execute-clone-actions {{
       position: fixed !important;
       right: var(--ca-main-inset-right) !important;
-      bottom: 1rem !important;
+      bottom: {_rem(1)} !important;
       left: auto !important;
       top: auto !important;
       width: auto !important;
@@ -743,7 +745,7 @@ _GLOBAL_CSS = f"""
   )}
 
   .ca-exec-ready {{
-      margin: 0.35rem 0 0.15rem 0;
+      margin: {_rem(0.35)} 0 {_rem(0.15)} 0;
       font-size: var(--ca-body-size);
       line-height: 1.5;
       color: #5b6166;
@@ -761,11 +763,11 @@ _GLOBAL_CSS = f"""
   .st-key-ca-status {{
       position: fixed !important;
       left: 0 !important;
-      bottom: 0.45rem !important;
+      bottom: {_rem(0.45)} !important;
       width: {SIDEBAR_WIDTH_PX}px !important;
       z-index: 1000;
       margin: 0 !important;
-      padding: 0.35rem var(--ca-sidebar-inset-x) 0.45rem var(--ca-sidebar-inset-x) !important;
+      padding: {_rem(0.35)} var(--ca-sidebar-inset-x) {_rem(0.45)} var(--ca-sidebar-inset-x) !important;
       box-sizing: border-box;
       height: auto !important;
       flex: 0 0 auto !important;
@@ -793,7 +795,7 @@ _GLOBAL_CSS = f"""
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.35rem;
+      gap: {_rem(0.35)};
       width: 100%;
       max-width: 100%;
       white-space: nowrap;
@@ -807,20 +809,20 @@ _GLOBAL_CSS = f"""
       align-items: center;
       justify-content: center;
       flex: 0 0 auto;
-      width: 14px;
-      height: 14px;
+      width: {_px(14)};
+      height: {_px(14)};
       overflow: visible;
   }}
 
   .ca-status .ca-dot {{
-      width: 7px;
-      height: 7px;
+      width: {_px(7)};
+      height: {_px(7)};
       border-radius: 50%;
       flex: 0 0 auto;
   }}
 
   .ca-status .ca-refresh-text {{
-      font-size: 0.56rem;
+      font-size: {_rem(0.56)};
       color: #6b7177;
       line-height: 1.1;
       white-space: nowrap;
@@ -839,20 +841,20 @@ _GLOBAL_CSS = f"""
   /* Offline: red with a steady glow. */
   .ca-status.is-offline .ca-dot {{
       background: #ef4444;
-      box-shadow: 0 0 7px 1px rgba(239, 68, 68, 0.7);
+      box-shadow: 0 0 {_px(7)} {_px(1)} rgba(239, 68, 68, 0.7);
   }}
 
   @keyframes ca-pulse {{
       0%   {{ box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }}
-      70%  {{ box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }}
+      70%  {{ box-shadow: 0 0 0 {_px(6)} rgba(34, 197, 94, 0); }}
       100% {{ box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }}
   }}
 
   /* ---------- Status badges (reused on cards + steps) ---------- */
   .ca-badge {{
       display: inline-block;
-      padding: 0.06rem 0.45rem;
-      border-radius: 999px;
+      padding: {_rem(0.06)} {_rem(0.45)};
+      border-radius: {_px(999)};
       font-size: calc(var(--ca-caption-size) * 0.92);
       font-weight: 700;
       letter-spacing: 0.02em;
@@ -867,13 +869,13 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run cards (Run History) ---------- */
   .st-key-ca-runs {{
-      --ca-run-card-gap: 0.08rem;
-      --ca-run-card-pad-y: 0.28rem;
-      --ca-run-card-pad-x: 0.65rem;
-      --ca-run-card-pad-right: 0.45rem;
-      --ca-run-card-line: 1.65rem;
-      --ca-run-inline-gap: 0.28rem;
-      margin-top: 0.18rem !important;
+      --ca-run-card-gap: {_rem(0.08)};
+      --ca-run-card-pad-y: {_rem(0.28)};
+      --ca-run-card-pad-x: {_rem(0.65)};
+      --ca-run-card-pad-right: {_rem(0.45)};
+      --ca-run-card-line: {_rem(1.65)};
+      --ca-run-inline-gap: {_rem(0.28)};
+      margin-top: {_rem(0.18)} !important;
   }}
   .st-key-ca-runs > [data-testid="stVerticalBlock"],
   .st-key-ca-runs > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
@@ -887,8 +889,8 @@ _GLOBAL_CSS = f"""
   /* Card shell — compact single-line row. */
   [class*="st-key-runcard_"] {{
       position: relative;
-      border: 1px solid #e3e6e8;
-      border-radius: 6px;
+      border: {_px(1)} solid #e3e6e8;
+      border-radius: {_px(6)};
       padding: var(--ca-run-card-pad-y) var(--ca-run-card-pad-right) var(--ca-run-card-pad-y) var(--ca-run-card-pad-x) !important;
       margin: 0 !important;
       background: #ffffff;
@@ -915,7 +917,7 @@ _GLOBAL_CSS = f"""
       width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      gap: 0.25rem !important;
+      gap: {_rem(0.25)} !important;
       min-height: var(--ca-run-card-line) !important;
   }}
   [class*="st-key-runcard_"] [data-testid="column"] {{
@@ -936,8 +938,8 @@ _GLOBAL_CSS = f"""
   [class*="st-key-runcard_"] [data-testid="column"]:last-child {{
       flex: 0 0 auto !important;
       width: auto !important;
-      min-width: 1.75rem !important;
-      max-width: 2rem !important;
+      min-width: {_rem(1.75)} !important;
+      max-width: {_rem(2)} !important;
       justify-content: center !important;
       position: relative !important;
       z-index: 2 !important;
@@ -1010,7 +1012,7 @@ _GLOBAL_CSS = f"""
   }}
   [class*="st-key-runcard_"]:hover {{
       border-color: {BRAND_ORANGE};
-      box-shadow: 0 1px 8px rgba(19, 21, 22, 0.06);
+      box-shadow: 0 {_px(1)} {_px(8)} rgba(19, 21, 22, 0.06);
   }}
 
   /* Redirect arrow — icon-only tertiary button in the right column. */
@@ -1038,7 +1040,7 @@ _GLOBAL_CSS = f"""
   [class*="st-key-runcard_"] [class*="st-key-open_run_"] .stButton button,
   [class*="st-key-runcard_"] [data-testid="column"]:last-child .stButton button {{
       width: auto !important;
-      min-width: 1.65rem !important;
+      min-width: {_rem(1.65)} !important;
       min-height: var(--ca-run-card-line) !important;
       height: var(--ca-run-card-line) !important;
       background: transparent !important;
@@ -1064,17 +1066,17 @@ _GLOBAL_CSS = f"""
   }}
   [class*="st-key-runcard_"] [class*="st-key-open_run_"] .stButton button [data-testid="stIconMaterial"],
   [class*="st-key-runcard_"] [data-testid="column"]:last-child .stButton button [data-testid="stIconMaterial"] {{
-      font-size: 1.2rem !important;
-      width: 1.2rem !important;
-      height: 1.2rem !important;
+      font-size: {_rem(1.2)} !important;
+      width: {_rem(1.2)} !important;
+      height: {_rem(1.2)} !important;
       line-height: 1 !important;
       color: #8a9097 !important;
       flex: 0 0 auto !important;
   }}
   [class*="st-key-runcard_"] [class*="st-key-open_run_"] .stButton button svg,
   [class*="st-key-runcard_"] [data-testid="column"]:last-child .stButton button svg {{
-      width: 1.2rem !important;
-      height: 1.2rem !important;
+      width: {_rem(1.2)} !important;
+      height: {_rem(1.2)} !important;
       color: #8a9097 !important;
       fill: currentColor !important;
   }}
@@ -1138,10 +1140,10 @@ _GLOBAL_CSS = f"""
   }}
   .ca-run-oneline .arrow {{
       color: {BRAND_ORANGE};
-      margin: 0 0.12rem;
+      margin: 0 {_rem(0.12)};
   }}
   .ca-run-oneline .ca-run-primary .ca-badge {{
-      padding: 0.04rem 0.34rem;
+      padding: {_rem(0.04)} {_rem(0.34)};
       font-size: calc(var(--ca-caption-size) * 0.88);
       line-height: 1.15;
   }}
@@ -1149,12 +1151,12 @@ _GLOBAL_CSS = f"""
       margin-left: auto;
       display: flex;
       align-items: center;
-      gap: 12px;
-      min-width: 420px;
+      gap: {_px(12)};
+      min-width: {_px(420)};
       justify-content: flex-end;
       flex: 0 0 auto;
       box-sizing: border-box;
-      padding-right: 0.12rem;
+      padding-right: {_rem(0.12)};
       font-size: var(--ca-run-meta-size);
       font-weight: 400;
       font-style: italic;
@@ -1167,7 +1169,7 @@ _GLOBAL_CSS = f"""
   .ca-run-oneline .ca-run-meta-part .ca-run-metaline {{
       display: inline-flex;
       align-items: center;
-      gap: 0.12rem;
+      gap: {_rem(0.12)};
       white-space: nowrap;
       flex-shrink: 0;
   }}
@@ -1179,10 +1181,10 @@ _GLOBAL_CSS = f"""
   .ca-run-metaline {{
       display: inline-flex;
       align-items: center;
-      gap: 0.22rem;
+      gap: {_rem(0.22)};
   }}
   .ca-run-metaline .mi {{
-      font-size: 0.92rem;
+      font-size: {_rem(0.92)};
       line-height: 1;
   }}
   .ca-run-metaline .mi-start {{ color: #1a7f37; }}
@@ -1191,10 +1193,10 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run details header ---------- */
   .st-key-ca-detail-header {{
-      --ca-detail-inline-gap: 0.28rem;
-      --ca-detail-section-v-gap: 0.05rem;
-      --ca-detail-title-height: 1.38rem;
-      --ca-detail-meta-height: 1.05rem;
+      --ca-detail-inline-gap: {_rem(0.28)};
+      --ca-detail-section-v-gap: {_rem(0.05)};
+      --ca-detail-title-height: {_rem(1.38)};
+      --ca-detail-meta-height: {_rem(1.05)};
   }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
   /* Title parts use the same gap as the middot-separated heading text. */
@@ -1301,7 +1303,7 @@ _GLOBAL_CSS = f"""
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
-      margin: -0.56rem 0 -0.3rem 0 !important;
+      margin: -{_rem(0.56)} 0 -{_rem(0.3)} 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
   }}
@@ -1313,7 +1315,7 @@ _GLOBAL_CSS = f"""
       width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      gap: 0.28rem !important;
+      gap: {_rem(0.28)} !important;
       min-height: var(--ca-detail-meta-height) !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"] {{
@@ -1366,7 +1368,7 @@ _GLOBAL_CSS = f"""
       flex-wrap: nowrap !important;
       width: auto !important;
       margin-left: auto !important;
-      gap: 0.75rem !important;
+      gap: {_rem(0.75)} !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"] {{
       flex: 0 0 auto !important;
@@ -1376,7 +1378,7 @@ _GLOBAL_CSS = f"""
       align-items: center !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"]:first-child {{
-      margin-right: 0.15rem !important;
+      margin-right: {_rem(0.15)} !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stElementContainer"],
   .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
@@ -1449,7 +1451,7 @@ _GLOBAL_CSS = f"""
       justify-content: flex-end !important;
       width: auto !important;
       margin: 0 !important;
-      gap: 0.35rem !important;
+      gap: {_rem(0.35)} !important;
       min-height: var(--ca-detail-meta-height) !important;
       height: var(--ca-detail-meta-height) !important;
   }}
@@ -1468,7 +1470,7 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       align-self: center !important;
-      gap: 0.35rem !important;
+      gap: {_rem(0.35)} !important;
       margin: 0 !important;
       padding: 0 !important;
       line-height: 1 !important;
@@ -1514,10 +1516,10 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-detail-refresh [data-baseweb="switch"] {{
       background-color: #c4c9ce !important;
-      border: 1px solid #aeb4ba !important;
-      min-width: 2rem !important;
-      min-height: 1rem !important;
-      padding: 0.12rem !important;
+      border: {_px(1)} solid #aeb4ba !important;
+      min-width: {_rem(2)} !important;
+      min-height: {_rem(1)} !important;
+      padding: {_rem(0.12)} !important;
       box-sizing: border-box !important;
       align-self: center !important;
       margin-top: 0 !important;
@@ -1529,7 +1531,7 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-detail-refresh [data-baseweb="switch"] > div {{
       background-color: #ffffff !important;
-      box-shadow: 0 1px 3px rgba(19, 21, 22, 0.18) !important;
+      box-shadow: 0 {_px(1)} {_px(3)} rgba(19, 21, 22, 0.18) !important;
   }}
   .ca-detail-head {{
       margin: 0;
@@ -1549,7 +1551,7 @@ _GLOBAL_CSS = f"""
       flex-direction: row;
       flex-wrap: nowrap;
       align-items: center;
-      gap: 0.22rem;
+      gap: {_rem(0.22)};
       font-size: var(--ca-run-meta-size);
       color: #7a8086;
       font-style: italic;
@@ -1573,8 +1575,8 @@ _GLOBAL_CSS = f"""
       align-items: center;
       justify-content: center;
       align-self: center;
-      height: 1rem;
-      padding: 0 0.32rem;
+      height: {_rem(1)};
+      padding: 0 {_rem(0.32)};
       line-height: 1;
       margin: 0;
       vertical-align: middle;
@@ -1583,7 +1585,7 @@ _GLOBAL_CSS = f"""
       display: inline-flex;
       align-items: center;
       align-self: center;
-      gap: 0.12rem;
+      gap: {_rem(0.12)};
       white-space: nowrap;
       line-height: 1;
   }}
@@ -1635,17 +1637,17 @@ _GLOBAL_CSS = f"""
       color: {BRAND_INK};
   }}
   .ca-detail-status {{
-      margin-top: 0.55rem;
+      margin-top: {_rem(0.55)};
       display: flex;
       align-items: center;
-      gap: 0.55rem;
+      gap: {_rem(0.55)};
   }}
   .ca-log-sep {{
       color: #c2c7cc;
   }}
   .ca-loglink {{
       color: {BRAND_ORANGE};
-      font-size: 0.86rem;
+      font-size: {_rem(0.86)};
       font-weight: 600;
       text-decoration: none;
   }}
@@ -1690,9 +1692,9 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) iframe {{
       margin: 0 !important;
       padding: 0 !important;
-      min-height: 2px !important;
-      max-height: 2px !important;
-      height: 2px !important;
+      min-height: {_px(2)} !important;
+      max-height: {_px(2)} !important;
+      height: {_px(2)} !important;
       overflow: hidden !important;
       pointer-events: none !important;
       display: block !important;
@@ -1710,7 +1712,7 @@ _GLOBAL_CSS = f"""
 
   /* Step list — vertical space below the orange divider only. */
   .st-key-ca-steps {{
-      --ca-step-card-gap: 0.1px;
+      --ca-step-card-gap: {_px(0.1)};
       margin-top: 0 !important;
   }}
 
@@ -1732,10 +1734,10 @@ _GLOBAL_CSS = f"""
   .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"])
       + [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
       /* Pull cards together so shared borders collapse; gap controls visible separation. */
-      margin-top: calc(var(--ca-step-card-gap) - .5px) !important;
+      margin-top: calc(var(--ca-step-card-gap) - .{_px(5)}) !important;
   }}
   .st-key-ca-steps [class*="st-key-stepcard_"] + [class*="st-key-stepcard_"] {{
-      margin-top: calc(var(--ca-step-card-gap) - .5px) !important;
+      margin-top: calc(var(--ca-step-card-gap) - .{_px(5)}) !important;
   }}
 
   /* Stable shell while the steps fragment mounts or polls. */
@@ -1746,13 +1748,13 @@ _GLOBAL_CSS = f"""
 
   /* Each step is a bordered card — flex row: left (icon+name) | right (actions+arrow). */
   [class*="st-key-stepcard_"] {{
-      --ca-step-arrow-size: 1.25rem;
+      --ca-step-arrow-size: {_rem(1.25)};
       position: relative;
-      border: 1px solid #e3e6e8;
-      border-radius: 10px;
-      padding: 4px 12px;
+      border: {_px(1)} solid #e3e6e8;
+      border-radius: {_px(10)};
+      padding: {_px(4)} {_px(12)};
       background: #ffffff;
-      min-height: 32px;
+      min-height: {_px(32)};
       box-sizing: border-box;
   }}
 
@@ -1773,12 +1775,12 @@ _GLOBAL_CSS = f"""
       width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      gap: 8px !important;
+      gap: {_px(8)} !important;
       min-height: 0 !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] {{
-      min-height: 24px !important;
+      min-height: {_px(24)} !important;
   }}
   [class*="st-key-stepcard_"] [data-testid="column"] {{
       display: flex !important;
@@ -1808,7 +1810,7 @@ _GLOBAL_CSS = f"""
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child {{
       flex: 0 0 auto !important;
       width: auto !important;
-      min-width: calc(var(--ca-step-arrow-size) + 0.15rem) !important;
+      min-width: calc(var(--ca-step-arrow-size) + {_rem(0.15)}) !important;
       max-width: none !important;
       justify-content: flex-end !important;
       margin-left: 0 !important;
@@ -1832,7 +1834,7 @@ _GLOBAL_CSS = f"""
       max-width: 100% !important;
       overflow: hidden !important;
   }}
-  /* Right-side actions group: "More actions" label + arrow with 8px gap. */
+  /* Right-side actions group: "More actions" label + arrow with {_px(8)} gap. */
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stElementContainer"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stElementContainer"] {{
       width: auto !important;
@@ -1849,7 +1851,7 @@ _GLOBAL_CSS = f"""
       border: none !important;
       background: transparent !important;
       min-height: 0 !important;
-      max-height: 24px !important;
+      max-height: {_px(24)} !important;
       height: auto !important;
       overflow: visible !important;
   }}
@@ -1861,8 +1863,8 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       border: none !important;
       background: transparent !important;
-      min-height: 18px !important;
-      max-height: 24px !important;
+      min-height: {_px(18)} !important;
+      max-height: {_px(24)} !important;
       height: auto !important;
       overflow: hidden !important;
   }}
@@ -1870,21 +1872,21 @@ _GLOBAL_CSS = f"""
   .ca-step-left {{
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: {_px(8)};
       flex: 1;
       min-width: 0;
       width: 100%;
   }}
   .ca-step-name {{
-      font-size: 14px;
+      font-size: {_px(14)};
       font-weight: 600;
       color: {BRAND_INK};
       line-height: 1.25;
   }}
   .ca-step-status-img {{
       flex: 0 0 auto;
-      width: 18px;
-      height: 18px;
+      width: {_px(18)};
+      height: {_px(18)};
       object-fit: contain;
       display: block;
   }}
@@ -1894,7 +1896,7 @@ _GLOBAL_CSS = f"""
   }}
   .ca-step-more {{
       flex: 0 0 auto;
-      font-size: 13px;
+      font-size: {_px(13)};
       font-weight: 600;
       color: #6b7177;
       white-space: nowrap;
@@ -1911,14 +1913,14 @@ _GLOBAL_CSS = f"""
   .ca-step-detail {{
       display: flex;
       flex-direction: column;
-      gap: 0.2rem;
+      gap: {_rem(0.2)};
       overflow: hidden;
       min-height: 0;
       margin-top: 0;
       padding-top: 0;
-      border-top: 1px solid transparent;
+      border-top: {_px(1)} solid transparent;
       opacity: 0;
-      transform: translateY(-6px);
+      transform: translateY(-{_px(6)});
       transition:
           opacity 0.24s ease,
           transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
@@ -1927,8 +1929,8 @@ _GLOBAL_CSS = f"""
           border-color 0.24s ease;
   }}
   .ca-step-detail-panel--open .ca-step-detail {{
-      margin-top: 0.5rem;
-      padding-top: 0.5rem;
+      margin-top: {_rem(0.5)};
+      padding-top: {_rem(0.5)};
       border-top-color: #eef0f2;
       opacity: 1;
       transform: translateY(0);
@@ -1940,7 +1942,7 @@ _GLOBAL_CSS = f"""
       }}
   }}
   .ca-step-time {{
-      font-size: 0.78rem;
+      font-size: {_rem(0.78)};
       color: #6b7177;
       white-space: nowrap;
   }}
@@ -1952,11 +1954,11 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: 0.22rem !important;
+      gap: {_rem(0.22)} !important;
       width: 100% !important;
-      margin: 0.1rem 0 0 0 !important;
-      padding: 0.12rem 0 0 0 !important;
-      border-top: 1px solid #eef0f2;
+      margin: {_rem(0.1)} 0 0 0 !important;
+      padding: {_rem(0.12)} 0 0 0 !important;
+      border-top: {_px(1)} solid #eef0f2;
   }}
   [class*="st-key-step_links_"] > [data-testid="stElementContainer"] {{
       width: auto !important;
@@ -1971,7 +1973,7 @@ _GLOBAL_CSS = f"""
       justify-content: center !important;
       width: auto !important;
       min-width: 0 !important;
-      padding: 0 0.06rem !important;
+      padding: 0 {_rem(0.06)} !important;
   }}
   .ca-step-link-sep {{
       color: #c2c7cc;
@@ -2153,8 +2155,8 @@ _GLOBAL_CSS = f"""
   /* ---------- Step detail dialog — translucent overlay + strict light panel ---------- */
   [data-testid="stBackdrop"] {{
       background-color: rgba(19, 21, 22, 0.38) !important;
-      backdrop-filter: blur(4px) !important;
-      -webkit-backdrop-filter: blur(4px) !important;
+      backdrop-filter: blur({_px(4)}) !important;
+      -webkit-backdrop-filter: blur({_px(4)}) !important;
   }}
   [data-testid="stDialog"],
   div[data-baseweb="modal"],
@@ -2169,15 +2171,15 @@ _GLOBAL_CSS = f"""
   [data-testid="stDialog"] [data-testid="stModalContainer"],
   div[data-baseweb="modal"] [data-baseweb="modal-dialog"] {{
       background: rgba(255, 255, 255, 0.97) !important;
-      backdrop-filter: blur(14px) saturate(1.1) !important;
-      -webkit-backdrop-filter: blur(14px) saturate(1.1) !important;
+      backdrop-filter: blur({_px(14)}) saturate(1.1) !important;
+      -webkit-backdrop-filter: blur({_px(14)}) saturate(1.1) !important;
       color: {BRAND_INK} !important;
       color-scheme: light only !important;
-      border: 1px solid rgba(227, 230, 232, 0.95) !important;
-      border-radius: 10px !important;
-      box-shadow: 0 16px 40px rgba(19, 21, 22, 0.18) !important;
-      max-width: min(96vw, 44rem) !important;
-      width: min(96vw, 44rem) !important;
+      border: {_px(1)} solid rgba(227, 230, 232, 0.95) !important;
+      border-radius: {_px(10)} !important;
+      box-shadow: 0 {_px(16)} {_px(40)} rgba(19, 21, 22, 0.18) !important;
+      max-width: min(96vw, {_rem(44)}) !important;
+      width: min(96vw, {_rem(44)}) !important;
       padding: 0 !important;
       --background-color: #ffffff !important;
       --secondary-background-color: #f6f7f8 !important;
@@ -2186,14 +2188,14 @@ _GLOBAL_CSS = f"""
   [data-testid="stDialog"] header,
   [data-testid="stDialog"] [data-testid="stModalHeader"] {{
       background: transparent !important;
-      border-bottom: 1px solid #eef0f2 !important;
+      border-bottom: {_px(1)} solid #eef0f2 !important;
       min-height: 0 !important;
-      padding: 0.35rem 0.55rem 0.25rem 0.65rem !important;
+      padding: {_rem(0.35)} {_rem(0.55)} {_rem(0.25)} {_rem(0.65)} !important;
   }}
   [data-testid="stDialog"] [data-testid="stModalBody"],
   [data-testid="stDialog"] [data-testid="stDialogBody"],
   [data-testid="stDialog"] section[data-testid="stMain"] {{
-      padding: 0.55rem 0.75rem 0.7rem 0.75rem !important;
+      padding: {_rem(0.55)} {_rem(0.75)} {_rem(0.7)} {_rem(0.75)} !important;
   }}
   [data-testid="stDialog"] [data-testid="stHtml"],
   [data-testid="stDialog"] [data-testid="stHtml"] iframe {{
@@ -2210,29 +2212,29 @@ _GLOBAL_CSS = f"""
       background: transparent !important;
   }}
   .ca-step-dialog-title {{
-      font-size: 0.92rem;
+      font-size: {_rem(0.92)};
       font-weight: 700;
       color: {BRAND_INK};
-      margin: 0 0 0.45rem 0;
+      margin: 0 0 {_rem(0.45)} 0;
       padding: 0;
       line-height: 1.25;
   }}
   .ca-step-dialog-body {{
       color: {BRAND_INK};
       background: transparent;
-      font-size: 0.78rem;
+      font-size: {_rem(0.78)};
       line-height: 1.3;
   }}
   .ca-step-dialog-body .ca-badge {{
       font-size: calc(var(--ca-caption-size) * 0.82);
-      padding: 0.03rem 0.32rem;
+      padding: {_rem(0.03)} {_rem(0.32)};
   }}
   .ca-step-dialog-fields {{
       display: grid;
       grid-template-columns: max-content 1fr;
-      gap: 0.22rem 0.65rem;
-      margin: 0 0 0.55rem 0;
-      font-size: 0.78rem;
+      gap: {_rem(0.22)} {_rem(0.65)};
+      margin: 0 0 {_rem(0.55)} 0;
+      font-size: {_rem(0.78)};
   }}
   .ca-step-dialog-fields dt {{
       margin: 0;
@@ -2246,30 +2248,30 @@ _GLOBAL_CSS = f"""
       min-width: 0;
   }}
   .ca-step-dialog-section {{
-      font-size: 0.8rem;
+      font-size: {_rem(0.8)};
       font-weight: 700;
       color: {BRAND_INK};
-      margin: 0 0 0.28rem 0;
+      margin: 0 0 {_rem(0.28)} 0;
   }}
   .ca-step-dialog-table-wrap {{
       overflow: visible;
-      border: 1px solid #e3e6e8;
-      border-radius: 6px;
+      border: {_px(1)} solid #e3e6e8;
+      border-radius: {_px(6)};
       background: #ffffff;
   }}
   .ca-step-dialog-table {{
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.72rem;
+      font-size: {_rem(0.72)};
       background: #ffffff;
       color: {BRAND_INK};
       table-layout: auto;
   }}
   .ca-step-dialog-table th,
   .ca-step-dialog-table td {{
-      padding: 0.32rem 0.5rem;
+      padding: {_rem(0.32)} {_rem(0.5)};
       text-align: left;
-      border-bottom: 1px solid #eef0f2;
+      border-bottom: {_px(1)} solid #eef0f2;
       color: {BRAND_INK};
       background: #ffffff;
       white-space: nowrap;
@@ -2288,28 +2290,28 @@ _GLOBAL_CSS = f"""
   }}
   .ca-step-dialog-empty {{
       color: #6b7177;
-      font-size: 0.74rem;
+      font-size: {_rem(0.74)};
       margin: 0;
   }}
   .ca-step-dialog-error {{
       color: #cf222e;
       background: #ffebe9;
-      border: 1px solid #ff8182;
-      border-radius: 6px;
-      padding: 0.4rem 0.55rem;
-      font-size: 0.76rem;
+      border: {_px(1)} solid #ff8182;
+      border-radius: {_px(6)};
+      padding: {_rem(0.4)} {_rem(0.55)};
+      font-size: {_rem(0.76)};
   }}
   .ca-log-dialog-pre {{
       margin: 0;
-      padding: 0.55rem 0.65rem;
-      max-height: min(62vh, 28rem);
+      padding: {_rem(0.55)} {_rem(0.65)};
+      max-height: min(62vh, {_rem(28)});
       overflow: auto;
-      border: 1px solid #d8dde3;
-      border-radius: 6px;
+      border: {_px(1)} solid #d8dde3;
+      border-radius: {_px(6)};
       background: #f8f9fa;
       color: {BRAND_INK};
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.72rem;
+      font-size: {_rem(0.72)};
       line-height: 1.35;
       white-space: pre-wrap;
       word-break: break-word;
@@ -2317,19 +2319,19 @@ _GLOBAL_CSS = f"""
 
   /* ---------- AI Chatbox ---------- */
   .st-key-ca-ai-chatbox {{
-      margin-top: 0.35rem !important;
+      margin-top: {_rem(0.35)} !important;
   }}
   .st-key-ca-ai-chatbox > [data-testid="stVerticalBlock"],
   .st-key-ca-ai-chatbox [data-testid="stVerticalBlock"] {{
-      gap: 0.65rem !important;
+      gap: {_rem(0.65)} !important;
   }}
 
   /* Message bubbles — force light palette (user + assistant). */
   .st-key-ca-ai-chatbox [data-testid="stChatMessage"] {{
       background: #ffffff !important;
-      border: 1px solid #eef0f2 !important;
-      border-radius: 8px !important;
-      padding: 0.65rem 0.75rem !important;
+      border: {_px(1)} solid #eef0f2 !important;
+      border-radius: {_px(8)} !important;
+      padding: {_rem(0.65)} {_rem(0.75)} !important;
       color: {BRAND_INK} !important;
   }}
   .st-key-ca-ai-chatbox [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {{
@@ -2350,7 +2352,7 @@ _GLOBAL_CSS = f"""
   .st-key-ca-ai-chatbox [data-testid="stChatMessageAvatarUser"],
   .st-key-ca-ai-chatbox [data-testid="stChatMessageAvatarAssistant"] {{
       background: #ffffff !important;
-      border: 1px solid #e3e6e8 !important;
+      border: {_px(1)} solid #e3e6e8 !important;
       color: #6b7177 !important;
   }}
   .st-key-ca-ai-chatbox [data-testid="stChatMessageAvatarAssistant"] [data-testid="stIconMaterial"] {{
@@ -2359,20 +2361,20 @@ _GLOBAL_CSS = f"""
 
   /* Input sits inline below messages — no bottom bar divider. */
   .st-key-ca-ai-chatbox .st-key-ca_ai_chat_input {{
-      margin-top: 0.15rem !important;
+      margin-top: {_rem(0.15)} !important;
   }}
 
   .st-key-ca_ai_chat_input [data-testid="stChatInput"] {{
       background-color: #ffffff !important;
-      border: 1px solid #e3e6e8 !important;
-      border-radius: 8px !important;
+      border: {_px(1)} solid #e3e6e8 !important;
+      border-radius: {_px(8)} !important;
       box-shadow: none !important;
       color: {BRAND_INK} !important;
   }}
   .st-key-ca_ai_chat_input [data-testid="stChatInput"]:focus-within {{
       background-color: #ffffff !important;
       border-color: rgba(232, 117, 17, 0.45) !important;
-      box-shadow: 0 0 0 1px rgba(232, 117, 17, 0.12) !important;
+      box-shadow: 0 0 0 {_px(1)} rgba(232, 117, 17, 0.12) !important;
   }}
   .st-key-ca_ai_chat_input [data-testid="stChatInputTextArea"],
   .st-key-ca_ai_chat_input textarea {{
@@ -2387,9 +2389,9 @@ _GLOBAL_CSS = f"""
 
   /* Send arrow — sidebar-style orange hover. */
   .st-key-ca_ai_chat_input [data-testid="stChatInputSubmitButton"] {{
-      border-radius: 5px !important;
-      min-width: 1.85rem !important;
-      min-height: 1.85rem !important;
+      border-radius: {_px(5)} !important;
+      min-width: {_rem(1.85)} !important;
+      min-height: {_rem(1.85)} !important;
       transition: background-color 0.15s ease, color 0.15s ease !important;
   }}
   .st-key-ca_ai_chat_input [data-testid="stChatInputSubmitButton"]:not(:disabled) {{
@@ -2418,20 +2420,20 @@ _GLOBAL_CSS = f"""
 
   /* Home — dashboard shell */
   .st-key-ca_home_dashboard {{
-      --ca-home-card-gap: 12px;
-      --ca-home-card-radius: 12px;
+      --ca-home-card-gap: {_px(12)};
+      --ca-home-card-radius: {_px(12)};
       --ca-home-card-border: #e6e9eb;
-      --ca-home-card-shadow: 0 1px 2px rgba(19, 21, 22, 0.04), 0 4px 14px rgba(19, 21, 22, 0.06);
+      --ca-home-card-shadow: 0 {_px(1)} {_px(2)} rgba(19, 21, 22, 0.04), 0 {_px(4)} {_px(14)} rgba(19, 21, 22, 0.06);
       --ca-home-muted: #6b7177;
       --ca-home-soft: #f6f7f8;
-      margin: 0.5rem 0 1rem 0 !important;
+      margin: {_rem(0.5)} 0 {_rem(1)} 0 !important;
       width: 100% !important;
   }}
   .st-key-ca_home_dashboard > [data-testid="stVerticalBlock"],
   .st-key-ca_home_dashboard > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       display: flex !important;
       flex-direction: column !important;
-      gap: var(--ca-home-card-gap, 12px) !important;
+      gap: var(--ca-home-card-gap, {_px(12)}) !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
@@ -2459,7 +2461,7 @@ _GLOBAL_CSS = f"""
   .ca-home-kpis {{
       display: grid;
       grid-template-columns: repeat(var(--ca-home-kpi-count, 4), minmax(0, 1fr));
-      gap: var(--ca-home-card-gap, 12px);
+      gap: var(--ca-home-card-gap, {_px(12)});
       margin: 0;
       width: 100%;
       max-width: 100%;
@@ -2469,12 +2471,12 @@ _GLOBAL_CSS = f"""
   .ca-home-kpis .ca-home-kpi {{
       width: 100%;
   }}
-  @media (max-width: 1100px) {{
+  @media (max-width: {_px(1100)}) {{
       .ca-home-kpis {{
           grid-template-columns: repeat(2, minmax(0, 1fr));
       }}
   }}
-  @media (max-width: 640px) {{
+  @media (max-width: {_px(640)}) {{
       .ca-home-kpis {{
           grid-template-columns: 1fr;
       }}
@@ -2487,47 +2489,47 @@ _GLOBAL_CSS = f"""
       width: 100%;
       min-width: 0;
       height: 100%;
-      border: 1px solid var(--ca-home-card-border, #e6e9eb);
-      border-radius: var(--ca-home-card-radius, 12px);
+      border: {_px(1)} solid var(--ca-home-card-border, #e6e9eb);
+      border-radius: var(--ca-home-card-radius, {_px(12)});
       background: #ffffff;
-      padding: 16px 18px 15px 18px;
+      padding: {_px(16)} {_px(18)} {_px(15)} {_px(18)};
       box-sizing: border-box;
       box-shadow: var(--ca-home-card-shadow);
   }}
   .ca-home-kpi-top {{
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: {_px(10)};
       color: var(--ca-home-muted, #6b7177);
       font-weight: 600;
-      font-size: 12.5px;
+      font-size: {_px(12.5)};
       line-height: 1.3;
       flex: 0 0 auto;
       letter-spacing: -0.01em;
   }}
   .ca-home-kpi-ic {{
-      width: 32px;
-      height: 32px;
-      border-radius: 9px;
+      width: {_px(32)};
+      height: {_px(32)};
+      border-radius: {_px(9)};
       display: grid;
       place-items: center;
       background: linear-gradient(145deg, rgba(232, 117, 17, 0.16) 0%, rgba(232, 117, 17, 0.08) 100%);
-      border: 1px solid rgba(232, 117, 17, 0.14);
-      flex: 0 0 32px;
+      border: {_px(1)} solid rgba(232, 117, 17, 0.14);
+      flex: 0 0 {_px(32)};
       line-height: 0;
   }}
   .ca-home-kpi-ic--check::after {{
       content: "";
-      width: 16px;
-      height: 16px;
+      width: {_px(16)};
+      height: {_px(16)};
       display: block;
       background: center / contain no-repeat
           url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e87511' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
   }}
   .ca-home-kpi-ic--layers::after {{
       content: "";
-      width: 16px;
-      height: 16px;
+      width: {_px(16)};
+      height: {_px(16)};
       display: block;
       background: center / contain no-repeat
           url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e87511' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2 2 7l10 5 10-5-10-5Z'/%3E%3Cpath d='m2 17 10 5 10-5'/%3E%3Cpath d='m2 12 10 5 10-5'/%3E%3C/svg%3E");
@@ -2537,31 +2539,31 @@ _GLOBAL_CSS = f"""
       align-items: baseline;
       gap: 0;
       font-weight: 800;
-      font-size: 32px;
-      letter-spacing: -1.2px;
+      font-size: {_px(32)};
+      letter-spacing: -{_px(1.2)};
       line-height: 1;
       color: {BRAND_INK};
-      margin: 14px 0 0 0;
+      margin: {_px(14)} 0 0 0;
       padding: 0;
       flex: 0 0 auto;
   }}
   .ca-home-kpi-val small {{
-      font-size: 18px;
+      font-size: {_px(18)};
       color: var(--ca-home-muted, #6b7177);
       font-weight: 700;
-      letter-spacing: -0.2px;
-      margin-left: 2px;
+      letter-spacing: -{_px(0.2)};
+      margin-left: {_px(2)};
   }}
   .ca-home-kpi-foot {{
       display: flex;
       flex-direction: column;
       align-items: stretch;
       gap: 0;
-      margin: 12px 0 0 0;
+      margin: {_px(12)} 0 0 0;
       flex: 1 1 auto;
       justify-content: flex-end;
       width: 100%;
-      font-size: 12px;
+      font-size: {_px(12)};
       font-weight: 600;
   }}
   .ca-home-kpi-meta {{
@@ -2570,22 +2572,22 @@ _GLOBAL_CSS = f"""
       align-items: center;
       justify-content: space-between;
       flex-wrap: nowrap;
-      gap: 8px;
+      gap: {_px(8)};
       width: 100%;
       min-width: 0;
   }}
   .ca-home-kpi-pill {{
       display: inline-flex;
       align-items: center;
-      gap: 3px;
-      padding: 3px 8px;
-      border-radius: 999px;
+      gap: {_px(3)};
+      padding: {_px(3)} {_px(8)};
+      border-radius: {_px(999)};
       font-weight: 700;
-      font-size: 11px;
+      font-size: {_px(11)};
       line-height: 1.2;
       white-space: nowrap;
       flex: 0 0 auto;
-      border: 1px solid transparent;
+      border: {_px(1)} solid transparent;
   }}
   .ca-home-kpi-pill.up {{
       background: rgba(26, 127, 55, 0.1);
@@ -2605,7 +2607,7 @@ _GLOBAL_CSS = f"""
   .ca-home-kpi-note {{
       color: var(--ca-home-muted, #6b7177);
       font-weight: 500;
-      font-size: 11.5px;
+      font-size: {_px(11.5)};
       line-height: 1.25;
       white-space: nowrap;
       overflow: hidden;
@@ -2619,7 +2621,7 @@ _GLOBAL_CSS = f"""
   /* Home — chart cards row (2:1 via Streamlit columns; do NOT use CSS grid here) */
   .st-key-ca_home_dashboard [data-testid="stHorizontalBlock"] {{
       align-items: stretch !important;
-      gap: var(--ca-home-card-gap, 12px) !important;
+      gap: var(--ca-home-card-gap, {_px(12)}) !important;
       width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
@@ -2647,7 +2649,7 @@ _GLOBAL_CSS = f"""
   .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
   .st-key-ca_home_dashboard [data-testid="column"]:last-child > [data-testid="stVerticalBlock"],
   .st-key-ca_home_dashboard [data-testid="column"]:last-child > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      gap: var(--ca-home-card-gap, 12px) !important;
+      gap: var(--ca-home-card-gap, {_px(12)}) !important;
   }}
   .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlock"] > .st-key-ca_clone_activity,
   .st-key-ca_home_dashboard [data-testid="column"]:first-child > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > .st-key-ca_clone_activity {{
@@ -2680,10 +2682,10 @@ _GLOBAL_CSS = f"""
       display: flex !important;
       flex-direction: column !important;
       width: 100% !important;
-      border: 1px solid var(--ca-home-card-border, #e6e9eb) !important;
-      border-radius: var(--ca-home-card-radius, 12px) !important;
+      border: {_px(1)} solid var(--ca-home-card-border, #e6e9eb) !important;
+      border-radius: var(--ca-home-card-radius, {_px(12)}) !important;
       background: #ffffff !important;
-      padding: 14px 16px 12px 16px !important;
+      padding: {_px(14)} {_px(16)} {_px(12)} {_px(16)} !important;
       margin: 0 !important;
       box-sizing: border-box !important;
       box-shadow: var(--ca-home-card-shadow) !important;
@@ -2693,7 +2695,7 @@ _GLOBAL_CSS = f"""
       display: flex !important;
       flex-direction: column !important;
       flex: 1 1 auto !important;
-      gap: 0.1rem !important;
+      gap: {_rem(0.1)} !important;
       margin: 0 !important;
       padding: 0 !important;
       min-height: 100% !important;
@@ -2760,10 +2762,10 @@ _GLOBAL_CSS = f"""
   .st-key-ca_clone_activity .js-plotly-plot,
   .st-key-ca_outcome_breakdown .js-plotly-plot {{
       margin: 0 !important;
-      max-height: 178px !important;
+      max-height: {_px(178)} !important;
   }}
   .ca-home-chart-head {{
-      margin: 0 0 6px 0;
+      margin: 0 0 {_px(6)} 0;
       flex: 0 0 auto;
   }}
   .ca-clone-activity-top {{
@@ -2774,17 +2776,17 @@ _GLOBAL_CSS = f"""
       gap: 0;
   }}
   .ca-home-chart-title {{
-      font-size: 15.5px;
+      font-size: {_px(15.5)};
       font-weight: 800;
       color: {BRAND_INK};
       line-height: 1.25;
       margin: 0;
-      letter-spacing: -0.3px;
+      letter-spacing: -{_px(0.3)};
       white-space: nowrap;
   }}
   .ca-home-chart-sub {{
-      margin: 3px 0 0 0;
-      font-size: 12px;
+      margin: {_px(3)} 0 0 0;
+      font-size: {_px(12)};
       font-weight: 500;
       color: var(--ca-home-muted, #6b7177);
       line-height: 1.35;
@@ -2798,33 +2800,33 @@ _GLOBAL_CSS = f"""
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 0;
-      margin: 12px 0 0 0;
-      padding: 11px 0 0 0;
-      border-top: 1px solid #f0f1f3;
+      margin: {_px(12)} 0 0 0;
+      padding: {_px(11)} 0 0 0;
+      border-top: {_px(1)} solid #f0f1f3;
       flex: 0 0 auto;
   }}
   .ca-home-chart-metric {{
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: {_px(3)};
       min-width: 0;
-      padding: 0 12px;
+      padding: 0 {_px(12)};
   }}
   .ca-home-chart-metric:first-child {{
       padding-left: 0;
   }}
   .ca-home-chart-metric:not(:last-child) {{
-      border-right: 1px solid #eef0f2;
+      border-right: {_px(1)} solid #eef0f2;
   }}
   .ca-home-chart-metric strong {{
-      font-size: 19px;
+      font-size: {_px(19)};
       font-weight: 800;
-      letter-spacing: -0.6px;
+      letter-spacing: -{_px(0.6)};
       color: {BRAND_INK};
       line-height: 1.05;
   }}
   .ca-home-chart-metric span {{
-      font-size: 11.5px;
+      font-size: {_px(11.5)};
       font-weight: 500;
       color: var(--ca-home-muted, #6b7177);
       line-height: 1.25;
@@ -2838,28 +2840,28 @@ _GLOBAL_CSS = f"""
       flex-direction: column;
       gap: 0;
       margin: 0;
-      padding-top: 10px;
-      border-top: 1px solid #f0f1f3;
+      padding-top: {_px(10)};
+      border-top: {_px(1)} solid #f0f1f3;
       flex: 0 0 auto;
   }}
   .ca-outcome-row {{
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto auto;
       align-items: center;
-      column-gap: 12px;
+      column-gap: {_px(12)};
       row-gap: 0;
-      font-size: 12.5px;
+      font-size: {_px(12.5)};
       line-height: 1.25;
-      padding: 7px 2px;
-      border-radius: 6px;
+      padding: {_px(7)} {_px(2)};
+      border-radius: {_px(6)};
   }}
   .ca-outcome-row + .ca-outcome-row {{
-      border-top: 1px solid #f6f7f8;
+      border-top: {_px(1)} solid #f6f7f8;
   }}
   .ca-outcome-label {{
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: {_px(8)};
       color: {BRAND_INK};
       font-weight: 600;
       min-width: 0;
@@ -2868,11 +2870,11 @@ _GLOBAL_CSS = f"""
       text-overflow: ellipsis;
   }}
   .ca-outcome-swatch {{
-      width: 10px;
-      height: 10px;
+      width: {_px(10)};
+      height: {_px(10)};
       border-radius: 50%;
-      flex: 0 0 10px;
-      box-shadow: inset 0 0 0 1px rgba(19, 21, 22, 0.06);
+      flex: 0 0 {_px(10)};
+      box-shadow: inset 0 0 0 {_px(1)} rgba(19, 21, 22, 0.06);
   }}
   .ca-outcome-swatch.ok {{
       background: {BRAND_ORANGE};
@@ -2887,14 +2889,14 @@ _GLOBAL_CSS = f"""
       color: {BRAND_INK};
       font-weight: 700;
       text-align: right;
-      min-width: 2.25rem;
+      min-width: {_rem(2.25)};
       font-variant-numeric: tabular-nums;
   }}
   .ca-outcome-pct {{
       color: {BRAND_INK};
       font-weight: 800;
       text-align: right;
-      min-width: 3.25rem;
+      min-width: {_rem(3.25)};
       font-variant-numeric: tabular-nums;
   }}
   .ca-outcome-pct strong {{
@@ -2903,10 +2905,10 @@ _GLOBAL_CSS = f"""
 
   /* Home — recent runs (Run History cards, max 5) */
   .st-key-ca_home_recent_runs {{
-      border: 1px solid var(--ca-home-card-border, #e6e9eb) !important;
-      border-radius: var(--ca-home-card-radius, 12px) !important;
+      border: {_px(1)} solid var(--ca-home-card-border, #e6e9eb) !important;
+      border-radius: var(--ca-home-card-radius, {_px(12)}) !important;
       background: #ffffff !important;
-      padding: 14px 16px 12px 16px !important;
+      padding: {_px(14)} {_px(16)} {_px(12)} {_px(16)} !important;
       margin: 0 !important;
       box-sizing: border-box !important;
       box-shadow: var(--ca-home-card-shadow) !important;
@@ -2914,7 +2916,7 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca_home_recent_runs > [data-testid="stVerticalBlock"],
   .st-key-ca_home_recent_runs > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      gap: 0.35rem !important;
+      gap: {_rem(0.35)} !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
@@ -2923,7 +2925,7 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca_home_recent_runs .st-key-ca-runs > [data-testid="stVerticalBlock"],
   .st-key-ca_home_recent_runs .st-key-ca-runs > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      gap: var(--ca-home-card-gap, 12px) !important;
+      gap: var(--ca-home-card-gap, {_px(12)}) !important;
   }}
   .st-key-ca_home_recent_runs .ca-run-oneline--compact .ca-run-meta-part--compact {{
       min-width: 0 !important;
@@ -2937,10 +2939,10 @@ _GLOBAL_CSS = f"""
       flex-direction: column !important;
       flex: 1 1 auto !important;
       min-height: 0 !important;
-      border: 1px solid var(--ca-home-card-border, #e6e9eb) !important;
-      border-radius: var(--ca-home-card-radius, 12px) !important;
+      border: {_px(1)} solid var(--ca-home-card-border, #e6e9eb) !important;
+      border-radius: var(--ca-home-card-radius, {_px(12)}) !important;
       background: #ffffff !important;
-      padding: 14px 16px 16px 16px !important;
+      padding: {_px(14)} {_px(16)} {_px(16)} {_px(16)} !important;
       margin: 0 !important;
       box-sizing: border-box !important;
       box-shadow: var(--ca-home-card-shadow) !important;
@@ -2958,14 +2960,14 @@ _GLOBAL_CSS = f"""
   }}
   .ca-home-soon {{
       display: inline-block;
-      margin: 10px 0 0 0 !important;
-      font-size: 0.72rem;
+      margin: {_px(10)} 0 0 0 !important;
+      font-size: {_rem(0.72)};
   }}
 
-  @media (max-width: 640px) {{
+  @media (max-width: {_px(640)}) {{
       .st-key-ca_home_dashboard [data-testid="stHorizontalBlock"] {{
           flex-direction: column !important;
-          gap: var(--ca-home-card-gap, 12px) !important;
+          gap: var(--ca-home-card-gap, {_px(12)}) !important;
       }}
   }}
 </style>
@@ -3164,12 +3166,13 @@ def _status_glow_html(key: str, size: int) -> tuple[str, str]:
 
     r, g, b = rgb
     anim = f"ca-status-pulse-{key.lower()}"
-    wrap_size = size + 8
+    wrap_size = size + round(8 * UI_SCALE)
+    glow_px = round(6 * UI_SCALE)
     style_tag = (
         "<style>"
         f"@keyframes {anim}{{"
         f"0%{{box-shadow:0 0 0 0 rgba({r},{g},{b},0.55);}}"
-        f"70%{{box-shadow:0 0 0 6px rgba({r},{g},{b},0);}}"
+        f"70%{{box-shadow:0 0 0 {glow_px}px rgba({r},{g},{b},0);}}"
         f"100%{{box-shadow:0 0 0 0 rgba({r},{g},{b},0);}}"
         "}"
         "</style>"
@@ -3281,8 +3284,8 @@ def render_run_card(run: dict, *, key_prefix: str = "", compact: bool = False) -
             )
         meta_html = (
             f'<div class="ca-run-meta-part" '
-            f'style="margin-left:auto;display:flex;align-items:center;gap:12px;'
-            f'min-width:420px;justify-content:flex-end;box-sizing:border-box;">'
+            f'style="margin-left:auto;display:flex;align-items:center;gap:{round(12 * UI_SCALE)}px;'
+            f'min-width:{round(420 * UI_SCALE)}px;justify-content:flex-end;box-sizing:border-box;">'
             f'<span class="ca-run-metaline">'
             f'<span class="mi mi-start">&#9654;</span> Started {started_html(run.get("start_date"))}'
             f"</span>"
@@ -3301,7 +3304,7 @@ def render_run_card(run: dict, *, key_prefix: str = "", compact: bool = False) -
     oneline_class = "ca-run-oneline ca-run-oneline--compact" if compact else "ca-run-oneline"
     info_html = (
         f'<div class="ca-run"><div class="{oneline_class}" '
-        f'style="display:flex;align-items:center;width:100%;min-height:1.65rem;line-height:1.25;">'
+        f'style="display:flex;align-items:center;width:100%;min-height:{_rem(1.65)};line-height:1.25;">'
         f"{primary_html}"
         f"{meta_html}"
         f"</div></div>"
@@ -3556,7 +3559,7 @@ def run_detail_title_html(*, run_id: str, src: str, tgt: str) -> str:
     ``st.html`` renders inside an iframe, so styles must be embedded here —
     global CSS from ``apply_global_styles()`` does not apply inside the iframe.
     """
-    title_size = "1.75rem"
+    title_size = _rem(1.75)
     return f"""
     <style>
       .ca-detail-page-header,
@@ -3567,7 +3570,7 @@ def run_detail_title_html(*, run_id: str, src: str, tgt: str) -> str:
       .ca-detail-title-parts {{
         display: inline-flex;
         align-items: center;
-        gap: 0.28rem;
+        gap: {_rem(0.28)};
         margin: 0;
         padding: 0;
         font-size: {title_size};

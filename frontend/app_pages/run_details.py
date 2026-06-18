@@ -27,6 +27,8 @@ from styles import (
     started_html,
     status_badge_html,
     status_image_html,
+    STATUS_ICON_PX,
+    UI_SCALE,
     step_detail_dialog_error_html,
     step_detail_dialog_html,
     _esc,
@@ -153,10 +155,10 @@ if run:
                 with left_col:
                     st.html(
                         f'<div class="ca-step-left" '
-                        f'style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;width:100%;">'
-                        f'{status_image_html(step.get("status", ""), size=18)}'
+                        f'style="display:flex;align-items:center;gap:{round(8 * UI_SCALE)}px;flex:1;min-width:0;width:100%;">'
+                        f'{status_image_html(step.get("status", ""), size=STATUS_ICON_PX)}'
                         f'<span class="ca-step-name" '
-                        f'style="font-size:14px;font-weight:600;line-height:1.25;">'
+                        f'style="font-size:{round(14 * UI_SCALE)}px;font-weight:600;line-height:1.25;">'
                         f"{safe_name}</span>"
                         f"</div>"
                     )

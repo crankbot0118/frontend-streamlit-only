@@ -7,7 +7,7 @@ import html
 import plotly.graph_objects as go
 
 from kpi_helpers import CloneActivityStats, OutcomeBreakdown, format_duration
-from styles import BRAND_INK, BRAND_ORANGE, BRAND_RED
+from styles import BRAND_INK, BRAND_ORANGE, BRAND_RED, UI_SCALE
 
 CHART_SUCCESS = BRAND_ORANGE
 CHART_FAILED = BRAND_RED
@@ -17,8 +17,11 @@ CHART_MUTED = "#6b7177"
 CHART_AXIS = "#9aa0a6"
 
 _PLOTLY_CONFIG = {"displayModeBar": False, "responsive": True}
-ACTIVITY_CHART_HEIGHT = 178
-OUTCOME_CHART_HEIGHT = 178
+ACTIVITY_CHART_HEIGHT = round(178 * UI_SCALE)
+OUTCOME_CHART_HEIGHT = round(178 * UI_SCALE)
+_CHART_FONT = round(12 * UI_SCALE)
+_CHART_FONT_SM = round(11 * UI_SCALE)
+_CHART_FONT_XS = round(10 * UI_SCALE)
 
 
 def _base_layout(**overrides) -> dict:
@@ -28,14 +31,14 @@ def _base_layout(**overrides) -> dict:
         font=dict(
             family="system-ui, -apple-system, Segoe UI, sans-serif",
             color=BRAND_INK,
-            size=12,
+            size=_CHART_FONT,
         ),
-        margin=dict(l=0, r=0, t=4, b=0),
+        margin=dict(l=0, r=0, t=round(4 * UI_SCALE), b=0),
         showlegend=False,
         hoverlabel=dict(
             bgcolor="#ffffff",
             bordercolor="#e3e6e8",
-            font=dict(color=BRAND_INK, size=12),
+            font=dict(color=BRAND_INK, size=_CHART_FONT),
         ),
     )
     layout.update(overrides)
@@ -53,7 +56,7 @@ def clone_activity_figure(stats: CloneActivityStats) -> go.Figure:
             name="Successful",
             x=labels,
             y=success,
-            marker=dict(color=CHART_SUCCESS, line=dict(width=0), cornerradius=4),
+            marker=dict(color=CHART_SUCCESS, line=dict(width=0), cornerradius=round(4 * UI_SCALE)),
             hovertemplate="%{x}<br>Successful: %{y}<extra></extra>",
         )
     )
@@ -62,7 +65,7 @@ def clone_activity_figure(stats: CloneActivityStats) -> go.Figure:
             name="Failed",
             x=labels,
             y=failed,
-            marker=dict(color=CHART_FAILED, line=dict(width=0), cornerradius=4),
+            marker=dict(color=CHART_FAILED, line=dict(width=0), cornerradius=round(4 * UI_SCALE)),
             hovertemplate="%{x}<br>Failed: %{y}<extra></extra>",
         )
     )
@@ -77,20 +80,20 @@ def clone_activity_figure(stats: CloneActivityStats) -> go.Figure:
                 y=-0.18,
                 xanchor="left",
                 x=0,
-                font=dict(size=11, color=CHART_MUTED),
+                font=dict(size=_CHART_FONT_SM, color=CHART_MUTED),
                 traceorder="normal",
                 itemsizing="constant",
-                itemwidth=30,
-                entrywidth=90,
+                itemwidth=round(30 * UI_SCALE),
+                entrywidth=round(90 * UI_SCALE),
                 bgcolor="rgba(0,0,0,0)",
             ),
             showlegend=True,
-            margin=dict(l=0, r=0, t=2, b=38),
+            margin=dict(l=0, r=0, t=round(2 * UI_SCALE), b=round(38 * UI_SCALE)),
             xaxis=dict(
                 showgrid=False,
                 showline=False,
                 zeroline=False,
-                tickfont=dict(size=11, color=CHART_AXIS),
+                tickfont=dict(size=_CHART_FONT_SM, color=CHART_AXIS),
                 tickmode="linear",
             ),
             yaxis=dict(
@@ -99,7 +102,7 @@ def clone_activity_figure(stats: CloneActivityStats) -> go.Figure:
                 gridwidth=1,
                 zeroline=False,
                 showline=False,
-                tickfont=dict(size=10, color=CHART_AXIS),
+                tickfont=dict(size=_CHART_FONT_XS, color=CHART_AXIS),
                 ticks="outside",
                 ticklen=0,
                 tickcolor="rgba(0,0,0,0)",
@@ -129,7 +132,7 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
             values=values,
             labels=[slice_.label for slice_ in breakdown.slices],
             hole=0.78,
-            marker=dict(colors=colors, line=dict(color="#ffffff", width=5)),
+            marker=dict(colors=colors, line=dict(color="#ffffff", width=round(5 * UI_SCALE))),
             sort=False,
             direction="clockwise",
             rotation=210,
@@ -141,7 +144,7 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
     fig.update_layout(
         **_base_layout(
             height=OUTCOME_CHART_HEIGHT,
-            margin=dict(l=0, r=0, t=4, b=4),
+            margin=dict(l=0, r=0, t=round(4 * UI_SCALE), b=round(4 * UI_SCALE)),
         )
     )
     fig.add_annotation(
@@ -153,7 +156,7 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
         xref="paper",
         yref="paper",
         font=dict(
-            size=27,
+            size=round(27 * UI_SCALE),
             color=BRAND_INK,
             family="system-ui, -apple-system, Segoe UI, sans-serif",
         ),
@@ -166,7 +169,7 @@ def outcome_donut_figure(breakdown: OutcomeBreakdown) -> go.Figure:
         align="center",
         xref="paper",
         yref="paper",
-        font=dict(size=11, color=CHART_MUTED, family="system-ui, sans-serif"),
+        font=dict(size=_CHART_FONT_SM, color=CHART_MUTED, family="system-ui, sans-serif"),
     )
     return fig
 
