@@ -10,6 +10,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from api import (
+    abort_run,
     get_run,
     get_run_steps,
     get_step_detail,
@@ -56,6 +57,26 @@ def _load_steps(run_id: int, fallback: list | None = None) -> list:
     except Exception as exc:
         show_error(exc, context="Could not load run steps")
         return fallback or []
+
+
+def _abort_state(step_rows: list, live_run: dict | None) -> tuple[bool, int | None, str]:
+    failed_steps = [
+        s for s in step_rows if (s.get("status") or "").upper() == "FAILED"
+    ]
+    failed_step_id = (
+        max(failed_steps, key=lambda s: s["clone_function_run_id"])["clone_function_run_id"]
+        if failed_steps
+        else None
+    )
+    run_status = (live_run.get("status") or "").upper() if live_run else ""
+    can_abort = run_status == "FAILED" and failed_step_id is not None
+    if can_abort:
+        help_text = "Mark this failed run as ABORTED"
+    elif run_status != "FAILED":
+        help_text = "Only available when clone run status is FAILED"
+    else:
+        help_text = "No failed function step found for this run"
+    return can_abort, failed_step_id, help_text
 
 
 def _step_action_state(step: dict, live_run: dict | None) -> tuple[bool, str]:
@@ -152,10 +173,10 @@ if run:
                 with left_col:
                     st.html(
                         f'<div class="ca-step-left" '
-                        f'style="display:flex;align-items:center;gap:5px;flex:1;min-width:0;width:100%;">'
-                        f'{status_image_html(step.get("status", ""), size=16)}'
+                        f'style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;width:100%;">'
+                        f'{status_image_html(step.get("status", ""), size=18)}'
                         f'<span class="ca-step-name" '
-                        f'style="font-size:13px;font-weight:600;line-height:1.2;">'
+                        f'style="font-size:14px;font-weight:600;line-height:1.25;">'
                         f"{safe_name}</span>"
                         f"</div>"
                     )
@@ -228,28 +249,50 @@ if run:
             if not live_run:
                 live_run = run
             live_steps = _load_steps(run_id, steps) if polling else steps
+            can_abort, failed_step_id, abort_help = _abort_state(live_steps, live_run)
 
             with st.container(key="ca-detail-title-row"):
                 st.html(
                     f"""
                     <div class="ca-page-header ca-detail-page-header">
                       <div class="ca-title">
-                        <div class="ca-detail-title-parts">
+                        <h1 class="ca-detail-title-parts">
                           <span>Run #{safe_run_id}</span>
                           <span class="ca-run-sep">&middot;</span>
                           <span>{src}</span>
                           <span class="arrow">&#8594;</span>
                           <span>{tgt}</span>
                           <span class="ca-run-sep">&middot;</span>
-                        </div>
+                        </h1>
                       </div>
                     </div>
                     """
                 )
+                with st.container(key="detail-actions"):
+                    if st.button(
+                        "Abort",
+                        key="detail_abort",
+                        type="secondary",
+                        icon=":material/stop:",
+                        disabled=not can_abort,
+                        help=abort_help,
+                    ):
+                        if not can_abort:
+                            show_error(
+                                "Abort is only allowed when clone run status is FAILED.",
+                                context="Cannot abort run",
+                            )
+                        else:
+                            try:
+                                abort_run(run_id, failed_step_id)
+                                st.session_state.pop("selected_run", None)
+                                st.rerun()
+                            except Exception as exc:
+                                show_error(exc, context="Could not abort run")
 
             with st.container(key="ca-detail-meta-row"):
                 col_meta, col_actions = st.columns(
-                    [1, 0.3],
+                    [1, 0.32],
                     gap="small",
                     vertical_alignment="center",
                 )
@@ -274,7 +317,7 @@ if run:
                 with col_actions:
                     with st.container(key="detail-meta-actions"):
                         col_dl, col_ref = st.columns(
-                            [1, 1.1],
+                            [1, 1.15],
                             gap="small",
                             vertical_alignment="center",
                         )
