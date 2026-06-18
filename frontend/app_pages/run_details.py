@@ -22,7 +22,7 @@ from log_view import open_run_log_dialog, open_step_log_dialog
 from styles import (
     emit_html,
     render_title,
-    run_detail_meta_dropdown_html,
+    run_detail_meta_inner_html,
     status_image_html,
     step_detail_dialog_error_html,
     step_detail_dialog_html,
@@ -286,30 +286,45 @@ if run:
                                 st.rerun()
                             except Exception as exc:
                                 show_error(exc, context="Could not abort run")
-                    emit_html(
-                        run_detail_meta_dropdown_html(
-                            user=user,
-                            start_date=live_run.get("start_date"),
-                            last_update=live_run.get("last_update"),
-                            status=live_run.get("status", ""),
-                        )
+                    st.markdown(
+                        '<span class="ca-run-sep ca-detail-action-sep">&middot;</span>',
+                        unsafe_allow_html=True,
                     )
+                    with st.container(key="detail-info"):
+                        with st.popover("Info", icon=":material/info:", help="Run status and timing"):
+                            emit_html(
+                                f'<div class="ca-detail-meta ca-detail-meta--popover">'
+                                f"{run_detail_meta_inner_html(
+                                    user=user,
+                                    start_date=live_run.get('start_date'),
+                                    last_update=live_run.get('last_update'),
+                                    status=live_run.get('status', ''),
+                                )}"
+                                f"</div>"
+                            )
 
             with st.container(key="ca-detail-meta-row"):
                 with st.container(key="detail-meta-actions"):
-                    with st.container(key="detail-download-log"):
-                        if st.button(
-                            "View Log",
-                            key=f"view_run_log_{run_id}",
-                            type="secondary",
-                        ):
-                            open_run_log_dialog(clone_run_id=run_id)
-                    with st.container(key="detail-refresh"):
-                        st.toggle(
-                            "Auto refresh",
-                            key=refresh_key,
-                            label_visibility="visible",
-                        )
+                    col_dl, col_ref = st.columns(
+                        [1, 1.15],
+                        gap="small",
+                        vertical_alignment="center",
+                    )
+                    with col_dl:
+                        with st.container(key="detail-download-log"):
+                            if st.button(
+                                "View Log",
+                                key=f"view_run_log_{run_id}",
+                                type="secondary",
+                            ):
+                                open_run_log_dialog(clone_run_id=run_id)
+                    with col_ref:
+                        with st.container(key="detail-refresh"):
+                            st.toggle(
+                                "Auto refresh",
+                                key=refresh_key,
+                                label_visibility="visible",
+                            )
 
             st.html('<hr class="ca-title-rule" />')
 

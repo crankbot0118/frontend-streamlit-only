@@ -1309,20 +1309,13 @@ _GLOBAL_CSS = f"""
       accent=BRAND_RED,
       accent_bg=BRAND_RED_BG,
   )}
-  .st-key-detail-actions [data-testid="stElementContainer"]:has(.ca-detail-meta-dropdown) {{
+  .st-key-detail-actions [data-testid="stElementContainer"]:has(.ca-detail-action-sep) {{
       flex: 0 0 auto !important;
       display: inline-flex !important;
       align-items: center !important;
       width: auto !important;
       margin: 0 !important;
       padding: 0 !important;
-  }}
-  .ca-detail-inline-actions {{
-      display: inline-flex;
-      align-items: center;
-      gap: var(--ca-detail-inline-gap);
-      flex: 0 0 auto;
-      line-height: 1;
   }}
   .ca-detail-action-sep {{
       flex: 0 0 auto;
@@ -1331,73 +1324,47 @@ _GLOBAL_CSS = f"""
       line-height: 1;
       user-select: none;
   }}
-  .ca-detail-meta-dropdown {{
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      flex: 0 0 auto;
+  .st-key-detail-info,
+  .st-key-detail-info [data-testid="stVerticalBlock"],
+  .st-key-detail-info [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      display: inline-flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
-  .ca-detail-meta-trigger {{
-      display: inline-flex;
-      align-items: center;
-      gap: 0.22rem;
-      min-height: calc(var(--ca-detail-title-height) - 0.2rem);
-      padding: 0 0.38rem;
-      border: 1px solid #e3e6e8;
-      border-radius: 6px;
-      background: #ffffff;
-      color: #5b6166;
-      font-size: calc(var(--ca-nav-font-size) * 0.92);
-      font-weight: 600;
-      line-height: 1;
-      cursor: pointer;
-      user-select: none;
-      white-space: nowrap;
-      box-sizing: border-box;
+  .st-key-detail-info [data-testid="stElementContainer"] {{
+      flex: 0 0 auto !important;
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
-  .ca-detail-meta-trigger-ic {{
-      font-style: normal;
-      font-size: 0.95em;
-      line-height: 1;
-      color: #8a9097;
+  .st-key-detail-info [data-testid="stPopoverButton"] button,
+  .st-key-detail-info button[kind="secondary"] {{
+      min-height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
+      height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
+      padding: 0 0.42rem !important;
+      gap: 0.28rem !important;
+      line-height: 1 !important;
+      font-size: calc(var(--ca-nav-font-size) * 0.92) !important;
+      border: 1px solid #e3e6e8 !important;
+      border-radius: 6px !important;
+      background: #ffffff !important;
+      color: #5b6166 !important;
+      font-weight: 600 !important;
+      box-shadow: none !important;
   }}
-  .ca-detail-meta-trigger-chevron {{
-      font-size: 0.72em;
-      line-height: 1;
-      color: #9aa0a6;
-      margin-left: -0.06rem;
+  .st-key-detail-info [data-testid="stPopoverButton"] button:hover,
+  .st-key-detail-info button[kind="secondary"]:hover {{
+      border-color: #d0d4d8 !important;
+      background: #f6f7f8 !important;
+      color: {BRAND_INK} !important;
   }}
-  .ca-detail-meta-dropdown:hover .ca-detail-meta-trigger,
-  .ca-detail-meta-dropdown:focus-within .ca-detail-meta-trigger {{
-      border-color: #d0d4d8;
-      background: #f6f7f8;
-      color: {BRAND_INK};
-  }}
-  .ca-detail-meta-popover {{
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 999999;
-      min-width: max-content;
-      max-width: min(96vw, 56rem);
-      padding: 0.42rem 0.55rem;
-      border: 1px solid #e3e6e8;
-      border-radius: 8px;
-      background: #ffffff;
-      box-shadow: 0 4px 18px rgba(19, 21, 22, 0.1);
-      box-sizing: border-box;
-      pointer-events: auto;
-  }}
-  .ca-detail-meta-dropdown:hover .ca-detail-meta-popover,
-  .ca-detail-meta-dropdown:focus-within .ca-detail-meta-popover,
-  .ca-detail-meta-popover.ca-detail-meta-popover--open {{
-      display: block;
-  }}
-  .ca-detail-meta.ca-detail-meta--popover {{
-      width: auto;
-      flex-wrap: wrap;
+  div[data-testid="stPopoverBody"] .ca-detail-meta.ca-detail-meta--popover {{
       font-style: italic;
+      flex-wrap: wrap;
+      gap: 0.22rem;
   }}
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
@@ -1470,26 +1437,35 @@ _GLOBAL_CSS = f"""
   .st-key-detail-meta-actions,
   .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
   .st-key-detail-meta-actions [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      width: auto !important;
+      margin: 0 0 0 auto !important;
+      padding: 0 !important;
+  }}
+  .st-key-detail-meta-actions [data-testid="stHorizontalBlock"] {{
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
       justify-content: flex-end !important;
       flex-wrap: nowrap !important;
-      gap: 1rem !important;
-      width: 100% !important;
-      margin: 0 !important;
-      padding: 0 !important;
+      width: max-content !important;
+      min-width: max-content !important;
+      max-width: 100% !important;
+      margin-left: auto !important;
+      gap: 0.75rem !important;
   }}
-  .st-key-detail-meta-actions > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  .st-key-detail-meta-actions > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
+  .st-key-detail-meta-actions [data-testid="column"] {{
       flex: 0 0 auto !important;
       width: auto !important;
-      min-width: 0 !important;
-      margin: 0 !important;
-      padding: 0 !important;
+      min-width: fit-content !important;
+      justify-content: flex-end !important;
+      align-items: center !important;
   }}
-  .st-key-detail-meta-actions [data-testid="stHorizontalBlock"] {{
-      display: none !important;
+  .st-key-detail-meta-actions [data-testid="column"]:first-child {{
+      margin-right: 0 !important;
+  }}
+  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stElementContainer"],
+  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
+      justify-content: flex-end !important;
   }}
   .st-key-ca-detail-meta-row .st-key-detail-refresh,
   .st-key-ca-detail-meta-row .st-key-detail-download-log {{
@@ -3141,92 +3117,6 @@ def run_detail_meta_inner_html(
         f'<span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(start_date, last_update)}</span>'
         f'<span class="ca-detail-sep">&middot;</span>'
         f"{status_badge_html(status)}"
-    )
-
-
-def run_detail_meta_dropdown_html(
-    *,
-    user: str,
-    start_date,
-    last_update,
-    status: str,
-) -> str:
-    """Middot + hover dropdown beside Abort showing the run meta line."""
-    inner = run_detail_meta_inner_html(
-        user=user,
-        start_date=start_date,
-        last_update=last_update,
-        status=status,
-    )
-    return (
-        '<span class="ca-detail-inline-actions">'
-        '<span class="ca-run-sep ca-detail-action-sep">&middot;</span>'
-        '<div class="ca-detail-meta-dropdown">'
-        '<span class="ca-detail-meta-trigger" tabindex="0" role="button" aria-label="Run info">'
-        '<span class="ca-detail-meta-trigger-ic" aria-hidden="true">&#8505;</span>'
-        '<span class="ca-detail-meta-trigger-label">Info</span>'
-        '<span class="ca-detail-meta-trigger-chevron" aria-hidden="true">&#9662;</span>'
-        "</span>"
-        '<div class="ca-detail-meta-popover" role="tooltip">'
-        f'<div class="ca-detail-meta ca-detail-meta--popover">{inner}</div>'
-        "</div>"
-        "</div>"
-        "</span>"
-        "<script>"
-        "(function(){"
-        "function placePop(root){"
-        "var trigger=root.querySelector('.ca-detail-meta-trigger');"
-        "var pop=root.querySelector('.ca-detail-meta-popover');"
-        "if(!trigger||!pop)return;"
-        "pop.classList.add('ca-detail-meta-popover--open');"
-        "pop.style.display='block';"
-        "pop.style.visibility='hidden';"
-        "pop.style.position='fixed';"
-        "var r=trigger.getBoundingClientRect();"
-        "var ph=pop.offsetHeight||0;"
-        "var pw=pop.offsetWidth||0;"
-        "var top=r.bottom+6;"
-        "if(top+ph>window.innerHeight-8){top=r.top-ph-6;}"
-        "var left=Math.min(r.left,Math.max(8,window.innerWidth-pw-8));"
-        "pop.style.left=Math.max(8,left)+'px';"
-        "pop.style.top=Math.max(8,top)+'px';"
-        "pop.style.visibility='visible';"
-        "pop.style.zIndex='999999';"
-        "try{"
-        "if(window.frameElement){"
-        "var need=top+ph+10;"
-        "window.frameElement.style.height=Math.max(window.frameElement.offsetHeight,need)+'px';"
-        "window.frameElement.style.overflow='visible';"
-        "var ec=window.frameElement.closest('[data-testid=\"stElementContainer\"]');"
-        "if(ec){ec.style.overflow='visible';}"
-        "}"
-        "}catch(e){}"
-        "}"
-        "function hidePop(root){"
-        "var pop=root.querySelector('.ca-detail-meta-popover');"
-        "if(pop){pop.style.display='none';pop.classList.remove('ca-detail-meta-popover--open');}"
-        "try{if(window.frameElement){window.frameElement.style.height='';}}catch(e){}"
-        "}"
-        "document.querySelectorAll('.ca-detail-meta-dropdown').forEach(function(root){"
-        "if(root.dataset.caMetaBound)return;"
-        "root.dataset.caMetaBound='1';"
-        "var pop=root.querySelector('.ca-detail-meta-popover');"
-        "var hideTimer=null;"
-        "function cancelHide(){if(hideTimer){clearTimeout(hideTimer);hideTimer=null;}}"
-        "function scheduleHide(){cancelHide();hideTimer=setTimeout(function(){hidePop(root);},150);}"
-        "root.addEventListener('mouseenter',function(){cancelHide();placePop(root);});"
-        "root.addEventListener('mouseleave',scheduleHide);"
-        "if(pop){"
-        "pop.addEventListener('mouseenter',cancelHide);"
-        "pop.addEventListener('mouseleave',scheduleHide);"
-        "}"
-        "root.addEventListener('focusin',function(){cancelHide();placePop(root);});"
-        "root.addEventListener('focusout',function(e){"
-        "if(!root.contains(e.relatedTarget)&&!(pop&&pop.contains(e.relatedTarget))){scheduleHide();}"
-        "});"
-        "});"
-        "})();"
-        "</script>"
     )
 
 
