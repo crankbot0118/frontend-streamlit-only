@@ -278,45 +278,44 @@ if run:
             can_abort, failed_step_id, abort_help = _abort_state(live_steps, live_run)
 
             with st.container(key="ca-detail-title-row"):
-                st.html(
-                    f"""
-                    <div class="ca-page-header ca-detail-page-header">
-                      <div class="ca-title">
-                        <h1 class="ca-detail-title-parts">
-                          <span>Run #{safe_run_id}</span>
-                          <span class="ca-run-sep">&middot;</span>
-                          <span>{src}</span>
-                          <span class="arrow">&#8594;</span>
-                          <span>{tgt}</span>
-                          <span class="ca-run-sep">&middot;</span>
-                        </h1>
-                      </div>
-                    </div>
-                    """
-                )
-                with st.container(key="detail-actions"):
-                    if st.button(
-                        "Abort",
-                        key="detail_abort",
-                        type="secondary",
-                        icon=":material/stop:",
-                        disabled=not can_abort,
-                        help=abort_help,
-                    ):
-                        if not can_abort:
-                            show_error(
-                                "Abort is only allowed when clone run status is FAILED.",
-                                context="Cannot abort run",
-                            )
-                        else:
-                            try:
-                                abort_run(run_id, failed_step_id)
-                                st.session_state.pop("selected_run", None)
-                                st.rerun()
-                            except Exception as exc:
-                                show_error(exc, context="Could not abort run")
-
-            with st.container(key="ca-detail-meta-row"):
+                with st.container(key="ca-detail-left"):
+                    st.html(
+                        f"""
+                        <div class="ca-page-header ca-detail-page-header">
+                          <div class="ca-title">
+                            <div class="ca-detail-title-parts ca-detail-title-parts--toolbar">
+                              <span>Run #{safe_run_id}</span>
+                              <span class="ca-run-sep">&middot;</span>
+                              <span>{src}</span>
+                              <span class="arrow">&#8594;</span>
+                              <span>{tgt}</span>
+                              <span class="ca-run-sep">&middot;</span>
+                            </div>
+                          </div>
+                        </div>
+                        """
+                    )
+                    with st.container(key="detail-actions"):
+                        if st.button(
+                            "Abort",
+                            key="detail_abort",
+                            type="secondary",
+                            icon=":material/stop:",
+                            disabled=not can_abort,
+                            help=abort_help,
+                        ):
+                            if not can_abort:
+                                show_error(
+                                    "Abort is only allowed when clone run status is FAILED.",
+                                    context="Cannot abort run",
+                                )
+                            else:
+                                try:
+                                    abort_run(run_id, failed_step_id)
+                                    st.session_state.pop("selected_run", None)
+                                    st.rerun()
+                                except Exception as exc:
+                                    show_error(exc, context="Could not abort run")
                 with st.container(key="detail-meta-actions"):
                     if st.button(
                         "View Log",

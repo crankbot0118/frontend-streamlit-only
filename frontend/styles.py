@@ -1182,8 +1182,9 @@ _GLOBAL_CSS = f"""
   /* ---------- Run details header ---------- */
   .st-key-ca-detail-header {{
       --ca-detail-inline-gap: 0.28rem;
-      --ca-detail-title-height: 1.38rem;
-      --ca-detail-meta-height: 1.05rem;
+      --ca-detail-toolbar-title-size: 0.9375rem;
+      --ca-detail-title-height: 1.12rem;
+      --ca-detail-meta-height: 1.12rem;
   }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
   /* Title parts use the same gap as the middot-separated heading text. */
@@ -1224,21 +1225,67 @@ _GLOBAL_CSS = f"""
   .ca-detail-title-parts .arrow {{
       color: {BRAND_ORANGE};
   }}
-  /* Title row: Run # heading then Abort — single inline flex row, no overlap. */
+  .ca-detail-title-parts--toolbar {{
+      font-size: var(--ca-detail-toolbar-title-size) !important;
+      font-weight: 600 !important;
+      letter-spacing: -0.01em;
+  }}
+  /* Toolbar row: title + abort (left) · links + toggle (right). */
   .st-key-ca-detail-title-row,
-  .st-key-ca-detail-title-row [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-title-row [data-testid="stVerticalBlockBorderWrapper"] {{
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      flex-wrap: nowrap !important;
+      justify-content: space-between !important;
+      gap: 1rem !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-height: var(--ca-detail-meta-height) !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca-detail-left,
+  .st-key-ca-detail-left > [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-left > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
       gap: var(--ca-detail-inline-gap) !important;
-      width: fit-content !important;
-      max-width: 100% !important;
-      min-height: 0 !important;
-      height: auto !important;
+      flex: 0 1 auto !important;
+      min-width: 0 !important;
+      width: auto !important;
       margin: 0 !important;
       padding: 0 !important;
+  }}
+  .st-key-ca-detail-left > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-ca-detail-left > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
+      flex: 0 0 auto !important;
+      width: auto !important;
+      min-width: 0 !important;
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca-detail-title-row .st-key-detail-meta-actions {{
+      flex: 0 0 auto !important;
+      margin-left: auto !important;
+  }}
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
+      display: flex !important;
+      align-items: center !important;
+      flex: 0 0 auto !important;
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child,
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child {{
+      margin-left: auto !important;
   }}
   .st-key-ca-detail-title-row [data-testid="stElementContainer"] {{
       flex: 0 0 auto !important;
@@ -1291,12 +1338,12 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca-detail-title-row .st-key-detail_abort .stButton button,
   .st-key-ca-detail-title-row .st-key-detail_abort .stDownloadButton button {{
-      min-height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
-      height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
-      padding: 0 0.42rem !important;
-      gap: 0.28rem !important;
+      min-height: calc(var(--ca-detail-title-height) - 0.12rem) !important;
+      height: calc(var(--ca-detail-title-height) - 0.12rem) !important;
+      padding: 0 0.34rem !important;
+      gap: 0.2rem !important;
       line-height: 1 !important;
-      font-size: calc(var(--ca-nav-font-size) * 0.92) !important;
+      font-size: calc(var(--ca-run-meta-size) * 1.05) !important;
   }}
   {_nav_action_button_css(
       ".st-key-detail_abort",
@@ -1746,7 +1793,7 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
   .st-key-ca-detail-header .st-key-ca-detail-title-row {{
-      margin-bottom: -0.1rem !important;
+      margin-bottom: 0 !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child {{
       margin-top: -0.2rem !important;
