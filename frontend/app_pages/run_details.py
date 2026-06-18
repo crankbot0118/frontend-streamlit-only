@@ -223,14 +223,13 @@ if run:
 
     with st.container(key="ca-detail-header"):
         with st.container(key="ca-detail-title-row"):
-            st.html(run_detail_title_html(run_id=safe_run_id, src=src, tgt=tgt))
-
-        with st.container(key="ca-detail-meta-row"):
-            col_meta, col_actions = st.columns(
-                [1, 0.32],
+            col_title, col_actions = st.columns(
+                [1, 0.38],
                 gap="small",
                 vertical_alignment="center",
             )
+            with col_title:
+                st.html(run_detail_title_html(run_id=safe_run_id, src=src, tgt=tgt))
             with col_actions:
                 with st.container(key="detail-meta-actions"):
                     col_dl, col_ref = st.columns(
@@ -253,33 +252,33 @@ if run:
                                 key=refresh_key,
                                 label_visibility="visible",
                             )
-            with col_meta:
 
-                @st.fragment(run_every=poll_every)
-                def _live_meta_line() -> None:
-                    polling = bool(st.session_state.get(refresh_key))
-                    live_run = _load_run(run_id, run) if polling else run
-                    if not live_run:
-                        live_run = run
-                    emit_html(
-                        f"""
-                        <div class="ca-detail-meta-bar">
-                          <div class="ca-detail-meta">
-                            <span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(live_run.get('start_date'))}</span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(live_run.get('last_update'))}</span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(live_run.get('start_date'), live_run.get('last_update'))}</span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            {status_badge_html(live_run.get('status', ''))}
-                          </div>
-                        </div>
-                        """
-                    )
+        with st.container(key="ca-detail-meta-row"):
+            @st.fragment(run_every=poll_every)
+            def _live_meta_line() -> None:
+                polling = bool(st.session_state.get(refresh_key))
+                live_run = _load_run(run_id, run) if polling else run
+                if not live_run:
+                    live_run = run
+                emit_html(
+                    f"""
+                    <div class="ca-detail-meta-bar">
+                      <div class="ca-detail-meta">
+                        <span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>
+                        <span class="ca-detail-sep">&middot;</span>
+                        <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(live_run.get('start_date'))}</span>
+                        <span class="ca-detail-sep">&middot;</span>
+                        <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(live_run.get('last_update'))}</span>
+                        <span class="ca-detail-sep">&middot;</span>
+                        <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(live_run.get('start_date'), live_run.get('last_update'))}</span>
+                        <span class="ca-detail-sep">&middot;</span>
+                        {status_badge_html(live_run.get('status', ''))}
+                      </div>
+                    </div>
+                    """
+                )
 
-                _live_meta_line()
+            _live_meta_line()
 
         @st.fragment(run_every=poll_every)
         def _live_steps_panel() -> None:

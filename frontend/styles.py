@@ -1186,6 +1186,7 @@ _GLOBAL_CSS = f"""
       --ca-detail-toolbar-title-size: 1.125rem;
       --ca-detail-title-height: 1.15rem;
       --ca-detail-meta-height: 1.05rem;
+      --ca-detail-action-height: 1.75rem;
   }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
   /* Title parts use the same gap as the middot-separated heading text. */
@@ -1226,21 +1227,49 @@ _GLOBAL_CSS = f"""
   .ca-detail-title-parts .arrow {{
       color: {BRAND_ORANGE};
   }}
-  /* Title row: Run # heading — single inline flex row. */
+  /* Title row: Run # heading on the left, actions on the right. */
   .st-key-ca-detail-title-row,
   .st-key-ca-detail-title-row [data-testid="stVerticalBlock"],
   .st-key-ca-detail-title-row [data-testid="stVerticalBlockBorderWrapper"] {{
       display: flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
       flex-wrap: nowrap !important;
-      gap: var(--ca-detail-inline-gap) !important;
-      width: fit-content !important;
+      gap: 0 !important;
+      width: 100% !important;
       max-width: 100% !important;
       min-height: 0 !important;
       height: auto !important;
       margin: 0 !important;
       padding: 0 !important;
+  }}
+  .st-key-ca-detail-title-row [data-testid="stHorizontalBlock"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      flex-wrap: nowrap !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      gap: 0.75rem !important;
+      min-height: var(--ca-detail-action-height) !important;
+  }}
+  .st-key-ca-detail-title-row [data-testid="column"] {{
+      display: flex !important;
+      align-items: center !important;
+      min-height: var(--ca-detail-action-height) !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+  }}
+  .st-key-ca-detail-title-row [data-testid="column"]:first-child {{
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+      justify-content: flex-start !important;
+  }}
+  .st-key-ca-detail-title-row [data-testid="column"]:last-child {{
+      flex: 0 0 auto !important;
+      margin-left: auto !important;
+      justify-content: flex-end !important;
   }}
   .st-key-ca-detail-title-row [data-testid="stElementContainer"] {{
       flex: 0 0 auto !important;
@@ -1276,7 +1305,7 @@ _GLOBAL_CSS = f"""
       overflow: hidden !important;
       pointer-events: none !important;
   }}
-  .st-key-ca-detail-meta-row [data-testid="column"]:last-child,
+  .st-key-ca-detail-title-row [data-testid="column"]:last-child,
   .st-key-detail-meta-actions,
   .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
   .st-key-detail-meta-actions [data-testid="stVerticalBlockBorderWrapper"],
@@ -1292,15 +1321,18 @@ _GLOBAL_CSS = f"""
       z-index: 12 !important;
       pointer-events: auto !important;
   }}
-  .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stHtml"],
-  .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
-  .st-key-ca-detail-meta-row [data-testid="column"]:first-child iframe {{
+  .st-key-ca-detail-meta-row [data-testid="stHtml"],
+  .st-key-ca-detail-meta-row [data-testid="stHtml"] iframe,
+  .st-key-ca-detail-meta-row iframe,
+  .st-key-ca-detail-title-row [data-testid="column"]:first-child [data-testid="stHtml"],
+  .st-key-ca-detail-title-row [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
+  .st-key-ca-detail-title-row [data-testid="column"]:first-child iframe {{
       pointer-events: none !important;
   }}
-  /* Meta row: strict single horizontal line. */
+  /* Meta row: single full-width metadata line below the title/actions row. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
-      margin: -0.56rem 0 -0.3rem 0 !important;
+      margin: 0 0 0.15rem 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
   }}
@@ -1326,11 +1358,6 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-meta-row [data-testid="column"]:first-child {{
       flex: 1 1 auto !important;
       min-width: 0 !important;
-  }}
-  .st-key-ca-detail-meta-row [data-testid="column"]:last-child {{
-      flex: 0 0 auto !important;
-      margin-left: auto !important;
-      justify-content: flex-end !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"] [data-testid="stVerticalBlock"],
   .st-key-ca-detail-meta-row [data-testid="column"] [data-testid="stElementContainer"] {{
@@ -1381,8 +1408,8 @@ _GLOBAL_CSS = f"""
   .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
       justify-content: flex-end !important;
   }}
-  .st-key-ca-detail-meta-row .st-key-detail-refresh,
-  .st-key-ca-detail-meta-row .st-key-detail-download-log {{
+  .st-key-ca-detail-title-row .st-key-detail-refresh,
+  .st-key-ca-detail-title-row .st-key-detail-download-log {{
       width: auto !important;
       margin: 0 !important;
       padding: 0 !important;
@@ -1398,8 +1425,8 @@ _GLOBAL_CSS = f"""
   .st-key-detail-download-log .stButton,
   .st-key-detail-download-log .stButton button {{
       width: auto !important;
-      min-height: var(--ca-detail-meta-height) !important;
-      height: var(--ca-detail-meta-height) !important;
+      min-height: var(--ca-detail-action-height) !important;
+      height: var(--ca-detail-action-height) !important;
       margin: 0 !important;
       padding: 0 !important;
       background: transparent !important;
@@ -1440,8 +1467,8 @@ _GLOBAL_CSS = f"""
       text-decoration: underline !important;
       color: {BRAND_ORANGE} !important;
   }}
-  .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stElementContainer"] {{
+  .st-key-ca-detail-title-row .st-key-detail-refresh [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-title-row .st-key-detail-refresh [data-testid="stElementContainer"] {{
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
@@ -1449,8 +1476,8 @@ _GLOBAL_CSS = f"""
       width: auto !important;
       margin: 0 !important;
       gap: 0.35rem !important;
-      min-height: var(--ca-detail-meta-height) !important;
-      height: var(--ca-detail-meta-height) !important;
+      min-height: var(--ca-detail-action-height) !important;
+      height: var(--ca-detail-action-height) !important;
   }}
   .st-key-detail-refresh [data-testid="stToggle"],
   .st-key-detail-refresh [data-testid="stCheckbox"] {{
@@ -1458,8 +1485,8 @@ _GLOBAL_CSS = f"""
       align-items: center !important;
       margin: 0 !important;
       padding: 0 !important;
-      min-height: var(--ca-detail-meta-height) !important;
-      height: var(--ca-detail-meta-height) !important;
+      min-height: var(--ca-detail-action-height) !important;
+      height: var(--ca-detail-action-height) !important;
   }}
   .st-key-detail-refresh label,
   .st-key-detail-refresh [data-testid="stWidgetLabel"] {{
@@ -1669,7 +1696,7 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
   .st-key-ca-detail-header .st-key-ca-detail-title-row {{
-      margin-bottom: calc(var(--ca-detail-section-v-gap) * -3) !important;
+      margin-bottom: 0.15rem !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row),
   .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row) {{
