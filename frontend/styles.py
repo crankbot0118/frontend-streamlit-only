@@ -1247,6 +1247,16 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
   }}
+  .st-key-ca-detail-title-row,
+  .st-key-ca-detail-title-row [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-title-row [data-testid="stVerticalBlockBorderWrapper"],
+  .st-key-ca-detail-title-row[data-testid="stVerticalBlockBorderWrapper"],
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-title-row),
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-title-row),
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([class*="st-key-ca-detail-title-row"]),
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([class*="st-key-ca-detail-title-row"]) {{
+      pointer-events: none !important;
+  }}
   .st-key-ca-detail-left,
   .st-key-ca-detail-left [data-testid="stVerticalBlock"],
   .st-key-ca-detail-left [data-testid="stVerticalBlockBorderWrapper"] {{
@@ -1350,11 +1360,12 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-log-row[data-testid="stVerticalBlockBorderWrapper"] {{
       width: 100% !important;
       max-width: 100% !important;
-      margin: -0.12rem 0 -0.1rem 0 !important;
+      margin: 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
       position: relative !important;
-      z-index: 6 !important;
+      z-index: 40 !important;
+      pointer-events: auto !important;
   }}
   .st-key-ca-detail-log-row > [data-testid="stVerticalBlock"],
   .st-key-ca-detail-log-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
@@ -1370,6 +1381,18 @@ _GLOBAL_CSS = f"""
       min-height: 0 !important;
       height: auto !important;
       gap: 0 !important;
+      pointer-events: auto !important;
+  }}
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-log-row),
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-log-row),
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"] > [class*="st-key-ca-detail-log-row"],
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [class*="st-key-ca-detail-log-row"] {{
+      width: 100% !important;
+      max-width: 100% !important;
+      align-self: stretch !important;
+      pointer-events: auto !important;
+      position: relative !important;
+      z-index: 40 !important;
   }}
   .st-key-ca-detail-log-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
   .st-key-ca-detail-log-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
@@ -1385,7 +1408,7 @@ _GLOBAL_CSS = f"""
       min-height: 0 !important;
       height: auto !important;
       position: relative !important;
-      z-index: 30 !important;
+      z-index: 40 !important;
       pointer-events: auto !important;
   }}
   .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton,
@@ -1409,7 +1432,8 @@ _GLOBAL_CSS = f"""
       line-height: 1 !important;
       text-decoration: none !important;
       cursor: pointer !important;
-      display: inline !important;
+      display: inline-flex !important;
+      pointer-events: auto !important;
       appearance: none !important;
       -webkit-appearance: none !important;
   }}
