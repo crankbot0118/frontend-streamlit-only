@@ -27,7 +27,7 @@ BRAND_RED = "#cf222e"
 BRAND_RED_BG = "rgba(207, 34, 46, 0.12)"
 SHELL_MAIN_BG = "#faf7f2"
 SHELL_SIDEBAR_BG = "#ffffff"
-UI_SCALE = 1
+UI_SCALE = 0.8
 STATUS_ICON_PX = 18
 SIDEBAR_WIDTH_PX = 200
 
@@ -156,13 +156,20 @@ _GLOBAL_CSS = f"""
       --ca-ui-scale: {UI_SCALE};
   }}
 
-  /* Scale the entire dashboard shell (sidebar + pages) to 80%. */
-  [data-testid="stAppViewContainer"] {{
+  /* === Global UI zoom — behaves like real browser zoom: reflows layout, no empty bands === */
+  html {{
       zoom: var(--ca-ui-scale);
   }}
-  .stApp {{
-      min-height: calc(100vh / var(--ca-ui-scale));
+
+  /* Full-viewport shell background; sub-pixel rounding must not reveal a gap. */
+  html,
+  body,
+  [data-testid="stApp"],
+  [data-testid="stAppViewContainer"] {{
+      background-color: {SHELL_MAIN_BG};
+      min-height: 100vh;
   }}
+
   [data-testid="stAppViewContainer"],
   .stApp,
   section.main {{
