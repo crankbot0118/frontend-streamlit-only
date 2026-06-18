@@ -229,6 +229,111 @@ _GLOBAL_CSS = f"""
       background: transparent;
   }}
 
+  /* ---------- Top-right user menu (fixed to viewport) ---------- */
+  .st-key-ca-user-menu {{
+      position: fixed !important;
+      top: var(--ca-page-inset-top) !important;
+      right: var(--ca-main-inset-right) !important;
+      left: auto !important;
+      width: auto !important;
+      max-width: calc(100vw - {SIDEBAR_WIDTH_PX}px - 2.5rem) !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      z-index: 1100 !important;
+      pointer-events: none !important;
+  }}
+  .st-key-ca-user-menu [data-testid="stVerticalBlock"],
+  .st-key-ca-user-menu [data-testid="stVerticalBlockBorderWrapper"],
+  .st-key-ca-user-menu [data-testid="stHorizontalBlock"],
+  .st-key-ca-user-menu [data-testid="column"],
+  .st-key-ca-user-menu [data-testid="stElementContainer"] {{
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      pointer-events: auto !important;
+  }}
+  .st-key-ca-user-menu [data-testid="stHorizontalBlock"] {{
+      display: inline-flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      flex-wrap: nowrap !important;
+      gap: 0 !important;
+      background: {SHELL_SIDEBAR_BG} !important;
+      border: 1px solid #e3e6ea !important;
+      border-radius: 999px !important;
+      box-shadow: 0 1px 2px rgba(19, 21, 22, 0.06) !important;
+      padding: 0.18rem 0.2rem 0.18rem 0.72rem !important;
+      min-height: var(--ca-header-row-height) !important;
+      box-sizing: border-box !important;
+  }}
+  .st-key-ca-user-menu [data-testid="stHtml"],
+  .st-key-ca-user-menu [data-testid="stHtml"] iframe,
+  .st-key-ca-user-menu .stHtml,
+  .st-key-ca-user-menu .stHtml iframe {{
+      width: auto !important;
+      height: auto !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      overflow: visible !important;
+      display: block !important;
+  }}
+  .ca-user-menu-identity {{
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      white-space: nowrap;
+      line-height: 1;
+  }}
+  .ca-user-menu-greet {{
+      font-size: var(--ca-body-size);
+      color: {BRAND_INK};
+  }}
+  .ca-user-menu-greet em {{
+      font-style: italic;
+      font-weight: 500;
+  }}
+  .ca-user-menu-avatar {{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.65rem;
+      height: 1.65rem;
+      border-radius: 50%;
+      overflow: hidden;
+      flex: 0 0 auto;
+      background: #dfe3e8;
+  }}
+  .ca-user-menu-avatar svg {{
+      width: 100%;
+      height: 100%;
+      display: block;
+  }}
+  .st-key-ca-user-menu [data-testid="stPopover"] {{
+      margin: 0 !important;
+  }}
+  .st-key-ca-user-menu [data-testid="stPopover"] button {{
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      min-height: 1.65rem !important;
+      height: 1.65rem !important;
+      padding: 0 0.28rem 0 0.12rem !important;
+      margin: 0 !important;
+      color: #6b7177 !important;
+      gap: 0 !important;
+  }}
+  .st-key-ca-user-menu [data-testid="stPopover"] button:hover,
+  .st-key-ca-user-menu [data-testid="stPopover"] button:focus-visible {{
+      background: rgba(19, 21, 22, 0.04) !important;
+      color: {BRAND_INK} !important;
+  }}
+  .st-key-ca-user-menu [data-testid="stPopover"] button [data-testid="stIconMaterial"] {{
+      font-size: 1.15rem !important;
+  }}
+
   /* Persistent sidebar: hide the collapse control so it stays expanded. */
   [data-testid="stSidebarCollapseButton"] {{
       display: none !important;
@@ -3588,6 +3693,44 @@ def run_detail_title_html(*, run_id: str, src: str, tgt: str) -> str:
       </div>
     </div>
     """
+
+
+_USER_AVATAR_SVG = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+  <circle cx="12" cy="12" r="12" fill="#dfe3e8"/>
+  <path fill="#6b7177" d="M12 11.2a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8zm0 1.2c-2.56 0-7.68 1.28-7.68 3.84V18h15.36v-1.76C19.68 13.68 14.56 12.4 12 12.4z"/>
+</svg>
+""".strip()
+
+
+def user_menu_identity_html(display_name: str) -> str:
+    """Greeting + default avatar chip shown beside the account menu trigger."""
+    safe_name = _esc(display_name)
+    return (
+        f'<div class="ca-user-menu-identity">'
+        f'<span class="ca-user-menu-greet"><em>Hello {safe_name}!</em></span>'
+        f'<span class="ca-user-menu-avatar">{_USER_AVATAR_SVG}</span>'
+        f"</div>"
+    )
+
+
+def render_user_menu(display_name: str = "Tarun") -> None:
+    """Fixed top-right account menu placeholder (settings / logout)."""
+    with st.container(key="ca-user-menu"):
+        identity_col, menu_col = st.columns(
+            [1, 0.14],
+            gap="small",
+            vertical_alignment="center",
+        )
+        with identity_col:
+            emit_html(user_menu_identity_html(display_name))
+        with menu_col:
+            with st.popover("", icon=":material/keyboard_arrow_down:", help="Account"):
+                st.markdown("**Settings**")
+                st.caption("Coming soon")
+                st.divider()
+                st.markdown("**Logout**")
+                st.caption("Coming soon")
 
 
 def render_title(title: str, subtitle: str | None = None) -> None:

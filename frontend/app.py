@@ -42,6 +42,7 @@ from styles import (
     render_logo,
     render_sidebar_nav,
     render_status,
+    render_user_menu,
 )
 
 st.set_page_config(
@@ -64,5 +65,7 @@ with st.sidebar:
     if not is_live:
         log.warning("Backend health check failed for %s", pg.title)
     render_status(is_live, datetime.now(timezone.utc))
+
+render_user_menu()
 
 pg.run()
