@@ -1265,12 +1265,6 @@ _GLOBAL_CSS = f"""
       max-width: none !important;
       overflow: visible !important;
   }}
-  .st-key-ca-detail-title-row [data-testid="stHtml"],
-  .st-key-ca-detail-title-row [data-testid="stHtml"] iframe,
-  .st-key-ca-detail-title-row .stHtml,
-  .st-key-ca-detail-title-row .stHtml iframe {{
-      overflow: visible !important;
-  }}
   .st-key-detail-actions,
   .st-key-detail-actions [data-testid="stVerticalBlock"],
   .st-key-detail-actions [data-testid="stVerticalBlockBorderWrapper"] {{
@@ -1309,63 +1303,6 @@ _GLOBAL_CSS = f"""
       accent=BRAND_RED,
       accent_bg=BRAND_RED_BG,
   )}
-  .st-key-detail-actions [data-testid="stElementContainer"]:has(.ca-detail-action-sep) {{
-      flex: 0 0 auto !important;
-      display: inline-flex !important;
-      align-items: center !important;
-      width: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .ca-detail-action-sep {{
-      flex: 0 0 auto;
-      font-weight: 400;
-      color: #c2c7cc;
-      line-height: 1;
-      user-select: none;
-  }}
-  .st-key-detail-info,
-  .st-key-detail-info [data-testid="stVerticalBlock"],
-  .st-key-detail-info [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      display: inline-flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-      width: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-detail-info [data-testid="stElementContainer"] {{
-      flex: 0 0 auto !important;
-      width: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-detail-info [data-testid="stPopoverButton"] button,
-  .st-key-detail-info button[kind="secondary"] {{
-      min-height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
-      height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
-      padding: 0 0.42rem !important;
-      gap: 0.28rem !important;
-      line-height: 1 !important;
-      font-size: calc(var(--ca-nav-font-size) * 0.92) !important;
-      border: 1px solid #e3e6e8 !important;
-      border-radius: 6px !important;
-      background: #ffffff !important;
-      color: #5b6166 !important;
-      font-weight: 600 !important;
-      box-shadow: none !important;
-  }}
-  .st-key-detail-info [data-testid="stPopoverButton"] button:hover,
-  .st-key-detail-info button[kind="secondary"]:hover {{
-      border-color: #d0d4d8 !important;
-      background: #f6f7f8 !important;
-      color: {BRAND_INK} !important;
-  }}
-  div[data-testid="stPopoverBody"] .ca-detail-meta.ca-detail-meta--popover {{
-      font-style: italic;
-      flex-wrap: wrap;
-      gap: 0.22rem;
-  }}
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
@@ -1396,25 +1333,10 @@ _GLOBAL_CSS = f"""
       flex: 1 1 auto !important;
       min-width: 0 !important;
   }}
-  .st-key-ca-detail-meta-row [data-testid="column"]:last-child,
-  .st-key-ca-detail-meta-row .st-key-detail-meta-actions {{
+  .st-key-ca-detail-meta-row [data-testid="column"]:last-child {{
       flex: 0 0 auto !important;
       margin-left: auto !important;
       justify-content: flex-end !important;
-  }}
-  .st-key-ca-detail-meta-row:has(.st-key-detail-meta-actions) {{
-      display: flex !important;
-      justify-content: flex-end !important;
-      width: 100% !important;
-  }}
-  .st-key-ca-detail-meta-row:has(.st-key-detail-meta-actions) [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-meta-row:has(.st-key-detail-meta-actions) [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      display: flex !important;
-      flex-direction: row !important;
-      justify-content: flex-end !important;
-      width: 100% !important;
-      margin: 0 !important;
-      padding: 0 !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"] [data-testid="stVerticalBlock"],
   .st-key-ca-detail-meta-row [data-testid="column"] [data-testid="stElementContainer"] {{
@@ -1436,7 +1358,7 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-detail-meta-actions,
   .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
-  .st-key-detail-meta-actions [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+  .st-key-detail-meta-actions [data-testid="stVerticalBlockBorderWrapper"] {{
       width: auto !important;
       margin: 0 0 0 auto !important;
       padding: 0 !important;
@@ -1447,21 +1369,19 @@ _GLOBAL_CSS = f"""
       align-items: center !important;
       justify-content: flex-end !important;
       flex-wrap: nowrap !important;
-      width: max-content !important;
-      min-width: max-content !important;
-      max-width: 100% !important;
+      width: auto !important;
       margin-left: auto !important;
       gap: 0.75rem !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"] {{
       flex: 0 0 auto !important;
       width: auto !important;
-      min-width: fit-content !important;
+      min-width: 0 !important;
       justify-content: flex-end !important;
       align-items: center !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"]:first-child {{
-      margin-right: 0 !important;
+      margin-right: 0.15rem !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stElementContainer"],
   .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
@@ -1469,7 +1389,6 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca-detail-meta-row .st-key-detail-refresh,
   .st-key-ca-detail-meta-row .st-key-detail-download-log {{
-      flex: 0 0 auto !important;
       width: auto !important;
       margin: 0 !important;
       padding: 0 !important;
@@ -3097,27 +3016,6 @@ def status_badge_html(status: str) -> str:
     """Return an HTML badge span for a status (colored)."""
     safe = _esc(status)
     return f'<span class="ca-badge {status_color(status)}">{safe}</span>'
-
-
-def run_detail_meta_inner_html(
-    *,
-    user: str,
-    start_date,
-    last_update,
-    status: str,
-) -> str:
-    """Run-details meta line: triggered by, started, updated, duration, status."""
-    return (
-        f'<span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>'
-        f'<span class="ca-detail-sep">&middot;</span>'
-        f'<span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(start_date)}</span>'
-        f'<span class="ca-detail-sep">&middot;</span>'
-        f'<span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(last_update)}</span>'
-        f'<span class="ca-detail-sep">&middot;</span>'
-        f'<span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(start_date, last_update)}</span>'
-        f'<span class="ca-detail-sep">&middot;</span>'
-        f"{status_badge_html(status)}"
-    )
 
 
 def step_attempts_table_html(attempts: list[dict]) -> str:
