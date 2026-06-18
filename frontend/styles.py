@@ -1183,7 +1183,7 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-header {{
       --ca-detail-inline-gap: 0.28rem;
       --ca-detail-section-v-gap: 0.05rem;
-      --ca-run-details-v-gap: 0.05rem;
+      --ca-run-details-v-gap: 0.08rem;
       --ca-detail-toolbar-title-size: 1.125rem;
       --ca-detail-title-height: 1.15rem;
       --ca-detail-meta-height: 1.05rem;
@@ -1757,31 +1757,19 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
   .st-key-ca-detail-header .st-key-ca-detail-title-row {{
-      margin-bottom: calc(var(--ca-run-details-v-gap) * -1) !important;
-  }}
-  /* Live panel fragment: title block → step list (vertical only). */
-  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) {{
-      --ca-run-details-v-gap: 0.05rem;
-  }}
-  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) > [data-testid="stVerticalBlock"],
-  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) > [data-testid="stVerticalBlockBorderWrapper"],
-  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      display: flex !important;
-      flex-direction: column !important;
-      gap: 0 !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
-      margin-left: 0 !important;
-      margin-right: 0 !important;
       margin-bottom: 0 !important;
-      padding: 0 !important;
   }}
-  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-header) + [data-testid="stElementContainer"]:has(.st-key-ca-steps),
-  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-header) + [data-testid="stElementContainer"]:has(.st-key-ca-steps) {{
-      margin-top: var(--ca-run-details-v-gap) !important;
+  /* Run details live panel: one fragment wrapper, one step-list container. */
+  [data-testid="stMainBlockContainer"]:has([class*="st-key-ca-steps"]) > [data-testid="stVerticalBlock"] {{
+      gap: 0 !important;
+  }}
+  [data-testid="stMainBlockContainer"]:has([class*="st-key-ca-steps"]) > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  [data-testid="stFragment"]:has([class*="st-key-ca-steps"]) > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  [data-testid="stFragment"]:has([class*="st-key-ca-steps"]) > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row),
   .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row) {{
@@ -1843,45 +1831,39 @@ _GLOBAL_CSS = f"""
   }}
 
   /* Step list — title, divider, and step cards share one vertical stack. */
-  .st-key-ca-steps,
-  .st-key-ca-steps[data-testid="stVerticalBlockBorderWrapper"] {{
-      --ca-step-list-gap: var(--ca-run-details-v-gap, 0.05rem);
+  [class*="st-key-ca-steps"],
+  [class*="st-key-ca-steps"][data-testid="stVerticalBlockBorderWrapper"] {{
+      --ca-step-list-gap: var(--ca-run-details-v-gap, 0.08rem);
       margin-top: 0 !important;
       margin-bottom: 0 !important;
   }}
-  .st-key-ca-steps > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-title-row),
-  .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-title-row),
-  .st-key-ca-steps[data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-title-row) {{
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
 
-  /* List column — every Streamlit wrapper shape for keyed containers. */
-  .st-key-ca-steps > [data-testid="stVerticalBlock"],
-  .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
-  .st-key-ca-steps[data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+  /* List column — flex gap controls all vertical separation in the stack. */
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"],
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
+  [class*="st-key-ca-steps"][data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       display: flex !important;
       flex-direction: column !important;
-      gap: 0 !important;
+      gap: var(--ca-step-list-gap) !important;
       align-items: stretch !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
 
-  /* Kill Streamlit default margins on list rows (divider + step cards). */
-  .st-key-ca-steps > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  .st-key-ca-steps[data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
+  /* Zero Streamlit widget margins on every row in the stack. */
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  [class*="st-key-ca-steps"][data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
       margin: 0 !important;
       padding: 0 !important;
   }}
-
-  /* Uniform spacing — divider → first card, and between every card. */
-  .st-key-ca-steps > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] + [data-testid="stElementContainer"],
-  .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] + [data-testid="stElementContainer"],
-  .st-key-ca-steps[data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] + [data-testid="stElementContainer"] {{
-      margin-top: var(--ca-step-list-gap) !important;
+  [class*="st-key-ca-steps"] [class*="st-key-ca-detail-title-row"],
+  [class*="st-key-ca-steps"] [class*="st-key-ca-detail-title-row"] [data-testid="stVerticalBlock"],
+  [class*="st-key-ca-steps"] [class*="st-key-ca-detail-title-row"] [data-testid="stVerticalBlockBorderWrapper"] {{
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
   }}
 
   /* Stable shell while the steps fragment mounts or polls. */
@@ -2100,8 +2082,8 @@ _GLOBAL_CSS = f"""
       flex-wrap: nowrap !important;
       gap: 0.22rem !important;
       width: 100% !important;
-      margin: var(--ca-run-details-v-gap, 0.05rem) 0 0 0 !important;
-      padding: var(--ca-run-details-v-gap, 0.05rem) 0 0 0 !important;
+      margin: var(--ca-run-details-v-gap, 0.08rem) 0 0 0 !important;
+      padding: var(--ca-run-details-v-gap, 0.08rem) 0 0 0 !important;
       border-top: 1px solid #eef0f2;
   }}
   [class*="st-key-step_links_"] > [data-testid="stElementContainer"] {{
