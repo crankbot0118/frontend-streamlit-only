@@ -1224,7 +1224,7 @@ _GLOBAL_CSS = f"""
   .ca-detail-title-parts .arrow {{
       color: {BRAND_ORANGE};
   }}
-  /* Title row: Run # heading then Abort — single inline flex row, no overlap. */
+  /* Title row: Run # heading — single inline flex row. */
   .st-key-ca-detail-title-row,
   .st-key-ca-detail-title-row [data-testid="stVerticalBlock"],
   .st-key-ca-detail-title-row [data-testid="stVerticalBlockBorderWrapper"] {{
@@ -1265,44 +1265,6 @@ _GLOBAL_CSS = f"""
       max-width: none !important;
       overflow: visible !important;
   }}
-  .st-key-detail-actions,
-  .st-key-detail-actions [data-testid="stVerticalBlock"],
-  .st-key-detail-actions [data-testid="stVerticalBlockBorderWrapper"] {{
-      display: flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-      flex-wrap: nowrap !important;
-      gap: 0.28rem !important;
-      width: auto !important;
-      margin: 0 !important;
-      flex: 0 0 auto !important;
-      flex-shrink: 0 !important;
-      position: relative !important;
-      z-index: 4 !important;
-  }}
-  .st-key-detail-actions [data-testid="stElementContainer"] {{
-      display: inline-flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-      width: auto !important;
-      flex: 0 0 auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-ca-detail-title-row .st-key-detail_abort .stButton button,
-  .st-key-ca-detail-title-row .st-key-detail_abort .stDownloadButton button {{
-      min-height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
-      height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
-      padding: 0 0.42rem !important;
-      gap: 0.28rem !important;
-      line-height: 1 !important;
-      font-size: calc(var(--ca-nav-font-size) * 0.92) !important;
-  }}
-  {_nav_action_button_css(
-      ".st-key-detail_abort",
-      accent=BRAND_RED,
-      accent_bg=BRAND_RED_BG,
-  )}
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
