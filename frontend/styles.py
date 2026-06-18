@@ -1186,7 +1186,9 @@ _GLOBAL_CSS = f"""
       --ca-detail-toolbar-title-size: 1.125rem;
       --ca-detail-title-height: 1.15rem;
       --ca-detail-meta-height: 1.05rem;
-      --ca-detail-action-height: 1.75rem;
+      position: relative !important;
+      z-index: 5 !important;
+      isolation: isolate !important;
   }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
   /* Title parts use the same gap as the middot-separated heading text. */
@@ -1227,49 +1229,21 @@ _GLOBAL_CSS = f"""
   .ca-detail-title-parts .arrow {{
       color: {BRAND_ORANGE};
   }}
-  /* Title row: Run # heading on the left, actions on the right. */
+  /* Title row: Run # heading — single inline flex row. */
   .st-key-ca-detail-title-row,
   .st-key-ca-detail-title-row [data-testid="stVerticalBlock"],
   .st-key-ca-detail-title-row [data-testid="stVerticalBlockBorderWrapper"] {{
       display: flex !important;
-      flex-direction: column !important;
-      align-items: stretch !important;
+      flex-direction: row !important;
+      align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: 0 !important;
-      width: 100% !important;
+      gap: var(--ca-detail-inline-gap) !important;
+      width: fit-content !important;
       max-width: 100% !important;
       min-height: 0 !important;
       height: auto !important;
       margin: 0 !important;
       padding: 0 !important;
-  }}
-  .st-key-ca-detail-title-row [data-testid="stHorizontalBlock"] {{
-      display: flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-      flex-wrap: nowrap !important;
-      width: 100% !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      gap: 0.75rem !important;
-      min-height: var(--ca-detail-action-height) !important;
-  }}
-  .st-key-ca-detail-title-row [data-testid="column"] {{
-      display: flex !important;
-      align-items: center !important;
-      min-height: var(--ca-detail-action-height) !important;
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
-  }}
-  .st-key-ca-detail-title-row [data-testid="column"]:first-child {{
-      flex: 1 1 auto !important;
-      min-width: 0 !important;
-      justify-content: flex-start !important;
-  }}
-  .st-key-ca-detail-title-row [data-testid="column"]:last-child {{
-      flex: 0 0 auto !important;
-      margin-left: auto !important;
-      justify-content: flex-end !important;
   }}
   .st-key-ca-detail-title-row [data-testid="stElementContainer"] {{
       flex: 0 0 auto !important;
@@ -1305,7 +1279,7 @@ _GLOBAL_CSS = f"""
       overflow: hidden !important;
       pointer-events: none !important;
   }}
-  .st-key-ca-detail-title-row [data-testid="column"]:last-child,
+  .st-key-ca-detail-meta-row [data-testid="column"]:last-child,
   .st-key-detail-meta-actions,
   .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
   .st-key-detail-meta-actions [data-testid="stVerticalBlockBorderWrapper"],
@@ -1314,25 +1288,22 @@ _GLOBAL_CSS = f"""
   .st-key-detail-meta-actions [data-testid="stElementContainer"],
   .st-key-detail-meta-actions .stButton,
   .st-key-detail-meta-actions .stButton button,
-  .st-key-detail-meta-actions [data-testid="stToggle"],
-  .st-key-detail-meta-actions [data-baseweb="switch"],
-  .st-key-detail-meta-actions label {{
+  [class*="st-key-run_actions_links_"],
+  [class*="st-key-run_actions_links_"] .stButton,
+  [class*="st-key-run_actions_links_"] .stButton button {{
       position: relative !important;
-      z-index: 12 !important;
+      z-index: 20 !important;
       pointer-events: auto !important;
   }}
-  .st-key-ca-detail-meta-row [data-testid="stHtml"],
-  .st-key-ca-detail-meta-row [data-testid="stHtml"] iframe,
-  .st-key-ca-detail-meta-row iframe,
-  .st-key-ca-detail-title-row [data-testid="column"]:first-child [data-testid="stHtml"],
-  .st-key-ca-detail-title-row [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
-  .st-key-ca-detail-title-row [data-testid="column"]:first-child iframe {{
+  .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stHtml"],
+  .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
+  .st-key-ca-detail-meta-row [data-testid="column"]:first-child iframe {{
       pointer-events: none !important;
   }}
-  /* Meta row: single full-width metadata line below the title/actions row. */
+  /* Meta row: metadata on the left, run actions on the right. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
-      margin: 0 0 0.15rem 0 !important;
+      margin: -0.56rem 0 -0.3rem 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
   }}
@@ -1358,6 +1329,17 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-meta-row [data-testid="column"]:first-child {{
       flex: 1 1 auto !important;
       min-width: 0 !important;
+      pointer-events: none !important;
+      overflow: hidden !important;
+      z-index: 1 !important;
+  }}
+  .st-key-ca-detail-meta-row [data-testid="column"]:last-child {{
+      flex: 0 0 auto !important;
+      margin-left: auto !important;
+      justify-content: flex-end !important;
+      position: relative !important;
+      z-index: 20 !important;
+      pointer-events: auto !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"] [data-testid="stVerticalBlock"],
   .st-key-ca-detail-meta-row [data-testid="column"] [data-testid="stElementContainer"] {{
@@ -1369,13 +1351,19 @@ _GLOBAL_CSS = f"""
       min-height: 0 !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stElementContainer"],
+  .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stHtml"],
   .st-key-ca-detail-meta-row [data-testid="column"]:first-child iframe {{
       display: flex !important;
       align-items: center !important;
       width: 100% !important;
       min-height: var(--ca-detail-meta-height) !important;
+      max-height: var(--ca-detail-meta-height) !important;
+      height: var(--ca-detail-meta-height) !important;
       margin: 0 !important;
       padding: 0 !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
+      line-height: 0 !important;
   }}
   .st-key-detail-meta-actions,
   .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
@@ -1401,15 +1389,8 @@ _GLOBAL_CSS = f"""
       justify-content: flex-end !important;
       align-items: center !important;
   }}
-  .st-key-detail-meta-actions [data-testid="column"]:first-child {{
-      margin-right: 0.15rem !important;
-  }}
-  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stElementContainer"],
-  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
-      justify-content: flex-end !important;
-  }}
-  .st-key-ca-detail-title-row .st-key-detail-refresh,
-  .st-key-ca-detail-title-row .st-key-detail-download-log {{
+  .st-key-ca-detail-meta-row .st-key-detail-download-log,
+  [class*="st-key-run_more_"] {{
       width: auto !important;
       margin: 0 !important;
       padding: 0 !important;
@@ -1423,10 +1404,12 @@ _GLOBAL_CSS = f"""
   .st-key-detail-download-log .stDownloadButton,
   .st-key-detail-download-log .stDownloadButton button,
   .st-key-detail-download-log .stButton,
-  .st-key-detail-download-log .stButton button {{
+  .st-key-detail-download-log .stButton button,
+  [class*="st-key-run_actions_links_"] .stButton,
+  [class*="st-key-run_actions_links_"] .stButton button {{
       width: auto !important;
-      min-height: var(--ca-detail-action-height) !important;
-      height: var(--ca-detail-action-height) !important;
+      min-height: var(--ca-detail-title-height) !important;
+      height: var(--ca-detail-title-height) !important;
       margin: 0 !important;
       padding: 0 !important;
       background: transparent !important;
@@ -1443,7 +1426,9 @@ _GLOBAL_CSS = f"""
   .st-key-detail-download-log .stDownloadButton button [data-testid="stMarkdownContainer"],
   .st-key-detail-download-log .stDownloadButton button p,
   .st-key-detail-download-log .stButton button [data-testid="stMarkdownContainer"],
-  .st-key-detail-download-log .stButton button p {{
+  .st-key-detail-download-log .stButton button p,
+  [class*="st-key-run_actions_links_"] .stButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-run_actions_links_"] .stButton button p {{
       width: auto !important;
       min-height: 0 !important;
       height: auto !important;
@@ -1463,99 +1448,39 @@ _GLOBAL_CSS = f"""
   .st-key-detail-download-log .stDownloadButton button:hover p,
   .st-key-detail-download-log .stButton button:hover,
   .st-key-detail-download-log .stButton button:hover [data-testid="stMarkdownContainer"],
-  .st-key-detail-download-log .stButton button:hover p {{
+  .st-key-detail-download-log .stButton button:hover p,
+  [class*="st-key-run_actions_links_"] .stButton button:hover,
+  [class*="st-key-run_actions_links_"] .stButton button:hover [data-testid="stMarkdownContainer"],
+  [class*="st-key-run_actions_links_"] .stButton button:hover p {{
       text-decoration: underline !important;
       color: {BRAND_ORANGE} !important;
   }}
-  .st-key-ca-detail-title-row .st-key-detail-refresh [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-title-row .st-key-detail-refresh [data-testid="stElementContainer"] {{
+  [class*="st-key-run_actions_links_"],
+  [class*="st-key-run_actions_links_"] > [data-testid="stVerticalBlock"],
+  [class*="st-key-run_actions_links_"] > [data-testid="stVerticalBlockBorderWrapper"] {{
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
-      justify-content: flex-end !important;
+      flex-wrap: nowrap !important;
+      gap: 0.22rem !important;
       width: auto !important;
-      margin: 0 !important;
-      gap: 0.35rem !important;
-      min-height: var(--ca-detail-action-height) !important;
-      height: var(--ca-detail-action-height) !important;
+      margin: 0.1rem 0 0 0 !important;
+      padding: 0.12rem 0 0 0 !important;
+      justify-content: flex-end !important;
   }}
-  .st-key-detail-refresh [data-testid="stToggle"],
-  .st-key-detail-refresh [data-testid="stCheckbox"] {{
-      display: flex !important;
-      align-items: center !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      min-height: var(--ca-detail-action-height) !important;
-      height: var(--ca-detail-action-height) !important;
-  }}
-  .st-key-detail-refresh label,
-  .st-key-detail-refresh [data-testid="stWidgetLabel"] {{
-      display: inline-flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-      align-self: center !important;
-      gap: 0.35rem !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      line-height: 1 !important;
-  }}
-  .st-key-detail-refresh [data-testid="stWidgetLabel"],
-  .st-key-detail-refresh [data-testid="stWidgetLabel"] p,
-  .st-key-detail-refresh [data-testid="stWidgetLabel"] span,
-  .st-key-detail-refresh [data-testid="stMarkdownContainer"] p,
-  .st-key-detail-refresh label,
-  .st-key-detail-refresh label p,
-  .st-key-detail-refresh label span {{
-      color: #6b7177 !important;
-      opacity: 1 !important;
-      visibility: visible !important;
-  }}
-  .st-key-detail-refresh [data-testid="stWidgetLabel"] p {{
-      font-size: var(--ca-run-meta-size) !important;
-      font-weight: 600 !important;
-      white-space: nowrap;
-      line-height: 1 !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      display: flex !important;
-      align-items: center !important;
-      align-self: center !important;
-  }}
-  .st-key-detail-refresh [data-testid="stToggle"] [data-testid="stMarkdownContainer"],
-  .st-key-detail-refresh [data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] {{
-      display: flex !important;
-      align-items: center !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-detail-refresh [data-testid="stToggle"],
-  .st-key-detail-refresh [data-testid="stCheckbox"],
-  .st-key-detail-refresh [role="switch"],
-  .st-key-detail-refresh [data-baseweb="switch"] {{
-      opacity: 1 !important;
-      visibility: visible !important;
-      margin: 0 !important;
-      align-self: center !important;
+  [class*="st-key-run_actions_links_"] > [data-testid="stElementContainer"] {{
+      width: auto !important;
       flex: 0 0 auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
-  .st-key-detail-refresh [data-baseweb="switch"] {{
-      background-color: #c4c9ce !important;
-      border: 1px solid #aeb4ba !important;
-      min-width: 2rem !important;
-      min-height: 1rem !important;
-      padding: 0.12rem !important;
-      box-sizing: border-box !important;
-      align-self: center !important;
-      margin-top: 0 !important;
-      margin-bottom: 0 !important;
-  }}
-  .st-key-detail-refresh [data-baseweb="switch"][aria-checked="true"] {{
-      background-color: {BRAND_ORANGE} !important;
-      border-color: {BRAND_ORANGE} !important;
-  }}
-  .st-key-detail-refresh [data-baseweb="switch"] > div {{
-      background-color: #ffffff !important;
-      box-shadow: 0 1px 3px rgba(19, 21, 22, 0.18) !important;
+  [class*="st-key-run_actions_links_"] [data-testid="stElementContainer"]:has(.ca-step-link-sep) {{
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: auto !important;
+      min-width: 0 !important;
+      padding: 0 0.06rem !important;
   }}
   .ca-detail-head {{
       margin: 0;
@@ -1696,7 +1621,7 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
   .st-key-ca-detail-header .st-key-ca-detail-title-row {{
-      margin-bottom: 0.15rem !important;
+      margin-bottom: calc(var(--ca-detail-section-v-gap) * -3) !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row),
   .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row) {{

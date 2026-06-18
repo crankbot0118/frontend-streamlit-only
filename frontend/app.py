@@ -36,6 +36,7 @@ if hasattr(st, "set_theme"):
     )
 
 from api import check_backend_health
+from page_refresh import PAGE_REFRESH_SEC
 from styles import (
     apply_global_styles,
     build_pages,
@@ -66,3 +67,12 @@ with st.sidebar:
     render_status(is_live, datetime.now(timezone.utc))
 
 pg.run()
+
+
+@st.fragment(run_every=PAGE_REFRESH_SEC)
+def _auto_refresh_current_page() -> None:
+    """Re-run the active page so lists and run details pick up backend changes."""
+    st.rerun(scope="app")
+
+
+_auto_refresh_current_page()
