@@ -318,34 +318,22 @@ if run:
 
             with st.container(key="ca-detail-meta-row"):
                 with st.container(key="detail-meta-actions"):
-                    col_links, col_ref = st.columns(
-                        [1, 1.15],
-                        gap="small",
-                        vertical_alignment="center",
-                    )
-                    with col_links:
-                        with st.container(key="detail-run-links"):
-                            if st.button(
-                                "View Log",
-                                key=f"view_run_log_{run_id}",
-                            ):
-                                open_run_log_dialog(clone_run_id=run_id)
-                            st.markdown(
-                                '<span class="ca-step-link-sep">&middot;</span>',
-                                unsafe_allow_html=True,
-                            )
-                            if st.button(
-                                "Info",
-                                key=f"detail_info_{run_id}",
-                            ):
-                                open_run_info_dialog(run_id)
-                    with col_ref:
-                        with st.container(key="detail-refresh"):
-                            st.toggle(
-                                "Auto refresh",
-                                key=refresh_key,
-                                label_visibility="visible",
-                            )
+                    if st.button(
+                        "View Log",
+                        key=f"view_run_log_{run_id}",
+                    ):
+                        open_run_log_dialog(clone_run_id=run_id)
+                    if st.button(
+                        "Info",
+                        key=f"detail_info_{run_id}",
+                    ):
+                        open_run_info_dialog(run_id)
+                    with st.container(key="detail-refresh"):
+                        st.toggle(
+                            "Auto refresh",
+                            key=refresh_key,
+                            label_visibility="visible",
+                        )
 
             st.html('<hr class="ca-title-rule" />')
 

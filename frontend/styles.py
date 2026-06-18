@@ -1371,64 +1371,26 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
   .st-key-detail-meta-actions,
-  .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
-  .st-key-detail-meta-actions [data-testid="stVerticalBlockBorderWrapper"] {{
+  .st-key-detail-meta-actions > [data-testid="stVerticalBlock"],
+  .st-key-detail-meta-actions > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      flex-wrap: nowrap !important;
+      gap: 1rem !important;
       width: auto !important;
+      max-width: 100% !important;
       margin: 0 0 0 auto !important;
       padding: 0 !important;
   }}
-  .st-key-detail-meta-actions [data-testid="stHorizontalBlock"] {{
-      display: flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-      justify-content: flex-end !important;
-      flex-wrap: nowrap !important;
-      width: max-content !important;
-      min-width: max-content !important;
-      max-width: 100% !important;
-      margin-left: auto !important;
-      gap: 0.75rem !important;
-  }}
-  .st-key-detail-meta-actions [data-testid="column"] {{
-      flex: 0 0 auto !important;
-      width: auto !important;
-      min-width: fit-content !important;
-      justify-content: flex-end !important;
-      align-items: center !important;
-  }}
-  .st-key-detail-meta-actions [data-testid="column"]:first-child {{
-      margin-right: 0 !important;
-  }}
-  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stElementContainer"],
-  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
-      justify-content: flex-end !important;
-  }}
-  .st-key-detail-run-links,
-  .st-key-detail-run-links > [data-testid="stVerticalBlock"],
-  .st-key-detail-run-links > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      display: flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-      flex-wrap: nowrap !important;
-      gap: 0.22rem !important;
-      width: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-detail-run-links > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  .st-key-detail-run-links > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
+  .st-key-detail-meta-actions > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-detail-meta-actions > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-detail-meta-actions .st-key-detail-refresh {{
       flex: 0 0 auto !important;
       width: auto !important;
       margin: 0 !important;
       padding: 0 !important;
-  }}
-  .st-key-detail-run-links [data-testid="stElementContainer"]:has(.ca-step-link-sep) {{
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      width: auto !important;
-      min-width: 0 !important;
-      padding: 0 0.06rem !important;
   }}
   [class*="st-key-view_run_log_"] .stButton,
   [class*="st-key-view_run_log_"] .stButton button,
@@ -1519,17 +1481,28 @@ _GLOBAL_CSS = f"""
       text-decoration: underline !important;
       color: {BRAND_ORANGE} !important;
   }}
+  .st-key-detail-refresh > [data-testid="stVerticalBlock"],
+  .st-key-detail-refresh > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      gap: 0.4rem !important;
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
   .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stVerticalBlock"],
   .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stElementContainer"] {{
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
-      justify-content: flex-end !important;
+      justify-content: flex-start !important;
       width: auto !important;
       margin: 0 !important;
-      gap: 0.35rem !important;
+      padding: 0 !important;
+      gap: 0.4rem !important;
       min-height: var(--ca-detail-meta-height) !important;
-      height: var(--ca-detail-meta-height) !important;
+      height: auto !important;
   }}
   .st-key-detail-refresh [data-testid="stToggle"],
   .st-key-detail-refresh [data-testid="stCheckbox"] {{
