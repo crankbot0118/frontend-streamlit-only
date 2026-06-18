@@ -27,8 +27,8 @@ BRAND_RED = "#cf222e"
 BRAND_RED_BG = "rgba(207, 34, 46, 0.12)"
 SHELL_MAIN_BG = "#faf7f2"
 SHELL_SIDEBAR_BG = "#ffffff"
-UI_SCALE = 0.8
-STATUS_ICON_PX = round(18 * UI_SCALE)
+UI_SCALE = 1
+STATUS_ICON_PX = 18
 SIDEBAR_WIDTH_PX = 200
 
 # Repo root is the parent of the ``frontend/`` package that holds this file.
@@ -157,11 +157,11 @@ _GLOBAL_CSS = f"""
   }}
 
   /* Scale the entire dashboard shell (sidebar + pages) to 80%. */
-  .stApp {{
+  [data-testid="stAppViewContainer"] {{
       zoom: var(--ca-ui-scale);
-      width: calc(100% / var(--ca-ui-scale));
+  }}
+  .stApp {{
       min-height: calc(100vh / var(--ca-ui-scale));
-      transform-origin: top left;
   }}
   [data-testid="stAppViewContainer"],
   .stApp,
@@ -3556,7 +3556,7 @@ def run_detail_title_html(*, run_id: str, src: str, tgt: str) -> str:
     ``st.html`` renders inside an iframe, so styles must be embedded here —
     global CSS from ``apply_global_styles()`` does not apply inside the iframe.
     """
-    title_size = f"{1.75 * UI_SCALE}rem"
+    title_size = "1.75rem"
     return f"""
     <style>
       .ca-detail-page-header,
