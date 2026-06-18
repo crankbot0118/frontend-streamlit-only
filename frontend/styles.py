@@ -1237,9 +1237,9 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      justify-content: space-between !important;
+      justify-content: flex-start !important;
       gap: var(--ca-detail-inline-gap) !important;
-      width: 100% !important;
+      width: fit-content !important;
       max-width: 100% !important;
       min-height: 0 !important;
       height: auto !important;
@@ -3208,33 +3208,6 @@ def step_detail_dialog_error_html(message: str) -> str:
     return f'<div class="ca-step-dialog-body"><p class="ca-step-dialog-error">{safe}</p></div>'
 
 
-def run_detail_info_dialog_html(
-    *,
-    user: str,
-    start_date,
-    last_update,
-    status: str,
-) -> str:
-    """Run details popup — triggered by, timing, duration, and status."""
-    badge = status_badge_html(status)
-    return (
-        f'<div class="ca-step-dialog-body">'
-        f'<div class="ca-step-dialog-title">Run details</div>'
-        f'<div class="ca-detail-meta ca-detail-meta-dialog">'
-        f'<span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>'
-        f'<span class="ca-detail-sep">&middot;</span>'
-        f'<span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(start_date)}</span>'
-        f'<span class="ca-detail-sep">&middot;</span>'
-        f'<span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(last_update)}</span>'
-        f'<span class="ca-detail-sep">&middot;</span>'
-        f'<span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(start_date, last_update)}</span>'
-        f'<span class="ca-detail-sep">&middot;</span>'
-        f"{badge}"
-        f"</div>"
-        f"</div>"
-    )
-
-
 def log_file_dialog_html(title: str, file_path: str, content: str, filename: str) -> str:
     """Log viewer popup body when the instance file exists and was loaded."""
     safe_title = html.escape(title)
@@ -3729,7 +3702,6 @@ def run_detail_title_html(*, run_id: str, src: str, tgt: str) -> str:
           <span>{src}</span>
           <span class="arrow">&#8594;</span>
           <span>{tgt}</span>
-          <span class="ca-run-sep">&middot;</span>
         </div>
       </div>
     </div>

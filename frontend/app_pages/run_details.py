@@ -16,12 +16,10 @@ from api import (
     retry_run,
     skip_run,
 )
-from config.settings import frontend
-from log_view import open_run_log_dialog, open_step_log_dialog
+from log_view import open_step_log_dialog
 from styles import (
     emit_html,
     render_title,
-    run_detail_info_dialog_html,
     run_detail_title_html,
     status_image_html,
     step_detail_dialog_error_html,
@@ -30,22 +28,9 @@ from styles import (
 )
 from ui_errors import show_error
 
-_RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
-
 
 def _toggle_step(open_key: str) -> None:
     st.session_state[open_key] = not st.session_state.get(open_key, False)
-
-
-def _load_run(run_id: int, fallback: dict | None = None) -> dict | None:
-    try:
-        latest = get_run(run_id)
-        if latest:
-            st.session_state["selected_run"] = latest
-            return latest
-    except Exception:
-        pass
-    return fallback
 
 
 def _load_steps(run_id: int, fallback: list | None = None) -> list:
@@ -96,11 +81,6 @@ if run_id and (not run or run.get("clone_run_id") != run_id):
 # Keep the URL in sync so subsequent refreshes still work.
 if run_id:
     st.query_params["run"] = str(run_id)
-    if st.session_state.get("_auto_refresh_run") != run_id:
-        st.session_state[f"auto_refresh_{run_id}"] = True
-        st.session_state["_auto_refresh_run"] = run_id
-
-refresh_key = f"auto_refresh_{run_id}"
 
 if not run_id:
     render_title("Run details")
@@ -112,7 +92,6 @@ steps = _load_steps(run_id)
 if run:
     src = _esc(run.get("source_name", "—"))
     tgt = _esc(run.get("target_name", "—"))
-    user = _esc(run.get("user_name", "—"))
     safe_run_id = _esc(run_id)
 
     @st.dialog(" ", width="large")
@@ -215,84 +194,17 @@ if run:
                             except Exception as exc:
                                 show_error(exc, context="Could not skip step")
 
-    auto_on = bool(st.session_state.get(refresh_key))
-    poll_every = _RUN_DETAILS_REFRESH_SEC if auto_on else None
-
-    def _on_view_run_log() -> None:
-        st.session_state[f"_open_run_log_{run_id}"] = True
-
-    def _on_run_info() -> None:
-        st.session_state[f"_open_run_info_{run_id}"] = True
-
-    @st.dialog(" ", width="large")
-    def _show_run_info_dialog() -> None:
-        polling = bool(st.session_state.get(refresh_key))
-        live_run = _load_run(run_id, run) if polling else run
-        if not live_run:
-            live_run = run
-        emit_html(
-            run_detail_info_dialog_html(
-                user=user,
-                start_date=live_run.get("start_date"),
-                last_update=live_run.get("last_update"),
-                status=live_run.get("status", ""),
-            )
-        )
-
     with st.container(key="ca-detail-header"):
         with st.container(key="ca-detail-title-row"):
-            with st.container(key="ca-detail-left"):
-                st.html(run_detail_title_html(run_id=safe_run_id, src=src, tgt=tgt))
-                with st.container(key="detail-toolbar-links"):
-                    with st.container(key="detail-download-log"):
-                        st.button(
-                            "View Log",
-                            key=f"view_run_log_{run_id}",
-                            type="secondary",
-                            on_click=_on_view_run_log,
-                        )
-                    st.markdown(
-                        '<span class="ca-step-link-sep">&middot;</span>',
-                        unsafe_allow_html=True,
-                    )
-                    with st.container(key="detail-run-info"):
-                        st.button(
-                            "Details",
-                            key=f"run_info_{run_id}",
-                            type="secondary",
-                            on_click=_on_run_info,
-                        )
-            with st.container(key="detail-meta-actions"):
-                with st.container(key="detail-refresh"):
-                    st.toggle(
-                        "Auto refresh",
-                        key=refresh_key,
-                        label_visibility="visible",
-                    )
+            st.html(run_detail_title_html(run_id=safe_run_id, src=src, tgt=tgt))
 
-    @st.fragment(run_every=poll_every)
-    def _live_steps_panel() -> None:
-        polling = bool(st.session_state.get(refresh_key))
-        live_run = _load_run(run_id, run) if polling else run
-        if not live_run:
-            live_run = run
-        live_steps = _load_steps(run_id, steps) if polling else steps
+    st.html('<hr class="ca-title-rule" />')
 
-        st.html('<hr class="ca-title-rule" />')
-
-        if live_steps:
-            with st.container(key="ca-steps"):
-                _render_step_cards(live_steps, live_run)
-        else:
-            st.caption("No steps found for this run.")
-
-    _live_steps_panel()
-
-    if st.session_state.pop(f"_open_run_log_{run_id}", False):
-        open_run_log_dialog(clone_run_id=run_id)
-
-    if st.session_state.pop(f"_open_run_info_{run_id}", False):
-        _show_run_info_dialog()
+    if steps:
+        with st.container(key="ca-steps"):
+            _render_step_cards(steps, run)
+    else:
+        st.caption("No steps found for this run.")
 else:
     render_title(f"Run #{run_id}")
     if not steps:
