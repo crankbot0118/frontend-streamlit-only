@@ -292,15 +292,14 @@ if run:
                     )
                     with st.container(key="detail-info"):
                         with st.popover("Info", icon=":material/info:", help="Run status and timing"):
+                            meta_html = run_detail_meta_inner_html(
+                                user=user,
+                                start_date=live_run.get("start_date"),
+                                last_update=live_run.get("last_update"),
+                                status=live_run.get("status", ""),
+                            )
                             emit_html(
-                                f'<div class="ca-detail-meta ca-detail-meta--popover">'
-                                f"{run_detail_meta_inner_html(
-                                    user=user,
-                                    start_date=live_run.get('start_date'),
-                                    last_update=live_run.get('last_update'),
-                                    status=live_run.get('status', ''),
-                                )}"
-                                f"</div>"
+                                f'<div class="ca-detail-meta ca-detail-meta--popover">{meta_html}</div>'
                             )
 
             with st.container(key="ca-detail-meta-row"):
