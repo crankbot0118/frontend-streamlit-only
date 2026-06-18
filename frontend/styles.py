@@ -1181,9 +1181,10 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run details header ---------- */
   .st-key-ca-detail-header {{
-      --ca-detail-inline-gap: 0.28rem;
-      --ca-detail-title-height: 1.38rem;
-      --ca-detail-meta-height: 1.05rem;
+      --ca-detail-inline-gap: 0.18rem;
+      --ca-detail-toolbar-title-size: 1.0625rem;
+      --ca-detail-title-height: 1.12rem;
+      --ca-detail-meta-height: 0.95rem;
   }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
   /* Title parts use the same gap as the middot-separated heading text. */
@@ -1193,9 +1194,9 @@ _GLOBAL_CSS = f"""
       gap: var(--ca-detail-inline-gap);
       margin: 0;
       padding: 0;
-      font-size: var(--ca-title-size);
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      font-size: var(--ca-detail-toolbar-title-size, var(--ca-title-size));
+      font-weight: 600;
+      letter-spacing: -0.01em;
       color: {BRAND_INK};
       line-height: 1;
       white-space: nowrap;
@@ -1224,7 +1225,7 @@ _GLOBAL_CSS = f"""
   .ca-detail-title-parts .arrow {{
       color: {BRAND_ORANGE};
   }}
-  /* Title row: Run # heading then Abort — single inline flex row, no overlap. */
+  /* Title row: Run # heading — single inline flex row. */
   .st-key-ca-detail-title-row,
   .st-key-ca-detail-title-row [data-testid="stVerticalBlock"],
   .st-key-ca-detail-title-row [data-testid="stVerticalBlockBorderWrapper"] {{
@@ -1265,48 +1266,10 @@ _GLOBAL_CSS = f"""
       max-width: none !important;
       overflow: visible !important;
   }}
-  .st-key-detail-actions,
-  .st-key-detail-actions [data-testid="stVerticalBlock"],
-  .st-key-detail-actions [data-testid="stVerticalBlockBorderWrapper"] {{
-      display: flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-      flex-wrap: nowrap !important;
-      gap: 0.28rem !important;
-      width: auto !important;
-      margin: 0 !important;
-      flex: 0 0 auto !important;
-      flex-shrink: 0 !important;
-      position: relative !important;
-      z-index: 4 !important;
-  }}
-  .st-key-detail-actions [data-testid="stElementContainer"] {{
-      display: inline-flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-      width: auto !important;
-      flex: 0 0 auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-ca-detail-title-row .st-key-detail_abort .stButton button,
-  .st-key-ca-detail-title-row .st-key-detail_abort .stDownloadButton button {{
-      min-height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
-      height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
-      padding: 0 0.42rem !important;
-      gap: 0.28rem !important;
-      line-height: 1 !important;
-      font-size: calc(var(--ca-nav-font-size) * 0.92) !important;
-  }}
-  {_nav_action_button_css(
-      ".st-key-detail_abort",
-      accent=BRAND_RED,
-      accent_bg=BRAND_RED_BG,
-  )}
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
-      margin: -0.42rem 0 -0.22rem 0 !important;
+      margin: -0.22rem 0 -0.1rem 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
   }}
@@ -1318,7 +1281,7 @@ _GLOBAL_CSS = f"""
       width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      gap: 0.28rem !important;
+      gap: 0.18rem !important;
       min-height: var(--ca-detail-meta-height) !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"] {{
@@ -1371,7 +1334,7 @@ _GLOBAL_CSS = f"""
       flex-wrap: nowrap !important;
       width: auto !important;
       margin-left: auto !important;
-      gap: 0.75rem !important;
+      gap: 0.45rem !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"] {{
       flex: 0 0 auto !important;
@@ -1554,7 +1517,7 @@ _GLOBAL_CSS = f"""
       flex-direction: row;
       flex-wrap: nowrap;
       align-items: center;
-      gap: 0.22rem;
+      gap: 0.14rem;
       font-size: var(--ca-run-meta-size);
       color: #7a8086;
       font-style: italic;
@@ -1671,10 +1634,10 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
   .st-key-ca-detail-header .st-key-ca-detail-title-row {{
-      margin-bottom: -0.1rem !important;
+      margin-bottom: -0.04rem !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child {{
-      margin-top: -0.2rem !important;
+      margin-top: -0.12rem !important;
       line-height: 0 !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child [data-testid="stHtml"],
@@ -1692,7 +1655,7 @@ _GLOBAL_CSS = f"""
   /* Step list — breathing room below the orange divider. */
   .st-key-ca-steps {{
       --ca-step-card-gap: 0.1px;
-      margin-top: 0.32rem !important;
+      margin-top: 0.16rem !important;
   }}
 
   /* Inter-card spacing — cards sit in stElementContainer wrappers, not direct
@@ -1727,13 +1690,13 @@ _GLOBAL_CSS = f"""
 
   /* Each step is a bordered card — flex row: left (icon+name) | right (actions+arrow). */
   [class*="st-key-stepcard_"] {{
-      --ca-step-arrow-size: 1.25rem;
+      --ca-step-arrow-size: 1.15rem;
       position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
-      padding: 4px 12px;
+      padding: 3px 10px;
       background: #ffffff;
-      min-height: 32px;
+      min-height: 28px;
       box-sizing: border-box;
   }}
 
@@ -1754,12 +1717,12 @@ _GLOBAL_CSS = f"""
       width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      gap: 8px !important;
+      gap: 5px !important;
       min-height: 0 !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] {{
-      min-height: 24px !important;
+      min-height: 22px !important;
   }}
   [class*="st-key-stepcard_"] [data-testid="column"] {{
       display: flex !important;
@@ -1933,10 +1896,10 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: 0.22rem !important;
+      gap: 0.16rem !important;
       width: 100% !important;
-      margin: 0.18rem 0 0 0 !important;
-      padding: 0.22rem 0 0 0 !important;
+      margin: 0.12rem 0 0 0 !important;
+      padding: 0.14rem 0 0 0 !important;
       border-top: 1px solid #eef0f2;
   }}
   [class*="st-key-step_links_"] > [data-testid="stElementContainer"] {{
