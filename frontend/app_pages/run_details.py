@@ -17,7 +17,7 @@ from api import (
     skip_run,
 )
 from config.settings import frontend
-from log_view import open_step_log_dialog
+from log_view import open_log_dialog
 from styles import (
     emit_html,
     render_title,
@@ -183,10 +183,10 @@ if run:
                             unsafe_allow_html=True,
                         )
                         if st.button("View Step Log", key=f"view_step_log_{run_id}_{i}"):
-                            open_step_log_dialog(
+                            open_log_dialog(
+                                title=f"Step log · {name}",
                                 clone_run_id=run_id,
                                 clone_function_run_id=step_pk,
-                                title=f"Step log · {name}",
                             )
                         st.markdown(
                             '<span class="ca-step-link-sep">&middot;</span>',
@@ -244,6 +244,23 @@ if run:
                         status=status,
                     )
                 )
+                with st.container(key="detail-toolbar-links"):
+                    st.markdown(
+                        '<span class="ca-step-link-sep">&middot;</span>',
+                        unsafe_allow_html=True,
+                    )
+                    with st.container(key="detail-download-log"):
+                        if (live_run or {}).get("log_location"):
+                            if st.button("View Log", key=f"view_run_log_{run_id}"):
+                                open_log_dialog(
+                                    title=f"Run log · #{run_id}",
+                                    clone_run_id=run_id,
+                                )
+                        else:
+                            st.html(
+                                '<span class="ca-step-link-disabled" '
+                                'title="Log not available yet">View Log</span>'
+                            )
             st.html('<hr class="ca-title-rule" />')
             if live_steps:
                 _render_step_cards(live_steps, live_run)

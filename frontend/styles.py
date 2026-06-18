@@ -1323,6 +1323,20 @@ _GLOBAL_CSS = f"""
       overflow: hidden !important;
       pointer-events: none !important;
   }}
+  .st-key-ca-detail-title-row .st-key-detail-toolbar-links,
+  .st-key-ca-detail-title-row .st-key-detail-toolbar-links [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-title-row .st-key-detail-toolbar-links [data-testid="stVerticalBlockBorderWrapper"],
+  .st-key-ca-detail-title-row .st-key-detail-download-log,
+  .st-key-ca-detail-title-row .st-key-detail-download-log [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-title-row .st-key-detail-download-log [data-testid="stVerticalBlockBorderWrapper"] {{
+      pointer-events: auto !important;
+  }}
+  .st-key-ca-detail-title-row .st-key-detail-download-log .stButton button,
+  .st-key-ca-detail-title-row .st-key-detail-download-log .stButton button [data-testid="stMarkdownContainer"],
+  .st-key-ca-detail-title-row .st-key-detail-download-log .stButton button p,
+  .st-key-ca-detail-title-row .st-key-detail-download-log .ca-step-link-disabled {{
+      font-size: 0.86rem !important;
+  }}
   .st-key-detail-meta-actions,
   .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
   .st-key-detail-meta-actions [data-testid="stVerticalBlockBorderWrapper"],
