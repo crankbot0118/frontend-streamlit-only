@@ -1183,7 +1183,8 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-header {{
       --ca-detail-inline-gap: 0.28rem;
       --ca-detail-section-v-gap: 0.05rem;
-      --ca-detail-title-height: 1.38rem;
+      --ca-detail-toolbar-title-size: 1.125rem;
+      --ca-detail-title-height: 1.15rem;
       --ca-detail-meta-height: 1.05rem;
   }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
@@ -1194,7 +1195,7 @@ _GLOBAL_CSS = f"""
       gap: var(--ca-detail-inline-gap);
       margin: 0;
       padding: 0;
-      font-size: var(--ca-title-size);
+      font-size: var(--ca-detail-toolbar-title-size, var(--ca-title-size));
       font-weight: 700;
       letter-spacing: -0.02em;
       color: {BRAND_INK};
