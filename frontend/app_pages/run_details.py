@@ -10,6 +10,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from api import (
+    abort_run,
     get_run,
     get_run_steps,
     get_step_detail,
@@ -20,8 +21,11 @@ from config.settings import frontend
 from log_view import open_log_dialog
 from styles import (
     emit_html,
+    fmt_duration,
+    relative_update_html,
     render_title,
-    run_detail_title_html,
+    started_html,
+    status_badge_html,
     status_image_html,
     step_detail_dialog_error_html,
     step_detail_dialog_html,
@@ -30,7 +34,8 @@ from styles import (
 from ui_errors import show_error
 
 _RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
-_TERMINAL_STATUSES = frozenset({"COMPLETED", "FAILED", "ABORTED", "SKIPPED"})
+
+
 def _toggle_step(open_key: str) -> None:
     st.session_state[open_key] = not st.session_state.get(open_key, False)
 
@@ -46,27 +51,32 @@ def _load_run(run_id: int, fallback: dict | None = None) -> dict | None:
     return fallback
 
 
-def _poll_interval(status: str) -> int | None:
-    if (status or "").upper() in _TERMINAL_STATUSES:
-        return None
-    return _RUN_DETAILS_REFRESH_SEC
-
-
-def _maybe_rerun_on_terminal(run_id: int, status: str) -> None:
-    """Full rerun once when a run reaches a terminal status so polling stops."""
-    key = f"_run_status_{run_id}"
-    prev = st.session_state.get(key)
-    st.session_state[key] = status
-    if prev and prev != status and (status or "").upper() in _TERMINAL_STATUSES:
-        st.rerun()
-
-
 def _load_steps(run_id: int, fallback: list | None = None) -> list:
     try:
         return get_run_steps(run_id)
     except Exception as exc:
         show_error(exc, context="Could not load run steps")
         return fallback or []
+
+
+def _abort_state(step_rows: list, live_run: dict | None) -> tuple[bool, int | None, str]:
+    failed_steps = [
+        s for s in step_rows if (s.get("status") or "").upper() == "FAILED"
+    ]
+    failed_step_id = (
+        max(failed_steps, key=lambda s: s["clone_function_run_id"])["clone_function_run_id"]
+        if failed_steps
+        else None
+    )
+    run_status = (live_run.get("status") or "").upper() if live_run else ""
+    can_abort = run_status == "FAILED" and failed_step_id is not None
+    if can_abort:
+        help_text = "Mark this failed run as ABORTED"
+    elif run_status != "FAILED":
+        help_text = "Only available when clone run status is FAILED"
+    else:
+        help_text = "No failed function step found for this run"
+    return can_abort, failed_step_id, help_text
 
 
 def _step_action_state(step: dict, live_run: dict | None) -> tuple[bool, str]:
@@ -109,6 +119,11 @@ if run_id and (not run or run.get("clone_run_id") != run_id):
 # Keep the URL in sync so subsequent refreshes still work.
 if run_id:
     st.query_params["run"] = str(run_id)
+    if st.session_state.get("_auto_refresh_run") != run_id:
+        st.session_state[f"auto_refresh_{run_id}"] = True
+        st.session_state["_auto_refresh_run"] = run_id
+
+refresh_key = f"auto_refresh_{run_id}"
 
 if not run_id:
     render_title("Run details")
@@ -120,6 +135,7 @@ steps = _load_steps(run_id)
 if run:
     src = _esc(run.get("source_name", "—"))
     tgt = _esc(run.get("target_name", "—"))
+    user = _esc(run.get("user_name", "—"))
     safe_run_id = _esc(run_id)
 
     @st.dialog(" ", width="large")
@@ -151,6 +167,7 @@ if run:
             with st.container(key=f"stepcard_{i}"):
                 left_col, more_col, arrow_col = st.columns(
                     [1, 0.11, 0.04],
+                    gap="small",
                     vertical_alignment="center",
                 )
                 with left_col:
@@ -221,50 +238,117 @@ if run:
                             except Exception as exc:
                                 show_error(exc, context="Could not skip step")
 
-    poll_every = _poll_interval(run.get("status", ""))
+    auto_on = bool(st.session_state.get(refresh_key))
+    poll_every = _RUN_DETAILS_REFRESH_SEC if auto_on else None
 
-    with st.container(key="ca-steps"):
+    with st.container(key="ca-detail-header"):
         @st.fragment(run_every=poll_every)
-        def _live_header() -> None:
-            live_run = _load_run(run_id, run) if poll_every else run
+        def _live_detail_panel() -> None:
+            polling = bool(st.session_state.get(refresh_key))
+            live_run = _load_run(run_id, run) if polling else run
             if not live_run:
                 live_run = run
-            status = live_run.get("status", "")
-            if poll_every:
-                _maybe_rerun_on_terminal(run_id, status)
+            live_steps = _load_steps(run_id, steps) if polling else steps
+            can_abort, failed_step_id, abort_help = _abort_state(live_steps, live_run)
+
             with st.container(key="ca-detail-title-row"):
                 st.html(
-                    run_detail_title_html(
-                        run_id=safe_run_id,
-                        src=src,
-                        tgt=tgt,
-                        status=status,
+                    f"""
+                    <div class="ca-page-header ca-detail-page-header">
+                      <div class="ca-title">
+                        <h1 class="ca-detail-title-parts">
+                          <span>Run #{safe_run_id}</span>
+                          <span class="ca-run-sep">&middot;</span>
+                          <span>{src}</span>
+                          <span class="arrow">&#8594;</span>
+                          <span>{tgt}</span>
+                          <span class="ca-run-sep">&middot;</span>
+                        </h1>
+                      </div>
+                    </div>
+                    """
+                )
+                with st.container(key="detail-actions"):
+                    if st.button(
+                        "Abort",
+                        key="detail_abort",
+                        type="secondary",
+                        icon=":material/stop:",
+                        disabled=not can_abort,
+                        help=abort_help,
+                    ):
+                        if not can_abort:
+                            show_error(
+                                "Abort is only allowed when clone run status is FAILED.",
+                                context="Cannot abort run",
+                            )
+                        else:
+                            try:
+                                abort_run(run_id, failed_step_id)
+                                st.session_state.pop("selected_run", None)
+                                st.rerun()
+                            except Exception as exc:
+                                show_error(exc, context="Could not abort run")
+
+            with st.container(key="ca-detail-meta-row"):
+                col_meta, col_actions = st.columns(
+                    [1, 0.32],
+                    gap="small",
+                    vertical_alignment="center",
+                )
+                with col_meta:
+                    emit_html(
+                        f"""
+                        <div class="ca-detail-meta-bar">
+                          <div class="ca-detail-meta">
+                            <span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>
+                            <span class="ca-detail-sep">&middot;</span>
+                            <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(live_run.get('start_date'))}</span>
+                            <span class="ca-detail-sep">&middot;</span>
+                            <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(live_run.get('last_update'))}</span>
+                            <span class="ca-detail-sep">&middot;</span>
+                            <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(live_run.get('start_date'), live_run.get('last_update'))}</span>
+                            <span class="ca-detail-sep">&middot;</span>
+                            {status_badge_html(live_run.get('status', ''))}
+                          </div>
+                        </div>
+                        """
                     )
-                )
+                with col_actions:
+                    with st.container(key="detail-meta-actions"):
+                        col_dl, col_ref = st.columns(
+                            [1, 1.15],
+                            gap="small",
+                            vertical_alignment="center",
+                        )
+                        with col_dl:
+                            with st.container(key="detail-download-log"):
+                                if st.button(
+                                    "View Log",
+                                    key=f"view_run_log_{run_id}",
+                                    type="secondary",
+                                ):
+                                    open_log_dialog(
+                                        title=f"Run log · #{run_id}",
+                                        clone_run_id=run_id,
+                                    )
+                        with col_ref:
+                            with st.container(key="detail-refresh"):
+                                st.toggle(
+                                    "Auto refresh",
+                                    key=refresh_key,
+                                    label_visibility="visible",
+                                )
 
-        _live_header()
+            st.html('<hr class="ca-title-rule" />')
 
-        with st.container(key="ca-detail-log-row"):
-            if st.button("View Log", key=f"view_run_log_{run_id}"):
-                open_log_dialog(
-                    title=f"Run log · #{run_id}",
-                    clone_run_id=run_id,
-                )
-
-        st.html('<hr class="ca-title-rule" />')
-
-        @st.fragment(run_every=poll_every)
-        def _live_steps() -> None:
-            live_run = _load_run(run_id, run) if poll_every else run
-            if not live_run:
-                live_run = run
-            live_steps = _load_steps(run_id, steps) if poll_every else steps
             if live_steps:
-                _render_step_cards(live_steps, live_run)
+                with st.container(key="ca-steps"):
+                    _render_step_cards(live_steps, live_run)
             else:
                 st.caption("No steps found for this run.")
 
-        _live_steps()
+        _live_detail_panel()
 else:
     render_title(f"Run #{run_id}")
     if not steps:

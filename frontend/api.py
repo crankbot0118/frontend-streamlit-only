@@ -236,6 +236,14 @@ def get_step_detail(clone_run_id: int, clone_function_run_id: int) -> dict:
     return data if isinstance(data, dict) else {}
 
 
+def abort_run(clone_run_id: int, clone_function_run_id: int | None = None) -> dict:
+    """Insert ABORTED status for the run and the failed function step."""
+    body = {}
+    if clone_function_run_id is not None:
+        body["clone_function_run_id"] = clone_function_run_id
+    return _post_json(f"/api/v1/runs/{clone_run_id}/abort", body)
+
+
 def skip_run(clone_run_id: int, clone_function_run_id: int | None = None) -> dict:
     """Insert SKIPPED status for the run and the failed function step."""
     body = {}
