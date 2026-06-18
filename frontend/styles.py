@@ -1267,12 +1267,35 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       border: none !important;
       line-height: 0 !important;
+      pointer-events: none !important;
   }}
   .st-key-ca-detail-title-row [data-testid="stElementContainer"]:has([data-testid="stHtml"]) {{
       flex: 0 0 auto !important;
       width: fit-content !important;
-      max-width: none !important;
-      overflow: visible !important;
+      max-width: fit-content !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
+  }}
+  .st-key-ca-detail-meta-row [data-testid="column"]:last-child,
+  .st-key-detail-meta-actions,
+  .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
+  .st-key-detail-meta-actions [data-testid="stVerticalBlockBorderWrapper"],
+  .st-key-detail-meta-actions [data-testid="stHorizontalBlock"],
+  .st-key-detail-meta-actions [data-testid="column"],
+  .st-key-detail-meta-actions [data-testid="stElementContainer"],
+  .st-key-detail-meta-actions .stButton,
+  .st-key-detail-meta-actions .stButton button,
+  .st-key-detail-meta-actions [data-testid="stToggle"],
+  .st-key-detail-meta-actions [data-baseweb="switch"],
+  .st-key-detail-meta-actions label {{
+      position: relative !important;
+      z-index: 12 !important;
+      pointer-events: auto !important;
+  }}
+  .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stHtml"],
+  .st-key-ca-detail-meta-row [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
+  .st-key-ca-detail-meta-row [data-testid="column"]:first-child iframe {{
+      pointer-events: none !important;
   }}
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
@@ -1658,6 +1681,7 @@ _GLOBAL_CSS = f"""
       margin-top: calc(var(--ca-detail-section-v-gap) * -2) !important;
       margin-bottom: 0 !important;
       line-height: 0 !important;
+      pointer-events: none !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) [data-testid="stHtml"],
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) iframe,
@@ -1665,6 +1689,11 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) iframe {{
       margin: 0 !important;
       padding: 0 !important;
+      min-height: 2px !important;
+      max-height: 2px !important;
+      height: 2px !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
       display: block !important;
       line-height: 0 !important;
   }}

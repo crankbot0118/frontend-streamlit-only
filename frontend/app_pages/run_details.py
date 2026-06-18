@@ -222,24 +222,45 @@ if run:
     poll_every = _RUN_DETAILS_REFRESH_SEC if auto_on else None
 
     with st.container(key="ca-detail-header"):
-        @st.fragment(run_every=poll_every)
-        def _live_detail_panel() -> None:
-            polling = bool(st.session_state.get(refresh_key))
-            live_run = _load_run(run_id, run) if polling else run
-            if not live_run:
-                live_run = run
-            live_steps = _load_steps(run_id, steps) if polling else steps
+        with st.container(key="ca-detail-title-row"):
+            st.html(run_detail_title_html(run_id=safe_run_id, src=src, tgt=tgt))
 
-            with st.container(key="ca-detail-title-row"):
-                st.html(run_detail_title_html(run_id=safe_run_id, src=src, tgt=tgt))
+        with st.container(key="ca-detail-meta-row"):
+            col_meta, col_actions = st.columns(
+                [1, 0.32],
+                gap="small",
+                vertical_alignment="center",
+            )
+            with col_actions:
+                with st.container(key="detail-meta-actions"):
+                    col_dl, col_ref = st.columns(
+                        [1, 1.15],
+                        gap="small",
+                        vertical_alignment="center",
+                    )
+                    with col_dl:
+                        with st.container(key="detail-download-log"):
+                            if st.button(
+                                "View Log",
+                                key=f"view_run_log_{run_id}",
+                                type="secondary",
+                            ):
+                                open_run_log_dialog(clone_run_id=run_id)
+                    with col_ref:
+                        with st.container(key="detail-refresh"):
+                            st.toggle(
+                                "Auto refresh",
+                                key=refresh_key,
+                                label_visibility="visible",
+                            )
+            with col_meta:
 
-            with st.container(key="ca-detail-meta-row"):
-                col_meta, col_actions = st.columns(
-                    [1, 0.32],
-                    gap="small",
-                    vertical_alignment="center",
-                )
-                with col_meta:
+                @st.fragment(run_every=poll_every)
+                def _live_meta_line() -> None:
+                    polling = bool(st.session_state.get(refresh_key))
+                    live_run = _load_run(run_id, run) if polling else run
+                    if not live_run:
+                        live_run = run
                     emit_html(
                         f"""
                         <div class="ca-detail-meta-bar">
@@ -257,28 +278,16 @@ if run:
                         </div>
                         """
                     )
-                with col_actions:
-                    with st.container(key="detail-meta-actions"):
-                        col_dl, col_ref = st.columns(
-                            [1, 1.15],
-                            gap="small",
-                            vertical_alignment="center",
-                        )
-                        with col_dl:
-                            with st.container(key="detail-download-log"):
-                                if st.button(
-                                    "View Log",
-                                    key=f"view_run_log_{run_id}",
-                                    type="secondary",
-                                ):
-                                    open_run_log_dialog(clone_run_id=run_id)
-                        with col_ref:
-                            with st.container(key="detail-refresh"):
-                                st.toggle(
-                                    "Auto refresh",
-                                    key=refresh_key,
-                                    label_visibility="visible",
-                                )
+
+                _live_meta_line()
+
+        @st.fragment(run_every=poll_every)
+        def _live_steps_panel() -> None:
+            polling = bool(st.session_state.get(refresh_key))
+            live_run = _load_run(run_id, run) if polling else run
+            if not live_run:
+                live_run = run
+            live_steps = _load_steps(run_id, steps) if polling else steps
 
             st.html('<hr class="ca-title-rule" />')
 
@@ -288,7 +297,7 @@ if run:
             else:
                 st.caption("No steps found for this run.")
 
-        _live_detail_panel()
+        _live_steps_panel()
 else:
     render_title(f"Run #{run_id}")
     if not steps:
