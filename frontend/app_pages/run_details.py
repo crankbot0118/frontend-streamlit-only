@@ -275,7 +275,7 @@ if run:
             if not live_run:
                 live_run = run
             live_steps = _load_steps(run_id, steps) if polling else steps
-            can_abort, failed_step_id, abort_help = _abort_state(live_steps, live_run)
+            can_abort, failed_step_id, _abort_help = _abort_state(live_steps, live_run)
 
             with st.container(key="ca-detail-title-row"):
                 with st.container(key="ca-detail-left"):
@@ -297,12 +297,10 @@ if run:
                     )
                     with st.container(key="detail-actions"):
                         if st.button(
-                            "Abort",
+                            " ",
                             key="detail_abort",
-                            type="secondary",
-                            icon=":material/stop:",
                             disabled=not can_abort,
-                            help=abort_help,
+                            help="Abort",
                         ):
                             if not can_abort:
                                 show_error(
