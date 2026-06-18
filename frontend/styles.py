@@ -1736,21 +1736,33 @@ _GLOBAL_CSS = f"""
 
   /* Each step is a bordered card — flex row: left (icon+name) | right (actions+arrow). */
   [class*="st-key-stepcard_"] {{
+      --ca-step-card-height: 2.5rem;
       --ca-step-arrow-size: 1.25rem;
       position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
-      padding: 4px 12px;
+      padding: 0 12px;
       background: #ffffff;
-      min-height: 32px;
+      height: var(--ca-step-card-height) !important;
+      min-height: var(--ca-step-card-height) !important;
+      max-height: var(--ca-step-card-height) !important;
       box-sizing: border-box;
+      overflow: visible;
+      transition:
+          background 0.4s ease,
+          border-color 0.4s ease,
+          box-shadow 0.4s ease;
   }}
   [class*="st-key-stepcard_"]:has([data-ca-running-id]) {{
-      border-color: rgba(232, 117, 17, 0.45);
-      background: linear-gradient(90deg, rgba(232, 117, 17, 0.08) 0%, #ffffff 42%);
-      box-shadow: 0 0 0 1px rgba(232, 117, 17, 0.12);
+      border-color: rgba(232, 117, 17, 0.55);
+      background: linear-gradient(90deg, rgba(232, 117, 17, 0.1) 0%, #ffffff 50%);
+      box-shadow: inset 0 0 0 1px rgba(232, 117, 17, 0.08);
   }}
   [class*="st-key-stepcard_"] [data-testid="stElementContainer"]:has(.ca-running-step-marker) {{
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 0 !important;
       height: 0 !important;
       min-height: 0 !important;
       max-height: 0 !important;
@@ -1758,6 +1770,8 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       overflow: hidden !important;
       line-height: 0 !important;
+      pointer-events: none !important;
+      z-index: 0 !important;
   }}
   .ca-running-step-marker {{
       display: block;
@@ -1776,7 +1790,8 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       position: relative !important;
       min-height: 0 !important;
-      height: auto !important;
+      height: 100% !important;
+      justify-content: center !important;
   }}
   [class*="st-key-stepcard_"] [data-testid="stHorizontalBlock"] {{
       display: flex !important;
@@ -1791,7 +1806,9 @@ _GLOBAL_CSS = f"""
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] {{
-      min-height: 24px !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      max-height: var(--ca-step-card-height) !important;
       align-items: center !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"] [data-testid="stElementContainer"],
@@ -1799,7 +1816,9 @@ _GLOBAL_CSS = f"""
       display: flex !important;
       align-items: center !important;
       align-self: center !important;
-      min-height: 24px !important;
+      height: var(--ca-step-card-height) !important;
+      min-height: 0 !important;
+      max-height: var(--ca-step-card-height) !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
@@ -1871,9 +1890,9 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       border: none !important;
       background: transparent !important;
-      min-height: 0 !important;
-      max-height: 24px !important;
-      height: auto !important;
+      height: 1.25rem !important;
+      min-height: 1.25rem !important;
+      max-height: 1.25rem !important;
       overflow: visible !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
@@ -1884,10 +1903,10 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       border: none !important;
       background: transparent !important;
-      min-height: 18px !important;
-      max-height: 24px !important;
-      height: auto !important;
-      overflow: hidden !important;
+      height: 1.25rem !important;
+      min-height: 1.25rem !important;
+      max-height: 1.25rem !important;
+      overflow: visible !important;
   }}
 
   .ca-step-left {{
@@ -1914,6 +1933,8 @@ _GLOBAL_CSS = f"""
   .ca-step-status-wrap {{
       flex: 0 0 auto;
       line-height: 0;
+      overflow: visible;
+      transition: opacity 0.35s ease, transform 0.35s ease;
   }}
   .ca-step-more {{
       flex: 0 0 auto;
@@ -2171,6 +2192,15 @@ _GLOBAL_CSS = f"""
   [class*="st-key-stepcard_"] [class*="st-key-more_"] .stButton button:hover svg {{
       color: {BRAND_ORANGE} !important;
       fill: {BRAND_ORANGE} !important;
+  }}
+  @media (prefers-reduced-motion: reduce) {{
+      [class*="st-key-stepcard_"] {{
+          transition: none !important;
+      }}
+      .ca-step-status-wrap {{
+          transition: none !important;
+          animation: none !important;
+      }}
   }}
 
   /* ---------- Step detail dialog — translucent overlay + strict light panel ---------- */
@@ -3003,21 +3033,65 @@ _RUN_DETAILS_SCROLL_JS = """
 
   var doc = root.document;
   var lastRunningId = null;
+  var lastRunPage = null;
   var scrollTimer = null;
+  var scrollAnim = null;
+
+  function pageRunId() {
+    try {
+      return new URL(root.location.href).searchParams.get("run");
+    } catch (e) {
+      return null;
+    }
+  }
 
   function runningCard(marker) {
     if (!marker) return null;
-    return marker.closest('[class*="st-key-stepcard_"]') || marker;
+    return marker.closest('[class*="st-key-stepcard_"]');
   }
 
-  function cardIsVisible(card) {
-    var rect = card.getBoundingClientRect();
-    var vh = root.innerHeight || doc.documentElement.clientHeight || 0;
-    var margin = Math.max(48, vh * 0.12);
-    return rect.top >= margin && rect.bottom <= (vh - margin);
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   }
 
-  function scrollRunningToCenter(force) {
+  function smoothScrollToY(targetY) {
+    var scroller = doc.scrollingElement || doc.documentElement;
+    var startY = root.scrollY || scroller.scrollTop || 0;
+    var delta = targetY - startY;
+    if (Math.abs(delta) < 6) return;
+
+    if (root.matchMedia && root.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      root.scrollTo(0, targetY);
+      return;
+    }
+
+    if (scrollAnim) root.cancelAnimationFrame(scrollAnim);
+
+    var duration = Math.min(780, Math.max(420, Math.abs(delta) * 0.55));
+    var started = null;
+
+    function frame(ts) {
+      if (started === null) started = ts;
+      var progress = Math.min(1, (ts - started) / duration);
+      var nextY = startY + delta * easeInOutCubic(progress);
+      root.scrollTo(0, nextY);
+      if (progress < 1) {
+        scrollAnim = root.requestAnimationFrame(frame);
+      } else {
+        scrollAnim = null;
+      }
+    }
+
+    scrollAnim = root.requestAnimationFrame(frame);
+  }
+
+  function scrollRunningToCenter() {
+    var currentRun = pageRunId();
+    if (currentRun !== lastRunPage) {
+      lastRunPage = currentRun;
+      lastRunningId = null;
+    }
+
     var marker = doc.querySelector("[data-ca-running-id]");
     if (!marker) {
       lastRunningId = null;
@@ -3028,33 +3102,36 @@ _RUN_DETAILS_SCROLL_JS = """
     var card = runningCard(marker);
     if (!card || !runningId) return;
 
-    var idChanged = runningId !== lastRunningId;
-    if (!force && !idChanged && cardIsVisible(card)) {
-      return;
-    }
+    if (runningId === lastRunningId) return;
 
-    card.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    var rect = card.getBoundingClientRect();
+    var vh = root.innerHeight || doc.documentElement.clientHeight || 0;
+    var targetY =
+      (root.scrollY || doc.documentElement.scrollTop || 0) +
+      rect.top -
+      (vh / 2) +
+      (rect.height / 2);
+
+    smoothScrollToY(Math.max(0, targetY));
     lastRunningId = runningId;
   }
 
-  function scheduleScroll(force) {
+  function scheduleScroll() {
     if (scrollTimer) root.clearTimeout(scrollTimer);
     scrollTimer = root.setTimeout(function () {
       scrollTimer = null;
-      root.requestAnimationFrame(function () {
-        scrollRunningToCenter(force);
-      });
-    }, force ? 0 : 90);
+      root.requestAnimationFrame(scrollRunningToCenter);
+    }, 120);
   }
 
   if (doc.body) {
     var observer = new MutationObserver(function () {
-      scheduleScroll(false);
+      scheduleScroll();
     });
     observer.observe(doc.body, { childList: true, subtree: true });
   }
 
-  scheduleScroll(true);
+  scheduleScroll();
 })();
 </script>
 """
@@ -3062,9 +3139,9 @@ _RUN_DETAILS_SCROLL_JS = """
 
 def inject_run_details_scroll_js() -> None:
     """Install auto-scroll-to-running-step behavior once per session."""
-    if st.session_state.get("_ca_run_details_scroll_js"):
+    if st.session_state.get("_ca_run_details_scroll_v2"):
         return
-    st.session_state["_ca_run_details_scroll_js"] = True
+    st.session_state["_ca_run_details_scroll_v2"] = True
     try:
         st.html(_RUN_DETAILS_SCROLL_JS, unsafe_allow_javascript=True)
     except TypeError:
@@ -3256,29 +3333,26 @@ STATUS_GLOW_RGB = {
 def _status_glow_html(key: str, size: int) -> tuple[str, str]:
     """Return optional ``<style>`` tag and inline wrapper styles for a status glow."""
     rgb = STATUS_GLOW_RGB.get(key)
+    base_style = (
+        f"display:inline-flex;align-items:center;justify-content:center;"
+        f"flex:0 0 auto;width:{size}px;height:{size}px;border-radius:50%;"
+        f"position:relative;overflow:visible;"
+    )
     if not rgb:
-        return "", (
-            f"display:inline-flex;align-items:center;justify-content:center;"
-            f"flex:0 0 auto;width:{size}px;height:{size}px;"
-        )
+        return "", base_style
 
     r, g, b = rgb
     anim = f"ca-status-pulse-{key.lower()}"
-    wrap_size = size + 8
     style_tag = (
         "<style>"
         f"@keyframes {anim}{{"
-        f"0%{{box-shadow:0 0 0 0 rgba({r},{g},{b},0.55);}}"
-        f"70%{{box-shadow:0 0 0 6px rgba({r},{g},{b},0);}}"
+        f"0%{{box-shadow:0 0 0 0 rgba({r},{g},{b},0.45);}}"
+        f"70%{{box-shadow:0 0 0 4px rgba({r},{g},{b},0);}}"
         f"100%{{box-shadow:0 0 0 0 rgba({r},{g},{b},0);}}"
         "}"
         "</style>"
     )
-    wrap_style = (
-        f"display:inline-flex;align-items:center;justify-content:center;"
-        f"flex:0 0 auto;width:{wrap_size}px;height:{wrap_size}px;border-radius:50%;"
-        f"animation:{anim} 1.6s ease-out infinite;"
-    )
+    wrap_style = f"{base_style}animation:{anim} 1.6s ease-out infinite;"
     return style_tag, wrap_style
 
 
