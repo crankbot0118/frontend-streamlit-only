@@ -10,7 +10,6 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from api import (
-    abort_run,
     get_run,
     get_run_steps,
     get_step_detail,
@@ -18,12 +17,13 @@ from api import (
     skip_run,
 )
 from config.settings import frontend
-from log_view import open_log_dialog
+from log_view import open_run_log_dialog, open_step_log_dialog
 from styles import (
     emit_html,
     fmt_duration,
     relative_update_html,
     render_title,
+    run_detail_title_html,
     started_html,
     status_badge_html,
     status_image_html,
@@ -57,26 +57,6 @@ def _load_steps(run_id: int, fallback: list | None = None) -> list:
     except Exception as exc:
         show_error(exc, context="Could not load run steps")
         return fallback or []
-
-
-def _abort_state(step_rows: list, live_run: dict | None) -> tuple[bool, int | None, str]:
-    failed_steps = [
-        s for s in step_rows if (s.get("status") or "").upper() == "FAILED"
-    ]
-    failed_step_id = (
-        max(failed_steps, key=lambda s: s["clone_function_run_id"])["clone_function_run_id"]
-        if failed_steps
-        else None
-    )
-    run_status = (live_run.get("status") or "").upper() if live_run else ""
-    can_abort = run_status == "FAILED" and failed_step_id is not None
-    if can_abort:
-        help_text = "Mark this failed run as ABORTED"
-    elif run_status != "FAILED":
-        help_text = "Only available when clone run status is FAILED"
-    else:
-        help_text = "No failed function step found for this run"
-    return can_abort, failed_step_id, help_text
 
 
 def _step_action_state(step: dict, live_run: dict | None) -> tuple[bool, str]:
@@ -200,10 +180,10 @@ if run:
                             unsafe_allow_html=True,
                         )
                         if st.button("View Step Log", key=f"view_step_log_{run_id}_{i}"):
-                            open_log_dialog(
-                                title=f"Step log · {name}",
+                            open_step_log_dialog(
                                 clone_run_id=run_id,
                                 clone_function_run_id=step_pk,
+                                title=f"Step log · {name}",
                             )
                         st.markdown(
                             '<span class="ca-step-link-sep">&middot;</span>',
@@ -242,61 +222,45 @@ if run:
     poll_every = _RUN_DETAILS_REFRESH_SEC if auto_on else None
 
     with st.container(key="ca-detail-header"):
-        @st.fragment(run_every=poll_every)
-        def _live_detail_panel() -> None:
-            polling = bool(st.session_state.get(refresh_key))
-            live_run = _load_run(run_id, run) if polling else run
-            if not live_run:
-                live_run = run
-            live_steps = _load_steps(run_id, steps) if polling else steps
-            can_abort, failed_step_id, abort_help = _abort_state(live_steps, live_run)
+        with st.container(key="ca-detail-title-row"):
+            st.html(run_detail_title_html(run_id=safe_run_id, src=src, tgt=tgt))
 
-            with st.container(key="ca-detail-title-row"):
-                st.html(
-                    f"""
-                    <div class="ca-page-header ca-detail-page-header">
-                      <div class="ca-title">
-                        <h1 class="ca-detail-title-parts">
-                          <span>Run #{safe_run_id}</span>
-                          <span class="ca-run-sep">&middot;</span>
-                          <span>{src}</span>
-                          <span class="arrow">&#8594;</span>
-                          <span>{tgt}</span>
-                          <span class="ca-run-sep">&middot;</span>
-                        </h1>
-                      </div>
-                    </div>
-                    """
-                )
-                with st.container(key="detail-actions"):
-                    if st.button(
-                        "Abort",
-                        key="detail_abort",
-                        type="secondary",
-                        icon=":material/stop:",
-                        disabled=not can_abort,
-                        help=abort_help,
-                    ):
-                        if not can_abort:
-                            show_error(
-                                "Abort is only allowed when clone run status is FAILED.",
-                                context="Cannot abort run",
+        with st.container(key="ca-detail-meta-row"):
+            col_meta, col_actions = st.columns(
+                [1, 0.32],
+                gap="small",
+                vertical_alignment="center",
+            )
+            with col_actions:
+                with st.container(key="detail-meta-actions"):
+                    col_dl, col_ref = st.columns(
+                        [1, 1.15],
+                        gap="small",
+                        vertical_alignment="center",
+                    )
+                    with col_dl:
+                        with st.container(key="detail-download-log"):
+                            if st.button(
+                                "View Log",
+                                key=f"view_run_log_{run_id}",
+                                type="secondary",
+                            ):
+                                open_run_log_dialog(clone_run_id=run_id)
+                    with col_ref:
+                        with st.container(key="detail-refresh"):
+                            st.toggle(
+                                "Auto refresh",
+                                key=refresh_key,
+                                label_visibility="visible",
                             )
-                        else:
-                            try:
-                                abort_run(run_id, failed_step_id)
-                                st.session_state.pop("selected_run", None)
-                                st.rerun()
-                            except Exception as exc:
-                                show_error(exc, context="Could not abort run")
+            with col_meta:
 
-            with st.container(key="ca-detail-meta-row"):
-                col_meta, col_actions = st.columns(
-                    [1, 0.32],
-                    gap="small",
-                    vertical_alignment="center",
-                )
-                with col_meta:
+                @st.fragment(run_every=poll_every)
+                def _live_meta_line() -> None:
+                    polling = bool(st.session_state.get(refresh_key))
+                    live_run = _load_run(run_id, run) if polling else run
+                    if not live_run:
+                        live_run = run
                     emit_html(
                         f"""
                         <div class="ca-detail-meta-bar">
@@ -314,31 +278,16 @@ if run:
                         </div>
                         """
                     )
-                with col_actions:
-                    with st.container(key="detail-meta-actions"):
-                        col_dl, col_ref = st.columns(
-                            [1, 1.15],
-                            gap="small",
-                            vertical_alignment="center",
-                        )
-                        with col_dl:
-                            with st.container(key="detail-download-log"):
-                                if st.button(
-                                    "View Log",
-                                    key=f"view_run_log_{run_id}",
-                                    type="secondary",
-                                ):
-                                    open_log_dialog(
-                                        title=f"Run log · #{run_id}",
-                                        clone_run_id=run_id,
-                                    )
-                        with col_ref:
-                            with st.container(key="detail-refresh"):
-                                st.toggle(
-                                    "Auto refresh",
-                                    key=refresh_key,
-                                    label_visibility="visible",
-                                )
+
+                _live_meta_line()
+
+        @st.fragment(run_every=poll_every)
+        def _live_steps_panel() -> None:
+            polling = bool(st.session_state.get(refresh_key))
+            live_run = _load_run(run_id, run) if polling else run
+            if not live_run:
+                live_run = run
+            live_steps = _load_steps(run_id, steps) if polling else steps
 
             st.html('<hr class="ca-title-rule" />')
 
@@ -348,7 +297,7 @@ if run:
             else:
                 st.caption("No steps found for this run.")
 
-        _live_detail_panel()
+        _live_steps_panel()
 else:
     render_title(f"Run #{run_id}")
     if not steps:
