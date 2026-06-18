@@ -1183,8 +1183,8 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-header {{
       --ca-detail-inline-gap: 0.28rem;
       --ca-detail-section-v-gap: 0.05rem;
-      --ca-run-details-v-gap: 0.02rem;
-      --ca-detail-toolbar-title-size: 1rem;
+      --ca-run-details-v-gap: 0.05rem;
+      --ca-detail-toolbar-title-size: 1.125rem;
       --ca-detail-title-height: 1.15rem;
       --ca-detail-meta-height: 1.05rem;
       position: relative !important;
