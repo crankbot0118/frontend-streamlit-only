@@ -145,27 +145,24 @@ if run:
             is_open = st.session_state.get(open_key, False)
             can_act, act_help = _step_action_state(step, live_run)
             is_running = (step.get("status") or "").upper() == "RUNNING"
-            running_attr = (
-                f' data-ca-running-id="{int(step_pk)}"'
-                if is_running and step_pk is not None
-                else ""
-            )
             with st.container(key=f"stepcard_{i}"):
+                if is_running and step_pk is not None:
+                    st.markdown(
+                        f'<span class="ca-running-step-marker" '
+                        f'data-ca-running-id="{int(step_pk)}"></span>',
+                        unsafe_allow_html=True,
+                    )
                 left_col, more_col, arrow_col = st.columns(
                     [1, 0.11, 0.04],
                     gap="small",
                     vertical_alignment="center",
                 )
                 with left_col:
-                    st.markdown(
-                        f'<div class="ca-step-left"{running_attr} '
-                        f'style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;width:100%;">'
+                    st.html(
+                        f'<div class="ca-step-left">'
                         f'{status_image_html(step.get("status", ""), size=18)}'
-                        f'<span class="ca-step-name" '
-                        f'style="font-size:14px;font-weight:600;line-height:1.25;">'
-                        f"{safe_name}</span>"
-                        f"</div>",
-                        unsafe_allow_html=True,
+                        f'<span class="ca-step-name">{safe_name}</span>'
+                        f"</div>"
                     )
                 with more_col:
                     st.html('<span class="ca-step-more">More actions</span>')
