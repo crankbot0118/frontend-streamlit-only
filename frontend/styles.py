@@ -1817,31 +1817,41 @@ _GLOBAL_CSS = f"""
       padding-bottom: 0 !important;
   }}
 
-  /* Step list — one gap for divider → first card and between every card. */
-  .st-key-ca-steps {{
+  /* Step list — one gap for divider → first card and between every card.
+     Spacing uses adjacent margin-top (not flex gap) because Streamlit wraps
+     each row in stElementContainer with default widget margins. */
+  .st-key-ca-steps,
+  .st-key-ca-steps[data-testid="stVerticalBlockBorderWrapper"] {{
       --ca-step-list-gap: 0.05rem;
       margin-top: 0 !important;
   }}
 
-  /* Inter-card spacing — each card sits in an stElementContainer wrapper;
-     flex gap on the list column controls separation (not Streamlit defaults). */
+  /* List column — every Streamlit wrapper shape for keyed containers. */
   .st-key-ca-steps > [data-testid="stVerticalBlock"],
   .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
-  .st-key-ca-steps [data-testid="stFragment"] > [data-testid="stVerticalBlock"],
-  .st-key-ca-steps [data-testid="stVerticalBlock"]:has([class*="st-key-stepcard_"]),
-  .st-key-ca-steps [data-testid="stVerticalBlock"]:has([data-testid="stElementContainer"]:has(.ca-title-rule)) {{
-      gap: var(--ca-step-list-gap) !important;
+  .st-key-ca-steps[data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0 !important;
       align-items: stretch !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
+
+  /* Kill Streamlit default margins on list rows (divider + step cards). */
   .st-key-ca-steps > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
   .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]),
-  .st-key-ca-steps > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule),
-  .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) {{
+  .st-key-ca-steps[data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
       margin: 0 !important;
       padding: 0 !important;
+  }}
+
+  /* Uniform spacing — divider → first card, and between every card. */
+  .st-key-ca-steps > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] + [data-testid="stElementContainer"],
+  .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] + [data-testid="stElementContainer"],
+  .st-key-ca-steps[data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] + [data-testid="stElementContainer"] {{
+      margin-top: var(--ca-step-list-gap) !important;
   }}
 
   /* Stable shell while the steps fragment mounts or polls. */
