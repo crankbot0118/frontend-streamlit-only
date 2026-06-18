@@ -252,7 +252,11 @@ if run:
                     )
                 )
             with st.container(key="ca-detail-log-row"):
-                if st.button("View Log", key=f"view_run_log_{run_id}"):
+                if st.button(
+                    "View Log",
+                    key=f"view_run_log_{run_id}",
+                    type="tertiary",
+                ):
                     st.session_state[_OPEN_RUN_LOG_KEY] = True
                     st.rerun()
             st.html('<hr class="ca-title-rule" />')

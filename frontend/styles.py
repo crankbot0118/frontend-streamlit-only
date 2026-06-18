@@ -1393,22 +1393,35 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button [data-testid="stMarkdownContainer"],
   .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button p {{
       width: auto !important;
+      min-width: 0 !important;
       min-height: 0 !important;
       height: auto !important;
       margin: 0 !important;
       padding: 0 !important;
       background: transparent !important;
+      background-color: transparent !important;
       border: none !important;
+      border-radius: 0 !important;
       box-shadow: none !important;
       color: {BRAND_ORANGE} !important;
       font-size: var(--ca-run-meta-size) !important;
       font-weight: 600 !important;
       line-height: 1 !important;
       text-decoration: none !important;
+      cursor: pointer !important;
+      display: inline !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
   }}
   .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button:hover,
+  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button:focus,
+  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button:active,
   .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button:hover [data-testid="stMarkdownContainer"],
   .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button:hover p {{
+      background: transparent !important;
+      background-color: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
       text-decoration: none !important;
       color: {BRAND_ORANGE} !important;
   }}
