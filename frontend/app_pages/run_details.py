@@ -16,6 +16,7 @@ from api import (
     retry_run,
     skip_run,
 )
+from config.settings import frontend
 from log_view import open_run_log_dialog, open_step_log_dialog
 from styles import (
     emit_html,
@@ -32,6 +33,8 @@ from styles import (
 )
 from ui_errors import show_error
 
+_RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
+
 
 def _toggle_step(open_key: str) -> None:
     st.session_state[open_key] = not st.session_state.get(open_key, False)
@@ -39,6 +42,17 @@ def _toggle_step(open_key: str) -> None:
 
 def _toggle_run_actions(open_key: str) -> None:
     st.session_state[open_key] = not st.session_state.get(open_key, False)
+
+
+def _load_run(run_id: int, fallback: dict | None = None) -> dict | None:
+    try:
+        latest = get_run(run_id)
+        if latest:
+            st.session_state["selected_run"] = latest
+            return latest
+    except Exception:
+        pass
+    return fallback
 
 
 def _load_steps(run_id: int, fallback: list | None = None) -> list:
@@ -148,7 +162,6 @@ if run:
     tgt = _esc(run.get("target_name", "—"))
     user = _esc(run.get("user_name", "—"))
     safe_run_id = _esc(run_id)
-    run_status = run.get("status", "")
 
     @st.dialog(" ", width="large")
     def _show_step_detail_dialog(
@@ -254,40 +267,55 @@ if run:
         with st.container(key="ca-detail-title-row"):
             st.html(run_detail_title_html(run_id=safe_run_id, src=src, tgt=tgt))
 
-        with st.container(key="ca-detail-meta-row"):
-            col_meta, col_actions = st.columns(
-                [1, 0.32],
-                gap="small",
-                vertical_alignment="center",
-            )
-            with col_meta:
-                emit_html(
-                    f"""
-                    <div class="ca-detail-meta-bar">
-                      <div class="ca-detail-meta">
-                        <span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>
-                        <span class="ca-detail-sep">&middot;</span>
-                        <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(run.get('start_date'))}</span>
-                        <span class="ca-detail-sep">&middot;</span>
-                        <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(run.get('last_update'))}</span>
-                        <span class="ca-detail-sep">&middot;</span>
-                        <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(run.get('start_date'), run.get('last_update'))}</span>
-                        <span class="ca-detail-sep">&middot;</span>
-                        {status_badge_html(run_status)}
-                      </div>
-                    </div>
-                    """
+        @st.fragment(run_every=_RUN_DETAILS_REFRESH_SEC)
+        def _live_meta_row() -> None:
+            live_run = _load_run(run_id, run) or run
+            with st.container(key="ca-detail-meta-row"):
+                col_meta, col_actions = st.columns(
+                    [1, 0.32],
+                    gap="small",
+                    vertical_alignment="center",
                 )
-            with col_actions:
-                _render_run_header_actions(run_id=run_id, run_status=run_status)
+                with col_meta:
+                    emit_html(
+                        f"""
+                        <div class="ca-detail-meta-bar">
+                          <div class="ca-detail-meta">
+                            <span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>
+                            <span class="ca-detail-sep">&middot;</span>
+                            <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(live_run.get('start_date'))}</span>
+                            <span class="ca-detail-sep">&middot;</span>
+                            <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(live_run.get('last_update'))}</span>
+                            <span class="ca-detail-sep">&middot;</span>
+                            <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(live_run.get('start_date'), live_run.get('last_update'))}</span>
+                            <span class="ca-detail-sep">&middot;</span>
+                            {status_badge_html(live_run.get('status', ''))}
+                          </div>
+                        </div>
+                        """
+                    )
+                with col_actions:
+                    _render_run_header_actions(
+                        run_id=run_id,
+                        run_status=live_run.get("status", ""),
+                    )
 
-        st.html('<hr class="ca-title-rule" />')
+        _live_meta_row()
 
-        if steps:
-            with st.container(key="ca-steps"):
-                _render_step_cards(steps, run)
-        else:
-            st.caption("No steps found for this run.")
+        @st.fragment(run_every=_RUN_DETAILS_REFRESH_SEC)
+        def _live_steps_panel() -> None:
+            live_run = _load_run(run_id, run) or run
+            live_steps = _load_steps(run_id, steps)
+
+            st.html('<hr class="ca-title-rule" />')
+
+            if live_steps:
+                with st.container(key="ca-steps"):
+                    _render_step_cards(live_steps, live_run)
+            else:
+                st.caption("No steps found for this run.")
+
+        _live_steps_panel()
 else:
     render_title(f"Run #{run_id}")
     if not steps:
