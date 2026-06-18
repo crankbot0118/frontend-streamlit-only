@@ -27,9 +27,9 @@ BRAND_RED = "#cf222e"
 BRAND_RED_BG = "rgba(207, 34, 46, 0.12)"
 SHELL_MAIN_BG = "#faf7f2"
 SHELL_SIDEBAR_BG = "#ffffff"
+UI_SCALE = 0.8
 STATUS_ICON_PX = 18
 SIDEBAR_WIDTH_PX = 200
-UI_SCALE = 1
 
 # Repo root is the parent of the ``frontend/`` package that holds this file.
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -156,20 +156,13 @@ _GLOBAL_CSS = f"""
       --ca-ui-scale: {UI_SCALE};
   }}
 
-  /* Render the whole app at 80% — equivalent to browser zoom, without changing
-     the user's actual browser zoom level. */
-  html {{
-      zoom: {UI_SCALE};
+  /* Scale the entire dashboard shell (sidebar + pages) to 80%. */
+  [data-testid="stAppViewContainer"] {{
+      zoom: var(--ca-ui-scale);
   }}
-  @supports not (zoom: 1) {{
-      .stApp {{
-          transform: scale({UI_SCALE});
-          transform-origin: top left;
-          width: {100 / UI_SCALE}%;
-          min-height: {100 / UI_SCALE}vh;
-      }}
+  .stApp {{
+      min-height: calc(100vh / var(--ca-ui-scale));
   }}
-
   [data-testid="stAppViewContainer"],
   .stApp,
   section.main {{
