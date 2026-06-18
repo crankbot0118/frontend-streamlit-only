@@ -3666,13 +3666,17 @@ def render_sidebar_nav(pages: dict, current_title: str) -> None:
                 st.html('<hr class="ca-nav-divider-line" />')
 
 
-def run_detail_title_html(*, run_id: str, src: str, tgt: str) -> str:
-    """Run details toolbar title (Run # · src → tgt).
+def run_detail_title_html(*, run_id: str, src: str, tgt: str, status: str = "") -> str:
+    """Run details toolbar title (Run # · src → tgt · status).
 
     ``st.html`` renders inside an iframe, so styles must be embedded here —
     global CSS from ``apply_global_styles()`` does not apply inside the iframe.
     """
     title_size = "1.125rem"
+    badge_html = status_badge_html(status) if status else ""
+    status_part = (
+        f'<span class="ca-run-sep">&middot;</span>{badge_html}' if badge_html else ""
+    )
     return f"""
     <style>
       .ca-detail-page-header,
@@ -3700,6 +3704,23 @@ def run_detail_title_html(*, run_id: str, src: str, tgt: str) -> str:
       .ca-detail-title-parts .arrow {{
         color: {BRAND_ORANGE};
       }}
+      .ca-detail-title-parts .ca-badge {{
+        display: inline-flex;
+        align-items: center;
+        padding: 0.06rem 0.45rem;
+        border-radius: 999px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        line-height: 1;
+        white-space: nowrap;
+      }}
+      .ca-detail-title-parts .ca-badge.green  {{ background: #dafbe1; color: #116329; }}
+      .ca-detail-title-parts .ca-badge.blue   {{ background: #ddf4ff; color: #0a3069; }}
+      .ca-detail-title-parts .ca-badge.gray   {{ background: #eef0f2; color: #57606a; }}
+      .ca-detail-title-parts .ca-badge.red    {{ background: #ffebe9; color: #cf222e; }}
+      .ca-detail-title-parts .ca-badge.orange {{ background: #fff1e5; color: #bc4c00; }}
+      .ca-detail-title-parts .ca-badge.violet {{ background: #fbefff; color: #6639ba; }}
     </style>
     <div class="ca-page-header ca-detail-page-header">
       <div class="ca-title">
@@ -3709,6 +3730,7 @@ def run_detail_title_html(*, run_id: str, src: str, tgt: str) -> str:
           <span>{src}</span>
           <span class="arrow">&#8594;</span>
           <span>{tgt}</span>
+          {status_part}
         </div>
       </div>
     </div>

@@ -16,6 +16,7 @@ from api import (
     retry_run,
     skip_run,
 )
+from config.settings import frontend
 from log_view import open_step_log_dialog
 from styles import (
     emit_html,
@@ -28,9 +29,38 @@ from styles import (
 )
 from ui_errors import show_error
 
+_RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
+_TERMINAL_STATUSES = frozenset({"COMPLETED", "FAILED", "ABORTED", "SKIPPED"})
+
 
 def _toggle_step(open_key: str) -> None:
     st.session_state[open_key] = not st.session_state.get(open_key, False)
+
+
+def _load_run(run_id: int, fallback: dict | None = None) -> dict | None:
+    try:
+        latest = get_run(run_id)
+        if latest:
+            st.session_state["selected_run"] = latest
+            return latest
+    except Exception:
+        pass
+    return fallback
+
+
+def _poll_interval(status: str) -> int | None:
+    if (status or "").upper() in _TERMINAL_STATUSES:
+        return None
+    return _RUN_DETAILS_REFRESH_SEC
+
+
+def _maybe_rerun_on_terminal(run_id: int, status: str) -> None:
+    """Full rerun once when a run reaches a terminal status so polling stops."""
+    key = f"_run_status_{run_id}"
+    prev = st.session_state.get(key)
+    st.session_state[key] = status
+    if prev and prev != status and (status or "").upper() in _TERMINAL_STATUSES:
+        st.rerun()
 
 
 def _load_steps(run_id: int, fallback: list | None = None) -> list:
@@ -194,16 +224,37 @@ if run:
                             except Exception as exc:
                                 show_error(exc, context="Could not skip step")
 
-    with st.container(key="ca-detail-header"):
-        with st.container(key="ca-detail-title-row"):
-            st.html(run_detail_title_html(run_id=safe_run_id, src=src, tgt=tgt))
+    poll_every = _poll_interval(run.get("status", ""))
 
-    with st.container(key="ca-steps"):
-        st.html('<hr class="ca-title-rule" />')
-        if steps:
-            _render_step_cards(steps, run)
-        else:
-            st.caption("No steps found for this run.")
+    @st.fragment(run_every=poll_every)
+    def _live_run_panel() -> None:
+        live_run = _load_run(run_id, run) if poll_every else run
+        if not live_run:
+            live_run = run
+        status = live_run.get("status", "")
+        if poll_every:
+            _maybe_rerun_on_terminal(run_id, status)
+        live_steps = _load_steps(run_id, steps) if poll_every else steps
+
+        with st.container(key="ca-detail-header"):
+            with st.container(key="ca-detail-title-row"):
+                st.html(
+                    run_detail_title_html(
+                        run_id=safe_run_id,
+                        src=src,
+                        tgt=tgt,
+                        status=status,
+                    )
+                )
+
+        with st.container(key="ca-steps"):
+            st.html('<hr class="ca-title-rule" />')
+            if live_steps:
+                _render_step_cards(live_steps, live_run)
+            else:
+                st.caption("No steps found for this run.")
+
+    _live_run_panel()
 else:
     render_title(f"Run #{run_id}")
     if not steps:
