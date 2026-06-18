@@ -1388,9 +1388,35 @@ _GLOBAL_CSS = f"""
   .st-key-detail-meta-actions > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
   .st-key-detail-meta-actions .st-key-detail-refresh {{
       flex: 0 0 auto !important;
+      flex-shrink: 0 !important;
       width: auto !important;
+      min-width: max-content !important;
+      max-width: none !important;
       margin: 0 !important;
       padding: 0 !important;
+  }}
+  .st-key-detail-meta-actions [data-testid="stElementContainer"][class*="st-key-view_run_log_"],
+  .st-key-detail-meta-actions [data-testid="stElementContainer"][class*="st-key-detail_info_"] {{
+      flex: 0 0 auto !important;
+      flex-shrink: 0 !important;
+      width: auto !important;
+      min-width: max-content !important;
+      max-width: none !important;
+      overflow: visible !important;
+  }}
+  [class*="st-key-view_run_log_"],
+  [class*="st-key-detail_info_"] {{
+      width: auto !important;
+      min-width: max-content !important;
+      max-width: none !important;
+      flex: 0 0 auto !important;
+      flex-shrink: 0 !important;
+  }}
+  [class*="st-key-view_run_log_"] .stButton,
+  [class*="st-key-detail_info_"] .stButton {{
+      width: auto !important;
+      min-width: max-content !important;
+      max-width: none !important;
   }}
   [class*="st-key-view_run_log_"] .stButton,
   [class*="st-key-view_run_log_"] .stButton button,
@@ -1401,6 +1427,8 @@ _GLOBAL_CSS = f"""
   [class*="st-key-detail_info_"] .stButton button [data-testid="stMarkdownContainer"],
   [class*="st-key-detail_info_"] .stButton button p {{
       width: auto !important;
+      min-width: max-content !important;
+      max-width: none !important;
       min-height: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
@@ -1410,7 +1438,8 @@ _GLOBAL_CSS = f"""
       color: {BRAND_ORANGE} !important;
       font-size: var(--ca-run-meta-size) !important;
       font-weight: 600 !important;
-      line-height: 1 !important;
+      line-height: 1.2 !important;
+      white-space: nowrap !important;
       text-decoration: none !important;
   }}
   [class*="st-key-view_run_log_"] .stButton button:hover,
