@@ -250,16 +250,10 @@ if run:
                         unsafe_allow_html=True,
                     )
                     with st.container(key="detail-download-log"):
-                        if (live_run or {}).get("log_location"):
-                            if st.button("View Log", key=f"view_run_log_{run_id}"):
-                                open_log_dialog(
-                                    title=f"Run log · #{run_id}",
-                                    clone_run_id=run_id,
-                                )
-                        else:
-                            st.html(
-                                '<span class="ca-step-link-disabled" '
-                                'title="Log not available yet">View Log</span>'
+                        if st.button("View Log", key=f"view_run_log_{run_id}"):
+                            open_log_dialog(
+                                title=f"Run log · #{run_id}",
+                                clone_run_id=run_id,
                             )
             st.html('<hr class="ca-title-rule" />')
             if live_steps:
