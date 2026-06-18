@@ -20,12 +20,7 @@ from config.settings import frontend
 from log_view import open_run_log_dialog, open_step_log_dialog
 from styles import (
     emit_html,
-    fmt_duration,
-    relative_update_html,
     render_title,
-    run_detail_title_html,
-    started_html,
-    status_badge_html,
     status_image_html,
     step_detail_dialog_error_html,
     step_detail_dialog_html,
@@ -158,11 +153,6 @@ if not run_id:
 steps = _load_steps(run_id)
 
 if run:
-    src = _esc(run.get("source_name", "—"))
-    tgt = _esc(run.get("target_name", "—"))
-    user = _esc(run.get("user_name", "—"))
-    safe_run_id = _esc(run_id)
-
     @st.dialog(" ", width="large")
     def _show_step_detail_dialog(
         clone_run_id: int,
@@ -264,44 +254,6 @@ if run:
                                 show_error(exc, context="Could not skip step")
 
     with st.container(key="ca-detail-header"):
-        with st.container(key="ca-detail-title-row"):
-            st.html(run_detail_title_html(run_id=safe_run_id, src=src, tgt=tgt))
-
-        @st.fragment(run_every=_RUN_DETAILS_REFRESH_SEC)
-        def _live_meta_row() -> None:
-            live_run = _load_run(run_id, run) or run
-            with st.container(key="ca-detail-meta-row"):
-                col_meta, col_actions = st.columns(
-                    [1, 0.32],
-                    gap="small",
-                    vertical_alignment="center",
-                )
-                with col_meta:
-                    emit_html(
-                        f"""
-                        <div class="ca-detail-meta-bar">
-                          <div class="ca-detail-meta">
-                            <span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            <span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(live_run.get('start_date'))}</span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            <span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(live_run.get('last_update'))}</span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            <span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(live_run.get('start_date'), live_run.get('last_update'))}</span>
-                            <span class="ca-detail-sep">&middot;</span>
-                            {status_badge_html(live_run.get('status', ''))}
-                          </div>
-                        </div>
-                        """
-                    )
-                with col_actions:
-                    _render_run_header_actions(
-                        run_id=run_id,
-                        run_status=live_run.get("status", ""),
-                    )
-
-        _live_meta_row()
-
         @st.fragment(run_every=_RUN_DETAILS_REFRESH_SEC)
         def _live_steps_panel() -> None:
             live_run = _load_run(run_id, run) or run
