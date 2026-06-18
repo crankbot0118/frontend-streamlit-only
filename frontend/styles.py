@@ -1817,34 +1817,32 @@ _GLOBAL_CSS = f"""
       padding-bottom: 0 !important;
   }}
 
-  /* Step list — vertical space below the orange divider only. */
+  /* Step list — compact vertical rhythm below the orange divider. */
   .st-key-ca-steps {{
-      --ca-step-card-gap: 0.1px;
+      --ca-step-card-gap: 0.22rem;
       margin-top: 0 !important;
   }}
 
-  /* Inter-card spacing — cards sit in stElementContainer wrappers, not direct
-     flex children, so flex gap alone does not apply. Use adjacent margins. */
+  /* Inter-card spacing — each card sits in an stElementContainer wrapper;
+     flex gap on the list column controls separation (not Streamlit defaults). */
   .st-key-ca-steps > [data-testid="stVerticalBlock"],
   .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
   .st-key-ca-steps [data-testid="stFragment"] > [data-testid="stVerticalBlock"],
   .st-key-ca-steps [data-testid="stVerticalBlock"]:has([class*="st-key-stepcard_"]) {{
-      gap: 0 !important;
+      gap: var(--ca-step-card-gap) !important;
       align-items: stretch !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
+  .st-key-ca-steps > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
   .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
       margin: 0 !important;
       padding: 0 !important;
   }}
-  .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"])
-      + [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
-      /* Pull cards together so shared borders collapse; gap controls visible separation. */
-      margin-top: calc(var(--ca-step-card-gap) - .5px) !important;
-  }}
-  .st-key-ca-steps [class*="st-key-stepcard_"] + [class*="st-key-stepcard_"] {{
-      margin-top: calc(var(--ca-step-card-gap) - .5px) !important;
+  [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule)
+      + [data-testid="stElementContainer"]:has(.st-key-ca-steps) {{
+      margin-top: -0.14rem !important;
   }}
 
   /* Stable shell while the steps fragment mounts or polls. */
@@ -1859,9 +1857,9 @@ _GLOBAL_CSS = f"""
       position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
-      padding: 4px 12px;
+      padding: 3px 12px;
       background: #ffffff;
-      min-height: 32px;
+      min-height: 30px;
       box-sizing: border-box;
   }}
 
@@ -2063,8 +2061,8 @@ _GLOBAL_CSS = f"""
       flex-wrap: nowrap !important;
       gap: 0.22rem !important;
       width: 100% !important;
-      margin: 0.1rem 0 0 0 !important;
-      padding: 0.12rem 0 0 0 !important;
+      margin: 0.08rem 0 0 0 !important;
+      padding: 0.08rem 0 0 0 !important;
       border-top: 1px solid #eef0f2;
   }}
   [class*="st-key-step_links_"] > [data-testid="stElementContainer"] {{
