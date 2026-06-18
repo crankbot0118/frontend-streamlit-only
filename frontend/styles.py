@@ -1183,6 +1183,7 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-header {{
       --ca-detail-inline-gap: 0.28rem;
       --ca-detail-section-v-gap: 0.05rem;
+      --ca-run-details-v-gap: 0.05rem;
       --ca-detail-toolbar-title-size: 1.125rem;
       --ca-detail-title-height: 1.15rem;
       --ca-detail-meta-height: 1.05rem;
@@ -1756,7 +1757,31 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
   .st-key-ca-detail-header .st-key-ca-detail-title-row {{
-      margin-bottom: calc(var(--ca-detail-section-v-gap) * -1) !important;
+      margin-bottom: calc(var(--ca-run-details-v-gap) * -1) !important;
+  }}
+  /* Live panel fragment: title block → step list (vertical only). */
+  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) {{
+      --ca-run-details-v-gap: 0.05rem;
+  }}
+  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) > [data-testid="stVerticalBlock"],
+  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) > [data-testid="stVerticalBlockBorderWrapper"],
+  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      margin-bottom: 0 !important;
+      padding: 0 !important;
+  }}
+  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-header) + [data-testid="stElementContainer"]:has(.st-key-ca-steps),
+  [data-testid="stFragment"]:has(.st-key-ca-detail-header):has(.st-key-ca-steps) > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-header) + [data-testid="stElementContainer"]:has(.st-key-ca-steps) {{
+      margin-top: var(--ca-run-details-v-gap) !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row),
   .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row) {{
@@ -1822,7 +1847,7 @@ _GLOBAL_CSS = f"""
      each row in stElementContainer with default widget margins. */
   .st-key-ca-steps,
   .st-key-ca-steps[data-testid="stVerticalBlockBorderWrapper"] {{
-      --ca-step-list-gap: 0.05rem;
+      --ca-step-list-gap: var(--ca-run-details-v-gap, 0.05rem);
       margin-top: 0 !important;
   }}
 
@@ -2070,8 +2095,8 @@ _GLOBAL_CSS = f"""
       flex-wrap: nowrap !important;
       gap: 0.22rem !important;
       width: 100% !important;
-      margin: 0.08rem 0 0 0 !important;
-      padding: 0.08rem 0 0 0 !important;
+      margin: var(--ca-run-details-v-gap, 0.05rem) 0 0 0 !important;
+      padding: var(--ca-run-details-v-gap, 0.05rem) 0 0 0 !important;
       border-top: 1px solid #eef0f2;
   }}
   [class*="st-key-step_links_"] > [data-testid="stElementContainer"] {{
