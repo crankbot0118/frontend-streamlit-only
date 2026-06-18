@@ -1819,7 +1819,7 @@ _GLOBAL_CSS = f"""
 
   /* Step list — one gap for divider → first card and between every card. */
   .st-key-ca-steps {{
-      --ca-step-list-gap: 0.1rem;
+      --ca-step-list-gap: 0.1rem !important;
       margin-top: 0 !important;
   }}
 
