@@ -28,8 +28,18 @@ BRAND_RED_BG = "rgba(207, 34, 46, 0.12)"
 SHELL_MAIN_BG = "#faf7f2"
 SHELL_SIDEBAR_BG = "#ffffff"
 UI_SCALE = 0.8
-STATUS_ICON_PX = 18
-SIDEBAR_WIDTH_PX = 200
+STATUS_ICON_PX = int(round(18 * UI_SCALE))
+SIDEBAR_WIDTH_PX = int(round(200 * UI_SCALE))
+
+
+def _scale_rem(value: float) -> str:
+    """Scale a rem length by ``UI_SCALE`` for global layout typography."""
+    return f"{value * UI_SCALE:.6g}rem"
+
+
+def _scale_px(value: float) -> str:
+    """Scale a pixel length by ``UI_SCALE``."""
+    return f"{int(round(value * UI_SCALE))}px"
 
 # Repo root is the parent of the ``frontend/`` package that holds this file.
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -136,32 +146,24 @@ _GLOBAL_CSS = f"""
       --background-color: {SHELL_MAIN_BG};
       --secondary-background-color: {SHELL_SIDEBAR_BG};
       --text-color: {BRAND_INK};
-      --ca-detail-inline-gap: 0.45rem;
-      --ca-page-inset-top: 0.5rem;
-      --ca-sidebar-inset-x: 0.5rem;
-      --ca-main-inset-x: 1rem;
-      --ca-main-inset-right: 1.25rem;
-      --ca-header-row-height: 2rem;
+      --ca-detail-inline-gap: {_scale_rem(0.45)};
+      --ca-page-inset-top: {_scale_rem(0.5)};
+      --ca-sidebar-inset-x: {_scale_rem(0.5)};
+      --ca-main-inset-x: {_scale_rem(1)};
+      --ca-main-inset-right: {_scale_rem(1.25)};
+      --ca-header-row-height: {_scale_rem(2)};
       /* Type scale — all page text derives from the heading size. */
-      --ca-title-size: 1.75rem;
+      --ca-title-size: {_scale_rem(1.75)};
       --ca-subtitle-size: calc(var(--ca-title-size) * 0.43);   /* ~0.75rem subtitle */
       --ca-body-size: calc(var(--ca-title-size) * 0.5);         /* ~0.875rem body */
       --ca-label-size: calc(var(--ca-title-size) * 0.486);        /* ~0.85rem labels */
       --ca-caption-size: calc(var(--ca-title-size) * 0.457);    /* ~0.8rem captions */
       --ca-run-meta-size: calc(var(--ca-title-size) * 0.4);     /* ~0.7rem card meta */
       --ca-nav-font-size: var(--ca-body-size);
-      --ca-nav-item-gap: 0.32rem;
+      --ca-nav-item-gap: {_scale_rem(0.32)};
       --ca-nav-highlight-bg: rgba(232, 117, 17, 0.12);
-      --ca-detail-meta-height: 1.6rem;
+      --ca-detail-meta-height: {_scale_rem(1.6)};
       --ca-ui-scale: {UI_SCALE};
-  }}
-
-  /* Scale the entire dashboard shell (sidebar + pages) to 80%. */
-  [data-testid="stAppViewContainer"] {{
-      zoom: var(--ca-ui-scale);
-  }}
-  .stApp {{
-      min-height: calc(100vh / var(--ca-ui-scale));
   }}
   [data-testid="stAppViewContainer"],
   .stApp,
@@ -214,7 +216,7 @@ _GLOBAL_CSS = f"""
   section.main > .block-container,
   [data-testid="stMainBlockContainer"] {{
       padding-top: var(--ca-page-inset-top) !important;
-      padding-bottom: 1.25rem !important;
+      padding-bottom: {_scale_rem(1.25)} !important;
       padding-left: var(--ca-main-inset-x) !important;
       padding-right: var(--ca-main-inset-right) !important;
       max-width: none !important;
@@ -225,7 +227,7 @@ _GLOBAL_CSS = f"""
   }}
 
   [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] {{
-      gap: 0.35rem !important;
+      gap: {_scale_rem(0.35)} !important;
   }}
 
   [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {{
@@ -266,7 +268,7 @@ _GLOBAL_CSS = f"""
       padding-top: var(--ca-page-inset-top);
       padding-left: var(--ca-sidebar-inset-x);
       padding-right: var(--ca-sidebar-inset-x);
-      padding-bottom: 1.75rem;
+      padding-bottom: {_scale_rem(1.75)};
       box-sizing: border-box;
       overflow: hidden;
   }}
@@ -310,7 +312,7 @@ _GLOBAL_CSS = f"""
       width: 100%;
       max-width: 100%;
       height: auto;
-      max-height: 2.35rem;
+      max-height: {_scale_rem(2.35)};
       object-fit: contain;
       object-position: left center;
       display: block;
@@ -761,7 +763,7 @@ _GLOBAL_CSS = f"""
   .st-key-ca-status {{
       position: fixed !important;
       left: 0 !important;
-      bottom: 0.45rem !important;
+      bottom: {_scale_rem(0.45)} !important;
       width: {SIDEBAR_WIDTH_PX}px !important;
       z-index: 1000;
       margin: 0 !important;
@@ -807,14 +809,14 @@ _GLOBAL_CSS = f"""
       align-items: center;
       justify-content: center;
       flex: 0 0 auto;
-      width: 14px;
-      height: 14px;
+      width: {_scale_px(14)};
+      height: {_scale_px(14)};
       overflow: visible;
   }}
 
   .ca-status .ca-dot {{
-      width: 7px;
-      height: 7px;
+      width: {_scale_px(7)};
+      height: {_scale_px(7)};
       border-radius: 50%;
       flex: 0 0 auto;
   }}
@@ -1746,13 +1748,13 @@ _GLOBAL_CSS = f"""
 
   /* Each step is a bordered card — flex row: left (icon+name) | right (actions+arrow). */
   [class*="st-key-stepcard_"] {{
-      --ca-step-arrow-size: 1.25rem;
+      --ca-step-arrow-size: {_scale_rem(1.25)};
       position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
-      padding: 4px 12px;
+      padding: {_scale_px(4)} {_scale_px(12)};
       background: #ffffff;
-      min-height: 32px;
+      min-height: {_scale_px(32)};
       box-sizing: border-box;
   }}
 
@@ -1773,12 +1775,12 @@ _GLOBAL_CSS = f"""
       width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      gap: 8px !important;
+      gap: {_scale_px(8)} !important;
       min-height: 0 !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] {{
-      min-height: 24px !important;
+      min-height: {_scale_px(24)} !important;
   }}
   [class*="st-key-stepcard_"] [data-testid="column"] {{
       display: flex !important;
@@ -1818,7 +1820,7 @@ _GLOBAL_CSS = f"""
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] {{
       width: auto !important;
-      align-items: flex-end !important;
+      align-items: center !important;
       margin-left: 0 !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stVerticalBlock"],
@@ -1849,7 +1851,7 @@ _GLOBAL_CSS = f"""
       border: none !important;
       background: transparent !important;
       min-height: 0 !important;
-      max-height: 24px !important;
+      max-height: {_scale_px(24)} !important;
       height: auto !important;
       overflow: visible !important;
   }}
@@ -1861,8 +1863,8 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       border: none !important;
       background: transparent !important;
-      min-height: 18px !important;
-      max-height: 24px !important;
+      min-height: {STATUS_ICON_PX}px !important;
+      max-height: {_scale_px(24)} !important;
       height: auto !important;
       overflow: hidden !important;
   }}
@@ -1870,21 +1872,21 @@ _GLOBAL_CSS = f"""
   .ca-step-left {{
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: {_scale_px(8)};
       flex: 1;
       min-width: 0;
       width: 100%;
   }}
   .ca-step-name {{
-      font-size: 14px;
+      font-size: {_scale_px(14)};
       font-weight: 600;
       color: {BRAND_INK};
       line-height: 1.25;
   }}
   .ca-step-status-img {{
       flex: 0 0 auto;
-      width: 18px;
-      height: 18px;
+      width: {STATUS_ICON_PX}px;
+      height: {STATUS_ICON_PX}px;
       object-fit: contain;
       display: block;
   }}
@@ -1894,7 +1896,7 @@ _GLOBAL_CSS = f"""
   }}
   .ca-step-more {{
       flex: 0 0 auto;
-      font-size: 13px;
+      font-size: {_scale_px(13)};
       font-weight: 600;
       color: #6b7177;
       white-space: nowrap;
@@ -3556,7 +3558,7 @@ def run_detail_title_html(*, run_id: str, src: str, tgt: str) -> str:
     ``st.html`` renders inside an iframe, so styles must be embedded here —
     global CSS from ``apply_global_styles()`` does not apply inside the iframe.
     """
-    title_size = "1.75rem"
+    title_size = _scale_rem(1.75)
     return f"""
     <style>
       .ca-detail-page-header,
