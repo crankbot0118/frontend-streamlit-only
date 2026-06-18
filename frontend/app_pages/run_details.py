@@ -198,12 +198,13 @@ if run:
         with st.container(key="ca-detail-title-row"):
             st.html(run_detail_title_html(run_id=safe_run_id, src=src, tgt=tgt))
 
-    with st.container(key="ca-steps"):
-        st.html('<hr class="ca-title-rule" />')
-        if steps:
+    st.html('<hr class="ca-title-rule" />')
+
+    if steps:
+        with st.container(key="ca-steps"):
             _render_step_cards(steps, run)
-        else:
-            st.caption("No steps found for this run.")
+    else:
+        st.caption("No steps found for this run.")
 else:
     render_title(f"Run #{run_id}")
     if not steps:
