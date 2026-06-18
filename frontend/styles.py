@@ -1182,9 +1182,9 @@ _GLOBAL_CSS = f"""
   /* ---------- Run details header ---------- */
   .st-key-ca-detail-header {{
       --ca-detail-inline-gap: 0.28rem;
-      --ca-detail-section-v-gap: 0.05rem;
-      --ca-detail-title-height: 1.38rem;
-      --ca-detail-meta-height: 1.05rem;
+      --ca-detail-section-v-gap: 0;
+      --ca-detail-title-height: var(--ca-header-row-height);
+      --ca-detail-meta-height: 1.6rem;
   }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
   /* Title parts use the same gap as the middot-separated heading text. */
@@ -1212,9 +1212,9 @@ _GLOBAL_CSS = f"""
       vertical-align: middle;
   }}
   .ca-detail-page-header .ca-title {{
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      min-height: 0;
+      min-height: var(--ca-header-row-height);
       margin: 0;
       padding: 0;
   }}
@@ -1257,6 +1257,7 @@ _GLOBAL_CSS = f"""
       width: auto !important;
       max-width: none !important;
       min-width: 0 !important;
+      min-height: var(--ca-header-row-height) !important;
       height: auto !important;
       display: block !important;
       overflow: visible !important;
@@ -1288,10 +1289,10 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-meta-row [data-testid="column"]:first-child iframe {{
       pointer-events: none !important;
   }}
-  /* Meta row: strict single horizontal line. */
+  /* Meta row: subtitle band — same rhythm as render_title() subtitle. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
-      margin: -0.56rem 0 -0.3rem 0 !important;
+      margin: 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
   }}
@@ -1304,13 +1305,13 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
       gap: 0.28rem !important;
-      min-height: var(--ca-detail-meta-height) !important;
+      min-height: 0 !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"] {{
       display: flex !important;
       align-items: center !important;
       justify-content: flex-start !important;
-      min-height: var(--ca-detail-meta-height) !important;
+      min-height: 0 !important;
       padding-top: 0 !important;
       padding-bottom: 0 !important;
   }}
@@ -1337,7 +1338,7 @@ _GLOBAL_CSS = f"""
       display: flex !important;
       align-items: center !important;
       width: 100% !important;
-      min-height: var(--ca-detail-meta-height) !important;
+      min-height: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
@@ -1528,26 +1529,29 @@ _GLOBAL_CSS = f"""
   .ca-detail-meta-bar {{
       width: 100%;
       box-sizing: border-box;
+      margin: 0;
       padding: 0;
       display: flex;
       align-items: center;
       min-height: 0;
   }}
-  /* Meta line — single compact row, vertically centered. */
+  /* Meta line — same vertical slot as .ca-subtitle under .ca-title. */
   .ca-detail-meta {{
       display: flex;
       flex-direction: row;
       flex-wrap: nowrap;
       align-items: center;
       gap: 0.22rem;
-      font-size: var(--ca-run-meta-size);
-      color: #7a8086;
+      font-size: var(--ca-subtitle-size);
+      color: #5b6166;
       font-style: italic;
+      font-weight: 400;
       width: 100%;
-      line-height: 1;
+      line-height: 1.25;
       height: auto;
-      min-height: var(--ca-detail-meta-height);
+      min-height: 0;
       min-width: 0;
+      max-width: 52rem;
   }}
   .ca-detail-meta > * {{
       display: inline-flex;
@@ -1660,17 +1664,22 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
   .st-key-ca-detail-header .st-key-ca-detail-title-row {{
-      margin-bottom: calc(var(--ca-detail-section-v-gap) * -3) !important;
+      margin: 0 !important;
+  }}
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-title-row),
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-title-row) {{
+      margin: 0 !important;
+      padding: 0 !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row),
   .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row) {{
-      margin-top: calc(var(--ca-detail-section-v-gap) * -2.5) !important;
-      margin-bottom: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule),
   .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) {{
-      margin-top: calc(var(--ca-detail-section-v-gap) * -2) !important;
-      margin-bottom: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
       line-height: 0 !important;
       pointer-events: none !important;
   }}
@@ -3547,12 +3556,18 @@ def run_detail_title_html(*, run_id: str, src: str, tgt: str) -> str:
     global CSS from ``apply_global_styles()`` does not apply inside the iframe.
     """
     title_size = "1.75rem"
+    header_row_height = "2rem"
     return f"""
     <style>
       .ca-detail-page-header,
       .ca-detail-page-header .ca-title {{
         margin: 0;
         padding: 0;
+      }}
+      .ca-detail-page-header .ca-title {{
+        display: flex;
+        align-items: center;
+        min-height: {header_row_height};
       }}
       .ca-detail-title-parts {{
         display: inline-flex;
