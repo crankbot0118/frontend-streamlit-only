@@ -1817,9 +1817,9 @@ _GLOBAL_CSS = f"""
       padding-bottom: 0 !important;
   }}
 
-  /* Step list — compact vertical rhythm below the orange divider. */
+  /* Step list — one gap for divider → first card and between every card. */
   .st-key-ca-steps {{
-      --ca-step-card-gap: 0.22rem;
+      --ca-step-list-gap: 0.22rem;
       margin-top: 0 !important;
   }}
 
@@ -1828,21 +1828,20 @@ _GLOBAL_CSS = f"""
   .st-key-ca-steps > [data-testid="stVerticalBlock"],
   .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
   .st-key-ca-steps [data-testid="stFragment"] > [data-testid="stVerticalBlock"],
-  .st-key-ca-steps [data-testid="stVerticalBlock"]:has([class*="st-key-stepcard_"]) {{
-      gap: var(--ca-step-card-gap) !important;
+  .st-key-ca-steps [data-testid="stVerticalBlock"]:has([class*="st-key-stepcard_"]),
+  .st-key-ca-steps [data-testid="stVerticalBlock"]:has([data-testid="stElementContainer"]:has(.ca-title-rule)) {{
+      gap: var(--ca-step-list-gap) !important;
       align-items: stretch !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
   .st-key-ca-steps > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
   .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
+  .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]),
+  .st-key-ca-steps > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule),
+  .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) {{
       margin: 0 !important;
       padding: 0 !important;
-  }}
-  [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule)
-      + [data-testid="stElementContainer"]:has(.st-key-ca-steps) {{
-      margin-top: -0.14rem !important;
   }}
 
   /* Stable shell while the steps fragment mounts or polls. */
