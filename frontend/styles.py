@@ -1181,9 +1181,9 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run details header ---------- */
   .st-key-ca-detail-header {{
-      --ca-detail-inline-gap: 0.16rem;
-      --ca-detail-title-height: 1.15rem;
-      --ca-detail-meta-height: 0.9rem;
+      --ca-detail-inline-gap: 0.28rem;
+      --ca-detail-title-height: 1.38rem;
+      --ca-detail-meta-height: 1.05rem;
   }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
   /* Title parts use the same gap as the middot-separated heading text. */
@@ -1268,7 +1268,7 @@ _GLOBAL_CSS = f"""
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
-      margin: -0.28rem 0 -0.1rem 0 !important;
+      margin: -0.42rem 0 -0.22rem 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
   }}
@@ -1280,7 +1280,7 @@ _GLOBAL_CSS = f"""
       width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      gap: 0.16rem !important;
+      gap: 0.28rem !important;
       min-height: var(--ca-detail-meta-height) !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"] {{
@@ -1333,7 +1333,7 @@ _GLOBAL_CSS = f"""
       flex-wrap: nowrap !important;
       width: auto !important;
       margin-left: auto !important;
-      gap: 0.4rem !important;
+      gap: 0.75rem !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"] {{
       flex: 0 0 auto !important;
@@ -1343,7 +1343,7 @@ _GLOBAL_CSS = f"""
       align-items: center !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"]:first-child {{
-      margin-right: 0.06rem !important;
+      margin-right: 0.15rem !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stElementContainer"],
   .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
@@ -1416,7 +1416,7 @@ _GLOBAL_CSS = f"""
       justify-content: flex-end !important;
       width: auto !important;
       margin: 0 !important;
-      gap: 0.25rem !important;
+      gap: 0.35rem !important;
       min-height: var(--ca-detail-meta-height) !important;
       height: var(--ca-detail-meta-height) !important;
   }}
@@ -1435,7 +1435,7 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       align-self: center !important;
-      gap: 0.25rem !important;
+      gap: 0.35rem !important;
       margin: 0 !important;
       padding: 0 !important;
       line-height: 1 !important;
@@ -1516,7 +1516,7 @@ _GLOBAL_CSS = f"""
       flex-direction: row;
       flex-wrap: nowrap;
       align-items: center;
-      gap: 0.12rem;
+      gap: 0.22rem;
       font-size: var(--ca-run-meta-size);
       color: #7a8086;
       font-style: italic;
@@ -1550,7 +1550,7 @@ _GLOBAL_CSS = f"""
       display: inline-flex;
       align-items: center;
       align-self: center;
-      gap: 0.08rem;
+      gap: 0.12rem;
       white-space: nowrap;
       line-height: 1;
   }}
@@ -1633,13 +1633,10 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
   .st-key-ca-detail-header .st-key-ca-detail-title-row {{
-      margin-bottom: -0.06rem !important;
-  }}
-  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row) {{
-      margin-top: -0.08rem !important;
+      margin-bottom: -0.1rem !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child {{
-      margin-top: -0.12rem !important;
+      margin-top: -0.2rem !important;
       line-height: 0 !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child [data-testid="stHtml"],
@@ -1657,7 +1654,7 @@ _GLOBAL_CSS = f"""
   /* Step list — breathing room below the orange divider. */
   .st-key-ca-steps {{
       --ca-step-card-gap: 0.1px;
-      margin-top: 0.12rem !important;
+      margin-top: 0.32rem !important;
   }}
 
   /* Inter-card spacing — cards sit in stElementContainer wrappers, not direct
@@ -1692,13 +1689,13 @@ _GLOBAL_CSS = f"""
 
   /* Each step is a bordered card — flex row: left (icon+name) | right (actions+arrow). */
   [class*="st-key-stepcard_"] {{
-      --ca-step-arrow-size: 1.12rem;
+      --ca-step-arrow-size: 1.25rem;
       position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
-      padding: 2px 10px;
+      padding: 4px 12px;
       background: #ffffff;
-      min-height: 28px;
+      min-height: 32px;
       box-sizing: border-box;
   }}
 
@@ -1719,12 +1716,12 @@ _GLOBAL_CSS = f"""
       width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      gap: 5px !important;
+      gap: 8px !important;
       min-height: 0 !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] {{
-      min-height: 22px !important;
+      min-height: 24px !important;
   }}
   [class*="st-key-stepcard_"] [data-testid="column"] {{
       display: flex !important;
@@ -1898,10 +1895,10 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: 0.14rem !important;
+      gap: 0.22rem !important;
       width: 100% !important;
-      margin: 0.1rem 0 0 0 !important;
-      padding: 0.12rem 0 0 0 !important;
+      margin: 0.18rem 0 0 0 !important;
+      padding: 0.22rem 0 0 0 !important;
       border-top: 1px solid #eef0f2;
   }}
   [class*="st-key-step_links_"] > [data-testid="stElementContainer"] {{
