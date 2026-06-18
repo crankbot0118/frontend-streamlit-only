@@ -240,7 +240,7 @@ if run:
             _maybe_rerun_on_terminal(run_id, status)
         live_steps = _load_steps(run_id, steps) if poll_every else steps
 
-        # Single vertical stack: title → divider → step cards (no extra header wrapper).
+        # Single vertical stack: title → log link → divider → step cards.
         with st.container(key="ca-steps"):
             with st.container(key="ca-detail-title-row"):
                 st.html(
@@ -251,13 +251,11 @@ if run:
                         status=status,
                     )
                 )
-                st.markdown(
-                    '<span class="ca-step-link-sep">&middot;</span>',
-                    unsafe_allow_html=True,
-                )
-                if st.button("View Log", key=f"view_run_log_{run_id}"):
-                    st.session_state[_OPEN_RUN_LOG_KEY] = True
-                    st.rerun()
+            with st.container(key="ca-detail-log-row"):
+                with st.container(key="detail-download-log"):
+                    if st.button("View Log", key=f"view_run_log_{run_id}"):
+                        st.session_state[_OPEN_RUN_LOG_KEY] = True
+                        st.rerun()
             st.html('<hr class="ca-title-rule" />')
             if live_steps:
                 _render_step_cards(live_steps, live_run)

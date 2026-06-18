@@ -1328,15 +1328,7 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-title-row .st-key-detail-toolbar-links [data-testid="stVerticalBlockBorderWrapper"],
   .st-key-ca-detail-title-row .st-key-detail-download-log,
   .st-key-ca-detail-title-row .st-key-detail-download-log [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-title-row .st-key-detail-download-log [data-testid="stVerticalBlockBorderWrapper"],
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.stButton),
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-step-link-sep),
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.stButton),
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-step-link-sep),
-  .st-key-ca-detail-title-row [class*="st-key-view_run_log_"],
-  .st-key-ca-detail-title-row [class*="st-key-view_run_log_"] [data-testid="stElementContainer"],
-  .st-key-ca-detail-title-row [class*="st-key-view_run_log_"] [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-title-row [class*="st-key-view_run_log_"] [data-testid="stVerticalBlockBorderWrapper"] {{
+  .st-key-ca-detail-title-row .st-key-detail-download-log [data-testid="stVerticalBlockBorderWrapper"] {{
       position: relative !important;
       z-index: 30 !important;
       pointer-events: auto !important;
@@ -1350,11 +1342,58 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-title-row .st-key-detail-download-log .stButton button,
   .st-key-ca-detail-title-row .st-key-detail-download-log .stButton button [data-testid="stMarkdownContainer"],
   .st-key-ca-detail-title-row .st-key-detail-download-log .stButton button p,
-  .st-key-ca-detail-title-row .st-key-detail-download-log .ca-step-link-disabled,
-  .st-key-ca-detail-title-row [class*="st-key-view_run_log_"] .stButton button,
-  .st-key-ca-detail-title-row [class*="st-key-view_run_log_"] .stButton button [data-testid="stMarkdownContainer"],
-  .st-key-ca-detail-title-row [class*="st-key-view_run_log_"] .stButton button p {{
+  .st-key-ca-detail-title-row .st-key-detail-download-log .ca-step-link-disabled {{
       font-size: 0.86rem !important;
+  }}
+  /* Run log link row — full width, right-aligned above the orange divider. */
+  .st-key-ca-detail-log-row,
+  .st-key-ca-detail-log-row[data-testid="stVerticalBlockBorderWrapper"] {{
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      position: relative !important;
+      z-index: 6 !important;
+  }}
+  .st-key-ca-detail-log-row > [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-log-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-log-row[data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: var(--ca-detail-meta-height) !important;
+      gap: 0 !important;
+  }}
+  .st-key-ca-detail-log-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-ca-detail-log-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-ca-detail-log-row[data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-ca-detail-log-row .st-key-detail-download-log,
+  .st-key-ca-detail-log-row .st-key-detail-download-log [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-log-row .st-key-detail-download-log [data-testid="stVerticalBlockBorderWrapper"],
+  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"],
+  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] [data-testid="stElementContainer"] {{
+      width: auto !important;
+      flex: 0 0 auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      position: relative !important;
+      z-index: 30 !important;
+      pointer-events: auto !important;
+  }}
+  .st-key-ca-detail-log-row .st-key-detail-download-log .stButton button,
+  .st-key-ca-detail-log-row .st-key-detail-download-log .stButton button [data-testid="stMarkdownContainer"],
+  .st-key-ca-detail-log-row .st-key-detail-download-log .stButton button p,
+  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button,
+  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button [data-testid="stMarkdownContainer"],
+  .st-key-ca-detail-log-row [class*="st-key-view_run_log_"] .stButton button p {{
+      font-size: 0.86rem !important;
+      min-height: var(--ca-detail-meta-height) !important;
+      height: var(--ca-detail-meta-height) !important;
   }}
   .st-key-detail-meta-actions,
   .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
@@ -1871,6 +1910,7 @@ _GLOBAL_CSS = f"""
       --ca-step-card-gap: 0.08rem;
       --ca-detail-inline-gap: 0.28rem;
       --ca-detail-title-height: 1.15rem;
+      --ca-detail-meta-height: 1.05rem;
       margin-top: 0 !important;
       margin-bottom: 0 !important;
   }}
@@ -1908,11 +1948,22 @@ _GLOBAL_CSS = f"""
   }}
   [class*="st-key-ca-steps"] [class*="st-key-ca-detail-title-row"],
   [class*="st-key-ca-steps"] [class*="st-key-ca-detail-title-row"] [data-testid="stVerticalBlock"],
-  [class*="st-key-ca-steps"] [class*="st-key-ca-detail-title-row"] [data-testid="stVerticalBlockBorderWrapper"] {{
+  [class*="st-key-ca-steps"] [class*="st-key-ca-detail-title-row"] [data-testid="stVerticalBlockBorderWrapper"],
+  [class*="st-key-ca-steps"] [class*="st-key-ca-detail-log-row"],
+  [class*="st-key-ca-steps"] [class*="st-key-ca-detail-log-row"] [data-testid="stVerticalBlock"],
+  [class*="st-key-ca-steps"] [class*="st-key-ca-detail-log-row"] [data-testid="stVerticalBlockBorderWrapper"] {{
       margin-top: 0 !important;
       margin-bottom: 0 !important;
       padding-top: 0 !important;
       padding-bottom: 0 !important;
+  }}
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-log-row),
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-log-row),
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlock"] > [class*="st-key-ca-detail-log-row"],
+  [class*="st-key-ca-steps"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [class*="st-key-ca-detail-log-row"] {{
+      width: 100% !important;
+      max-width: 100% !important;
+      align-self: stretch !important;
   }}
 
   /* Stable shell while the steps fragment mounts or polls. */
