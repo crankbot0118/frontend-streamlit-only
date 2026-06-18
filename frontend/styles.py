@@ -1328,13 +1328,32 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-title-row .st-key-detail-toolbar-links [data-testid="stVerticalBlockBorderWrapper"],
   .st-key-ca-detail-title-row .st-key-detail-download-log,
   .st-key-ca-detail-title-row .st-key-detail-download-log [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-title-row .st-key-detail-download-log [data-testid="stVerticalBlockBorderWrapper"] {{
+  .st-key-ca-detail-title-row .st-key-detail-download-log [data-testid="stVerticalBlockBorderWrapper"],
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.stButton),
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-step-link-sep),
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.stButton),
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-step-link-sep),
+  .st-key-ca-detail-title-row [class*="st-key-view_run_log_"],
+  .st-key-ca-detail-title-row [class*="st-key-view_run_log_"] [data-testid="stElementContainer"],
+  .st-key-ca-detail-title-row [class*="st-key-view_run_log_"] [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-title-row [class*="st-key-view_run_log_"] [data-testid="stVerticalBlockBorderWrapper"] {{
+      position: relative !important;
+      z-index: 30 !important;
       pointer-events: auto !important;
+  }}
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stHtml"]),
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stHtml"]) {{
+      flex: 0 1 auto !important;
+      width: auto !important;
+      max-width: max-content !important;
   }}
   .st-key-ca-detail-title-row .st-key-detail-download-log .stButton button,
   .st-key-ca-detail-title-row .st-key-detail-download-log .stButton button [data-testid="stMarkdownContainer"],
   .st-key-ca-detail-title-row .st-key-detail-download-log .stButton button p,
-  .st-key-ca-detail-title-row .st-key-detail-download-log .ca-step-link-disabled {{
+  .st-key-ca-detail-title-row .st-key-detail-download-log .ca-step-link-disabled,
+  .st-key-ca-detail-title-row [class*="st-key-view_run_log_"] .stButton button,
+  .st-key-ca-detail-title-row [class*="st-key-view_run_log_"] .stButton button [data-testid="stMarkdownContainer"],
+  .st-key-ca-detail-title-row [class*="st-key-view_run_log_"] .stButton button p {{
       font-size: 0.86rem !important;
   }}
   .st-key-detail-meta-actions,
@@ -1850,6 +1869,8 @@ _GLOBAL_CSS = f"""
       --ca-run-details-v-gap: 0.08rem;
       --ca-step-list-gap: var(--ca-run-details-v-gap);
       --ca-step-card-gap: 0.08rem;
+      --ca-detail-inline-gap: 0.28rem;
+      --ca-detail-title-height: 1.15rem;
       margin-top: 0 !important;
       margin-bottom: 0 !important;
   }}
@@ -2159,6 +2180,10 @@ _GLOBAL_CSS = f"""
   [class*="st-key-view_step_log_"] .stButton button,
   [class*="st-key-view_step_log_"] .stButton button [data-testid="stMarkdownContainer"],
   [class*="st-key-view_step_log_"] .stButton button p,
+  [class*="st-key-view_run_log_"] .stButton,
+  [class*="st-key-view_run_log_"] .stButton button,
+  [class*="st-key-view_run_log_"] .stButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-view_run_log_"] .stButton button p,
   [class*="st-key-step_retry_"] .stButton,
   [class*="st-key-step_retry_"] .stButton button,
   [class*="st-key-step_retry_"] .stButton button [data-testid="stMarkdownContainer"],
@@ -2186,6 +2211,9 @@ _GLOBAL_CSS = f"""
   [class*="st-key-view_step_log_"] .stButton button:hover,
   [class*="st-key-view_step_log_"] .stButton button:hover [data-testid="stMarkdownContainer"],
   [class*="st-key-view_step_log_"] .stButton button:hover p,
+  [class*="st-key-view_run_log_"] .stButton button:hover,
+  [class*="st-key-view_run_log_"] .stButton button:hover [data-testid="stMarkdownContainer"],
+  [class*="st-key-view_run_log_"] .stButton button:hover p,
   [class*="st-key-step_retry_"] .stButton button:not(:disabled):hover,
   [class*="st-key-step_retry_"] .stButton button:not(:disabled):hover [data-testid="stMarkdownContainer"],
   [class*="st-key-step_retry_"] .stButton button:not(:disabled):hover p,

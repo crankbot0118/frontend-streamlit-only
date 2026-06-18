@@ -31,6 +31,7 @@ from ui_errors import show_error
 
 _RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
 _TERMINAL_STATUSES = frozenset({"COMPLETED", "FAILED", "ABORTED", "SKIPPED"})
+_OPEN_RUN_LOG_KEY = "_ca_open_run_log"
 def _toggle_step(open_key: str) -> None:
     st.session_state[open_key] = not st.session_state.get(open_key, False)
 
@@ -225,6 +226,12 @@ if run:
 
     @st.fragment(run_every=poll_every)
     def _live_run_panel() -> None:
+        if st.session_state.pop(_OPEN_RUN_LOG_KEY, False):
+            open_log_dialog(
+                title=f"Run log · #{run_id}",
+                clone_run_id=run_id,
+            )
+
         live_run = _load_run(run_id, run) if poll_every else run
         if not live_run:
             live_run = run
@@ -244,17 +251,13 @@ if run:
                         status=status,
                     )
                 )
-                with st.container(key="detail-toolbar-links"):
-                    st.markdown(
-                        '<span class="ca-step-link-sep">&middot;</span>',
-                        unsafe_allow_html=True,
-                    )
-                    with st.container(key="detail-download-log"):
-                        if st.button("View Log", key=f"view_run_log_{run_id}"):
-                            open_log_dialog(
-                                title=f"Run log · #{run_id}",
-                                clone_run_id=run_id,
-                            )
+                st.markdown(
+                    '<span class="ca-step-link-sep">&middot;</span>',
+                    unsafe_allow_html=True,
+                )
+                if st.button("View Log", key=f"view_run_log_{run_id}"):
+                    st.session_state[_OPEN_RUN_LOG_KEY] = True
+                    st.rerun()
             st.html('<hr class="ca-title-rule" />')
             if live_steps:
                 _render_step_cards(live_steps, live_run)
