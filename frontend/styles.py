@@ -1745,6 +1745,11 @@ _GLOBAL_CSS = f"""
       min-height: 32px;
       box-sizing: border-box;
   }}
+  [class*="st-key-stepcard_"]:has([data-ca-running-id]) {{
+      border-color: rgba(232, 117, 17, 0.45);
+      background: linear-gradient(90deg, rgba(232, 117, 17, 0.08) 0%, #ffffff 42%);
+      box-shadow: 0 0 0 1px rgba(232, 117, 17, 0.12);
+  }}
 
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
@@ -2961,6 +2966,82 @@ _GLOBAL_CSS = f"""
 </style>
 """
 
+_RUN_DETAILS_SCROLL_JS = """
+<script>
+(function () {
+  var root = window.parent || window;
+  if (root.__caRunDetailsScrollInit) return;
+  root.__caRunDetailsScrollInit = true;
+
+  var doc = root.document;
+  var lastRunningId = null;
+  var scrollTimer = null;
+
+  function runningCard(marker) {
+    if (!marker) return null;
+    return marker.closest('[class*="st-key-stepcard_"]') || marker;
+  }
+
+  function cardIsVisible(card) {
+    var rect = card.getBoundingClientRect();
+    var vh = root.innerHeight || doc.documentElement.clientHeight || 0;
+    var margin = Math.max(48, vh * 0.12);
+    return rect.top >= margin && rect.bottom <= (vh - margin);
+  }
+
+  function scrollRunningToCenter(force) {
+    var marker = doc.querySelector("[data-ca-running-id]");
+    if (!marker) {
+      lastRunningId = null;
+      return;
+    }
+
+    var runningId = marker.getAttribute("data-ca-running-id");
+    var card = runningCard(marker);
+    if (!card || !runningId) return;
+
+    var idChanged = runningId !== lastRunningId;
+    if (!force && !idChanged && cardIsVisible(card)) {
+      return;
+    }
+
+    card.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    lastRunningId = runningId;
+  }
+
+  function scheduleScroll(force) {
+    if (scrollTimer) root.clearTimeout(scrollTimer);
+    scrollTimer = root.setTimeout(function () {
+      scrollTimer = null;
+      root.requestAnimationFrame(function () {
+        scrollRunningToCenter(force);
+      });
+    }, force ? 0 : 90);
+  }
+
+  if (doc.body) {
+    var observer = new MutationObserver(function () {
+      scheduleScroll(false);
+    });
+    observer.observe(doc.body, { childList: true, subtree: true });
+  }
+
+  scheduleScroll(true);
+})();
+</script>
+"""
+
+
+def inject_run_details_scroll_js() -> None:
+    """Install auto-scroll-to-running-step behavior once per session."""
+    if st.session_state.get("_ca_run_details_scroll_js"):
+        return
+    st.session_state["_ca_run_details_scroll_js"] = True
+    try:
+        st.html(_RUN_DETAILS_SCROLL_JS, unsafe_allow_javascript=True)
+    except TypeError:
+        st.html(_RUN_DETAILS_SCROLL_JS)
+
 
 def apply_global_styles() -> None:
     """Inject the shared CSS into the current page.
@@ -2971,6 +3052,7 @@ def apply_global_styles() -> None:
     """
     st.markdown(_GLOBAL_CSS, unsafe_allow_html=True)
     inject_local_datetime_js()
+    inject_run_details_scroll_js()
 
 
 def render_logo(path: str | Path | None = None, width: int | None = None) -> None:
