@@ -297,26 +297,19 @@ if run:
 
             with st.container(key="ca-detail-meta-row"):
                 with st.container(key="detail-meta-actions"):
-                    col_dl, col_ref = st.columns(
-                        [1, 1.15],
-                        gap="small",
-                        vertical_alignment="center",
-                    )
-                    with col_dl:
-                        with st.container(key="detail-download-log"):
-                            if st.button(
-                                "View Log",
-                                key=f"view_run_log_{run_id}",
-                                type="secondary",
-                            ):
-                                open_run_log_dialog(clone_run_id=run_id)
-                    with col_ref:
-                        with st.container(key="detail-refresh"):
-                            st.toggle(
-                                "Auto refresh",
-                                key=refresh_key,
-                                label_visibility="visible",
-                            )
+                    with st.container(key="detail-download-log"):
+                        if st.button(
+                            "View Log",
+                            key=f"view_run_log_{run_id}",
+                            type="secondary",
+                        ):
+                            open_run_log_dialog(clone_run_id=run_id)
+                    with st.container(key="detail-refresh"):
+                        st.toggle(
+                            "Auto refresh",
+                            key=refresh_key,
+                            label_visibility="visible",
+                        )
 
             st.html('<hr class="ca-title-rule" />')
 

@@ -1265,6 +1265,12 @@ _GLOBAL_CSS = f"""
       max-width: none !important;
       overflow: visible !important;
   }}
+  .st-key-ca-detail-title-row [data-testid="stHtml"],
+  .st-key-ca-detail-title-row [data-testid="stHtml"] iframe,
+  .st-key-ca-detail-title-row .stHtml,
+  .st-key-ca-detail-title-row .stHtml iframe {{
+      overflow: visible !important;
+  }}
   .st-key-detail-actions,
   .st-key-detail-actions [data-testid="stVerticalBlock"],
   .st-key-detail-actions [data-testid="stVerticalBlockBorderWrapper"] {{
@@ -1344,7 +1350,7 @@ _GLOBAL_CSS = f"""
       font-size: calc(var(--ca-nav-font-size) * 0.92);
       font-weight: 600;
       line-height: 1;
-      cursor: default;
+      cursor: pointer;
       user-select: none;
       white-space: nowrap;
       box-sizing: border-box;
@@ -1369,10 +1375,10 @@ _GLOBAL_CSS = f"""
   }}
   .ca-detail-meta-popover {{
       display: none;
-      position: absolute;
-      top: calc(100% + 0.35rem);
+      position: fixed;
+      top: 0;
       left: 0;
-      z-index: 50;
+      z-index: 999999;
       min-width: max-content;
       max-width: min(96vw, 56rem);
       padding: 0.42rem 0.55rem;
@@ -1381,9 +1387,11 @@ _GLOBAL_CSS = f"""
       background: #ffffff;
       box-shadow: 0 4px 18px rgba(19, 21, 22, 0.1);
       box-sizing: border-box;
+      pointer-events: auto;
   }}
   .ca-detail-meta-dropdown:hover .ca-detail-meta-popover,
-  .ca-detail-meta-dropdown:focus-within .ca-detail-meta-popover {{
+  .ca-detail-meta-dropdown:focus-within .ca-detail-meta-popover,
+  .ca-detail-meta-popover.ca-detail-meta-popover--open {{
       display: block;
   }}
   .ca-detail-meta.ca-detail-meta--popover {{
@@ -1461,37 +1469,31 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-detail-meta-actions,
   .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
-  .st-key-detail-meta-actions [data-testid="stVerticalBlockBorderWrapper"] {{
-      width: auto !important;
-      margin: 0 0 0 auto !important;
-      padding: 0 !important;
-  }}
-  .st-key-detail-meta-actions [data-testid="stHorizontalBlock"] {{
+  .st-key-detail-meta-actions [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
       justify-content: flex-end !important;
       flex-wrap: nowrap !important;
-      width: auto !important;
-      margin-left: auto !important;
-      gap: 0.75rem !important;
+      gap: 1rem !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
-  .st-key-detail-meta-actions [data-testid="column"] {{
+  .st-key-detail-meta-actions > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-detail-meta-actions > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
       flex: 0 0 auto !important;
       width: auto !important;
       min-width: 0 !important;
-      justify-content: flex-end !important;
-      align-items: center !important;
+      margin: 0 !important;
+      padding: 0 !important;
   }}
-  .st-key-detail-meta-actions [data-testid="column"]:first-child {{
-      margin-right: 0.15rem !important;
-  }}
-  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stElementContainer"],
-  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
-      justify-content: flex-end !important;
+  .st-key-detail-meta-actions [data-testid="stHorizontalBlock"] {{
+      display: none !important;
   }}
   .st-key-ca-detail-meta-row .st-key-detail-refresh,
   .st-key-ca-detail-meta-row .st-key-detail-download-log {{
+      flex: 0 0 auto !important;
       width: auto !important;
       margin: 0 !important;
       padding: 0 !important;
@@ -3170,6 +3172,61 @@ def run_detail_meta_dropdown_html(
         "</div>"
         "</div>"
         "</span>"
+        "<script>"
+        "(function(){"
+        "function placePop(root){"
+        "var trigger=root.querySelector('.ca-detail-meta-trigger');"
+        "var pop=root.querySelector('.ca-detail-meta-popover');"
+        "if(!trigger||!pop)return;"
+        "pop.classList.add('ca-detail-meta-popover--open');"
+        "pop.style.display='block';"
+        "pop.style.visibility='hidden';"
+        "pop.style.position='fixed';"
+        "var r=trigger.getBoundingClientRect();"
+        "var ph=pop.offsetHeight||0;"
+        "var pw=pop.offsetWidth||0;"
+        "var top=r.bottom+6;"
+        "if(top+ph>window.innerHeight-8){top=r.top-ph-6;}"
+        "var left=Math.min(r.left,Math.max(8,window.innerWidth-pw-8));"
+        "pop.style.left=Math.max(8,left)+'px';"
+        "pop.style.top=Math.max(8,top)+'px';"
+        "pop.style.visibility='visible';"
+        "pop.style.zIndex='999999';"
+        "try{"
+        "if(window.frameElement){"
+        "var need=top+ph+10;"
+        "window.frameElement.style.height=Math.max(window.frameElement.offsetHeight,need)+'px';"
+        "window.frameElement.style.overflow='visible';"
+        "var ec=window.frameElement.closest('[data-testid=\"stElementContainer\"]');"
+        "if(ec){ec.style.overflow='visible';}"
+        "}"
+        "}catch(e){}"
+        "}"
+        "function hidePop(root){"
+        "var pop=root.querySelector('.ca-detail-meta-popover');"
+        "if(pop){pop.style.display='none';pop.classList.remove('ca-detail-meta-popover--open');}"
+        "try{if(window.frameElement){window.frameElement.style.height='';}}catch(e){}"
+        "}"
+        "document.querySelectorAll('.ca-detail-meta-dropdown').forEach(function(root){"
+        "if(root.dataset.caMetaBound)return;"
+        "root.dataset.caMetaBound='1';"
+        "var pop=root.querySelector('.ca-detail-meta-popover');"
+        "var hideTimer=null;"
+        "function cancelHide(){if(hideTimer){clearTimeout(hideTimer);hideTimer=null;}}"
+        "function scheduleHide(){cancelHide();hideTimer=setTimeout(function(){hidePop(root);},150);}"
+        "root.addEventListener('mouseenter',function(){cancelHide();placePop(root);});"
+        "root.addEventListener('mouseleave',scheduleHide);"
+        "if(pop){"
+        "pop.addEventListener('mouseenter',cancelHide);"
+        "pop.addEventListener('mouseleave',scheduleHide);"
+        "}"
+        "root.addEventListener('focusin',function(){cancelHide();placePop(root);});"
+        "root.addEventListener('focusout',function(e){"
+        "if(!root.contains(e.relatedTarget)&&!(pop&&pop.contains(e.relatedTarget))){scheduleHide();}"
+        "});"
+        "});"
+        "})();"
+        "</script>"
     )
 
 
