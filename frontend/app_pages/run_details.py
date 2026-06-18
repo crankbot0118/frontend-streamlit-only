@@ -31,6 +31,36 @@ from styles import (
 from ui_errors import show_error
 
 _RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
+_RUN_INFO_DIALOG_KEY = "_ca_run_info_dialog"
+
+
+@st.dialog(" ", width="large")
+def _show_run_info_dialog() -> None:
+    clone_run_id = st.session_state.get(_RUN_INFO_DIALOG_KEY)
+    if not clone_run_id:
+        emit_html(step_detail_dialog_error_html("No run selected."))
+        return
+    try:
+        live = get_run(clone_run_id)
+    except Exception as exc:
+        emit_html(step_detail_dialog_error_html(f"Could not load run info: {exc}"))
+        return
+    if not live:
+        emit_html(step_detail_dialog_error_html("Run not found."))
+        return
+    emit_html(
+        run_detail_info_dialog_html(
+            user=_esc(live.get("user_name", "—")),
+            start_date=live.get("start_date"),
+            last_update=live.get("last_update"),
+            status=live.get("status", ""),
+        )
+    )
+
+
+def open_run_info_dialog(clone_run_id: int) -> None:
+    st.session_state[_RUN_INFO_DIALOG_KEY] = clone_run_id
+    _show_run_info_dialog()
 
 
 def _toggle_step(open_key: str) -> None:
@@ -151,25 +181,6 @@ if run:
             return
 
         emit_html(step_detail_dialog_html(detail, function_name))
-
-    @st.dialog(" ", width="large")
-    def _show_run_info_dialog(clone_run_id: int) -> None:
-        try:
-            live = get_run(clone_run_id)
-        except Exception as exc:
-            emit_html(step_detail_dialog_error_html(f"Could not load run info: {exc}"))
-            return
-        if not live:
-            emit_html(step_detail_dialog_error_html("Run not found."))
-            return
-        emit_html(
-            run_detail_info_dialog_html(
-                user=_esc(live.get("user_name", "—")),
-                start_date=live.get("start_date"),
-                last_update=live.get("last_update"),
-                status=live.get("status", ""),
-            )
-        )
 
     def _render_step_cards(step_rows: list[dict], live_run: dict | None) -> None:
         for i, step in enumerate(step_rows):
@@ -304,35 +315,30 @@ if run:
                                 st.rerun()
                             except Exception as exc:
                                 show_error(exc, context="Could not abort run")
-                    st.markdown(
-                        '<span class="ca-run-sep ca-detail-action-sep">&middot;</span>',
-                        unsafe_allow_html=True,
-                    )
-                    with st.container(key="detail-info"):
-                        if st.button(
-                            "Info",
-                            key="detail_info",
-                            type="secondary",
-                            icon=":material/info:",
-                            help="Run status and timing",
-                        ):
-                            _show_run_info_dialog(run_id)
 
             with st.container(key="ca-detail-meta-row"):
                 with st.container(key="detail-meta-actions"):
-                    col_dl, col_ref = st.columns(
+                    col_links, col_ref = st.columns(
                         [1, 1.15],
                         gap="small",
                         vertical_alignment="center",
                     )
-                    with col_dl:
-                        with st.container(key="detail-download-log"):
+                    with col_links:
+                        with st.container(key="detail-run-links"):
                             if st.button(
                                 "View Log",
                                 key=f"view_run_log_{run_id}",
-                                type="secondary",
                             ):
                                 open_run_log_dialog(clone_run_id=run_id)
+                            st.markdown(
+                                '<span class="ca-step-link-sep">&middot;</span>',
+                                unsafe_allow_html=True,
+                            )
+                            if st.button(
+                                "Info",
+                                key=f"detail_info_{run_id}",
+                            ):
+                                open_run_info_dialog(run_id)
                     with col_ref:
                         with st.container(key="detail-refresh"):
                             st.toggle(

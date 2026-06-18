@@ -1303,34 +1303,6 @@ _GLOBAL_CSS = f"""
       accent=BRAND_RED,
       accent_bg=BRAND_RED_BG,
   )}
-  .st-key-detail-actions [data-testid="stElementContainer"]:has(.ca-detail-action-sep) {{
-      flex: 0 0 auto !important;
-      display: inline-flex !important;
-      align-items: center !important;
-      width: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .ca-detail-action-sep {{
-      color: #c2c7cc;
-      font-weight: 400;
-      line-height: 1;
-      user-select: none;
-  }}
-  .st-key-ca-detail-title-row .st-key-detail-info .stButton button,
-  .st-key-ca-detail-title-row .st-key-detail-info .stDownloadButton button {{
-      min-height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
-      height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
-      padding: 0 0.42rem !important;
-      gap: 0.28rem !important;
-      line-height: 1 !important;
-      font-size: calc(var(--ca-nav-font-size) * 0.92) !important;
-  }}
-  {_nav_action_button_css(
-      ".st-key-detail-info",
-      accent="#5b6166",
-      accent_bg="#f6f7f8",
-  )}
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
@@ -1430,6 +1402,63 @@ _GLOBAL_CSS = f"""
   .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stElementContainer"],
   .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
       justify-content: flex-end !important;
+  }}
+  .st-key-detail-run-links,
+  .st-key-detail-run-links > [data-testid="stVerticalBlock"],
+  .st-key-detail-run-links > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      flex-wrap: nowrap !important;
+      gap: 0.22rem !important;
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-detail-run-links > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-detail-run-links > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
+      flex: 0 0 auto !important;
+      width: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
+  .st-key-detail-run-links [data-testid="stElementContainer"]:has(.ca-step-link-sep) {{
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: auto !important;
+      min-width: 0 !important;
+      padding: 0 0.06rem !important;
+  }}
+  [class*="st-key-view_run_log_"] .stButton,
+  [class*="st-key-view_run_log_"] .stButton button,
+  [class*="st-key-view_run_log_"] .stButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-view_run_log_"] .stButton button p,
+  [class*="st-key-detail_info_"] .stButton,
+  [class*="st-key-detail_info_"] .stButton button,
+  [class*="st-key-detail_info_"] .stButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-detail_info_"] .stButton button p {{
+      width: auto !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: {BRAND_ORANGE} !important;
+      font-size: var(--ca-run-meta-size) !important;
+      font-weight: 600 !important;
+      line-height: 1 !important;
+      text-decoration: none !important;
+  }}
+  [class*="st-key-view_run_log_"] .stButton button:hover,
+  [class*="st-key-view_run_log_"] .stButton button:hover [data-testid="stMarkdownContainer"],
+  [class*="st-key-view_run_log_"] .stButton button:hover p,
+  [class*="st-key-detail_info_"] .stButton button:hover,
+  [class*="st-key-detail_info_"] .stButton button:hover [data-testid="stMarkdownContainer"],
+  [class*="st-key-detail_info_"] .stButton button:hover p {{
+      text-decoration: underline !important;
+      color: {BRAND_ORANGE} !important;
   }}
   .st-key-ca-detail-meta-row .st-key-detail-refresh,
   .st-key-ca-detail-meta-row .st-key-detail-download-log {{
