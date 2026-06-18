@@ -1181,7 +1181,10 @@ _GLOBAL_CSS = f"""
 
   /* ---------- Run details header ---------- */
   .st-key-ca-detail-header {{
-      --ca-detail-inline-gap: 0.28rem;
+      --ca-detail-inline-gap: 0.2rem;
+      --ca-detail-section-gap: 0.06rem;
+      --ca-detail-meta-item-gap: 0.14rem;
+      --ca-detail-actions-gap: 0.45rem;
       --ca-detail-title-height: 1.38rem;
       --ca-detail-meta-height: 1.05rem;
   }}
@@ -1268,7 +1271,7 @@ _GLOBAL_CSS = f"""
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
-      margin: -0.42rem 0 -0.22rem 0 !important;
+      margin: -0.52rem 0 -0.26rem 0 !important;
       padding: 0 !important;
       min-height: 0 !important;
   }}
@@ -1280,7 +1283,7 @@ _GLOBAL_CSS = f"""
       width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      gap: 0.28rem !important;
+      gap: var(--ca-detail-meta-item-gap) !important;
       min-height: var(--ca-detail-meta-height) !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"] {{
@@ -1333,7 +1336,7 @@ _GLOBAL_CSS = f"""
       flex-wrap: nowrap !important;
       width: auto !important;
       margin-left: auto !important;
-      gap: 0.75rem !important;
+      gap: var(--ca-detail-actions-gap) !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"] {{
       flex: 0 0 auto !important;
@@ -1343,7 +1346,7 @@ _GLOBAL_CSS = f"""
       align-items: center !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"]:first-child {{
-      margin-right: 0.15rem !important;
+      margin-right: 0.08rem !important;
   }}
   .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stElementContainer"],
   .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
@@ -1516,7 +1519,7 @@ _GLOBAL_CSS = f"""
       flex-direction: row;
       flex-wrap: nowrap;
       align-items: center;
-      gap: 0.22rem;
+      gap: var(--ca-detail-meta-item-gap);
       font-size: var(--ca-run-meta-size);
       color: #7a8086;
       font-style: italic;
@@ -1619,28 +1622,42 @@ _GLOBAL_CSS = f"""
   .ca-loglink:hover {{
       text-decoration: underline;
   }}
-  /* Tighter vertical stack: title → meta → orange divider. */
+  /* Tighter vertical stack: title → meta → orange divider → steps (spacing only). */
   .st-key-ca-detail-header .ca-title-rule {{
       margin: 0 !important;
       display: block;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-header > [data-testid="stVerticalBlockBorderWrapper"] {{
+  .st-key-ca-detail-header > [data-testid="stVerticalBlockBorderWrapper"],
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       gap: 0 !important;
   }}
-  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
       margin: 0 !important;
       padding: 0 !important;
   }}
   .st-key-ca-detail-header .st-key-ca-detail-title-row {{
-      margin-bottom: -0.1rem !important;
+      margin-bottom: calc(var(--ca-detail-section-gap) * -2.5) !important;
   }}
-  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child {{
-      margin-top: -0.2rem !important;
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row),
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-meta-row) {{
+      margin-top: calc(var(--ca-detail-section-gap) * -2) !important;
+  }}
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule),
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) {{
+      margin-top: calc(var(--ca-detail-section-gap) * -1.5) !important;
       line-height: 0 !important;
   }}
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-steps),
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-steps) {{
+      margin-top: var(--ca-detail-section-gap) !important;
+  }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child [data-testid="stHtml"],
-  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child iframe {{
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child iframe,
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) [data-testid="stHtml"],
+  .st-key-ca-detail-header [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) iframe {{
       margin: 0 !important;
       padding: 0 !important;
       display: block !important;
@@ -1650,11 +1667,14 @@ _GLOBAL_CSS = f"""
       margin-bottom: 0 !important;
       padding-bottom: 0 !important;
   }}
+  .st-key-ca-detail-header [data-testid="stHorizontalBlock"] {{
+      gap: var(--ca-detail-meta-item-gap) !important;
+  }}
 
-  /* Step list — breathing room below the orange divider. */
+  /* Step list — spacing below the orange divider (card sizes unchanged). */
   .st-key-ca-steps {{
       --ca-step-card-gap: 0.1px;
-      margin-top: 0.32rem !important;
+      margin-top: 0 !important;
   }}
 
   /* Inter-card spacing — cards sit in stElementContainer wrappers, not direct
@@ -1895,10 +1915,10 @@ _GLOBAL_CSS = f"""
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: 0.22rem !important;
+      gap: 0.16rem !important;
       width: 100% !important;
-      margin: 0.18rem 0 0 0 !important;
-      padding: 0.22rem 0 0 0 !important;
+      margin: 0.1rem 0 0 0 !important;
+      padding: 0.12rem 0 0 0 !important;
       border-top: 1px solid #eef0f2;
   }}
   [class*="st-key-step_links_"] > [data-testid="stElementContainer"] {{
