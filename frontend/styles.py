@@ -1346,12 +1346,29 @@ _GLOBAL_CSS = f"""
       width: auto !important;
       max-width: fit-content !important;
       overflow: visible !important;
+      pointer-events: none !important;
+  }}
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child .st-key-detail_abort,
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child .st-key-detail_abort *,
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child .st-key-detail_abort,
+  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child .st-key-detail_abort * {{
+      pointer-events: auto !important;
   }}
   .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child,
   .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child {{
       margin-left: auto !important;
       position: relative !important;
-      z-index: 10 !important;
+      z-index: 12 !important;
+      pointer-events: auto !important;
+  }}
+  .st-key-detail-meta-actions [data-testid="stElementContainer"],
+  .st-key-detail-meta-actions .stButton,
+  .st-key-detail-meta-actions .stButton button,
+  .st-key-detail-meta-actions [data-testid="stToggle"],
+  .st-key-detail-meta-actions [data-baseweb="switch"],
+  .st-key-detail-meta-actions label {{
+      position: relative !important;
+      z-index: 12 !important;
       pointer-events: auto !important;
   }}
   .st-key-ca-detail-title-row [data-testid="stElementContainer"] {{
@@ -1367,19 +1384,31 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-title-row [data-testid="stHtml"] iframe,
   .st-key-ca-detail-title-row .stHtml,
   .st-key-ca-detail-title-row .stHtml iframe {{
+      display: block !important;
       width: auto !important;
       max-width: fit-content !important;
       min-width: 0 !important;
-      height: auto !important;
-      display: block !important;
-      overflow: visible !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      background: transparent !important;
+      line-height: 0 !important;
+      min-height: var(--ca-detail-meta-height) !important;
+      max-height: var(--ca-detail-meta-height) !important;
+      height: var(--ca-detail-meta-height) !important;
+      overflow: hidden !important;
       pointer-events: none !important;
   }}
   .st-key-ca-detail-title-row [data-testid="stElementContainer"]:has([data-testid="stHtml"]) {{
       flex: 0 0 auto !important;
       width: fit-content !important;
-      max-width: none !important;
-      overflow: visible !important;
+      max-width: fit-content !important;
+      min-height: 0 !important;
+      max-height: var(--ca-detail-meta-height) !important;
+      height: var(--ca-detail-meta-height) !important;
+      line-height: 0 !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
   }}
   .st-key-detail-actions,
   .st-key-detail-actions [data-testid="stVerticalBlock"],
@@ -1495,7 +1524,7 @@ _GLOBAL_CSS = f"""
       margin: 0 0 0 auto !important;
       padding: 0 !important;
       position: relative !important;
-      z-index: 10 !important;
+      z-index: 12 !important;
       pointer-events: auto !important;
   }}
   .st-key-detail-meta-actions > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
@@ -1862,6 +1891,17 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       line-height: 0 !important;
       min-height: 0 !important;
+      pointer-events: none !important;
+  }}
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) [data-testid="stHtml"],
+  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) iframe {{
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 2px !important;
+      max-height: 2px !important;
+      height: 2px !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"],
   .st-key-ca-detail-header > [data-testid="stVerticalBlockBorderWrapper"] {{

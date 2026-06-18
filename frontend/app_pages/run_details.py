@@ -267,33 +267,39 @@ if run:
     auto_on = bool(st.session_state.get(refresh_key))
     poll_every = _RUN_DETAILS_REFRESH_SEC if auto_on else None
 
-    with st.container(key="ca-detail-header"):
-        @st.fragment(run_every=poll_every)
-        def _live_detail_panel() -> None:
-            polling = bool(st.session_state.get(refresh_key))
-            live_run = _load_run(run_id, run) if polling else run
-            if not live_run:
-                live_run = run
-            live_steps = _load_steps(run_id, steps) if polling else steps
-            can_abort, failed_step_id, _abort_help = _abort_state(live_steps, live_run)
+    def _live_run_and_steps() -> tuple[dict | None, list]:
+        polling = bool(st.session_state.get(refresh_key))
+        live_run = _load_run(run_id, run) if polling else run
+        if not live_run:
+            live_run = run
+        live_steps = _load_steps(run_id, steps) if polling else steps
+        return live_run, live_steps
 
-            with st.container(key="ca-detail-title-row"):
-                with st.container(key="ca-detail-left"):
-                    st.html(
-                        f"""
-                        <div class="ca-page-header ca-detail-page-header">
-                          <div class="ca-title">
-                            <div class="ca-detail-title-parts ca-detail-title-parts--toolbar">
-                              <span>Run #{safe_run_id}</span>
-                              <span class="ca-run-sep">&middot;</span>
-                              <span>{src}</span>
-                              <span class="arrow">&#8594;</span>
-                              <span>{tgt}</span>
-                              <span class="ca-run-sep">&middot;</span>
-                            </div>
-                          </div>
+    with st.container(key="ca-detail-header"):
+        with st.container(key="ca-detail-title-row"):
+            with st.container(key="ca-detail-left"):
+                st.html(
+                    f"""
+                    <div class="ca-page-header ca-detail-page-header">
+                      <div class="ca-title">
+                        <div class="ca-detail-title-parts ca-detail-title-parts--toolbar">
+                          <span>Run #{safe_run_id}</span>
+                          <span class="ca-run-sep">&middot;</span>
+                          <span>{src}</span>
+                          <span class="arrow">&#8594;</span>
+                          <span>{tgt}</span>
+                          <span class="ca-run-sep">&middot;</span>
                         </div>
-                        """
+                      </div>
+                    </div>
+                    """
+                )
+
+                @st.fragment(run_every=poll_every)
+                def _live_abort() -> None:
+                    live_run, live_steps = _live_run_and_steps()
+                    can_abort, failed_step_id, _abort_help = _abort_state(
+                        live_steps, live_run
                     )
                     with st.container(key="detail-actions"):
                         if st.button(
@@ -314,24 +320,30 @@ if run:
                                     st.rerun()
                                 except Exception as exc:
                                     show_error(exc, context="Could not abort run")
-                with st.container(key="detail-meta-actions"):
-                    if st.button(
-                        "View Log",
-                        key=f"view_run_log_{run_id}",
-                    ):
-                        open_run_log_dialog(clone_run_id=run_id)
-                    if st.button(
-                        "Info",
-                        key=f"detail_info_{run_id}",
-                    ):
-                        open_run_info_dialog(run_id)
-                    with st.container(key="detail-refresh"):
-                        st.toggle(
-                            "Auto refresh",
-                            key=refresh_key,
-                            label_visibility="visible",
-                        )
 
+                _live_abort()
+
+            with st.container(key="detail-meta-actions"):
+                if st.button(
+                    "View Log",
+                    key=f"view_run_log_{run_id}",
+                ):
+                    open_run_log_dialog(clone_run_id=run_id)
+                if st.button(
+                    "Info",
+                    key=f"detail_info_{run_id}",
+                ):
+                    open_run_info_dialog(run_id)
+                with st.container(key="detail-refresh"):
+                    st.toggle(
+                        "Auto refresh",
+                        key=refresh_key,
+                        label_visibility="visible",
+                    )
+
+        @st.fragment(run_every=poll_every)
+        def _live_steps_panel() -> None:
+            live_run, live_steps = _live_run_and_steps()
             st.html('<hr class="ca-title-rule" />')
 
             if live_steps:
@@ -340,7 +352,7 @@ if run:
             else:
                 st.caption("No steps found for this run.")
 
-        _live_detail_panel()
+        _live_steps_panel()
 else:
     render_title(f"Run #{run_id}")
     if not steps:
