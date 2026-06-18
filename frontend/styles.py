@@ -124,49 +124,6 @@ def _nav_action_button_css(
 """
 
 
-def _abort_action_icon_uri() -> str:
-    """Abort toolbar icon — prefers ``assets/abort.png``, falls back to SVG."""
-    for name in ("abort.png", "status-aborted.svg"):
-        if (REPO_ROOT / "assets" / name).is_file():
-            return _asset_data_uri(name)
-    return ""
-
-
-def _abort_action_button_css() -> str:
-    """Compact abort control using the assets icon (no text label)."""
-    base = _nav_action_button_css(
-        ".st-key-detail_abort",
-        accent=BRAND_RED,
-        accent_bg=BRAND_RED_BG,
-    )
-    uri = _abort_action_icon_uri()
-    if not uri:
-        return base
-    icon_size = "14px"
-    return (
-        base
-        + f"""
-  .st-key-detail_abort .stButton button,
-  .st-key-detail_abort .stDownloadButton button {{
-      min-width: calc(var(--ca-detail-title-height) + 0.1rem) !important;
-      width: calc(var(--ca-detail-title-height) + 0.1rem) !important;
-      padding: 0 !important;
-      justify-content: center !important;
-      background-image: url("{uri}") !important;
-      background-repeat: no-repeat !important;
-      background-position: center center !important;
-      background-size: {icon_size} {icon_size} !important;
-  }}
-  .st-key-detail_abort .stButton button [data-testid="stMarkdownContainer"],
-  .st-key-detail_abort .stButton button p,
-  .st-key-detail_abort .stButton button svg,
-  .st-key-detail_abort .stButton button [data-testid="stIconMaterial"] {{
-      display: none !important;
-  }}
-"""
-    )
-
-
 _GLOBAL_CSS = f"""
 <style>
   /* Lock the shell to light mode (not system/dark) even if config.toml is
@@ -1225,9 +1182,8 @@ _GLOBAL_CSS = f"""
   /* ---------- Run details header ---------- */
   .st-key-ca-detail-header {{
       --ca-detail-inline-gap: 0.28rem;
-      --ca-detail-toolbar-title-size: 0.9375rem;
-      --ca-detail-title-height: 1.12rem;
-      --ca-detail-meta-height: 1.12rem;
+      --ca-detail-title-height: 1.38rem;
+      --ca-detail-meta-height: 1.05rem;
   }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
   /* Title parts use the same gap as the middot-separated heading text. */
@@ -1268,108 +1224,21 @@ _GLOBAL_CSS = f"""
   .ca-detail-title-parts .arrow {{
       color: {BRAND_ORANGE};
   }}
-  .ca-detail-title-parts--toolbar {{
-      font-size: var(--ca-detail-toolbar-title-size) !important;
-      font-weight: 600 !important;
-      letter-spacing: -0.01em;
-  }}
-  /* Toolbar row: title + abort (left) · links + toggle (right). */
+  /* Title row: Run # heading then Abort — single inline flex row, no overlap. */
   .st-key-ca-detail-title-row,
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      display: flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-      flex-wrap: nowrap !important;
-      justify-content: space-between !important;
-      gap: 1rem !important;
-      width: 100% !important;
-      max-width: 100% !important;
-      min-height: var(--ca-detail-meta-height) !important;
-      height: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-ca-detail-left,
-  .st-key-ca-detail-left > [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-left > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+  .st-key-ca-detail-title-row [data-testid="stVerticalBlock"],
+  .st-key-ca-detail-title-row [data-testid="stVerticalBlockBorderWrapper"] {{
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
       gap: var(--ca-detail-inline-gap) !important;
-      flex: 0 0 auto !important;
-      min-width: 0 !important;
-      width: auto !important;
-      max-width: fit-content !important;
+      width: fit-content !important;
+      max-width: 100% !important;
+      min-height: 0 !important;
+      height: auto !important;
       margin: 0 !important;
       padding: 0 !important;
-      pointer-events: none !important;
-  }}
-  .st-key-ca-detail-left .st-key-detail_abort,
-  .st-key-ca-detail-left .st-key-detail_abort * {{
-      pointer-events: auto !important;
-  }}
-  .st-key-ca-detail-left [data-testid="stHtml"],
-  .st-key-ca-detail-left [data-testid="stHtml"] iframe,
-  .st-key-ca-detail-left .stHtml,
-  .st-key-ca-detail-left .stHtml iframe {{
-      width: auto !important;
-      max-width: fit-content !important;
-      pointer-events: none !important;
-  }}
-  .st-key-ca-detail-left > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  .st-key-ca-detail-left > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
-      flex: 0 0 auto !important;
-      width: auto !important;
-      min-width: 0 !important;
-      max-width: none !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-ca-detail-title-row .st-key-detail-meta-actions {{
-      flex: 0 0 auto !important;
-      margin-left: auto !important;
-  }}
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"] {{
-      display: flex !important;
-      align-items: center !important;
-      flex: 0 0 auto !important;
-      width: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child,
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {{
-      flex: 0 0 auto !important;
-      width: auto !important;
-      max-width: fit-content !important;
-      overflow: visible !important;
-      pointer-events: none !important;
-  }}
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child .st-key-detail_abort,
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child .st-key-detail_abort *,
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child .st-key-detail_abort,
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child .st-key-detail_abort * {{
-      pointer-events: auto !important;
-  }}
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child,
-  .st-key-ca-detail-title-row > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child {{
-      margin-left: auto !important;
-      position: relative !important;
-      z-index: 12 !important;
-      pointer-events: auto !important;
-  }}
-  .st-key-detail-meta-actions [data-testid="stElementContainer"],
-  .st-key-detail-meta-actions .stButton,
-  .st-key-detail-meta-actions .stButton button,
-  .st-key-detail-meta-actions [data-testid="stToggle"],
-  .st-key-detail-meta-actions [data-baseweb="switch"],
-  .st-key-detail-meta-actions label {{
-      position: relative !important;
-      z-index: 12 !important;
-      pointer-events: auto !important;
   }}
   .st-key-ca-detail-title-row [data-testid="stElementContainer"] {{
       flex: 0 0 auto !important;
@@ -1382,33 +1251,19 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca-detail-title-row [data-testid="stHtml"],
   .st-key-ca-detail-title-row [data-testid="stHtml"] iframe,
-  .st-key-ca-detail-title-row .stHtml,
-  .st-key-ca-detail-title-row .stHtml iframe {{
-      display: block !important;
+  .st-key-ca-detail-title-row .stHtml {{
       width: auto !important;
-      max-width: fit-content !important;
+      max-width: none !important;
       min-width: 0 !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      border: none !important;
-      background: transparent !important;
-      line-height: 0 !important;
-      min-height: var(--ca-detail-meta-height) !important;
-      max-height: var(--ca-detail-meta-height) !important;
-      height: var(--ca-detail-meta-height) !important;
-      overflow: hidden !important;
-      pointer-events: none !important;
+      height: auto !important;
+      display: block !important;
+      overflow: visible !important;
   }}
   .st-key-ca-detail-title-row [data-testid="stElementContainer"]:has([data-testid="stHtml"]) {{
       flex: 0 0 auto !important;
       width: fit-content !important;
-      max-width: fit-content !important;
-      min-height: 0 !important;
-      max-height: var(--ca-detail-meta-height) !important;
-      height: var(--ca-detail-meta-height) !important;
-      line-height: 0 !important;
-      overflow: hidden !important;
-      pointer-events: none !important;
+      max-width: none !important;
+      overflow: visible !important;
   }}
   .st-key-detail-actions,
   .st-key-detail-actions [data-testid="stVerticalBlock"],
@@ -1423,6 +1278,7 @@ _GLOBAL_CSS = f"""
       flex: 0 0 auto !important;
       flex-shrink: 0 !important;
       position: relative !important;
+      z-index: 4 !important;
   }}
   .st-key-detail-actions [data-testid="stElementContainer"] {{
       display: inline-flex !important;
@@ -1435,14 +1291,18 @@ _GLOBAL_CSS = f"""
   }}
   .st-key-ca-detail-title-row .st-key-detail_abort .stButton button,
   .st-key-ca-detail-title-row .st-key-detail_abort .stDownloadButton button {{
-      min-height: calc(var(--ca-detail-title-height) - 0.12rem) !important;
-      height: calc(var(--ca-detail-title-height) - 0.12rem) !important;
-      padding: 0 0.34rem !important;
-      gap: 0.2rem !important;
+      min-height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
+      height: calc(var(--ca-detail-title-height) - 0.2rem) !important;
+      padding: 0 0.42rem !important;
+      gap: 0.28rem !important;
       line-height: 1 !important;
-      font-size: calc(var(--ca-run-meta-size) * 1.05) !important;
+      font-size: calc(var(--ca-nav-font-size) * 0.92) !important;
   }}
-  {_abort_action_button_css()}
+  {_nav_action_button_css(
+      ".st-key-detail_abort",
+      accent=BRAND_RED,
+      accent_bg=BRAND_RED_BG,
+  )}
   /* Meta row: strict single horizontal line. */
   .st-key-ca-detail-meta-row {{
       width: 100%;
@@ -1496,108 +1356,36 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
   }}
-  .st-key-ca-detail-meta-row:has(.st-key-detail-meta-actions) {{
-      display: flex !important;
-      justify-content: flex-end !important;
-      width: 100% !important;
-  }}
-  .st-key-ca-detail-meta-row:has(.st-key-detail-meta-actions) > [data-testid="stVerticalBlock"],
-  .st-key-ca-detail-meta-row:has(.st-key-detail-meta-actions) > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      display: flex !important;
-      flex-direction: row !important;
-      justify-content: flex-end !important;
-      width: 100% !important;
-      margin: 0 !important;
+  .st-key-detail-meta-actions,
+  .st-key-detail-meta-actions [data-testid="stVerticalBlock"],
+  .st-key-detail-meta-actions [data-testid="stVerticalBlockBorderWrapper"] {{
+      width: auto !important;
+      margin: 0 0 0 auto !important;
       padding: 0 !important;
   }}
-  .st-key-detail-meta-actions,
-  .st-key-detail-meta-actions > [data-testid="stVerticalBlock"],
-  .st-key-detail-meta-actions > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
+  .st-key-detail-meta-actions [data-testid="stHorizontalBlock"] {{
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
       justify-content: flex-end !important;
       flex-wrap: nowrap !important;
-      gap: 1rem !important;
       width: auto !important;
-      max-width: 100% !important;
-      margin: 0 0 0 auto !important;
-      padding: 0 !important;
-      position: relative !important;
-      z-index: 12 !important;
-      pointer-events: auto !important;
+      margin-left: auto !important;
+      gap: 0.75rem !important;
   }}
-  .st-key-detail-meta-actions > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  .st-key-detail-meta-actions > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
-  .st-key-detail-meta-actions .st-key-detail-refresh {{
+  .st-key-detail-meta-actions [data-testid="column"] {{
       flex: 0 0 auto !important;
-      flex-shrink: 0 !important;
       width: auto !important;
-      min-width: max-content !important;
-      max-width: none !important;
-      margin: 0 !important;
-      padding: 0 !important;
+      min-width: 0 !important;
+      justify-content: flex-end !important;
+      align-items: center !important;
   }}
-  .st-key-detail-meta-actions [data-testid="stElementContainer"][class*="st-key-view_run_log_"],
-  .st-key-detail-meta-actions [data-testid="stElementContainer"][class*="st-key-detail_info_"] {{
-      flex: 0 0 auto !important;
-      flex-shrink: 0 !important;
-      width: auto !important;
-      min-width: max-content !important;
-      max-width: none !important;
-      overflow: visible !important;
+  .st-key-detail-meta-actions [data-testid="column"]:first-child {{
+      margin-right: 0.15rem !important;
   }}
-  [class*="st-key-view_run_log_"],
-  [class*="st-key-detail_info_"] {{
-      width: auto !important;
-      min-width: max-content !important;
-      max-width: none !important;
-      flex: 0 0 auto !important;
-      flex-shrink: 0 !important;
-  }}
-  [class*="st-key-view_run_log_"] .stButton,
-  [class*="st-key-detail_info_"] .stButton {{
-      width: auto !important;
-      min-width: max-content !important;
-      max-width: none !important;
-  }}
-  [class*="st-key-view_run_log_"] .stButton button,
-  [class*="st-key-detail_info_"] .stButton button {{
-      cursor: pointer !important;
-      pointer-events: auto !important;
-  }}
-  [class*="st-key-view_run_log_"] .stButton,
-  [class*="st-key-view_run_log_"] .stButton button,
-  [class*="st-key-view_run_log_"] .stButton button [data-testid="stMarkdownContainer"],
-  [class*="st-key-view_run_log_"] .stButton button p,
-  [class*="st-key-detail_info_"] .stButton,
-  [class*="st-key-detail_info_"] .stButton button,
-  [class*="st-key-detail_info_"] .stButton button [data-testid="stMarkdownContainer"],
-  [class*="st-key-detail_info_"] .stButton button p {{
-      width: auto !important;
-      min-width: max-content !important;
-      max-width: none !important;
-      min-height: 0 !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      color: {BRAND_ORANGE} !important;
-      font-size: var(--ca-run-meta-size) !important;
-      font-weight: 600 !important;
-      line-height: 1.2 !important;
-      white-space: nowrap !important;
-      text-decoration: none !important;
-  }}
-  [class*="st-key-view_run_log_"] .stButton button:hover,
-  [class*="st-key-view_run_log_"] .stButton button:hover [data-testid="stMarkdownContainer"],
-  [class*="st-key-view_run_log_"] .stButton button:hover p,
-  [class*="st-key-detail_info_"] .stButton button:hover,
-  [class*="st-key-detail_info_"] .stButton button:hover [data-testid="stMarkdownContainer"],
-  [class*="st-key-detail_info_"] .stButton button:hover p {{
-      text-decoration: underline !important;
-      color: {BRAND_ORANGE} !important;
+  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stElementContainer"],
+  .st-key-detail-meta-actions [data-testid="column"]:first-child [data-testid="stVerticalBlock"] {{
+      justify-content: flex-end !important;
   }}
   .st-key-ca-detail-meta-row .st-key-detail-refresh,
   .st-key-ca-detail-meta-row .st-key-detail-download-log {{
@@ -1658,28 +1446,17 @@ _GLOBAL_CSS = f"""
       text-decoration: underline !important;
       color: {BRAND_ORANGE} !important;
   }}
-  .st-key-detail-refresh > [data-testid="stVerticalBlock"],
-  .st-key-detail-refresh > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
-      display: flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-      gap: 0.4rem !important;
-      width: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }}
   .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stVerticalBlock"],
   .st-key-ca-detail-meta-row .st-key-detail-refresh [data-testid="stElementContainer"] {{
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
-      justify-content: flex-start !important;
+      justify-content: flex-end !important;
       width: auto !important;
       margin: 0 !important;
-      padding: 0 !important;
-      gap: 0.4rem !important;
+      gap: 0.35rem !important;
       min-height: var(--ca-detail-meta-height) !important;
-      height: auto !important;
+      height: var(--ca-detail-meta-height) !important;
   }}
   .st-key-detail-refresh [data-testid="stToggle"],
   .st-key-detail-refresh [data-testid="stCheckbox"] {{
@@ -1885,24 +1662,6 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       display: block;
   }}
-  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule),
-  .st-key-ca-detail-header > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) {{
-      margin: 0 !important;
-      padding: 0 !important;
-      line-height: 0 !important;
-      min-height: 0 !important;
-      pointer-events: none !important;
-  }}
-  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) [data-testid="stHtml"],
-  .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.ca-title-rule) iframe {{
-      margin: 0 !important;
-      padding: 0 !important;
-      min-height: 2px !important;
-      max-height: 2px !important;
-      height: 2px !important;
-      overflow: hidden !important;
-      pointer-events: none !important;
-  }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"],
   .st-key-ca-detail-header > [data-testid="stVerticalBlockBorderWrapper"] {{
       gap: 0 !important;
@@ -1912,7 +1671,7 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
   }}
   .st-key-ca-detail-header .st-key-ca-detail-title-row {{
-      margin-bottom: 0 !important;
+      margin-bottom: -0.1rem !important;
   }}
   .st-key-ca-detail-header > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:last-child {{
       margin-top: -0.2rem !important;
@@ -2448,18 +2207,6 @@ _GLOBAL_CSS = f"""
   .ca-step-dialog-body .ca-badge {{
       font-size: calc(var(--ca-caption-size) * 0.82);
       padding: 0.03rem 0.32rem;
-  }}
-  .ca-detail-meta.ca-detail-meta--dialog {{
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.22rem;
-      margin: 0.15rem 0 0 0;
-      font-size: var(--ca-run-meta-size);
-      color: #7a8086;
-      font-style: italic;
-      line-height: 1.4;
   }}
   .ca-step-dialog-fields {{
       display: grid;
@@ -3301,32 +3048,6 @@ def step_attempts_table_html(attempts: list[dict]) -> str:
         "</tr></thead>"
         f"<tbody>{''.join(rows)}</tbody>"
         "</table></div>"
-    )
-
-
-def run_detail_info_dialog_html(
-    *,
-    user: str,
-    start_date,
-    last_update,
-    status: str,
-) -> str:
-    """Run info dialog body — same meta line as the former inline run header."""
-    return (
-        f'<div class="ca-step-dialog-body">'
-        f'<div class="ca-step-dialog-title">Run info</div>'
-        f'<div class="ca-detail-meta ca-detail-meta--dialog">'
-        f'<span class="ca-run-metaline">Triggered by <span class="ca-trigger-user">{user}</span></span>'
-        f'<span class="ca-detail-sep">&middot;</span>'
-        f'<span class="ca-run-metaline"><span class="mi mi-start">&#9654;</span> Started {started_html(start_date)}</span>'
-        f'<span class="ca-detail-sep">&middot;</span>'
-        f'<span class="ca-run-metaline"><span class="mi mi-upd">&#8635;</span> {relative_update_html(last_update)}</span>'
-        f'<span class="ca-detail-sep">&middot;</span>'
-        f'<span class="ca-run-metaline"><span class="mi mi-dur">&#9201;</span> {fmt_duration(start_date, last_update)}</span>'
-        f'<span class="ca-detail-sep">&middot;</span>'
-        f"{status_badge_html(status)}"
-        f"</div>"
-        f"</div>"
     )
 
 
