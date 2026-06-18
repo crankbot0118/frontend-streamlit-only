@@ -1183,8 +1183,7 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-header {{
       --ca-detail-inline-gap: 0.28rem;
       --ca-detail-section-v-gap: 0.05rem;
-      --ca-detail-toolbar-title-size: 1.125rem;
-      --ca-detail-title-height: 1.15rem;
+      --ca-detail-title-height: 1.38rem;
       --ca-detail-meta-height: 1.05rem;
   }}
   .ca-run-sep {{ color: #c2c7cc; font-weight: 400; }}
@@ -1195,7 +1194,7 @@ _GLOBAL_CSS = f"""
       gap: var(--ca-detail-inline-gap);
       margin: 0;
       padding: 0;
-      font-size: var(--ca-detail-toolbar-title-size, var(--ca-title-size));
+      font-size: var(--ca-title-size);
       font-weight: 700;
       letter-spacing: -0.02em;
       color: {BRAND_INK};
@@ -1256,25 +1255,17 @@ _GLOBAL_CSS = f"""
   .st-key-ca-detail-title-row .stHtml,
   .st-key-ca-detail-title-row .stHtml iframe {{
       width: auto !important;
-      max-width: fit-content !important;
+      max-width: none !important;
       min-width: 0 !important;
-      min-height: var(--ca-detail-title-height) !important;
-      max-height: var(--ca-detail-title-height) !important;
-      height: var(--ca-detail-title-height) !important;
+      height: auto !important;
       display: block !important;
-      overflow: hidden !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      border: none !important;
-      line-height: 0 !important;
-      pointer-events: none !important;
+      overflow: visible !important;
   }}
   .st-key-ca-detail-title-row [data-testid="stElementContainer"]:has([data-testid="stHtml"]) {{
       flex: 0 0 auto !important;
       width: fit-content !important;
-      max-width: fit-content !important;
-      overflow: hidden !important;
-      pointer-events: none !important;
+      max-width: none !important;
+      overflow: visible !important;
   }}
   .st-key-ca-detail-meta-row [data-testid="column"]:last-child,
   .st-key-detail-meta-actions,
@@ -3555,7 +3546,7 @@ def run_detail_title_html(*, run_id: str, src: str, tgt: str) -> str:
     ``st.html`` renders inside an iframe, so styles must be embedded here —
     global CSS from ``apply_global_styles()`` does not apply inside the iframe.
     """
-    title_size = "1.125rem"
+    title_size = "1.75rem"
     return f"""
     <style>
       .ca-detail-page-header,
