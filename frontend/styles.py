@@ -127,6 +127,10 @@ def _nav_action_button_css(
 
 _GLOBAL_CSS = f"""
 <style>
+  html {{
+      zoom: 0.8;
+  }}
+
   /* Lock the shell to light mode (not system/dark) even if config.toml is
      not picked up from the repo root. */
   :root,
