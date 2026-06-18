@@ -1701,6 +1701,7 @@ _GLOBAL_CSS = f"""
   /* Step list — vertical space below the orange divider only. */
   .st-key-ca-steps {{
       --ca-step-card-gap: 0.1px;
+      --ca-step-card-height: 2.5rem;
       margin-top: 0 !important;
   }}
 
@@ -1718,6 +1719,11 @@ _GLOBAL_CSS = f"""
   .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
       margin: 0 !important;
       padding: 0 !important;
+      height: var(--ca-step-card-height) !important;
+      min-height: var(--ca-step-card-height) !important;
+      max-height: var(--ca-step-card-height) !important;
+      display: flex !important;
+      align-items: center !important;
   }}
   .st-key-ca-steps [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"])
       + [data-testid="stElementContainer"]:has([class*="st-key-stepcard_"]) {{
@@ -1738,6 +1744,7 @@ _GLOBAL_CSS = f"""
   [class*="st-key-stepcard_"] {{
       --ca-step-card-height: 2.5rem;
       --ca-step-arrow-size: 1.25rem;
+      --ca-step-row-height: 1.5rem;
       position: relative;
       border: 1px solid #e3e6e8;
       border-radius: 10px;
@@ -1748,6 +1755,8 @@ _GLOBAL_CSS = f"""
       max-height: var(--ca-step-card-height) !important;
       box-sizing: border-box;
       overflow: visible;
+      display: flex !important;
+      align-items: center !important;
       transition:
           background 0.4s ease,
           border-color 0.4s ease,
@@ -1783,6 +1792,7 @@ _GLOBAL_CSS = f"""
       border: 0;
   }}
 
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
       gap: 0 !important;
@@ -1790,8 +1800,24 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       position: relative !important;
       min-height: 0 !important;
+      width: 100% !important;
       height: 100% !important;
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
       justify-content: center !important;
+      align-items: stretch !important;
+  }}
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stHorizontalBlock"]),
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stHorizontalBlock"]) {{
+      display: flex !important;
+      align-items: center !important;
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      flex: 1 1 auto !important;
   }}
   [class*="st-key-stepcard_"] [data-testid="stHorizontalBlock"] {{
       display: flex !important;
@@ -1806,19 +1832,21 @@ _GLOBAL_CSS = f"""
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] {{
-      height: 100% !important;
-      min-height: 0 !important;
-      max-height: var(--ca-step-card-height) !important;
+      width: 100% !important;
+      height: var(--ca-step-row-height) !important;
+      min-height: var(--ca-step-row-height) !important;
+      max-height: var(--ca-step-row-height) !important;
       align-items: center !important;
+      align-self: center !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"] [data-testid="stElementContainer"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"] [data-testid="stElementContainer"] {{
       display: flex !important;
       align-items: center !important;
       align-self: center !important;
-      height: var(--ca-step-card-height) !important;
-      min-height: 0 !important;
-      max-height: var(--ca-step-card-height) !important;
+      height: var(--ca-step-row-height) !important;
+      min-height: var(--ca-step-row-height) !important;
+      max-height: var(--ca-step-row-height) !important;
       margin: 0 !important;
       padding: 0 !important;
   }}
@@ -1860,7 +1888,8 @@ _GLOBAL_CSS = f"""
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] {{
       width: auto !important;
-      align-items: flex-end !important;
+      align-items: center !important;
+      justify-content: center !important;
       margin-left: 0 !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stVerticalBlock"],
@@ -1882,6 +1911,18 @@ _GLOBAL_CSS = f"""
       margin: 0 !important;
       padding: 0 !important;
   }}
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"],
+  [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] {{
+      display: flex !important;
+      align-items: center !important;
+      height: var(--ca-step-row-height) !important;
+      min-height: var(--ca-step-row-height) !important;
+      max-height: var(--ca-step-row-height) !important;
+      margin: 0 !important;
+      padding: 0 !important;
+  }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"] iframe,
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) [data-testid="stHtml"] iframe {{
       display: block !important;
@@ -1890,9 +1931,9 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       border: none !important;
       background: transparent !important;
-      height: 1.25rem !important;
-      min-height: 1.25rem !important;
-      max-height: 1.25rem !important;
+      height: var(--ca-step-row-height) !important;
+      min-height: var(--ca-step-row-height) !important;
+      max-height: var(--ca-step-row-height) !important;
       overflow: visible !important;
   }}
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="column"]:first-child [data-testid="stHtml"] iframe,
@@ -1903,9 +1944,9 @@ _GLOBAL_CSS = f"""
       padding: 0 !important;
       border: none !important;
       background: transparent !important;
-      height: 1.25rem !important;
-      min-height: 1.25rem !important;
-      max-height: 1.25rem !important;
+      height: var(--ca-step-row-height) !important;
+      min-height: var(--ca-step-row-height) !important;
+      max-height: var(--ca-step-row-height) !important;
       overflow: visible !important;
   }}
 
@@ -1916,6 +1957,8 @@ _GLOBAL_CSS = f"""
       flex: 1;
       min-width: 0;
       width: 100%;
+      height: 1.5rem;
+      line-height: 1;
   }}
   .ca-step-name {{
       font-size: 14px;
@@ -1942,7 +1985,10 @@ _GLOBAL_CSS = f"""
       font-weight: 600;
       color: #6b7177;
       white-space: nowrap;
-      line-height: 1.25;
+      line-height: 1.5rem;
+      height: 1.5rem;
+      display: inline-flex;
+      align-items: center;
   }}
   .ca-step-detail-panel {{
       display: grid;
