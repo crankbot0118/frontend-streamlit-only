@@ -31,6 +31,73 @@ from ui_errors import show_error
 
 _RUN_DETAILS_REFRESH_SEC = frontend().run_details_refresh_sec
 _TERMINAL_STATUSES = frozenset({"COMPLETED", "FAILED", "ABORTED", "SKIPPED"})
+# Single knob for all run-details vertical gaps (title → divider → cards → action rows).
+_RUN_DETAILS_V_GAP = "0.04rem"
+
+
+def _apply_run_details_vertical_spacing() -> None:
+    """Compact vertical spacing scoped to this page's container keys."""
+    gap = _RUN_DETAILS_V_GAP
+    st.markdown(
+        f"""
+        <style>
+          /* Run details page — vertical spacing only. */
+          .st-key-ca-steps,
+          .st-key-ca-steps[data-testid="stVerticalBlockBorderWrapper"] {{
+              --ca-run-details-v-gap: {gap};
+              --ca-step-list-gap: {gap};
+              margin-top: 0 !important;
+              margin-bottom: 0 !important;
+          }}
+          [data-testid="stFragment"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-steps),
+          [data-testid="stFragment"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-steps),
+          [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-steps),
+          [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stFragment"] .st-key-ca-steps) {{
+              margin-top: 0 !important;
+              margin-bottom: 0 !important;
+              padding-top: 0 !important;
+              padding-bottom: 0 !important;
+          }}
+          .st-key-ca-steps > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-title-row),
+          .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-title-row),
+          .st-key-ca-steps[data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-title-row) {{
+              margin-top: 0 !important;
+              margin-bottom: 0 !important;
+              padding-top: 0 !important;
+              padding-bottom: 0 !important;
+          }}
+          .st-key-ca-steps .st-key-ca-detail-title-row,
+          .st-key-ca-steps .st-key-ca-detail-title-row [data-testid="stVerticalBlock"],
+          .st-key-ca-steps .st-key-ca-detail-title-row [data-testid="stVerticalBlockBorderWrapper"] {{
+              margin-top: 0 !important;
+              margin-bottom: 0 !important;
+              padding-top: 0 !important;
+              padding-bottom: 0 !important;
+          }}
+          .st-key-ca-steps > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stCaptionContainer"]),
+          .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stCaptionContainer"]) {{
+              margin-top: {gap} !important;
+              margin-bottom: 0 !important;
+              padding-top: 0 !important;
+              padding-bottom: 0 !important;
+          }}
+          [class*="st-key-step_links_"] {{
+              margin-top: {gap} !important;
+              padding-top: {gap} !important;
+              margin-bottom: 0 !important;
+              padding-bottom: 0 !important;
+          }}
+          [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([class*="st-key-step_links_"]),
+          [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([class*="st-key-step_links_"]) {{
+              margin-top: 0 !important;
+              margin-bottom: 0 !important;
+              padding-top: 0 !important;
+              padding-bottom: 0 !important;
+          }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def _toggle_step(open_key: str) -> None:
@@ -153,7 +220,6 @@ if run:
             with st.container(key=f"stepcard_{i}"):
                 left_col, more_col, arrow_col = st.columns(
                     [1, 0.11, 0.04],
-                    gap="small",
                     vertical_alignment="center",
                 )
                 with left_col:
@@ -224,6 +290,7 @@ if run:
                             except Exception as exc:
                                 show_error(exc, context="Could not skip step")
 
+    _apply_run_details_vertical_spacing()
     poll_every = _poll_interval(run.get("status", ""))
 
     @st.fragment(run_every=poll_every)
@@ -236,7 +303,8 @@ if run:
             _maybe_rerun_on_terminal(run_id, status)
         live_steps = _load_steps(run_id, steps) if poll_every else steps
 
-        with st.container(key="ca-detail-header"):
+        # Single vertical stack: title → divider → step cards (no extra header wrapper).
+        with st.container(key="ca-steps"):
             with st.container(key="ca-detail-title-row"):
                 st.html(
                     run_detail_title_html(
@@ -246,8 +314,6 @@ if run:
                         status=status,
                     )
                 )
-
-        with st.container(key="ca-steps"):
             st.html('<hr class="ca-title-rule" />')
             if live_steps:
                 _render_step_cards(live_steps, live_run)

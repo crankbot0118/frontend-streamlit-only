@@ -1842,13 +1842,18 @@ _GLOBAL_CSS = f"""
       padding-bottom: 0 !important;
   }}
 
-  /* Step list — one gap for divider → first card and between every card.
-     Spacing uses adjacent margin-top (not flex gap) because Streamlit wraps
-     each row in stElementContainer with default widget margins. */
+  /* Step list — title, divider, and step cards share one vertical stack. */
   .st-key-ca-steps,
   .st-key-ca-steps[data-testid="stVerticalBlockBorderWrapper"] {{
       --ca-step-list-gap: var(--ca-run-details-v-gap, 0.05rem);
       margin-top: 0 !important;
+      margin-bottom: 0 !important;
+  }}
+  .st-key-ca-steps > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-title-row),
+  .st-key-ca-steps > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-title-row),
+  .st-key-ca-steps[data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-ca-detail-title-row) {{
+      margin: 0 !important;
+      padding: 0 !important;
   }}
 
   /* List column — every Streamlit wrapper shape for keyed containers. */
