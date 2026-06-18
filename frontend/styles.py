@@ -1745,11 +1745,6 @@ _GLOBAL_CSS = f"""
       min-height: 32px;
       box-sizing: border-box;
   }}
-  [class*="st-key-stepcard_"]:has([data-ca-running-step]) {{
-      border-color: rgba(232, 117, 17, 0.45);
-      background: linear-gradient(90deg, rgba(232, 117, 17, 0.08) 0%, #ffffff 42%);
-      box-shadow: 0 0 0 1px rgba(232, 117, 17, 0.12);
-  }}
 
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlock"],
   [class*="st-key-stepcard_"] > [data-testid="stVerticalBlockBorderWrapper"] > [data-testid="stVerticalBlock"] {{
@@ -3024,55 +3019,6 @@ def _esc(text) -> str:
     if text is None or text == "":
         return html.escape("—", quote=True)
     return html.escape(str(text), quote=True)
-
-
-def running_step_index(steps: list[dict]) -> int | None:
-    """Return the list index of the first step in RUNNING state, if any."""
-    for index, step in enumerate(steps):
-        if (step.get("status") or "").upper() == "RUNNING":
-            return index
-    return None
-
-
-def running_step_scroll_html(*, run_id: int, step_index: int) -> str:
-    """Smooth-scroll the running step card to the vertical center of the viewport."""
-    safe_index = int(step_index)
-    return f"""
-    <script>
-    (function () {{
-      var stepIndex = {safe_index};
-      var doc = (window.parent && window.parent.document) ? window.parent.document : document;
-      function findRunningCard() {{
-        var marker = doc.querySelector('[data-ca-running-step="' + stepIndex + '"]');
-        if (marker) {{
-          return marker.closest('[class*="st-key-stepcard_"]');
-        }}
-        return doc.querySelector(".st-key-stepcard_" + stepIndex);
-      }}
-      function scrollRunningToCenter() {{
-        var card = findRunningCard();
-        if (!card) return false;
-        card.scrollIntoView({{ behavior: "smooth", block: "center", inline: "nearest" }});
-        return true;
-      }}
-      function run() {{
-        if (scrollRunningToCenter()) return;
-        window.setTimeout(scrollRunningToCenter, 140);
-      }}
-      requestAnimationFrame(function () {{
-        requestAnimationFrame(run);
-      }});
-    }})();
-    </script>
-    """
-
-
-def emit_running_step_scroll(*, run_id: int, step_index: int) -> None:
-    """Inject scroll JS into the main document (not an iframe)."""
-    st.markdown(
-        running_step_scroll_html(run_id=run_id, step_index=step_index),
-        unsafe_allow_html=True,
-    )
 
 
 def status_badge_html(status: str) -> str:

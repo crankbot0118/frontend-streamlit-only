@@ -24,8 +24,6 @@ from styles import (
     relative_update_html,
     render_title,
     run_detail_title_html,
-    running_step_index,
-    emit_running_step_scroll,
     started_html,
     status_badge_html,
     status_image_html,
@@ -72,18 +70,6 @@ def _step_action_state(step: dict, live_run: dict | None) -> tuple[bool, str]:
     if step_status != "FAILED":
         return False, "Only available when this step is FAILED"
     return False, ""
-
-
-def _scroll_to_running_step(*, run_id: int, step_index: int | None) -> None:
-    """Scroll when the active running step changes (follows execution)."""
-    scroll_key = f"run_scroll_target_{run_id}"
-    if step_index is None:
-        st.session_state.pop(scroll_key, None)
-        return
-    if st.session_state.get(scroll_key) == step_index:
-        return
-    st.session_state[scroll_key] = step_index
-    emit_running_step_scroll(run_id=run_id, step_index=step_index)
 
 run_id = st.session_state.get("selected_run_id")
 
@@ -158,8 +144,6 @@ if run:
             open_key = f"step_open_{run_id}_{i}"
             is_open = st.session_state.get(open_key, False)
             can_act, act_help = _step_action_state(step, live_run)
-            is_running = (step.get("status") or "").upper() == "RUNNING"
-            running_attr = f' data-ca-running-step="{i}"' if is_running else ""
             with st.container(key=f"stepcard_{i}"):
                 left_col, more_col, arrow_col = st.columns(
                     [1, 0.11, 0.04],
@@ -167,15 +151,14 @@ if run:
                     vertical_alignment="center",
                 )
                 with left_col:
-                    st.markdown(
-                        f'<div class="ca-step-left"{running_attr} '
+                    st.html(
+                        f'<div class="ca-step-left" '
                         f'style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;width:100%;">'
                         f'{status_image_html(step.get("status", ""), size=18)}'
                         f'<span class="ca-step-name" '
                         f'style="font-size:14px;font-weight:600;line-height:1.25;">'
                         f"{safe_name}</span>"
-                        f"</div>",
-                        unsafe_allow_html=True,
+                        f"</div>"
                     )
                 with more_col:
                     st.html('<span class="ca-step-more">More actions</span>')
@@ -311,10 +294,6 @@ if run:
             if live_steps:
                 with st.container(key="ca-steps"):
                     _render_step_cards(live_steps, live_run)
-                _scroll_to_running_step(
-                    run_id=run_id,
-                    step_index=running_step_index(live_steps),
-                )
             else:
                 st.caption("No steps found for this run.")
 
