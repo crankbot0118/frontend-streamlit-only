@@ -1,6 +1,6 @@
 """FastAPI backend for the Clone Automation dashboard.
 
-Configuration is loaded from the repo-root ``.env`` (see ``.env.example``).
+Configuration is loaded from the repo-root ``.env``.
 """
 
 import os

@@ -1,8 +1,7 @@
 """Central configuration for frontend and backend.
 
-All values are read from the repo-root ``.env`` file. Copy ``.env.example`` to
-``.env`` and adjust for your environment. Defaults live in ``.env.example`` only
-— application code does not hardcode URLs, paths, or secrets.
+All values are read from the repo-root ``.env`` file. Application code does not
+hardcode URLs, paths, or secrets.
 """
 
 from __future__ import annotations
@@ -19,7 +18,6 @@ from config.errors import ConfigurationError
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 ENV_FILE = REPO_ROOT / ".env"
-ENV_EXAMPLE = REPO_ROOT / ".env.example"
 _env_loaded = False
 
 
@@ -29,12 +27,10 @@ def load_env(*, require_file: bool = True) -> None:
     if _env_loaded:
         return
     if require_file and not ENV_FILE.is_file():
-        hint = (
-            f"Copy {ENV_EXAMPLE} to {ENV_FILE} and set your values."
-            if ENV_EXAMPLE.is_file()
-            else f"Create {ENV_FILE} with the required environment variables."
+        raise ConfigurationError(
+            f"Missing configuration file: {ENV_FILE}. "
+            f"Create it with the required environment variables."
         )
-        raise ConfigurationError(f"Missing configuration file: {ENV_FILE}. {hint}")
     load_dotenv(ENV_FILE, override=False)
     _env_loaded = True
 
@@ -45,7 +41,7 @@ def _require(name: str) -> str:
     if not value:
         raise ConfigurationError(
             f"Missing required environment variable {name!r}. "
-            f"Set it in {ENV_FILE} (see {ENV_EXAMPLE})."
+            f"Set it in {ENV_FILE}."
         )
     return value
 

@@ -3,7 +3,6 @@
 from config.settings import (
     REPO_ROOT,
     ENV_FILE,
-    ENV_EXAMPLE,
     load_env,
     logging_config,
     database,
@@ -17,7 +16,6 @@ from config.logging import setup_logging
 __all__ = [
     "REPO_ROOT",
     "ENV_FILE",
-    "ENV_EXAMPLE",
     "load_env",
     "logging_config",
     "database",

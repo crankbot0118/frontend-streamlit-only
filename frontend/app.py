@@ -16,14 +16,12 @@ from config.logging import setup_logging
 log = setup_logging("frontend")
 
 try:
-    from config.settings import ENV_EXAMPLE, ENV_FILE, load_env
+    from config.settings import load_env
 
     load_env()
 except ConfigurationError as exc:
     st.set_page_config(page_title="Clone automation dashboard", layout="wide")
     st.error(str(exc))
-    if ENV_EXAMPLE.is_file():
-        st.info(f"Copy `{ENV_EXAMPLE.name}` to `{ENV_FILE.name}` in the repo root, then restart.")
     st.stop()
 
 if hasattr(st, "set_theme"):
