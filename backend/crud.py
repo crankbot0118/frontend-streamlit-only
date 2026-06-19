@@ -1,17 +1,9 @@
-"""Read helpers and write actions for clone run data."""
-
 import sys
 from datetime import date
 from pathlib import Path
-
-_ROOT = Path(__file__).resolve().parent.parent
-if str(_ROOT) not in sys.path:
-    sys.path.insert(0, str(_ROOT))
-
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-
 from config.settings import api_security, is_protected_target_env
 from step_queries import (
     GET_ATTEMPTS_FOR_FUNCTION,
@@ -25,9 +17,12 @@ from step_queries import (
     fetch_step_failure_summary,
 )
 
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
 _PROTECTED_TARGET = api_security().protected_target_env_name
 
-# ``locked`` is derived: target has an active row in clone_run_status with env_lock.
 _ENV_LOCKED_EXPR = """
     EXISTS (
         SELECT 1
