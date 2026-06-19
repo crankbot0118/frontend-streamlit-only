@@ -27,7 +27,7 @@ BRAND_RED = "#cf222e"
 BRAND_RED_BG = "rgba(207, 34, 46, 0.12)"
 SHELL_MAIN_BG = "#faf7f2"
 SHELL_SIDEBAR_BG = "#ffffff"
-UI_SCALE = 1
+UI_SCALE = 0.9
 STATUS_ICON_PX = round(18 * UI_SCALE)
 SIDEBAR_WIDTH_PX = round(200 * UI_SCALE)
 
