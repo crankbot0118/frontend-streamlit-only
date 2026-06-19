@@ -18,6 +18,7 @@ class CloneRunOut(BaseModel):
     source_name: str
     target_name: str
     status: str
+    env_lock: bool = False
     start_date: datetime | None = None
     last_update: datetime | None = None
     log_location: str | None = None
@@ -61,7 +62,10 @@ class UserOption(BaseModel):
 
 
 class EnvironmentOption(BaseModel):
-    """Environment that can be selected as a clone source or target."""
+    """Environment that can be selected as a clone source or target.
+
+    ``locked`` is derived: another run holds ``env_lock`` on this target.
+    """
 
     env_id: int
     env_name: str

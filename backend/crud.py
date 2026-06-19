@@ -27,23 +27,31 @@ from step_queries import (
 
 _PROTECTED_TARGET = api_security().protected_target_env_name
 
-# Latest ``clone_run_status`` row per ``clone_run_id`` (append-only status history).
-_LATEST_RUNS_CTE = """
-    SELECT DISTINCT ON (clone_run_id)
-        clone_run_id,
-        client_id,
-        user_id,
-        user_name,
-        source_env_id,
-        target_env_id,
-        source_name,
-        target_name,
-        status,
-        start_date,
-        last_update,
-        log_location
-    FROM clone_run_status
-    ORDER BY clone_run_id, last_update DESC NULLS LAST, clone_run_id DESC
+# ``locked`` is derived: target has an active row in clone_run_status with env_lock.
+_ENV_LOCKED_EXPR = """
+    EXISTS (
+        SELECT 1
+        FROM clone_run_status crs
+        WHERE crs.target_env_id = e.env_id
+          AND crs.env_lock = TRUE
+    )
+"""
+
+_RUN_COLUMNS = """
+    cr.clone_run_id,
+    cr.client_id,
+    c.client_name,
+    cr.user_id,
+    cr.user_name,
+    cr.source_env_id,
+    cr.target_env_id,
+    cr.source_name,
+    cr.target_name,
+    cr.status,
+    cr.env_lock,
+    cr.start_date,
+    cr.last_update,
+    cr.log_location
 """
 
 
@@ -51,9 +59,9 @@ def get_run_filter_options(db: Session) -> dict[str, list[str]]:
     """Distinct client, target, and user values for Run History filter dropdowns."""
     clients = db.execute(
         text(
-            f"""
+            """
             SELECT DISTINCT c.client_name
-            FROM ({_LATEST_RUNS_CTE}) cr
+            FROM clone_run_status cr
             JOIN clients c ON c.client_id = cr.client_id
             WHERE c.client_name IS NOT NULL
             ORDER BY c.client_name
@@ -62,9 +70,9 @@ def get_run_filter_options(db: Session) -> dict[str, list[str]]:
     ).scalars().all()
     targets = db.execute(
         text(
-            f"""
+            """
             SELECT DISTINCT target_name
-            FROM ({_LATEST_RUNS_CTE}) latest_runs
+            FROM clone_run_status
             WHERE target_name IS NOT NULL
             ORDER BY target_name
             """
@@ -72,9 +80,9 @@ def get_run_filter_options(db: Session) -> dict[str, list[str]]:
     ).scalars().all()
     users = db.execute(
         text(
-            f"""
+            """
             SELECT DISTINCT user_name
-            FROM ({_LATEST_RUNS_CTE}) latest_runs
+            FROM clone_run_status
             WHERE user_name IS NOT NULL
             ORDER BY user_name
             """
@@ -96,11 +104,7 @@ def get_clone_runs(
     start_date: date | None = None,
     end_date: date | None = None,
 ) -> list[dict]:
-    """Fetch rows from ``clone_run_status`` ordered by ``last_update``, newest
-    first, regardless of status. Rows with no ``last_update`` sort last;
-    ``clone_run_id`` descending is the tiebreaker. Joins ``clients`` for
-    ``client_name``.
-    """
+    """Fetch rows from ``clone_run_status`` ordered by ``last_update``, newest first."""
     conditions: list[str] = []
     params: dict = {"limit": limit}
     if client:
@@ -123,20 +127,8 @@ def get_clone_runs(
     query = text(
         f"""
         SELECT
-            cr.clone_run_id,
-            cr.client_id,
-            c.client_name,
-            cr.user_id,
-            cr.user_name,
-            cr.source_env_id,
-            cr.target_env_id,
-            cr.source_name,
-            cr.target_name,
-            cr.status,
-            cr.start_date,
-            cr.last_update,
-            cr.log_location
-        FROM ({_LATEST_RUNS_CTE}) cr
+            {_RUN_COLUMNS}
+        FROM clone_run_status cr
         JOIN clients c ON c.client_id = cr.client_id
         {where}
         ORDER BY cr.last_update DESC NULLS LAST, cr.clone_run_id DESC
@@ -163,27 +155,12 @@ def get_clone_runs(
 
 
 def get_clone_run(db: Session, clone_run_id: int) -> dict | None:
-    """Fetch a single ``clone_run_status`` row (with ``client_name`` joined).
-
-    Returns ``None`` when no run matches ``clone_run_id``.
-    """
+    """Fetch a single ``clone_run_status`` row (with ``client_name`` joined)."""
     query = text(
         f"""
         SELECT
-            cr.clone_run_id,
-            cr.client_id,
-            c.client_name,
-            cr.user_id,
-            cr.user_name,
-            cr.source_env_id,
-            cr.target_env_id,
-            cr.source_name,
-            cr.target_name,
-            cr.status,
-            cr.start_date,
-            cr.last_update,
-            cr.log_location
-        FROM ({_LATEST_RUNS_CTE}) cr
+            {_RUN_COLUMNS}
+        FROM clone_run_status cr
         JOIN clients c ON c.client_id = cr.client_id
         WHERE cr.clone_run_id = :clone_run_id
         """
@@ -293,6 +270,19 @@ def _get_failed_function_step(
     return dict(row) if row else None
 
 
+def _next_step_attempt_pk(clone_run_id: int, failed_step: dict) -> int:
+    """Next valid ``clone_function_run_id`` for a retry/skip/abort attempt."""
+    function_id = failed_step["function_id"]
+    last_pk = failed_step["clone_function_run_id"]
+    base_pk = function_run_base_pk(clone_run_id, function_id)
+    next_pk = last_pk + 1
+    if next_pk >= base_pk + 10:
+        raise ValueError(
+            f"Maximum number of attempts exceeded for run {clone_run_id} step {function_id}"
+        )
+    return next_pk
+
+
 def get_step_failure_summary(db: Session, limit: int = 50) -> list[dict]:
     """Cross-run failure counts per clone step (uses ``idx_cfrs_status``)."""
     return fetch_step_failure_summary(db, limit)
@@ -319,8 +309,13 @@ def get_execute_clone_options(db: Session) -> dict:
     ).mappings().all()
     environments = db.execute(
         text(
-            """
-            SELECT e.env_id, e.env_name, e.client_id, e.locked, c.client_name
+            f"""
+            SELECT
+                e.env_id,
+                e.env_name,
+                e.client_id,
+                c.client_name,
+                {_ENV_LOCKED_EXPR} AS locked
             FROM environments e
             JOIN clients c ON c.client_id = e.client_id
             ORDER BY e.env_name
@@ -351,8 +346,13 @@ def _get_user(db: Session, user_id: int) -> dict | None:
 def _get_environment(db: Session, env_id: int) -> dict | None:
     row = db.execute(
         text(
-            """
-            SELECT e.env_id, e.env_name, e.client_id, e.locked, c.client_name
+            f"""
+            SELECT
+                e.env_id,
+                e.env_name,
+                e.client_id,
+                c.client_name,
+                {_ENV_LOCKED_EXPR} AS locked
             FROM environments e
             JOIN clients c ON c.client_id = e.client_id
             WHERE e.env_id = :env_id
@@ -373,7 +373,7 @@ def trigger_clone_run(
     source_env_id: int,
     target_env_id: int,
 ) -> dict:
-    """Validate inputs and invoke ``create_clone_run`` (locks target atomically).
+    """Validate inputs and invoke ``create_clone_run`` (sets env_lock via trigger).
 
     Raises ``ValueError`` for business-rule violations or DB errors surfaced by
     the SQL function (e.g. target already locked).
@@ -399,6 +399,9 @@ def trigger_clone_run(
 
     if _is_prod_env(target["env_name"]):
         raise ValueError(f"Target cannot be {_PROTECTED_TARGET}")
+
+    if target.get("locked"):
+        raise ValueError("Target environment is locked by an active clone run.")
 
     try:
         run_id = db.execute(
@@ -437,12 +440,10 @@ def mark_run_action(
     new_status: str,
     clone_function_run_id: int | None = None,
 ) -> dict | None:
-    """Append ABORTED/SKIPPED status rows for the run and the failed function step.
+    """Record ABORTED/SKIPPED on the failed step; run status rolls up via DB trigger.
 
-    Inserts a new ``clone_function_run_status`` row for the single failed step
-    (preserving prior attempts) and a new ``clone_run_status`` row for the run.
-    Returns the latest run row, or ``None`` when the run does not exist.
-    Raises ``ValueError`` when the run is not FAILED or no failed step is found.
+    Inserts a new ``clone_function_run_status`` attempt row. ``sync_clone_run_status``
+    and ``sync_env_lock`` update the parent ``clone_run_status`` row in place.
     """
     run = get_clone_run(db, clone_run_id)
     if run is None:
@@ -454,74 +455,49 @@ def mark_run_action(
     if failed_step is None:
         raise ValueError("No failed function step found for this run")
 
-    db.execute(
-        text(
-            """
-            INSERT INTO clone_function_run_status (
-                clone_run_id,
-                function_id,
-                status,
-                start_time,
-                end_time,
-                step_func_log_location
-            ) VALUES (
-                :clone_run_id,
-                :function_id,
-                :status,
-                NOW(),
-                NOW(),
-                :step_func_log_location
-            )
-            """
-        ),
-        {
-            "clone_run_id": failed_step["clone_run_id"],
-            "function_id": failed_step["function_id"],
-            "status": new_status,
-            "step_func_log_location": failed_step.get("step_func_log_location"),
-        },
-    )
-    db.execute(
-        text(
-            f"""
-            INSERT INTO clone_run_status (
-                clone_run_id,
-                client_id,
-                user_id,
-                user_name,
-                source_env_id,
-                target_env_id,
-                source_name,
-                target_name,
-                status,
-                start_date,
-                last_update,
-                log_location
-            )
-            SELECT
-                clone_run_id,
-                client_id,
-                user_id,
-                user_name,
-                source_env_id,
-                target_env_id,
-                source_name,
-                target_name,
-                :status,
-                start_date,
-                NOW(),
-                log_location
-            FROM ({_LATEST_RUNS_CTE}) latest_runs
-            WHERE clone_run_id = :clone_run_id
-            """
-        ),
-        {"clone_run_id": clone_run_id, "status": new_status},
-    )
-    db.commit()
+    next_pk = _next_step_attempt_pk(clone_run_id, failed_step)
+
+    try:
+        db.execute(
+            text(
+                """
+                INSERT INTO clone_function_run_status (
+                    clone_function_run_id,
+                    clone_run_id,
+                    function_id,
+                    status,
+                    start_time,
+                    end_time,
+                    step_func_log_location
+                ) VALUES (
+                    :clone_function_run_id,
+                    :clone_run_id,
+                    :function_id,
+                    :status,
+                    NOW(),
+                    NOW(),
+                    :step_func_log_location
+                )
+                """
+            ),
+            {
+                "clone_function_run_id": next_pk,
+                "clone_run_id": failed_step["clone_run_id"],
+                "function_id": failed_step["function_id"],
+                "status": new_status,
+                "step_func_log_location": failed_step.get("step_func_log_location"),
+            },
+        )
+        db.commit()
+    except SQLAlchemyError as exc:
+        db.rollback()
+        detail = str(exc.orig).strip() if exc.orig else str(exc)
+        raise ValueError(detail) from exc
+
     latest = get_clone_run(db, clone_run_id)
     if latest is None:
         return None
-    latest["acted_clone_function_run_id"] = failed_step["clone_function_run_id"]
+    latest["acted_clone_function_run_id"] = next_pk
     return latest
 
 
@@ -530,7 +506,7 @@ def mark_run_retry(
     clone_run_id: int,
     clone_function_run_id: int | None = None,
 ) -> dict | None:
-    """Append PENDING status rows to retry the failed function step and resume the run."""
+    """Retry the failed step via ``retry_clone_run`` (new PENDING attempt + run PENDING)."""
     run = get_clone_run(db, clone_run_id)
     if run is None:
         return None
@@ -541,71 +517,21 @@ def mark_run_retry(
     if failed_step is None:
         raise ValueError("No failed function step found for this run")
 
-    db.execute(
-        text(
-            """
-            INSERT INTO clone_function_run_status (
-                clone_run_id,
-                function_id,
-                status,
-                start_time,
-                end_time,
-                step_func_log_location
-            ) VALUES (
-                :clone_run_id,
-                :function_id,
-                'PENDING',
-                NOW(),
-                NULL,
-                :step_func_log_location
-            )
-            """
-        ),
-        {
-            "clone_run_id": failed_step["clone_run_id"],
-            "function_id": failed_step["function_id"],
-            "step_func_log_location": failed_step.get("step_func_log_location"),
-        },
-    )
-    db.execute(
-        text(
-            f"""
-            INSERT INTO clone_run_status (
-                clone_run_id,
-                client_id,
-                user_id,
-                user_name,
-                source_env_id,
-                target_env_id,
-                source_name,
-                target_name,
-                status,
-                start_date,
-                last_update,
-                log_location
-            )
-            SELECT
-                clone_run_id,
-                client_id,
-                user_id,
-                user_name,
-                source_env_id,
-                target_env_id,
-                source_name,
-                target_name,
-                'PENDING',
-                start_date,
-                NOW(),
-                log_location
-            FROM ({_LATEST_RUNS_CTE}) latest_runs
-            WHERE clone_run_id = :clone_run_id
-            """
-        ),
-        {"clone_run_id": clone_run_id},
-    )
-    db.commit()
+    function_id = failed_step["function_id"]
+
+    try:
+        db.execute(
+            text("SELECT retry_clone_run(:clone_run_id, :function_id)"),
+            {"clone_run_id": clone_run_id, "function_id": function_id},
+        )
+        db.commit()
+    except SQLAlchemyError as exc:
+        db.rollback()
+        detail = str(exc.orig).strip() if exc.orig else str(exc)
+        raise ValueError(detail) from exc
+
     latest = get_clone_run(db, clone_run_id)
     if latest is None:
         return None
-    latest["acted_clone_function_run_id"] = failed_step["clone_function_run_id"]
+    latest["acted_clone_function_run_id"] = failed_step["clone_function_run_id"] + 1
     return latest

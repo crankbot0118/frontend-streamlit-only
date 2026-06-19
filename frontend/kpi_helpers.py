@@ -151,7 +151,7 @@ ACTIVITY_WEEKS = 12
 OUTCOME_DAYS = 90
 OUTCOME_FAILED = frozenset({"FAILED"})
 OUTCOME_ABORTED = frozenset({"ABORTED"})
-# Latest row per run from ``clone_run_status`` (see backend ``get_clone_runs``).
+# Latest status per run from ``clone_run_status`` (one row per ``clone_run_id``).
 OUTCOME_TERMINAL_STATUSES = frozenset({"COMPLETED", "FAILED", "ABORTED"})
 
 

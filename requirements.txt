@@ -1,10 +1,26 @@
-# Shared Python dependencies for the repo-root config loader and Streamlit UI.
-# Install backend deps separately: pip install -r backend/requirements.txt
+# =============================================================================
+# VIGT Clone Automation — Python 3.11+ (customer instance)
+#
+# Install from repo root:
+#   python3.11 -m pip install -r requirements.txt
+#
+# Run services (from repo root):
+#   python3.11 -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
+#   python3.11 -m streamlit run frontend/app.py
+# =============================================================================
+
+# Shared config (.env loader — used by frontend, backend, and config/)
 python-dotenv>=1.0,<2.0
-streamlit>=1.52
-plotly>=5.18,<6.0
+
+# Streamlit dashboard
+streamlit>=1.52,<2.0
+plotly>=5.18,<7.0
+
+# FastAPI backend
 fastapi>=0.115,<1.0
+pydantic>=2.0,<3.0
 uvicorn[standard]>=0.30,<1.0
+
+# PostgreSQL
 SQLAlchemy>=2.0,<3.0
 psycopg2-binary>=2.9,<3.0
-python-dotenv>=1.0,<2.0
