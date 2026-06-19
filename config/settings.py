@@ -20,7 +20,6 @@ from config.errors import ConfigurationError
 REPO_ROOT = Path(__file__).resolve().parent.parent
 ENV_FILE = REPO_ROOT / ".env"
 ENV_EXAMPLE = REPO_ROOT / ".env.example"
-
 _env_loaded = False
 
 
