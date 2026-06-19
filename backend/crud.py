@@ -469,9 +469,9 @@ def mark_run_action(
                     :clone_run_id,
                     :function_id,
                     :status,
+                    NULL,
                     NOW(),
-                    NOW(),
-                    :step_func_log_location
+                    NULL
                 )
                 """
             ),
@@ -480,7 +480,6 @@ def mark_run_action(
                 "clone_run_id": failed_step["clone_run_id"],
                 "function_id": failed_step["function_id"],
                 "status": new_status,
-                "step_func_log_location": failed_step.get("step_func_log_location"),
             },
         )
         db.commit()

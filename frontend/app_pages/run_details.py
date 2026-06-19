@@ -10,6 +10,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from api import (
+    abort_run,
     get_run,
     get_run_steps,
     get_step_detail,
@@ -219,6 +220,22 @@ if run:
                                 st.rerun()
                             except Exception as exc:
                                 show_error(exc, context="Could not skip step")
+                        st.markdown(
+                            '<span class="ca-step-link-sep">&middot;</span>',
+                            unsafe_allow_html=True,
+                        )
+                        if st.button(
+                            "Abort",
+                            key=f"step_abort_{run_id}_{i}",
+                            disabled=not can_act,
+                            help=act_help,
+                        ):
+                            try:
+                                abort_run(run_id, step_pk)
+                                st.session_state.pop("selected_run", None)
+                                st.rerun()
+                            except Exception as exc:
+                                show_error(exc, context="Could not abort step")
 
     auto_on = bool(st.session_state.get(refresh_key))
     poll_every = _RUN_DETAILS_REFRESH_SEC if auto_on else None

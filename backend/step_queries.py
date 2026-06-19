@@ -17,6 +17,30 @@ _STEPS_FOR_RUN = """
     WHERE clone_run_id = :clone_run_id
 """
 
+# Latest attempt per function within a run (matches sync_clone_run_status rollup).
+_LATEST_STEPS_FOR_RUN = """
+    SELECT DISTINCT ON (function_id)
+        clone_function_run_id,
+        clone_run_id,
+        function_id,
+        status,
+        step_func_log_location
+    FROM clone_function_run_status
+    WHERE clone_run_id = :clone_run_id
+    ORDER BY function_id, clone_function_run_id DESC
+"""
+
+_LATEST_STEPS_FOR_RUNS = """
+    SELECT DISTINCT ON (clone_run_id, function_id)
+        clone_run_id,
+        function_id,
+        status,
+        clone_function_run_id
+    FROM clone_function_run_status
+    WHERE clone_run_id IN :run_ids
+    ORDER BY clone_run_id, function_id, clone_function_run_id DESC
+"""
+
 GET_RUN_STEPS = text(
     f"""
     WITH steps_for_run AS (
@@ -88,32 +112,36 @@ GET_STEP_LOG_LOCATION = text(
     """
 )
 
-# idx_cfrs_status — locate FAILED rows, scoped by run when possible.
+# idx_cfrs_status — failed step whose latest attempt is FAILED (not stale history rows).
 GET_FAILED_STEP_FOR_RUN = text(
-    """
+    f"""
+    WITH latest AS (
+        {_LATEST_STEPS_FOR_RUN}
+    )
     SELECT
         clone_function_run_id,
         clone_run_id,
         function_id,
         step_func_log_location
-    FROM clone_function_run_status
+    FROM latest
     WHERE status = 'FAILED'
-      AND clone_run_id = :clone_run_id
-    ORDER BY clone_function_run_id DESC
+    ORDER BY function_id DESC
     LIMIT 1
     """
 )
 
 GET_FAILED_STEP_BY_PK = text(
-    """
+    f"""
+    WITH latest AS (
+        {_LATEST_STEPS_FOR_RUN}
+    )
     SELECT
         clone_function_run_id,
         clone_run_id,
         function_id,
         step_func_log_location
-    FROM clone_function_run_status
+    FROM latest
     WHERE status = 'FAILED'
-      AND clone_run_id = :clone_run_id
       AND clone_function_run_id = :clone_function_run_id
     """
 )
@@ -121,15 +149,23 @@ GET_FAILED_STEP_BY_PK = text(
 # idx_cfrs_status — batch lookup of latest FAILED step name per run (Run History).
 GET_FAILED_STEP_NAMES_FOR_RUNS = (
     text(
-        """
-    SELECT DISTINCT ON (cfrs.clone_run_id)
-        cfrs.clone_run_id,
+        f"""
+    WITH latest AS (
+        {_LATEST_STEPS_FOR_RUNS}
+    ),
+    failed AS (
+        SELECT DISTINCT ON (clone_run_id)
+            clone_run_id,
+            function_id
+        FROM latest
+        WHERE status = 'FAILED'
+        ORDER BY clone_run_id, function_id DESC
+    )
+    SELECT
+        f.clone_run_id,
         cf.function_name
-    FROM clone_function_run_status cfrs
-    JOIN clone_functions cf ON cf.function_id = cfrs.function_id
-    WHERE cfrs.status = 'FAILED'
-      AND cfrs.clone_run_id IN :run_ids
-    ORDER BY cfrs.clone_run_id, cfrs.clone_function_run_id DESC
+    FROM failed f
+    JOIN clone_functions cf ON cf.function_id = f.function_id
     """
     ).bindparams(bindparam("run_ids", expanding=True))
 )

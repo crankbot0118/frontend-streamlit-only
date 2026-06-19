@@ -351,8 +351,9 @@ def _run_action(
     "/api/v1/runs/{clone_run_id}/abort",
     response_model=RunActionOut,
     summary="Abort a failed clone run",
-    description="Inserts ABORTED status rows for the run and the single failed "
-    "function step. Only allowed when the latest run status is FAILED.",
+    description="Inserts a new ABORTED attempt for the failed function step. "
+    "Run status rolls up via ``sync_clone_run_status``. "
+    "Only allowed when the latest run status is FAILED.",
 )
 def abort_clone_run(
     clone_run_id: int,
@@ -366,8 +367,9 @@ def abort_clone_run(
     "/api/v1/runs/{clone_run_id}/skip",
     response_model=RunActionOut,
     summary="Skip a failed clone run",
-    description="Inserts SKIPPED status rows for the run and the single failed "
-    "function step. Only allowed when the latest run status is FAILED.",
+    description="Inserts a new SKIPPED attempt for the failed function step. "
+    "Run status rolls up via ``sync_clone_run_status``. "
+    "Only allowed when the latest run status is FAILED.",
 )
 def skip_clone_run(
     clone_run_id: int,
@@ -381,8 +383,9 @@ def skip_clone_run(
     "/api/v1/runs/{clone_run_id}/retry",
     response_model=RunActionOut,
     summary="Retry a failed clone run step",
-    description="Inserts PENDING status rows for the run and the single failed "
-    "function step. Only allowed when the latest run status is FAILED.",
+    description="Calls ``retry_clone_run`` to insert a new PENDING attempt for "
+    "the failed function step and set the run back to PENDING. "
+    "Only allowed when the latest run status is FAILED.",
 )
 def retry_clone_run(
     clone_run_id: int,

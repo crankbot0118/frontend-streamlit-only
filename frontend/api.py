@@ -244,6 +244,14 @@ def skip_run(clone_run_id: int, clone_function_run_id: int | None = None) -> dic
     return _post_json(f"/api/v1/runs/{clone_run_id}/skip", body)
 
 
+def abort_run(clone_run_id: int, clone_function_run_id: int | None = None) -> dict:
+    """Insert ABORTED status for the run and the failed function step."""
+    body = {}
+    if clone_function_run_id is not None:
+        body["clone_function_run_id"] = clone_function_run_id
+    return _post_json(f"/api/v1/runs/{clone_run_id}/abort", body)
+
+
 def retry_run(clone_run_id: int, clone_function_run_id: int | None = None) -> dict:
     """Insert PENDING status to retry the failed function step and resume the run."""
     body = {}

@@ -2010,7 +2010,11 @@ _GLOBAL_CSS = f"""
   [class*="st-key-step_skip_"] .stButton,
   [class*="st-key-step_skip_"] .stButton button,
   [class*="st-key-step_skip_"] .stButton button [data-testid="stMarkdownContainer"],
-  [class*="st-key-step_skip_"] .stButton button p {{
+  [class*="st-key-step_skip_"] .stButton button p,
+  [class*="st-key-step_abort_"] .stButton,
+  [class*="st-key-step_abort_"] .stButton button,
+  [class*="st-key-step_abort_"] .stButton button [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_abort_"] .stButton button p {{
       width: auto !important;
       min-height: 0 !important;
       margin: 0 !important;
@@ -2035,7 +2039,10 @@ _GLOBAL_CSS = f"""
   [class*="st-key-step_retry_"] .stButton button:not(:disabled):hover p,
   [class*="st-key-step_skip_"] .stButton button:not(:disabled):hover,
   [class*="st-key-step_skip_"] .stButton button:not(:disabled):hover [data-testid="stMarkdownContainer"],
-  [class*="st-key-step_skip_"] .stButton button:not(:disabled):hover p {{
+  [class*="st-key-step_skip_"] .stButton button:not(:disabled):hover p,
+  [class*="st-key-step_abort_"] .stButton button:not(:disabled):hover,
+  [class*="st-key-step_abort_"] .stButton button:not(:disabled):hover [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_abort_"] .stButton button:not(:disabled):hover p {{
       text-decoration: none !important;
       color: {BRAND_ORANGE} !important;
   }}
@@ -2044,7 +2051,10 @@ _GLOBAL_CSS = f"""
   [class*="st-key-step_retry_"] .stButton button:disabled p,
   [class*="st-key-step_skip_"] .stButton button:disabled,
   [class*="st-key-step_skip_"] .stButton button:disabled [data-testid="stMarkdownContainer"],
-  [class*="st-key-step_skip_"] .stButton button:disabled p {{
+  [class*="st-key-step_skip_"] .stButton button:disabled p,
+  [class*="st-key-step_abort_"] .stButton button:disabled,
+  [class*="st-key-step_abort_"] .stButton button:disabled [data-testid="stMarkdownContainer"],
+  [class*="st-key-step_abort_"] .stButton button:disabled p {{
       color: #b0b5ba !important;
       cursor: not-allowed !important;
       opacity: 1 !important;
